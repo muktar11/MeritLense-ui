@@ -1,0 +1,2106 @@
+{
+  "landing-page": {
+    "navbar": {
+      "logo_alt": "MeritLense Logo",
+      "menu_items": {
+        "features": "Features",
+        "how_it_works": "How It Works",
+        "pricing": "Pricing"
+      },
+      "actions": {
+        "sign_in": "Sign In",
+        "get_started": "Get Started"
+      }
+    },
+    "hero": {
+      "badge": "AI-Powered Evaluation Platform",
+      "title_part1": "Discover Talent with Clarity",
+      "title_part2_ai_power": "Powered by AI",
+      "description": "MeritLens is your smart evaluation platform that helps you choose the right person with confidence and ease.",
+      "cta_start_evaluating": "Start Evaluating Smarter",
+      "cta_explore_platform": "Explore the Platform",
+      "image_alt": "MeritLense Dashboard Preview"
+    },
+    "stats": {
+      "active_users": "hiring entities",
+      "evaluations": "Evaluations",
+      "countries": "Countries",
+      "success_rate": "User Satisfaction"
+    },
+    "features": {
+      "section_title": "Why Choose MeritLense?",
+      "section_subtitle": "Transform your hiring experience into a smarter, faster, data-driven process",
+      "smart_evaluations": {
+        "title": "Smart evaluations tailored to your needs",
+        "description": "Create professional assessments once and apply them across multiple roles with ease. Add video intros, real-world simulations, and AI-powered behavioral analysis — for a clear, comprehensive view of every candidate.",
+        "list_item1": "Reusable evaluation templates",
+        "list_item2": "AI-powered behavioral analysis",
+        "list_item3": "Custom skill assessments",
+        "image_alt": "Smart Evaluations Dashboard"
+      },
+      "predictive_reporting": {
+        "title": "Predictive Reports — See Beyond the Numbers for Smarter Hiring",
+        "description": "Take your hiring decisions to the next level with our intelligent predictive analytics. Using advanced AI-powered algorithms, MeritLens helps you forecast candidate stability, retention likelihood, and cultural fit — before you hire.",
+        "list_item1": "Job stability predictions",
+        "list_item2": "Retention forecasting",
+        "list_item3": "Cultural fit analysis",
+        "image_alt": "Predictive Analytics Dashboard"
+      },
+      "role_based_dashboards": {
+        "title": "Smart Dashboards for Every Role — Seamless Management & Real-Time Collaboration",
+        "description": "Give your team the tools they need to succeed. Admins, recruiters, and viewers each get tailored dashboards to track performance, manage permissions, and collaborate instantly — all with clarity and zero complexity.",
+        "list_item1": "Role-based user permissions for full control",
+        "list_item2": "Live collaboration tools to boost teamwork",
+        "list_item3": "Detailed logs and compliance tracking for transparency and security",
+        "image_alt": "Team Collaboration Dashboard"
+      },
+      "additional_features": [
+        {
+          "title": "Legal Neutrality",
+          "description": "Objective, compliant evaluation tools that deliver accurate insights without biasing hiring decisions."
+        },
+        {
+          "title": "Multilingual Support",
+          "description": "Run your system globally with Arabic and English interfaces, plus ready-to-use international certificates."
+        },
+        {
+          "title": "Lightning-Fast Reporting",
+          "description": "Generate comprehensive candidate reports in minutes — speeding up hiring without sacrificing accuracy."
+        },
+        {
+          "title": "Enterprise-Grade Security",
+          "description": "Military-grade encryption, full GDPR compliance, and detailed audit logs for total peace of mind."
+        },
+        {
+          "title": "Trusted Certifications",
+          "description": "Issue AI-backed certificates with QR codes for instant verification and high credibility."
+        },
+        {
+          "title": "Seamless Team Collaboration",
+          "description": "Advanced collaboration tools for admins, recruiters, and viewers — with role-based permissions for efficient teamwork"
+        }
+      ]
+    },
+    "how_it_works": {
+      "section_title": "Start Hiring Top Talent with Ease",
+      "section_subtitle": "Just three simple steps to make the right choice",
+      "steps": [
+        {
+          "title": "Create Your Account",
+          "description": "Sign up as a company or an individual it only takes minutes to get started."
+        },
+        {
+          "title": "Add Candidates",
+          "description": "Upload their data and choose the right evaluation for each role or profile."
+        },
+        {
+          "title": "Get Smart Insights",
+          "description": "Instant AI-powered reports to help you make confident, data-driven hiring decisions."
+        }
+      ],
+      "image_alt": "Platform Workflow"
+    },
+    "pricing": {
+      "section_title": "Flexible, Transparent Pricing for Every Team",
+      "section_subtitle": "Choose the plan that fits your goals and elevate your hiring process with ease upgrade anytime.",
+      "popular_badge": "Most Popular",
+      "cta_get_started": "Get Started",
+      "cta_contact_sales": "Contact Sales",
+      "individual_employers": {
+        "title": "For Individual Employers",
+        "time_unit": "/one-time",
+        "plans": [
+          {
+            "name": "Basic",
+            "candidates_count": "3 candidates",
+            "features": [
+              "Identity Verification",
+              "Medical Check",
+              "Basic Q&A",
+              "PDF Report"
+            ]
+          },
+          {
+            "name": "Essential",
+            "candidates_count": "5 candidates",
+            "features": [
+              "Everything in Basic",
+              "Education & Employment",
+              "Advanced Q&A",
+              "Behavioral Score"
+            ]
+          },
+          {
+            "name": "Pro",
+            "candidates_count": "10 candidates",
+            "features": [
+              "Everything in Essential",
+              "Skills Assessment",
+              "Video Interview",
+              "Reference Checks"
+            ]
+          },
+          {
+            "name": "Elite",
+            "candidates_count": "20 candidates",
+            "features": [
+              "Everything in Pro",
+              "Deep Background",
+              "Personality Profile",
+              "Custom Report"
+            ]
+          }
+        ]
+      },
+      "organizations_agencies": {
+        "title": "For Recruitment Entity",
+        "time_unit": "/month",
+        "plans": [
+          {
+            "name": "Starter",
+            "candidates_count": "50 evaluations/mo",
+            "features": [
+              "Dashboard",
+              "Basic Analytics",
+              "Email Support",
+              "PDF Reports"
+            ]
+          },
+          {
+            "name": "Growth",
+            "candidates_count": "200 evaluations/mo",
+            "features": [
+              "Everything in Starter",
+              "Team Access",
+              "Analytics",
+              "5% Discount",
+              "Priority Support"
+            ]
+          },
+          {
+            "name": "Business",
+            "candidates_count": "100 evaluations/mo",
+            "features": [
+              "Everything in Growth",
+              "Benchmarking",
+              "10% Discount",
+              "Audit Mode",
+              "Custom Branding"
+            ]
+          },
+          {
+            "name": "Enterprise",
+            "candidates_count": "Unlimited",
+            "features": [
+              "Everything in Business",
+              "API Access",
+              "24/7 Support",
+              "Custom AI"
+            ]
+          }
+        ]
+      }
+    },
+    "cta": {
+      "title": "Smart Hiring Starts Here",
+      "subtitle": "Ready to make smarter hiring decisions? Join thousands of business owners who rely on AI-powered insights to select top talent and build high-performing teams.",
+      "button_trial": "Start Free Trial",
+      "button_pricing": "View Pricing"
+    },
+    "footer": {
+      "logo_alt": "MeritLense Logo",
+      "mission_statement": "MeritLens equips recruitment entities—whether individual employers, licensed agencies, or HR teams—with AI-powered tools to evaluate candidates objectively, uncover hidden strengths, and make confident hiring decisions based on data, not assumptions.",
+      "links_section_title": "Quick Links",
+      "link_features": "Features",
+      "link_how_it_works": "How It Works",
+      "link_pricing": "Pricing",
+      "newsletter_section_title": "Stay Updated",
+      "newsletter_description": "Subscribe to get the latest insights and updates.",
+      "newsletter_placeholder": "Enter your email",
+      "newsletter_button": "Subscribe",
+      "copyright": "All rights reserved."
+    }
+  },
+  "auth_page": {
+    "acceptInvitation": {
+      "title": "Accept Team Invitation",
+      "subtitle": "You've been invited to join a team. Set your password to create your account.",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "acceptInvitation": "Accept Invitation & Create Account",
+      "accepting": "Creating Account...",
+      "success": "Welcome Aboard!",
+      "successMessage": "Your account has been successfully created. You will be redirected to the login page in 3 seconds."
+    },
+    "forgot_password": {
+      "header": {
+        "title": "Forgot Password?",
+        "subtitle": "No worries, we'll send you reset instructions"
+      },
+      "form": {
+        "label_email_or_phone": "Email Address or Phone Number",
+        "placeholder_email_or_phone": "you@example.com or +1234567890",
+        "button_send_link": "Send Reset Link",
+        "button_loading": "Sending..."
+      },
+      "confirmation": {
+        "title": "Check Your Email",
+        "message_part1": "We've sent a password reset link to your email address.",
+        "spam_check": "Didn't receive the email? Check your spam folder or try again.",
+        "button_try_again": "Try Another Email"
+      },
+      "link_back_to_login": "Back to Login",
+      "validation": {
+        "email_or_phone_required": "Email or phone is required",
+        "email_or_phone_invalid": "Please enter a valid email or phone number"
+      }
+    },
+    "login": {
+      "header": {
+        "title": "Welcome Back",
+        "subtitle": "Sign in to your Meritlense account"
+      },
+      "form": {
+        "label_email": "Email Address",
+        "label_password": "Password",
+        "remember_me": "Remember me",
+        "forgot_password": "forgot password?",
+        "button_text": "Sign In",
+        "button_loading": "Signing in..."
+      },
+      "messages": {
+        "no_account_prefix": "Don't have an account yet?",
+        "sign_up_link": "Sign up",
+        "error_invalid_credentials": "Invalid email or password. Try the demo accounts below."
+      }
+    },
+    "register_selection": {
+      "header": {
+        "title": "Create Account",
+        "subtitle": "Choose your account type to get started"
+      },
+      "card_b2c": {
+        "title": "Individual Employer",
+        "description": "For personal hiring needs, such as household staff or private assistants",
+        "cta": "Continue as Individual Employer"
+      },
+      "card_b2b": {
+        "title": "Recruitment Entity",
+        "description": "For licensed agencies, HR teams, and individual employers",
+        "cta": "Continue as Recruitment Entity"
+      },
+      "link_login": {
+        "prefix": "Already have an account?",
+        "link_text": "Sign in"
+      }
+    },
+    "register_b2c": {
+      "header": {
+        "title": "Individual Employer",
+        "subtitle": "Create your personal account"
+      },
+      "card_header": {
+        "title": "Individual Registration",
+        "subtitle": "Create your personal account",
+        "switch_to_b2b": "Register as Enterprise"
+      },
+      "form_fields": {
+        "full_name": {
+          "label": "Full Name",
+          "placeholder": "John Doe"
+        },
+        "email": "Email Address",
+        "mobile": "Mobile Number",
+        "country": {
+          "label": "Country",
+          "placeholder": "Select country"
+        },
+        "city": {
+          "label": "City",
+          "placeholder": "New York"
+        },
+        "preferred_language": {
+          "label": "Preferred Language",
+          "placeholder": "Select language"
+        },
+        "password": "Password",
+        "confirm_password": "Confirm Password",
+        "agree_to_terms": "I agree to the terms and conditions"
+      },
+      "select_options": {
+        "countries": {
+          "usa": "United States",
+          "uk": "United Kingdom",
+          "sa": "Saudi Arabia"
+        },
+        "languages": {
+          "en": "English",
+          "ar": "Arabic"
+        }
+      },
+      "buttons": {
+        "create_account": "Create Account",
+        "loading": "Creating Account..."
+      },
+      "link_login": {
+        "prefix": "Already have an account?",
+        "link_text": "Sign in"
+      }
+    },
+    "register_b2b": {
+      "header": {
+        "title": "Agency/Company Account",
+        "subtitle": "Create your business account"
+      },
+      "card_header": {
+        "title": "Company Registration",
+        "subtitle": "Fill in your business details",
+        "switch_to_b2c": "Register as Individual"
+      },
+      "sections": {
+        "personal": "Personal Information",
+        "company": "Company Information"
+      },
+      "form_fields": {
+        "country": {
+          "label": "Country",
+          "placeholder": "Select country"
+        },
+        "city": {
+          "label": "City",
+          "placeholder": "New York"
+        },
+        "preferred_language": {
+          "label": "Preferred Language",
+          "placeholder": "Select language"
+        },
+        "company_name": {
+          "label": "Company Name",
+          "placeholder": "Acme Corp"
+        },
+        "manager_name": {
+          "label": "Manager Name",
+          "placeholder": "Jane Smith"
+        },
+        "license_number": {
+          "label": "License Number",
+          "placeholder": "LIC-123456"
+        },
+        "official_email": {
+          "label": "Official Email",
+          "placeholder": "info@company.com"
+        },
+        "company_phone": "Company Phone",
+        "password": "Password",
+        "confirm_password": "Confirm Password",
+        "agree_to_terms": "I agree to the terms and conditions"
+      },
+      "select_options": {
+        "countries": {
+          "usa": "United States",
+          "uk": "United Kingdom",
+          "sa": "Saudi Arabia"
+        },
+        "languages": {
+          "en": "English",
+          "ar": "Arabic"
+        }
+      },
+      "buttons": {
+        "create_account": "Create Company Account",
+        "loading": "Creating Account..."
+      },
+      "link_login": {
+        "prefix": "Already have an account?",
+        "link_text": "Sign in"
+      }
+    },
+    "reset_password": {
+      "header": {
+        "title": "Reset Password",
+        "subtitle": "Enter your new password below"
+      },
+      "form": {
+        "label_new_password": "New Password",
+        "label_confirm_password": "Confirm Password",
+        "password_hint": "Must be at least 8 characters with uppercase, lowercase, and number",
+        "button_reset": "Reset Password",
+        "button_loading": "Resetting Password..."
+      },
+      "success_state": {
+        "title": "Password Reset Successfully!",
+        "message": "Your password has been reset. Redirecting to login..."
+      },
+      "link_login": {
+        "prefix": "Remember your password?",
+        "link_text": "Back to Login"
+      }
+    }
+  },
+  "dashboard": {
+    "profile": "Profile",
+    "logout": "Log out",
+    "collapse": "Collapse",
+    "admin": {
+      "user_type": "Admin",
+      "page_type": "Admin",
+      "pages_list": {
+          "overview": "Dashboard ",
+          "user_management": "User Profiles",
+          "business_candidate_management": "Candidate Management",
+          "candidate_management": "Candidate Comparison",
+          "business_management": "Business Management",
+          "system_configuration": "System Configuration",
+          "audit_logs": "Audit Logs",
+          "settings": "Settings",
+          "api_settings": "Payment Package",
+          "multi_agency_panel": "Billing ans Subscription"
+        }
+,
+      "overview_page": {
+        "title": "Dashboard Overview",
+        "subtitle": "Monitor platform performance and key metrics",
+         "users": "Users",
+        "companies": "Companies",
+        "evaluations": "Evaluations",
+        "subscribers": "Subscribers",
+        "revenue": "Revenue",
+        "B2C": "Individual Users",
+        "B2B": "Companies",
+          "stats": {
+          "activeCandidates": "Active Candidates",
+          "totalUsers": "Total Users",
+          "activeAgencies": "Active Agencies",
+          "totalEvaluations": "Total Evaluations",
+          "revenue": "Monthly Revenue"
+        },
+         "charts": {
+         "systemLoadTrend": "System Load Trend",
+          "userGrowthTrend": "User Growth Trend",
+          "evaluationTypesDistribution": "Evaluation Types Distribution",
+          "packageContribution": "Package Contribution",
+          "revenueTrend": "Revenue Trend"
+        },
+        "totalRevenue": "Total Revenue",
+        "paymentRevenue": "One-time Payments",
+        "subscriptionRevenue": "Subscriptions",
+        "cumulativeRevenue": "Cumulative",
+        "months": {
+          "1": "Jan",
+          "2": "Feb",
+          "3": "Mar",
+          "4": "Apr",
+          "5": "May",
+          "6": "Jun",
+          "7": "Jul",
+          "8": "Aug",
+          "9": "Sep",
+          "10": "Oct",
+          "11": "Nov",
+          "12": "Dec"
+        },
+        "weeks": {
+          "week": "Week"
+        },
+
+        "evaluationTypes": {
+          "Basic": "Basic",
+          "Advanced": "Advanced",
+          "Essential": "Essential",
+          "Premium": "Premium"
+        },
+
+       "packages": {
+            "Basic": "Basic",
+            "Advanced": "Advanced",
+            "Essential": "Essential",
+            "Premium": "Premium"
+          }
+
+      },
+
+
+       "userRoleManagement": {
+        "title": "User & Role Management",
+        "access": "Access: Super Admin Only",
+
+        "actions": {
+          "createUser": "Create Internal Company User",
+          "activityLog": "Global Activity Log Viewer"
+        },
+
+        "search": {
+          "placeholder": "Search users..."
+        },
+        "filters": {
+          "allRoles": "All Roles",
+          "allStatus": "All Status"
+        },
+
+        "table": {
+          "title": "Current System Users",
+          "headers": {
+            "user": "User",
+            "role": "Current Role",
+            "permissions": "Permissions",
+            "status": "Status",
+            "lastLogin": "Last Login",
+            "actions": "Actions"
+          },
+          "actions": {
+            "assignRole": "Assign Role",
+            "resetPassword": "Reset Password",
+            "viewActivity": "View Activity Log",
+            "disable": "Disable User",
+            "enable": "Enable User"
+          }
+        },
+
+        "roles": {
+          "superAdmin": "Super Admin",
+          "recruiterAdmin": "Recruiter Admin",
+          "viewer": "Viewer"
+        },
+        "createAdmin": {
+          "title": "Create Admin User",
+          "email": "Email Address",
+          "firstName": "First Name",
+          "lastName": "Last Name",
+          "department": "Department",
+          "phoneNumber": "Phone Number",
+          "password": "Password",
+          "confirmPassword": "Confirm Password",
+          "passwordHint": "Leave blank to keep existing password",
+          "permissions": "Admin Permissions",
+          "infoText": "The admin user will be created with the permissions selected above. They will receive an email with login instructions.",
+          "cancel": "Cancel",
+          "create": "Create Admin",
+          "creating": "Creating..."
+        },
+
+        "status": {
+          "active": "Active",
+          "disabled": "Disabled"
+        }
+      },
+
+       "candidateManagement": {
+        "title": "Candidate Management Console",
+        "subtitle": "Operational hub for admins and recruiters. Add, evaluate, and manage talent.",
+
+        "quickActions": {
+          "title": "Quick Actions:",
+          "add": "Add New Candidate",
+          "bulkUpload": "Bulk Upload PDF/CSV",
+          "archive": "Archive Video Ads"
+        },
+        "search": {
+          "placeholder": "Search candidates..."
+        },
+        "filters": {
+          "allRoles": "All Roles",
+          "verificationStatus": "Verification Status",
+          "documents": "Documents"
+        },
+
+        "table": {
+          "title": "All Candidates",
+          "headers": {
+            "name": "Name",
+            "role": "Role",
+            "email": "Email",
+            "verification": "Verification",
+            "documents": "Documents",
+            "joined": "Joined",
+            "actions": "Actions"
+          }
+        },
+
+        "detailModal": {
+          "title": "Candidate Details"
+        },
+        "roles": {
+          "B2C": "Individual",
+          "B2B": "Company",
+          "B2B_TEAM_MEMBER": "Team Member"
+        },
+
+        "verificationStatus": {
+          "pending": "Pending",
+          "approved": "Approved",
+          "rejected": "Rejected",
+          "info_needed": "Info Needed"
+        },
+
+        "jobRoles": {
+          "seniorDev": "Senior Developer",
+          "marketingLead": "Marketing Lead",
+          "productManager": "Product Manager"
+        },
+
+        "languages": {
+          "en": "English",
+          "es": "Spanish"
+        },
+
+        "evaluationStatus": {
+          "successful": "Completed (Successful)",
+          "pending": "Evaluation Pending",
+          "failed": "Failed"
+        },
+
+        "documentStatus": {
+          "uploadedAttached": "Uploaded | Docs Attached",
+          "uploadedMissing": "Uploaded | Docs Missing",
+          "missingAttached": "Missing | Docs Attached"
+        },
+
+        "actions": {
+          "downloadView": "Download Report | View Edit Link",
+          "sendUpload": "Send Evaluation | Upload Offer Letter",
+          "sendDownload": "Send/Edit | Download Report"
+        }
+      },
+      "rbac": {
+        "title": "Admin Role-Based Management",
+        "explorerTitle": "Role-Based Access Control Explorer",
+        "description": "This matrix defines authorization rules based on system roles.",
+        "selectSystem": "Select System",
+        "selectRole": "Select Role",
+        "search": "Search Users",
+        "searchPlaceholder": "Search by name or email...",
+        "placeholders": {
+          "system": "Select system",
+          "role": "Select role"
+        },
+        "systems": {
+          "b2bEnterprise": "B2B Enterprise Admin",
+          "b2bBasic": "B2B Basic Admin",
+          "b2cAdmin": "B2C Admin",
+          "b2benterprise": "B2B Enterprise",
+          "b2bbasic": "B2B Basic",
+          "b2cadmin": "B2C Admin"
+        },
+        "roles": {
+         "superadmin": "Super Admin",
+         "superAdmin": "Super Admin",
+          "admin": "Admin",
+          "manager": "Manager",
+          "user": "User",
+          "companyadmin": "Company Admin",
+          "companyAdmin": "Company Admin",
+          "teammember": "Team Member"
+        },
+        "access": {
+          "authentication": "Authentication",
+          "readOnly": "Read Only",
+          "writeManage": "Write & Manage"
+        },
+        "table": {
+          "dialog": "Dialog",
+          "email": "Email",
+          "feature": "Feature / Action",
+          "access": "Access",
+          "nationalId": "National ID",
+          "nationalIdAlt": "National ID #2",
+          "user": "User",
+          "type": "Type",
+          "role": "Role",
+          "system": "System",
+          "permissions": "Permissions",
+          "contact": "Contact"
+        },
+        "dialogs": {
+          "auth": "Authentication",
+          "candidate": "Candidate",
+          "company": "Company"
+        },
+        "features": {
+          "loginValidation": "Login Validation",
+          "evaluationSummary": "Evaluations Summary",
+          "profileReset": "Profile Reset / Description"
+        }
+      },
+      "profile": {
+        "title": "Admin Profile Settings",
+        "subtitle": "Manage your account, company, and billing information",
+        "companyManagement": "Company Management",
+        "lightMode": "Light",
+        "language": "ENG",
+        "allowMode": "Allow Mode",
+        "logout": "Log Out",
+
+        "tabs": {
+          "msa": "Contract Approval",
+          "profile": "Edit Profile",
+          "billing": "Billing & Subscription"
+        },
+
+        "msa": {
+          "title": "Master Service Agreement (MSA)",
+          "description": "Awaiting Super Admin approval to unlock premium features.",
+          "review": "Review and Approve"
+        },
+
+        "table": {
+          "contract": "Contract Name",
+          "date": "Date",
+          "status": "Status",
+          "pdf": "PDF",
+          "type": "Type",
+          "amount": "Amount"
+        },
+
+        "contracts": {
+          "update1": "Privacy Policy Update Completed 1",
+          "update2": "Privacy Policy Update Completed 2",
+          "update3": "Privacy Policy Update Completed 3"
+        },
+
+        "status": {
+          "pending": "Pending",
+          "success": "Completed / Successful",
+          "failed": "Failed",
+          "active": "Active"
+        },
+
+        "jobRoles": {
+          "houseKeeper": "House Keeper",
+          "cleaner": "Cleaner",
+          "driver": "Driver"
+        },
+
+        "billing": {
+          "title": "Consumption History",
+          "types": {
+            "evaluation": "Evaluation",
+            "subscription": "Subscription Renewal"
+          }
+        },
+
+        "download": "Download",
+        "companyName": "Company Name",
+        "email": "Email",
+        "save": "Save",
+        "saveChanges": "Save Changes"
+      },
+          "systemSecurity": {
+        "title": "System Security",
+        "subtitle": "Monitor security activity and manage administrative access",
+        "description": "Manage critical application settings and security policies, access controls, and notification defaults.",
+        "systemOverview": "System Overview",
+        "stats": {
+          "totalUsers": "Total Users",
+          "pendingVerification": "Pending Email Verification",
+          "pendingDocuments": "Pending Document Verification",
+          "recentRegistrations": "Recent Registrations"
+        },
+
+        "quickActions": {
+          "title": "Quick Actions:",
+          "viewLogs": "View Failed Logins",
+          "clearLogs": "Clear Failed Login Logs",
+          "createUser": "Create NEW User",
+          "manageRoles": "Manage Roles"
+        },
+
+        "alerts": {
+          "title": "System Alerts & Notifications",
+          "failedLoginThreshold": "Failed Login Threshold Exceeded (10+ attempts)",
+          "newUserCreated": "New User Account Creation",
+          "dbConnectionError": "Database Connection Error",
+          "systemUpgradeCompleted": "System Upgrade Completed",
+          "highFailedLogins": "Alert on high failed login rate",
+          "documentVerificationBacklog": "Alert on document verification backlog"
+        },
+        "search": {
+          "placeholder": "Search users..."
+        },
+        "filters": {
+          "role": "Role",
+          "status": "Status"
+        },
+        "status": {
+          "active": "Active",
+          "inactive": "Inactive",
+          "pending": "Pending"
+        },
+
+        "table": {
+          "title": "Current System Users",
+          "headers": {
+            "user": "User",
+            "role": "Role",
+            "status": "Status",
+            "joined": "Joined",
+            "actions": "Actions"
+          }
+        },
+
+        "roles": {
+          "superAdmin": "Super Admin",
+          "recruiterAdmin": "Recruiter Admin",
+          "viewer": "Viewer"
+        },
+
+        "actions": {
+          "edit": "Edit",
+          "reset": "Reset Password",
+          "disable": "Disable",
+          "enable": "Enable",
+          "revoke": "Revoke Access"
+        }
+      },
+
+  "auditLog": {
+        "title": "Audit Logs & Evaluation Center",
+        "adminAccess": "Admin Access",
+        "tabs": {
+          "pendingVerifications": "Pending Verifications",
+          "auditLogs": "Audit Logs"
+        },
+        "pending": {
+          "title": "Document Verification Queue",
+          "total": "Total Pending",
+          "b2c": "B2C Users",
+          "b2b": "B2B Users",
+          "empty": "No pending verifications",
+          "table": {
+            "user": "User",
+            "role": "Role",
+            "documents": "Documents",
+            "submitted": "Submitted",
+            "actions": "Actions",
+            "review": "Review"
+          }
+        },
+        "audit": {
+          "totalLogs": "Total Logs (30d)",
+          "search": "Search logs...",
+          "allCategories": "All Categories",
+          "allSeverities": "All Severities",
+          "noLogs": "No audit logs found",
+          "system": "System",
+          "showing": "Showing {from} to {to} of {total} logs",
+          "page": "Page {current} of {total}",
+          "table": {
+            "user": "User",
+            "action": "Action",
+            "category": "Category",
+            "severity": "Severity",
+            "resource": "Resource",
+            "timestamp": "Timestamp",
+            "description": "Description"
+          }
+        },
+        "severity": {
+          "INFO": "Info",
+          "WARNING": "Warning",
+          "ERROR": "Error",
+          "CRITICAL": "Critical"
+        },
+        "roles": {
+          "superAdmin": "SUPER ADMIN",
+          "b2c": "Individual",
+          "b2b": "Company"
+        },
+        "verifyDocuments": {
+          "title": "Verify Documents",
+          "verify": "Verify",
+          "reject": "Reject",
+          "cancel": "Cancel",
+          "confirmReject": "Confirm Rejection",
+          "processing": "Processing...",
+          "back": "Back",
+          "verificationNotes": "Verification Notes",
+          "rejectionReason": "Rejection Reason",
+          "notesPlaceholder": "Add any notes about this verification...",
+          "rejectionPlaceholder": "Explain why the documents are being rejected..."
+        },
+        "evaluationCenter": {
+          "contractListTitle": "Candidate Contract List",
+          "table": {
+            "headers": {
+              "candidate": "Candidate",
+              "readiness": "Readiness",
+              "status": "Status",
+              "action": "Action"
+            },
+            "statusTypes": {
+              "pending": "Pending Correction",
+              "approved": "Approved",
+              "inprogress": "In Progress"
+            }
+          },
+          "detailsPanel": {
+            "labels": {
+              "candidateName": "Candidate Name",
+              "code": "Code",
+              "readiness": "Readiness",
+              "status": "Status",
+              "email": "Email",
+              "date": "Date"
+            },
+            "buttons": {
+              "viewDetails": "View Details",
+              "downloadReport": "Download Report"
+            },
+            "noSelection": {
+              "title": "No Selection",
+              "description": "Select a candidate to view logs and perform actions."
+            }
+          }
+        },
+         "auditLog": {
+        "title": "Audit Logs",
+        "tabs": {
+          "evaluation": "Evaluation Center",
+          "audit": "Audit Logs"
+        },
+        "table": {
+          "headers": {
+            "customer": "Customer",
+            "resourceTarget": "Resource Target",
+            "actionType": "Action Type",
+            "timestamp": "Time Stamp",
+            "category": "Category",
+            "description": "Description"
+          }
+        },
+        "statusTypes": {
+          "pending": "Pending",
+          "approved": "Approved",
+          "inprogress": "In Progress"
+        },
+        "categories": {
+          "security": "Security",
+          "override": "Override",
+          "billing": "Billing",
+          "ui": "UI",
+          "system": "System"
+        },
+        "actions": {
+          "viewDetails": "View Details",
+          "downloadReport": "Download Report"
+        },
+        "noSelection": {
+          "title": "No Selection",
+          "description": "Select a candidate to view logs and perform actions."
+        },
+        "pagination": {
+          "showing": "Showing",
+          "of": "of",
+          "prev": "Prev",
+          "next": "Next"
+        }
+      }
+      }, 
+
+ "billing": {
+        "title": "Billing and Subscriptions",
+        "search": "Search subscriptions...",
+        "filters": {
+          "allStatus": "All Status"
+        },
+        "stats": {
+          "total": "Total Subscriptions",
+          "active": "Active Subscriptions",
+          "revenue": "Monthly Revenue",
+          "expiring": "Expiring Soon"
+        },
+        "table": {
+          "user": "User",
+          "plan": "Plan",
+          "status": "Status",
+          "amount": "Amount",
+          "periodEnd": "Period End",
+          "daysLeft": "Days Left",
+          "actions": "Actions"
+        },
+        "paymentSuccess": {
+          "title": "Payment Successful!",
+          "description": "Your payment has been processed successfully. You will receive a confirmation email shortly.",
+          "amount": "Amount",
+          "transactionId": "Transaction ID",
+          "paymentMethod": "Payment Method",
+          "date": "Date",
+          "enterprise": "Enterprise",
+          "receiptSent": "Receipt sent to"
+        },
+        "quickActions": {
+          "downloadReceipt": "Download Receipt",
+          "back": "Back",
+          "home": "Home"
+        },
+        "form": {
+          "creditCardInfo": "Credit Card Information",
+          "paymentMethodLabel": "Select Payment Method",
+          "methods": {
+            "card": "Card",
+            "bank": "Bank Transfer",
+            "wallet": "Mobile Wallet",
+            "more": "More"
+          },
+          "fields": {
+            "cardNumber": "Card Number",
+            "expiry": "Expiry",
+            "cvc": "CVC",
+            "fullName": "Full Name",
+            "bankNo": "Bank Number",
+            "bankName": "Bank Name",
+            "country": "Country",
+            "postalCode": "Postal code"
+          },
+          "banks": {
+            "commercial": "Commercial Bank",
+            "national": "National Bank",
+            "international": "International Bank"
+          }
+        },
+        "membership": {
+          "title": "Membership Type",
+          "options": {
+            "monthly": {
+              "title": "Pay Monthly",
+              "description": "€50 / Month Per Member"
+            },
+            "annual": {
+              "title": "Pay Annually",
+              "description": "€600 / Month Per Member"
+            },
+            "accelerator": {
+              "title": "AI Particle Accelerator",
+              "description": "$20,000 / Month Per Member",
+              "details": "Unlimited use of AI of Q&A, Autofill, Writer, and more"
+            }
+          },
+          "addons": "Add ons",
+          "terms": "By continuing you agree to our terms and conditions",
+          "upgradeButton": "Upgrade to Plus",
+          "proceedButton": "Proceed"
+        },
+        "paymentProviders": {
+          "apple": "Pay",
+          "stripe": "Stripe",
+          "paypal": "PayPal",
+          "google": "Pay"
+        }
+      }
+    },
+
+    "business": {
+      "bills": {
+          "companySubscription": "Company Subscription",
+          "noActiveSubscription":"No active subscription",
+          "viewPlans": "View Plans",
+          "paymentMethods": "Payment Methods",
+          "addPaymentMethod": "Add Payment Method",
+          "invoices": "Invoices",
+          "date": "Date",
+          "invoiceNumber": "Invoice Number",
+          "amount": "amount",
+          "status": "Status",
+          "action": "Action"
+          },
+      "company": {
+        "tabs": {
+          "profile": "Company Profile",
+          "billing": "Billing & Subscription"
+        }
+        },
+      "user_type": "Business",
+      "page_type": "Business",
+      "pages_list": {
+  "overview": "Dashboard ",
+  "profile_management": "User Profile ",
+  "candidate_management": "Candidate Comparison",
+  "multi_agency_panel": "Evaluation Management",
+  "assessments_monitor": "Assessments Monitor",
+  "reports_certificates": "Reports & Certificates",
+  "analytics_insights": "Analytics & Insights",
+  "performance_scorecard": "Performance Scorecard",
+  "user_management": "User Management",
+  "business_management": "Score Management",
+  "audit_logs": "Payment",
+  "notifications": "Notifications & Alerts",
+  "system_configuration": "Company Profile"
+},
+
+   "overview": {
+      "package": {
+        "expires": "Package expires in {days} days!",
+        "renew": "Renew Now"
+      },
+      "search": {
+        "placeholder": "Search..."
+      },
+      "metrics": {
+          "evaluationsCompleted": "Evaluations Completed",
+          "activeCandidates": "Active Candidates",
+          "certificatesIssued": "Certificates Issued",
+          "teamMembers": "Team Members",
+          "successRate": "Success Rate",
+          "changes": {
+            "growth": "+{value}% growth",
+            "negativeMonthly": "-{value}% monthly",
+            "used": "{value} used",
+            "increase": "+{value}% increase"
+          }
+        },
+      "alerts": {
+        "critical": "Critical Alert",
+        "contractRejection": "Contract Rejection",
+        "lowSuccessRate": "Success rate is below 50%. Review recent evaluations."
+      },
+      "candidateEvaluation": {
+        "title": "Recent Evaluations",
+        "columns": {
+          "candidate": "Candidate",
+          "evaluationType": "Evaluation Type",
+          "status": "Status",
+          "score": "Score",
+          "scheduledDate": "Scheduled Date",
+          "actions": "Actions"
+        },
+        "pagination": {
+          "rowsPerPage": "Rows per page"
+        }
+      },
+      "evaluationTrend": {
+        "title": "Evaluation Trends",
+        "legend": {
+          "completed": "Completed",
+          "scheduled": "Scheduled",
+          "cancelled": "Cancelled"
+        }
+      },
+      "statusDistribution": {
+        "title": "Evaluation Status"
+      },
+      "recentActivity": {
+        "title": "Monthly Activity",
+        "columns": {
+          "month": "Month",
+          "candidatesAdded": "Candidates Added",
+          "evaluationsCompleted": "Evaluations Completed",
+          "certificatesIssued": "Certificates Issued"
+        }
+      },
+      "performanceChart": {
+        "title": "Performance Metrics",
+        "tabs": {
+          "users": "Users",
+          "projects": "Projects",
+          "operatingStatus": "Status"
+        },
+        "tooltip": {
+          "score": "Average Score"
+        }
+      },
+      "score-distribution-chart": {
+        "title": "Average Scores by Role",
+        "score": "Score"
+      },
+      "languageDistributionChart": {
+        "title": "Language Distribution",
+        "tooltip": {
+          "usage": "Usage %"
+        }
+      }
+    },
+      "candidateEvaluation": {
+        "title": "Candidate Evaluation",
+        "columns": {
+          "candidate": "Candidate",
+          "status": "Status",
+          "certificateStatus": "Certificate Status",
+          "reportStatus": "Report Status",
+          "lastEvalDate": "Last Evaluation Date",
+          "writeNotes": "Write Notes",
+          "notifyCandidates": "Notify Candidates"
+        },
+        "status": {
+          "inProgress": "In Progress",
+          "complete": "Complete",
+          "pending": "Pending",
+          "approved": "Approved",
+          "rejected": "Rejected",
+          "needTraining": "Need Training",
+          "accepted": "Accepted"
+        },
+        "statusColors": {
+          "inProgress": "bg-yellow-100 text-yellow-700",
+          "complete": "bg-green-100 text-green-700",
+          "pending": "bg-orange-100 text-orange-700",
+          "approved": "bg-blue-100 text-blue-700",
+          "rejected": "bg-red-100 text-red-600",
+          "needTraining": "bg-red-100 text-red-600",
+          "accepted": "bg-green-100 text-green-700"
+        },
+        "pagination": {
+          "rowsPerPage": "Rows per page"
+        }
+      },
+
+       "performanceChart": {
+        "title": "Performance",
+        "tabs": {
+          "users": "Users",
+          "projects": "Projects",
+          "operatingStatus": "Operating Status"
+        },
+        "months": {
+          "jan": "Jan",
+          "feb": "Feb",
+          "mar": "Mar",
+          "apr": "Apr",
+          "may": "May",
+          "jun": "Jun"
+        }
+      },
+      "pointConsumptionChart": {
+        "title": "Point Consumption by Service",
+        "services": {
+          "cleaner": "Cleaner",
+          "maintenance": "Maintenance",
+          "companion": "Companion",
+          "sales": "Sales"
+        }
+      },
+      "readinessIndexChart": {
+        "title": "Overall Readiness Index",
+        "levels": {
+          "ready": "Ready",
+          "nearReady": "Near-Ready",
+          "lowReadiness": "Low Readiness"
+        }
+      },
+       "languageDistributionChart": {
+        "title": "Evaluation Language Distribution",
+        "tooltip": {
+          "usage": "Usage"
+        },
+        "languages": {
+          "english": "English",
+          "arabic": "Arabic",
+          "french": "French",
+          "spanish": "Spanish"
+        }
+      },
+      "ageDistributionChart": {
+        "tabs": {
+          "age": "Age",
+          "nationality": "Nationality",
+          "experience": "Experience"
+        },
+        "legend": {
+          "accepted": "Accepted",
+          "rejected": "Rejected"
+        },
+        "categories": {
+          "age_18_25": {
+            "label": "Age Group (18–25)",
+            "short": "18–25"
+          },
+          "age_26_35": {
+            "label": "Age Group (26–35)",
+            "short": "26–35"
+          },
+          "appearance_4_6": {
+            "label": "Appearances / Looks (4–6)",
+            "short": "Looks 4–6"
+          },
+          "work_attitude_intermediate": {
+            "label": "Work Attitude (Intermediate)",
+            "short": "Attitude"
+          }
+        }
+      },
+       
+  "score-distribution-chart": {
+        "title": "Candidate Score Distribution by Job Role",
+        "score": "Score",
+        "roles": {
+          "agent": "Agent",
+          "housekeeper": "Housekeeper",
+          "companion": "Companion",
+          "manager": "Manager"
+        }
+      },
+        "score-management": {
+        "quickActions": "Quick Actions",
+        "title": "Score Management",
+        "search": "Search...",
+        "roles": {
+          "maintenance": "Maintenance",
+          "housekeeper": "Housekeeper",
+          "nanny": "Nanny",
+          "elderCompanion": "Elder Companion"
+        },
+        "skills": {
+          "communications": "Communications",
+          "cleaning": "Cleaning",
+          "maintenance": "Maintenance",
+          "companionship": "Companionship",
+          "cooking": "Cooking"
+        },
+        "tableHeaders": {
+          "name": "Name",
+          "cleaning": "Cleaning",
+          "maintenance": "Maintenance",
+          "companionship": "Companionship",
+          "cooking": "Cooking",
+          "avgScore": "Average Score"
+        },
+        "pagination": {
+          "showing": "Showing",
+          "of": "of"
+        }
+      },
+       "company-profile": {
+        "title": "Company Profile",
+        "myProfile": "My Profile",
+        "notification": "Notifications",
+        "more": "More",
+        "logout": "Logout",
+
+        "companyDescription": "Company Description",
+        "uploadLogo": "Upload Logo",
+        "companyName": "Company Name",
+        "companyDescriptionText": "Manage company details and roles.",
+        "agency": "Agency",
+        "sales": "Sales",
+        "market": "Market",
+        "addRole": "Add Role",
+
+        "email": "Email",
+        "address": "Address",
+        "phone": "Phone",
+        "website": "Website",
+        "country": "Country",
+        "city": "City",
+        "preferredLanguage": "Preferred Language",
+
+        "manageUsers": "Manage Users",
+        "addUser": "Add User",
+
+        "columns": {
+          "user": "User",
+          "userRole": "User Role",
+          "systemRole": "System Role",
+          "permission": "Permission"
+        },
+
+        "roles": {
+          "businessManager": "Business Manager",
+          "agent": "Agent",
+          "analyst": "Analyst"
+        },
+
+        "permissions": {
+          "fullAccess": "Full Access",
+          "standard": "Standard",
+          "readOnly": "Read Only"
+        },
+
+        "partnerships": "Partnerships",
+
+        "tabs": {
+          "myConnections": "My Connections",
+          "discover": "Discover"
+        },
+
+        "connect": "Connect",
+
+        "candidatesStatus": "Candidates Status",
+        "downloadFiles": "Download Files",
+        "downloadAllowed": "CSV / PDF files are allowed",
+        "uploadFiles": "Upload Files",
+        "uploadCandidatesFile": "Upload candidates list file",
+
+        "settings": "Settings",
+        "theme": "Theme",
+        "light": "Light",
+        "dark": "Dark",
+        "language": "Language",
+        "english": "English",
+        "arabic": "Arabic",
+        "french": "French",
+        "spanish": "Spanish",
+        "push": "Push",
+        "save": "Save",
+
+        "billing": "Billing & Subscription Status",
+        "currentPlan": "Current Plan",
+        "premium": "Premium",
+        "monthlyCosts": "Monthly Costs",
+        "nextBilling": "Next Billing",
+        "update": "Update",
+
+        "saveChanges": "Save Changes",
+        "team": {
+          "pendingInvitations": "Pending Invitations",
+          "expires": "Expires",
+          "inviteModal": {
+            "title": "Invite Team Member",
+            "email": "Email Address",
+            "firstName": "First Name",
+            "lastName": "Last Name",
+            "jobTitle": "Job Title",
+            "phoneNumber": "Phone Number",
+            "permissions": "Permissions",
+            "inviteInfo": "The invited team member will receive an email with instructions to set up their account. The invitation will expire in 7 days.",
+            "cancel": "Cancel",
+            "sendInvite": "Send Invitation",
+            "sending": "Sending..."
+          }
+        }
+      },
+       "payment": {
+        "title": "The Right Plan for Your Business",
+        "subtitle": "Based on your selected role and coverage needs. You can upgrade or downgrade anytime.",
+        "billMonthly": "Bill Monthly",
+        "billAnnually": "Bill Annually",
+        "month": "month",
+        "custom": "Custom",
+        "getStarted": "Get Started",
+
+        "plans": {
+          "starter": { "name": "Starter" },
+          "growth": { "name": "Growth" },
+          "business": { "name": "Business" },
+          "enterprise": { "name": "Enterprise" }
+        },
+
+        "features": {
+          "eval5": "Monthly Evaluations up to 5",
+          "essentialAdvanced": "Essential + Advanced Tests",
+          "pdfReports": "PDF Reports",
+          "employerSummary": "Employer Summary Report (PDF)",
+          "simulation": "Practical Simulation (5–30 mins)",
+          "referenceVerification": "Digital Reference Verification",
+
+          "eval50": "Monthly Evaluations up to 50",
+          "dashboardAnalytics": "Dashboard + Analytics",
+          "simulationTests": "Practical Simulation Tests",
+          "comprehensionResilience": "Comprehension + Resilience Tests",
+          "benchmarking": "Benchmarking & Cohort Comparison",
+          "videoIntro": "Video Introduction Recording",
+          "smartInsights": "Smart Insights",
+          "jobMatching": "Job Role Matching",
+
+          "eval100": "Monthly Evaluations up to 100",
+          "addonDiscount": "Add-on Discount 10%",
+          "automations": "Custom Automations",
+          "auditLogs": "Audit Logs",
+          "personalitySnapshot": "Personality Snapshot",
+          "behavioralModels": "Custom Behavioral Models",
+          "regulatoryMode": "Regulatory Audit Mode",
+
+          "unlimitedEval": "Unlimited Monthly Evaluations",
+          "unlimitedAddons": "Unlimited Add-ons",
+          "discount": "Discount",
+          "multiAgency": "Multi-Agency Coordination Panel",
+          "customFeatures": "All Custom Features"
+        }
+      },
+       "candidate-evaluation": {
+        "title": "Candidate Evaluation",
+        "quickActions": "Quick Actions:",
+        "search": "Search...",
+        "filters": {
+          "role": "Filter by Role",
+          "status": "Filter by Status"
+        },
+        "tableHeaders": {
+          "candidate": "Candidate",
+          "passport": "ID/Passport No",
+          "role": "Job Role",
+          "certificate": "Certificate Status",
+          "evaluationDate": "Last Evaluation Date",
+          "language": "Preferred Language",
+          "actions": "Download/Copy Link"
+        },
+        "roles": {
+          "housekeeper": "Housekeeper",
+          "nanny": "Nanny",
+          "elderCompanion": "Elder Companion",
+          "kitchenAssistant": "Kitchen Assistant",
+          "maintenance": "Maintenance Worker"
+        },
+        "certificates": {
+          "inProgress": "In Progress",
+          "complete": "Complete",
+          "ready": "Ready for Employment",
+          "needTraining": "Need Training"
+        },
+        "languages": {
+          "english": "English",
+          "arabic": "Arabic",
+          "spanish": "Spanish"
+        }
+      }        
+},
+"candidates": {
+      "table": {
+        "searchPlaceholder": "Search candidates...",
+        "showing": "Showing {start}-{end} of {total}",
+        "filters": {
+          "allStatuses": "All Statuses",
+          "active": "Active",
+          "hired": "Hired",
+          "rejected": "Rejected",
+          "archived": "Archived"
+        },
+        "headers": {
+          "candidate": "Candidate",
+          "contact": "Contact",
+          "jobRole": "Job Role",
+          "skills": "Skills",
+          "status": "Status",
+          "createdBy": "Created By",
+          "actions": "Actions"
+        },
+        "roles": {
+          "softwareEngineer": "Software Engineer",
+          "dataScientist": "Data Scientist",
+          "productManager": "Product Manager",
+          "marketing": "Marketing",
+          "sales": "Sales",
+          "hr": "Human Resources",
+          "finance": "Finance",
+          "other": "Other"
+        },
+        "status": {
+          "active": "Active",
+          "hired": "Hired",
+          "rejected": "Rejected",
+          "archived": "Archived"
+        },
+        "actions": {
+          "view": "View",
+          "edit": "Edit",
+          "delete": "Delete"
+        },
+        "pagination": {
+          "previous": "Previous",
+          "next": "Next",
+          "page": "Page {current} of {total}"
+        },
+        "noCandidates": "No candidates found"
+      },
+      "modal": {
+        "title": {
+          "add": "Add New Candidate",
+          "edit": "Edit Candidate",
+          "view": "Candidate Details"
+        },
+        "fields": {
+          "firstName": "First Name",
+          "lastName": "Last Name",
+          "email": "Email",
+          "passportId": "Passport/ID Number",
+          "jobRole": "Job Role",
+          "selectRole": "Select a role",
+          "coreSkills": "Core Skills",
+          "skillsPlaceholder": "e.g., Python, JavaScript, React (comma-separated)",
+          "skillsHint": "Enter skills separated by commas",
+          "preferredLanguage": "Preferred Language",
+          "passportDocument": "Passport/ID Document",
+          "profilePhoto": "Profile Photo"
+        },
+        "profilePhotoHint": "Optional. JPG, PNG up to 2MB",
+        "skillsPreview": "Skills Preview",
+        "uploadDocument": "Click to upload or drag and drop",
+        "replaceDocument": "Click to replace document",
+        "viewDocument": "View Current Document",
+        "documentPreview": "Document Preview",
+        "buttons": {
+          "cancel": "Cancel",
+          "add": "Add Candidate",
+          "save": "Save Changes",
+          "saving": "Saving..."
+        },
+        "errors": {
+          "firstNameRequired": "First name is required",
+          "lastNameRequired": "Last name is required",
+          "emailRequired": "Email is required",
+          "emailInvalid": "Please enter a valid email",
+          "passportRequired": "Passport/ID number is required",
+          "jobRoleRequired": "Please select a job role",
+          "skillsRequired": "Core skills are required",
+          "skillsMin": "At least one skill is required",
+          "skillsMax": "Maximum 20 skills allowed",
+          "languageRequired": "Please select a preferred language",
+          "documentRequired": "Passport/ID document is required"
+        }
+      }
+    },
+
+    "indivisual": {
+        "scoreTrend": {
+          "title": "Performance Trends",
+          "averageScore": "Average Score",
+          "legend": {
+            "completed": "Completed",
+            "scheduled": "Scheduled",
+            "cancelled": "Cancelled"
+          }
+      },
+      "user_type": "Individual",
+      "page_type": "Individual",
+      "pages_list": {
+        "overview": "Dashboard ",
+        "candidate_management": "Candidates",
+        "evaluation_setup": "Evaluations",
+        "assessments_monitor": "Scores",
+        "reports_certificates": "Reports & Certificates",
+        "profile_management": "Profile",
+        "packages_subscription": "Packages & Subscription",
+        "notifications": "Notifications"
+      },
+
+       "payment": {
+        "title": "The Right Plan for Your Business",
+        "subtitle": "Based on your selected job roles, key job focus areas, and evaluation metrics, choose the right subscription plan.",
+        "billingMonthly": "Bill Monthly",
+        "billingAnnual": "Bill Annually",
+        "tabs": {
+          "plans": "Subscription Plans",
+          "billing": "Billing & Usage"
+        },
+        "getStarted": "Get Started",
+        "finish": "Finish",
+        "priceCustom": "Custom",
+        "plans": {
+          "basic": {
+            "name": "Basic",
+            "description": "/month",
+            "features": {
+              "identityVerification": "Identity Verification",
+              "basicMedicalCheck": "Basic Medical Check",
+              "basicQA": "Basic Theoretical Q&A",
+              "multilingualCertificate": "Multilingual Certificate",
+              "pdfSummary": "PDF Summary Report",
+              "employerSummary": "Employer Summary Report"
+            }
+          },
+          "essential": {
+            "name": "Essential",
+            "description": "/month",
+            "features": {
+              "practicalSimulation": "Practical Simulation",
+              "comprehensiveTest": "Comprehensive Test (Add-on: +€50)"
+            }
+          },
+          "advanced": {
+            "name": "Advanced",
+            "description": "/month",
+            "badge": "Save €10",
+            "features": {
+              "skillsBehavioralAssessment": "Skills & Behavioral Assessment",
+              "comprehensiveBehavioralTest": "Comprehensive & Behavioral Test",
+              "jobRoleMatching": "Job Role Matching Recommendation",
+              "personalitySnapshot": "Personality Snapshot Report",
+              "dashboardAnalytics": "Dashboard Analytics"
+            }
+          },
+          "premium": {
+            "name": "Premium",
+            "description": "/month",
+            "features": {
+              "culturalAdaptability": "Cultural Adaptability",
+              "emotionalResilience": "Emotional Resilience",
+              "motivationFit": "Motivation & Long-term Fit",
+              "digitalVerification": "Digital Preference Verification",
+              "videoRecording": "Video Introduction Recording (Add-on: +€30)"
+            }
+          }
+        }
+      },
+      "evaluations": {
+        "title": "Evaluation Management",
+        "scheduleEvaluation": "Schedule New Evaluation",
+        "searchPlaceholder": "Search...",
+        "filters": {
+          "role": "Filter by Role",
+          "status": "Filter by Status",
+          "language": "Filter by Language"
+        },
+        "roles": {
+          "housekeeping": "Housekeeping",
+          "elderCaregiver": "Elder Caregiver",
+          "nursingAssistant": "Nursing Assistant",
+          "maintenance": "Maintenance Worker",
+          "securityAssistant": "Security Assistant",
+          "ceo": "CEO",
+          "kitchenAssistant": "Kitchen Assistant"
+        },
+        "certificateStatus": {
+          "complete": "Complete",
+          "inProgress": "In Progress",
+          "ready": "Ready for Evaluation",
+          "needTraining": "Need Training"
+        },
+        "languages": {
+          "english": "English",
+          "spanish": "Spanish",
+          "arabic": "Arabic"
+        }
+      },
+
+      "candidates": {
+        "title": "Candidates",
+        "subtitle": "Manage and compare your candidates",
+        "addCandidate": "Add New Candidate",
+        "selectCandidates": "Select Candidates (Max 4)",
+        "selectMetrics": "Select Metrics",
+        "radarChartTitle": "Performance Comparison (Radar Chart)",
+        "metrics": {
+          "clearing": "Clearing",
+          "maintenance": "Maintenance",
+          "communication": "Communication",
+          "score": "Candidate Score",
+          "experience": "Experience"
+        },
+       "subjects": {
+          "experience": "Experience",
+          "hardSkill": "Hard Skills",
+          "softSkill": "Soft Skills",
+          "communication": "Communication",
+          "problemSolving": "Problem Solving"
+        },
+        "deleteConfirm": "Are you sure you want to delete this candidate?",
+        "exportPNG": "Export as PNG Image",
+        "exportPDF": "Export as PDF Report",
+        "linkAnalytics": "Link to Cohort Analytics"
+      },
+
+     "profile": {
+        "pageTitle": "Profile Settings"
+      },
+
+      "settings-tabs": {
+        "editProfile": "Edit Profile",
+        "security": "Security",
+        "billing": "Billing & Subscription"
+      },
+
+      "settings": {
+        "edit-profile-tab": {
+          "profilePictureTitle": "Profile Picture",
+          "profilePictureSubtitle": "Update your profile picture",
+          "changeButton": "Change",
+
+          "yourName": "Your Name",
+          "userName": "User Name",
+          "email": "Email",
+          "password": "Password",
+          "dob": "Date of Birth",
+          "presentAddress": "Present Address",
+          "country": "Country",
+          "city": "City",
+          "permanentAddress": "Permanent Address",
+          "preferredLanguage": "Preferred Language",
+
+          "saveButton": "Save Changes"
+        },
+
+        "billing-tab": {
+          "remainingPoints": "Remaining Points",
+          "currentPackage": "Current Package",
+          "availablePoints": "Available Points",
+
+          "consumptionHistory": "Consumption History",
+          "date": "Date",
+          "description": "Description",
+          "amount": "Amount",
+
+          "Evaluation": "Evaluation",
+          "Subscription Renewal": "Subscription Renewal",
+
+          "saveButton": "Save Changes",
+          "companySubscription": "Company Subscription",
+          "currentPlan": "Current Plan",
+          "noActivePlan": "No Active Plan",
+          "active": "Active",
+          "nextBillingDate": "Next Billing Date",
+          "daysRemaining": "Days Remaining",
+          "days": "Days",
+          "noActiveSubscription":"No active subscription",
+          "viewPlans": "View Plans",
+          "paymentMethod": "Payment Method",
+          "notSet": "Not Set",
+          "usage": "Usage",
+          "candidates": "Candidates",
+          "teamMembers": "Team Members",
+          "actions": "Actions",
+          "noInvoices": "No Invoices",
+          "evaluations": "Evaluations",
+          "paymentMethods": "Payment Methods",
+          "addPaymentMethod": "Add Payment Method",
+          "invoices": "Invoices",
+          "invoiceNumber": "Invoice Number",
+          "status": "Status",
+          "action": "Action"
+        },
+        "security-tab": {
+          "changeEmailTitle": "Change Email",
+          "currentEmail": "Current Email",
+          "currentEmailPlaceholder": "Enter your current email",
+          "newEmail": "New Email",
+          "newEmailPlaceholder": "Enter your new email",
+
+          "changePasswordTitle": "Change Password",
+          "currentPassword": "Current Password",
+          "currentPasswordPlaceholder": "Enter your current password",
+          "newPassword": "New Password",
+          "newPasswordPlaceholder": "Enter a new password",
+          "confirmNewPassword": "Confirm New Password",
+          "confirmNewPasswordPlaceholder": "Confirm your new password",
+          "passwordMismatch": "Passwords do not match",
+          "buttonChange": "Change Password",
+          "buttonChanging": "Changing...",
+          "success": {
+            "title": "Password Changed Successfully",
+            "message": "Your password has been updated. Please use your new password next time you log in."
+          },
+          "deleteAccountTitle": "Delete Account",
+          "deleteAccountSubtitle": "Deleting your account is permanent and will remove all associated data. This action cannot be undone.",
+          "deleteButton": "Delete Account",
+
+          "saveButton": "Save Changes"
+        }
+      },
+       "evaluationManagement": {
+        "title": "Evaluation Management",
+        "addBulkSchedule": "Add Bulk Schedule",
+
+        "tabs": {
+          "scheduled": "Scheduled",
+          "inProgress": "In Progress",
+          "completed": "Completed"
+        },
+
+        "filters": {
+          "type": "Evaluation Type",
+          "role": "Job Role",
+          "language": "Language"
+        },
+
+        "types": {
+          "interview": "Interview",
+          "assessment": "Assessment",
+          "technicalTest": "Technical Test",
+          "languageProficiency": "Language Proficiency"
+        },
+
+        "roles": {
+          "elderCompanion": "Elder Companion",
+          "cook": "Cook",
+          "maintenance": "Maintenance",
+          "housekeeper": "Housekeeper"
+        },
+
+        "languages": {
+          "english": "English",
+          "arabic": "Arabic",
+          "french": "French"
+        },
+
+        "status": {
+          "inProgress": "In Progress",
+          "scheduled": "Scheduled",
+          "completed": "Completed"
+        }
+      },
+       "candidateList": {
+      "title": "Candidate List",
+      "table": {
+        "name": "Name",
+        "role": "Role",
+        "notes": "Notes",
+        "evaluation": "Evaluation",
+        "action": "Action",
+        "viewResults": "View Results"
+      },
+      "roles": {
+        "houseKeeper": "HouseKeeper",
+        "nanny": "Nanny",
+        "elderCompanion": "Elder Companion",
+        "kitchenAssistant": "Kitchen Assistant",
+        "maintenanceWorker": "Maintenance Worker"
+      },
+      "notes": {
+        "needsMoreEvaluation": "Needs more evaluation"
+      },
+      "pagination": {
+        "rowsPerPage": "Rows per page"
+      }
+    },
+    
+    "candidateComparison": {
+      "title": "Candidate Comparison",
+      "averageScore": "Average Score",
+      "accepted": "Accepted",
+      "rejected": "Rejected",
+      "roles": {
+        "agent": "Agent",
+        "housekeeper": "Housekeeper",
+        "maintenance": "Maintenance",
+        "cleaner": "Cleaner",
+        "sales": "Sales"
+      }
+    },
+     "dashboard": {
+        "packageExpires": "Package expires in {days} days!",
+        "search": "Search...",
+        "notification": "Notification",
+        "metrics": {
+          "evaluationsCompleted": "Evaluations Completed",
+          "certificatesIssued": "Certificates Issued",
+          "remainingPoints": "Remaining Points",
+          "successRate": "Success Rate",
+          "thisMonth": "this month",
+          "thisMonthIncrease": "+{value}% this month",
+          "usedThisMonth": "{value}% used this month",
+          "increase": "{value}% increase"
+        },
+        "quickAction": "Quick Action",
+        "buyPoints": "Buy {value} points",
+        "resumeSubscription": "Resume Subscription",
+        "notifications": {
+          "pendingEvaluation": "Pending Evaluation",
+          "newReport": "New Report Ready"
+        }
+      },
+  
+  "pointConsumption": {
+    "title": "Point Consumption by Service",
+    "services": {
+      "cleaner": "Cleaner",
+      "cook": "Cook",
+      "companion": "Companion",
+      "nanny": "Nanny",
+      "others": "Others"
+    }
+  },
+  "timeRange": {
+    "title": "Time Range",
+    "tabs": {
+      "monthly": "Monthly",
+      "quarterly": "Quarterly",
+      "yearly": "Yearly"
+    },
+    "months": {
+      "jan": "Jan",
+      "feb": "Feb",
+      "mar": "Mar",
+      "apr": "Apr",
+      "may": "May",
+      "jun": "Jun"
+    }
+  },
+
+  "scheduleEvaluation": {
+        "title": "Schedule Evaluation",
+        "addBulkSchedule": "Select Candidate",
+        "cancel": "Cancel",
+        "schedule": "Schedule",
+
+        "filters": {
+          "type": "Email",
+          "role": "Job Role",
+          "language": "Evaluation Date / Language"
+        },
+
+        "roles": {
+          "elderCompanion": "Elder Companion",
+          "cook": "Cook",
+          "maintenance": "Maintenance",
+          "housekeeper": "Housekeeper"
+        },
+
+        "languages": {
+          "english": "English",
+          "arabic": "Arabic",
+          "french": "French"
+        },
+
+        "types": {
+          "interview": "Interview",
+          "assessment": "Assessment",
+          "technicalTest": "Technical Test",
+          "languageProficiency": "Language Proficiency"
+        },
+
+        "placeholders": {
+          "email": "email@example.com"
+        }
+      },
+      "notifications": {
+        "title": "Notifications",
+
+        "items": {
+          "comment": {
+            "title": "{name} sent you a comment",
+            "message": "in evaluation task"
+          },
+          "status": {
+            "title": "Candidate status updated",
+            "message": "Set to In Progress"
+          },
+          "lowPoints": {
+            "title": "Low points review item",
+            "message": "Added to to-do list"
+          },
+          "report": {
+            "title": "{name}'s report is ready",
+            "message": "Download and review"
+          }
+        },
+
+        "time": {
+          "daysAgo": "{value} days ago",
+          "hoursAgo": "{value}h ago",
+          "hoursMinutesAgo": "{hours}h {minutes}m ago",
+          "yesterday": "Yesterday {time}"
+        }
+      }
+
+  
+        
+      
+
+      
+    
+    
+}
+
+
+ 
+  },
+  "zodErrors": {
+    "email_required": "Email is required",
+    "email_invalid": "Please enter a valid email address",
+    "password_min": "Password must be at least 6 characters",
+    "password_min_8": "Password must be at least 8 characters",
+    "full_name_min": "Full name must be at least 2 characters",
+    "mobile_min": "Mobile number must be at least 8 digits",
+    "country_required": "Please select a country",
+    "city_required": "Please select a city",
+    "confirm_password_required": "Please confirm your password",
+    "agree_terms_required": "You must agree to terms and conditions",
+    "passwords_not_match": "Passwords do not match",
+    "company_name_min": "Company name must be at least 2 characters",
+    "manager_name_min": "Manager name must be at least 2 characters",
+    "license_number_required": "License number is required",
+    "official_email_required": "Official email is required",
+    "company_phone_min": "Company phone must be at least 8 digits",
+    "email_or_phone_required": "Email or phone number is required",
+    "email_or_phone_invalid": "Please enter a valid email address or phone number",
+    "password_requirements": "Password must contain at least one uppercase letter, one lowercase letter, and one number"
+  }
+}
+
+

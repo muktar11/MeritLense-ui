@@ -1,0 +1,130 @@
+{
+  "admin_companies": {
+    "title": "Company Management",
+    "description": "Manage recruitment agencies and licensed companies",
+    "filters": {
+      "search_placeholder": "Search by company name, email, or license number...",
+      "status": "Status",
+      "package": "Package",
+      "contract_status": "Contract Status",
+      "all_statuses": "All Statuses",
+      "all_packages": "All Packages",
+      "all_contract_statuses": "All Contract Statuses",
+      "date_from": "Registration From",
+      "date_to": "Registration To",
+      "reset": "Reset Filters"
+    },
+    "status": {
+      
+      "pending": "Pending",
+      "partially_activated": "Partially Activated",
+      "fully_activated": "Fully Activated",
+      "suspended": "Suspended"
+    },
+    "package": {
+      "starter": "Starter",
+      "growth": "Growth",
+      "business": "Business",
+      "enterprise": "Enterprise"
+    },
+    "contract": {
+      "signed": "Signed",
+      "pending": "Pending",
+      "rejected": "Rejected"
+    },
+    "table": {
+      "company_name": "Company Name",
+      "email": "Email",
+      "license": "License #",
+      "status": "Status",
+      "package": "Package",
+      "contract": "Contract",
+      "points": "Points",
+      "candidates": "Candidates",
+      "registered": "Registered",
+      "actions": "Actions",
+      "select_all": "Select all companies",
+      "selected": "{{count}} selected"
+    },
+    "actions": {
+      "view_details": "View Details",
+      "approve": "Approve",
+      "reject": "Reject",
+      "activate": "Activate",
+      "suspend": "Suspend",
+      "modify_package": "Modify Package",
+      "view_documents": "View Documents",
+      "export": "Export"
+    },
+    "bulk_actions": {
+      "title": "Bulk Actions",
+      "approve_selected": "Approve Selected",
+      "reject_selected": "Reject Selected",
+      "activate_selected": "Activate Selected",
+      "suspend_selected": "Suspend Selected",
+      "export_selected": "Export Selected"
+    },
+    "details": {
+      "title": "Company Details",
+      "company_info": "Company Information",
+      "name": "Company Name",
+      "email": "Email",
+      "phone": "Phone",
+      "license_number": "License Number",
+      "country": "Country",
+      "city": "City",
+      "website": "Website",
+      "service_description": "Service Description",
+      "account_status": "Account Status",
+      "package_details": "Package & Subscription",
+      "current_package": "Current Package",
+      "monthly_price": "Monthly Price",
+      "points_balance": "Points Balance",
+      "monthly_evaluations": "Monthly Evaluations",
+      "completed_evaluations": "Completed Evaluations",
+      "active_candidates": "Active Candidates",
+      "certificates_issued": "Certificates Issued",
+      "contract_info": "Contract Information",
+      "contract_status": "Contract Status",
+      "view_contract": "View Contract",
+      "view_license": "View License",
+      "download": "Download",
+      "job_roles": "Target Job Roles",
+      "activity_log": "Activity Log",
+      "registration_date": "Registration Date",
+      "last_activity": "Last Activity",
+      "admin_actions": "Admin Actions",
+      "approve_account": "Approve Account",
+      "reject_account": "Reject Account",
+      "activate_account": "Activate Account",
+      "suspend_account": "Suspend Account",
+      "modify_package": "Modify Package",
+      "reset_password": "Reset Password",
+      "close": "Close"
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page {{current}} of {{total}}",
+      "rows_per_page": "Rows per page"
+    },
+    "empty": {
+      "title": "No companies found",
+      "description": "No companies match your current filters"
+    },
+    "job_roles": {
+      "housekeeper": "Housekeeper",
+      "home_cook": "Home Cook",
+      "childcare_provider": "Childcare Provider",
+      "elder_companion": "Elder Companion",
+      "home_care_assistant": "Home Care Assistant",
+      "room_attendant": "Room Attendant",
+      "kitchen_assistant": "Kitchen Assistant",
+      "reception_hostess": "Reception Hostess",
+      "laundry_worker": "Laundry & Ironing Worker",
+      "industrial_cleaner": "Industrial Cleaner",
+      "maintenance_worker": "Basic Maintenance Worker",
+      "educational_nanny": "Educational Nanny"
+    }
+  }
+}

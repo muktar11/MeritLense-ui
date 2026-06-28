@@ -1,0 +1,129 @@
+{
+  "admin_companies": {
+    "title": "إدارة الشركات",
+    "description": "إدارة وكالات التوظيف والشركات المرخصة",
+    "filters": {
+      "search_placeholder": "البحث باسم الشركة أو البريد الإلكتروني أو رقم الترخيص...",
+      "status": "الحالة",
+      "package": "الباقة",
+      "contract_status": "حالة العقد",
+      "all_statuses": "جميع الحالات",
+      "all_packages": "جميع الباقات",
+      "all_contract_statuses": "جميع حالات العقود",
+      "date_from": "التسجيل من",
+      "date_to": "التسجيل إلى",
+      "reset": "إعادة تعيين الفلاتر"
+    },
+    "status": {
+      "pending": "قيد الانتظار",
+      "partially_activated": "مفعل جزئياً",
+      "fully_activated": "مفعل بالكامل",
+      "suspended": "معلق"
+    },
+    "package": {
+      "starter": "المبتدئ",
+      "growth": "النمو",
+      "business": "الأعمال",
+      "enterprise": "المؤسسات"
+    },
+    "contract": {
+      "signed": "موقع",
+      "pending": "قيد الانتظار",
+      "rejected": "مرفوض"
+    },
+    "table": {
+      "company_name": "اسم الشركة",
+      "email": "البريد الإلكتروني",
+      "license": "رقم الترخيص",
+      "status": "الحالة",
+      "package": "الباقة",
+      "contract": "العقد",
+      "points": "النقاط",
+      "candidates": "المرشحون",
+      "registered": "تاريخ التسجيل",
+      "actions": "الإجراءات",
+      "select_all": "تحديد جميع الشركات",
+      "selected": "{{count}} محدد"
+    },
+    "actions": {
+      "view_details": "عرض التفاصيل",
+      "approve": "موافقة",
+      "reject": "رفض",
+      "activate": "تفعيل",
+      "suspend": "تعليق",
+      "modify_package": "تعديل الباقة",
+      "view_documents": "عرض المستندات",
+      "export": "تصدير"
+    },
+    "bulk_actions": {
+      "title": "الإجراءات الجماعية",
+      "approve_selected": "الموافقة على المحدد",
+      "reject_selected": "رفض المحدد",
+      "activate_selected": "تفعيل المحدد",
+      "suspend_selected": "تعليق المحدد",
+      "export_selected": "تصدير المحدد"
+    },
+    "details": {
+      "title": "تفاصيل الشركة",
+      "company_info": "معلومات الشركة",
+      "name": "اسم الشركة",
+      "email": "البريد الإلكتروني",
+      "phone": "الهاتف",
+      "license_number": "رقم الترخيص",
+      "country": "الدولة",
+      "city": "المدينة",
+      "website": "الموقع الإلكتروني",
+      "service_description": "وصف الخدمة",
+      "account_status": "حالة الحساب",
+      "package_details": "تفاصيل الباقة والاشتراك",
+      "current_package": "الباقة الحالية",
+      "monthly_price": "السعر الشهري",
+      "points_balance": "رصيد النقاط",
+      "monthly_evaluations": "التقييمات الشهرية",
+      "completed_evaluations": "التقييمات المكتملة",
+      "active_candidates": "المرشحون النشطون",
+      "certificates_issued": "الشهادات الصادرة",
+      "contract_info": "معلومات العقد",
+      "contract_status": "حالة العقد",
+      "view_contract": "عرض العقد",
+      "view_license": "عرض الترخيص",
+      "download": "تحميل",
+      "job_roles": "المهن المستهدفة",
+      "activity_log": "سجل النشاطات",
+      "registration_date": "تاريخ التسجيل",
+      "last_activity": "آخر نشاط",
+      "admin_actions": "إجراءات المسؤول",
+      "approve_account": "الموافقة على الحساب",
+      "reject_account": "رفض الحساب",
+      "activate_account": "تفعيل الحساب",
+      "suspend_account": "تعليق الحساب",
+      "modify_package": "تعديل الباقة",
+      "reset_password": "إعادة تعيين كلمة المرور",
+      "close": "إغلاق"
+    },
+    "pagination": {
+      "previous": "السابق",
+      "next": "التالي",
+      "page": "الصفحة {{current}} من {{total}}",
+      "rows_per_page": "عدد الصفوف في الصفحة"
+    },
+    "empty": {
+      "title": "لا توجد شركات",
+      "description": "لا توجد شركات تطابق الفلاتر الحالية"
+    },
+    "job_roles": {
+      "housekeeper": "عامل نظافة منزلية",
+      "home_cook": "طباخ منزلي",
+      "childcare_provider": "مقدم رعاية أطفال",
+      "elder_companion": "مرافق كبار السن",
+      "home_care_assistant": "مساعد رعاية منزلية",
+      "room_attendant": "عامل غرف",
+      "kitchen_assistant": "مساعد مطبخ",
+      "reception_hostess": "موظفة استقبال",
+      "laundry_worker": "عامل غسيل وكي",
+      "industrial_cleaner": "عامل نظافة صناعية",
+      "maintenance_worker": "عامل صيانة أساسية",
+      "educational_nanny": "مربية تعليمية"
+    }
+  }
+}

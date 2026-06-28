@@ -1,0 +1,1702 @@
+{
+  "landing-page": {
+    "navbar": {
+      "logo_alt": "شعار MeritLense",
+      "menu_items": {
+        "features": "الميزات",
+        "how_it_works": "كيف يعمل",
+        "pricing": "التسعير"
+      },
+      "actions": {
+        "sign_in": "تسجيل الدخول",
+        "get_started": "ابدأ الآن"
+      }
+    },
+    "hero": {
+      "badge": "منصة تقييم مدعومة بالذكاء الاصطناعي",
+      "title_part1": " اكتشف الكفاءات بوضوح",
+      "title_part2_ai_power": "بذكاء الاصطناعي",
+      "description": "MeritLens هي منصّة تقييم ذكية تساعدك على اختيار الشخص المناسب بثقة وسهولة.",
+      "cta_start_evaluating": "ابدأ التقييم بذكاء أكبر",
+      "cta_explore_platform": "استكشاف المنصة",
+      "image_alt": "معاينة لوحة تحكم MeritLense"
+    },
+    "stats": {
+      "active_users": "المستخدمون النشطون",
+      "evaluations": "التقييمات",
+      "countries": "البلدان",
+      "success_rate": "معدل النجاح"
+    },
+    "features": {
+      "section_title": "لماذا تختار MeritLense؟",
+      "section_subtitle": " حوّل تجربة التوظيف إلى عملية أكثر ذكاءً وسرعة، مدعومة بالبيانات",
+      "smart_evaluations": {
+        "title": " تقييمات ذكية مصممة حسب احتياجاتك",
+        "description": " أنشئ تقييمات احترافية مرة واحدة، وطبّقها بسهولة على مختلف الوظائف. أضف مقدمات بالفيديو، محاكاة واقعية، وتحليلات سلوكية مدعومة بالذكاء الاصطناعي — لتحصل على رؤية دقيقة وشاملة لكل مرشح.",
+        "list_item1": "قوالب تقييم قابلة لإعادة الاستخدام",
+        "list_item2": "تحليل سلوكي مدعوم بالذكاء الاصطناعي",
+        "list_item3": "تقييمات مخصصة للمهارات",
+        "image_alt": "لوحة تحكم التقييمات الذكية"
+      },
+      "predictive_reporting": {
+        "title": "التقارير التنبؤية — رؤية تتجاوز الأرقام لتوظيف أكثر ذكاءً",
+        "description": "ارتقِ بقرارات التوظيف إلى مستوى جديد مع تحليلاتنا التنبؤية المدعومة بالذكاء الاصطناعي . نساعدك على توقّع استقرار المرشحين، فرص بقائهم في العمل، ومدى انسجامهم مع ثقافة شركتك — قبل التوظيف.",
+        "list_item1": "تنبؤات الاستقرار الوظيفي",
+        "list_item2": "التنبؤ بالاحتفاظ بالموظفين",
+        "list_item3": "تحليل التوافق الثقافي",
+        "image_alt": "لوحة تحكم التحليلات التنبؤية"
+      },
+      "role_based_dashboards": {
+        "title": "لوحات تحكم ذكية لكل دور — إدارة مرنة وتعاون في الوقت الفعلي",
+        "description": "امنح فريقك الأدوات التي يحتاجها للنجاح. الإداريون، مسؤولو التوظيف، والمشاهدون يحصلون على لوحات تحكم مخصصة تتيح لهم متابعة الأداء، إدارة الأذونات، والتعاون الفوري — بكل وضوح وبدون تعقيد",
+        "list_item1": "أذونات مخصصة حسب الدور لضمان تحكم كامل",
+        "list_item2": "أدوات تعاون مباشرة تعزز العمل الجماعي",
+        "list_item3": "سجلات دقيقة ومتابعة للامتثال لضمان الشفافية والأمان",
+        "image_alt": "لوحة تحكم تعاون الفريق"
+      },
+      "additional_features": [
+        {
+          "title": "حيادية قانونية",
+          "description": "أدوات تقييم موضوعية ومتوافقة مع القوانين، تقدم رؤى دقيقة دون التأثير على قرارات التوظيف."
+        },
+        {
+          "title": "دعم متعدد اللغات",
+          "description": " شغّل نظامك عالميًا بواجهات عربية وإنجليزية، مع شهادات جاهزة للاستخدام الدولي."
+        },
+        {
+          "title": "تقارير فائقة السرعة",
+          "description": "أنشئ تقارير شاملة للمرشحين في دقائق — لتسريع التوظيف دون التضحية بالدقة"
+        },
+        {
+          "title": " أمان بمستوى المؤسسات",
+          "description": " تشفير بمستوى عسكري، توافق كامل مع لوائح GDPR، وسجلات مراجعة دقيقة لراحة البال التامة."
+        },
+        {
+          "title": " شهادات موثوقة",
+          "description": "أصدر شهادات مدعومة بالذكاء الاصطناعي مع رموز QR للتحقق الفوري والمصداقية العالية."
+        },
+        {
+          "title": "تعاون سلس للفريق",
+          "description": "أدوات تعاون متقدمة للإداريين ومسؤولي التوظيف والمشاهدين — مع أذونات مخصصة لكل دور لضمان عمل جماعي فعّال."
+        }
+      ]
+    },
+    "how_it_works": {
+      "section_title": "ابدأ بتوظيف أفضل المواهب بسهولة",
+      "section_subtitle": "ثلاث خطوات بسيطة فقط تفصلك عن الاختيار الأمثل:",
+      "steps": [
+        {
+          "title": "أنشئ حسابك",
+          "description": "سجّل كشركة أو كفرد — العملية لا تستغرق سوى دقائق لتبدأ فورًا."
+        },
+        {
+          "title": "أضف المرشحين",
+          "description": "حمّل بياناتهم واختر التقييم المناسب لكل وظيفة أو ملف شخصي."
+        },
+        {
+          "title": " احصل على التحليلات الذكية",
+          "description": "تقارير فورية مدعومة بالذكاء الاصطناعي تساعدك على اتخاذ قرارات توظيف دقيقة بثقة."
+        }
+      ],
+      "image_alt": "سير عمل المنصة"
+    },
+    "pricing": {
+      "section_title": " أسعار واضحة وخطط مرنة تناسب الجميع",
+      "section_subtitle": "اختر الخطة التي تلائم احتياجاتك وارتقِ بعمليات التوظيف بكل سهولة — مع إمكانية الترقية في أي وقت..",
+      "popular_badge": "الأكثر شيوعًا",
+      "cta_get_started": "ابدأ الآن",
+      "cta_contact_sales": "الاتصال بالمبيعات",
+      "individual_employers": {
+        "title": "لأصحاب العمل الأفراد",
+        "time_unit": "/مرة واحدة",
+        "plans": [
+          {
+            "name": "الأساسية",
+            "candidates_count": "3 مرشحين",
+            "features": [
+              "التحقق من الهوية",
+              "فحص طبي",
+              "سؤال وجواب أساسي",
+              "تقرير PDF"
+            ]
+          },
+          {
+            "name": "الضرورية",
+            "candidates_count": "5 مرشحين",
+            "features": [
+              "كل ما في الخطة الأساسية",
+              "التعليم والتوظيف",
+              "سؤال وجواب متقدم",
+              "درجة السلوك"
+            ]
+          },
+          {
+            "name": "المحترفة",
+            "candidates_count": "10 مرشحين",
+            "features": [
+              "كل ما في الخطة الضرورية",
+              "تقييم المهارات",
+              "مقابلة فيديو",
+              "فحص المراجع"
+            ]
+          },
+          {
+            "name": "النخبة",
+            "candidates_count": "20 مرشحًا",
+            "features": [
+              "كل ما في الخطة المحترفة",
+              "خلفية متعمقة",
+              "ملف تعريف الشخصية",
+              "تقرير مخصص"
+            ]
+          }
+        ]
+      },
+      "organizations_agencies": {
+        "title": "جهات التوظيف",
+        "time_unit": "/الشهر",
+        "plans": [
+          {
+            "name": "المبتدئة",
+            "candidates_count": "50 تقييم/الشهر",
+            "features": [
+              "لوحة تحكم",
+              "تحليلات أساسية",
+              "دعم عبر البريد الإلكتروني",
+              "تقارير PDF"
+            ]
+          },
+          {
+            "name": "النمو",
+            "candidates_count": "200 تقييم/الشهر",
+            "features": [
+              "كل ما في الخطة المبتدئة",
+              "وصول الفريق",
+              "التحليلات",
+              "خصم 5%",
+              "دعم ذو أولوية"
+            ]
+          },
+          {
+            "name": "الأعمال",
+            "candidates_count": "100 تقييم/الشهر",
+            "features": [
+              "كل ما في خطة النمو",
+              "المقارنة المعيارية",
+              "خصم 10%",
+              "وضع التدقيق",
+              "علامة تجارية مخصصة"
+            ]
+          },
+          {
+            "name": "المؤسسات",
+            "candidates_count": "غير محدود",
+            "features": [
+              "كل ما في خطة الأعمال",
+              "الوصول إلى API",
+              "دعم 24/7",
+              "ذكاء اصطناعي مخصص"
+            ]
+          }
+        ]
+      }
+    },
+    "cta": {
+      "title": " التوظيف الذكي يبدأ من هنا",
+      "subtitle": "هل أنت مستعد لاتخاذ قرارات توظيف أكثر ذكاءً؟ انضم إلى آلاف أصحاب الأعمال الذين يعتمدون على تحليلات مدعومة بالذكاء الاصطناعي لاختيار أفضل المواهب وبناء فرق عالية الأداء..",
+      "button_trial": "ابدأ التجربة المجانية",
+      "button_pricing": "عرض الأسعار"
+    },
+    "footer": {
+      "logo_alt": "شعار MeritLense",
+      "mission_statement": "توفّر MeritLens أدوات تقييم مدعومة بالذكاء الاصطناعي تُمكّن جهات التوظيف—سواء كانوا أصحاب عمل أفراد، أو وكالات مرخصة، أو فرق الموارد البشرية—من تقييم المرشحين بموضوعية، واكتشاف نقاط القوة الخفية، واتخاذ قرارات توظيف واثقة تستند إلى البيانات، لا إلى الافتراضات.",
+      "links_section_title": "روابط سريعة",
+      "link_features": "الميزات",
+      "link_how_it_works": "كيف يعمل",
+      "link_pricing": "التسعير",
+      "newsletter_section_title": "ابق على اطلاع",
+      "newsletter_description": "اشترك للحصول على أحدث الرؤى والتحديثات.",
+      "newsletter_placeholder": "أدخل بريدك الإلكتروني",
+      "newsletter_button": "اشترك",
+      "copyright": "جميع الحقوق محفوظة."
+    }
+  },
+  "auth_page": {
+    "acceptInvitation": {
+      "title": "قبول دعوة الفريق",
+      "subtitle": "لقد تمت دعوتك للانضمام إلى فريق. قم بتعيين كلمة المرور الخاصة بك لإنشاء حسابك.",
+      "password": "كلمة المرور",
+      "confirmPassword": "تأكيد كلمة المرور",
+      "acceptInvitation": "قبول الدعوة وإنشاء حساب",
+      "accepting": "جاري إنشاء الحساب...",
+      "success": "مرحباً بك!",
+      "successMessage": "تم إنشاء حسابك بنجاح. سيتم إعادة توجيهك إلى صفحة تسجيل الدخول خلال 3 ثوانٍ."
+    },
+    "forgot_password": {
+      "header": {
+        "title": "هل نسيت كلمة المرور؟",
+        "subtitle": "لا تقلق، سنرسل لك تعليمات إعادة التعيين"
+      },
+      "form": {
+        "label_email_or_phone": "البريد الإلكتروني أو رقم الهاتف",
+        "placeholder_email_or_phone": "you@example.com أو +1234567890",
+        "button_send_link": "إرسال رابط إعادة التعيين",
+        "button_loading": "جاري الإرسال..."
+      },
+      "confirmation": {
+        "title": "تحقق من بريدك الإلكتروني",
+        "message_part1": "لقد أرسلنا رابط إعادة تعيين كلمة المرور إلى ",
+        "message_part2": "",
+        "spam_check": "لم تستلِم البريد الإلكتروني؟ تحقق من مجلد الرسائل غير المرغوب فيها أو حاول مرة أخرى.",
+        "button_try_again": "جرّب بريدًا إلكترونيًا آخر"
+      },
+      "link_back_to_login": "العودة إلى تسجيل الدخول",
+      "validation": {
+        "email_or_phone_required": "البريد الإلكتروني أو الهاتف مطلوب",
+        "email_or_phone_invalid": "الرجاء إدخال بريد إلكتروني أو رقم هاتف صحيح"
+      }
+    },
+    "login": {
+      "header": {
+        "title": "مرحباً بعودتك",
+        "subtitle": "سجّل الدخول إلى حسابك في MeritLense"
+      },
+      "form": {
+        "label_email": "البريد الإلكتروني",
+        "label_password": "كلمة المرور",
+        "remember_me": "تذكرني",
+        "forgot_password": "هل نسيت كلمة المرور؟",
+        "button_text": "تسجيل الدخول",
+        "button_loading": "جاري تسجيل الدخول..."
+      },
+      "messages": {
+        "no_account_prefix": "ليس لديك حساب بعد؟",
+        "sign_up_link": "سجّل الآن",
+        "error_invalid_credentials": "بريد إلكتروني أو كلمة مرور غير صالحة. جرّب حسابات العرض التوضيحي أدناه."
+      }
+    },
+    "register_selection": {
+      "header": {
+        "title": "إنشاء حساب",
+        "subtitle": "اختر نوع حسابك للبدء"
+      },
+      "card_b2c": {
+        "title": "صاحب عمل فردي",
+        "description": "للاحتياجات الشخصية في التوظيف، مثل العاملين في المنزل أو المساعدين الخاصين",
+        "cta": " المتابعة كصاحب عمل فردي"
+      },
+      "card_b2b": {
+        "title": "جهة توظيف",
+        "description": " للوكالات المرخصة، فرق الموارد البشرية، وأصحاب العمل الأفراد",
+        "cta": "المتابعة كجهة توظيف"
+      },
+      "link_login": {
+        "prefix": "هل لديك حساب بالفعل؟",
+        "link_text": "تسجيل الدخول"
+      }
+    },
+    "register_b2c": {
+      "header": {
+        "title": "صاحب عمل فردي",
+        "subtitle": "أنشئ حسابك الشخصي"
+      },
+      "card_header": {
+        "title": "التسجيل الفردي",
+        "subtitle": "أنشئ حسابك الشخصي",
+        "switch_to_b2b": "التسجيل كمؤسسة"
+      },
+      "form_fields": {
+        "full_name": {
+          "label": "الاسم الكامل",
+          "placeholder": "جون دو"
+        },
+        "email": "البريد الإلكتروني",
+        "mobile": "رقم الجوال",
+        "country": {
+          "label": "الدولة",
+          "placeholder": "اختر الدولة"
+        },
+        "city": {
+          "label": "المدينة",
+          "placeholder": "نيويورك"
+        },
+        "preferred_language": {
+          "label": "اللغة المفضلة",
+          "placeholder": "اختر اللغة"
+        },
+        "password": "كلمة المرور",
+        "confirm_password": "تأكيد كلمة المرور",
+        "agree_to_terms": "أوافق على الشروط والأحكام"
+      },
+      "select_options": {
+        "countries": {
+          "usa": "الولايات المتحدة",
+          "uk": "المملكة المتحدة",
+          "sa": "Saudi Arabia"
+        },
+        "languages": {
+          "en": "الإنجليزية",
+          "ar": "العربية"
+        }
+      },
+      "buttons": {
+        "create_account": "إنشاء حساب",
+        "loading": "جاري إنشاء الحساب..."
+      },
+      "link_login": {
+        "prefix": "هل لديك حساب بالفعل؟",
+        "link_text": "تسجيل الدخول"
+      }
+    },
+    "register_b2b": {
+      "header": {
+        "title": "حساب وكالة / شركة",
+        "subtitle": "أنشئ حساب عملك"
+      },
+      "card_header": {
+        "title": "تسجيل الشركة",
+        "subtitle": "املأ تفاصيل عملك",
+        "switch_to_b2c": "التسجيل كفرد"
+      },
+      "sections": {
+        "personal": "المعلومات الشخصية",
+        "company": "معلومات الشركة"
+      },
+      "form_fields": {
+        "country": {
+          "label": "الدولة",
+          "placeholder": "اختر الدولة"
+        },
+        "city": {
+          "label": "المدينة",
+          "placeholder": "نيويورك"
+        },
+        "preferred_language": {
+          "label": "اللغة المفضلة",
+          "placeholder": "اختر اللغة"
+        },
+        "company_name": {
+          "label": "اسم الشركة",
+          "placeholder": "شركة أكما"
+        },
+        "manager_name": {
+          "label": "اسم المدير",
+          "placeholder": "جين سميث"
+        },
+        "license_number": {
+          "label": "رقم الترخيص",
+          "placeholder": "LIC-123456"
+        },
+        "official_email": {
+          "label": "البريد الإلكتروني الرسمي",
+          "placeholder": "info@company.com"
+        },
+        "company_phone": "هاتف الشركة",
+        "password": "كلمة المرور",
+        "confirm_password": "تأكيد كلمة المرور",
+        "agree_to_terms": "أوافق على الشروط والأحكام"
+      },
+      "select_options": {
+        "countries": {
+          "usa": "الولايات المتحدة",
+          "uk": "المملكة المتحدة",
+          "sa": "المملكة العربية السعودية"
+        },
+        "languages": {
+          "en": "الإنجليزية",
+          "ar": "العربية"
+        }
+      },
+      "buttons": {
+        "create_account": "إنشاء حساب الشركة",
+        "loading": "جاري إنشاء الحساب..."
+      },
+      "link_login": {
+        "prefix": "هل لديك حساب بالفعل؟",
+        "link_text": "تسجيل الدخول"
+      }
+    },
+    "reset_password": {
+      "header": {
+        "title": "إعادة تعيين كلمة المرور",
+        "subtitle": "أدخل كلمة المرور الجديدة أدناه"
+      },
+      "form": {
+        "label_new_password": "كلمة المرور الجديدة",
+        "label_confirm_password": "تأكيد كلمة المرور",
+        "password_hint": "يجب أن تتكون من 8 أحرف على الأقل، وتحتوي على أحرف كبيرة وصغيرة ورقم",
+        "button_reset": "إعادة تعيين كلمة المرور",
+        "button_loading": "جاري إعادة تعيين كلمة المرور..."
+      },
+      "success_state": {
+        "title": "تمت إعادة تعيين كلمة المرور بنجاح!",
+        "message": "تمت إعادة تعيين كلمة المرور الخاصة بك. جاري تحويلك إلى صفحة تسجيل الدخول..."
+      },
+      "link_login": {
+        "prefix": "هل تذكر كلمة المرور الخاصة بك؟",
+        "link_text": "العودة إلى تسجيل الدخول"
+      }
+    }
+  },
+  "dashboard": {
+    "profile": "الملف الشخصي",
+"logout": "تسجيل الخروج",
+"collapse": "طي القائمة",
+"admin": {
+  "user_type": "مدير",
+  "page_type": "مدير",
+  "pages_list": {
+    "overview": "لوحة القيادة",
+    "user_management": "ملفات المستخدمين",
+    "candidate_management": "مقارنة المرشحين",
+    "business_management": "إدارة الشركات",
+    "system_configuration": "إعدادات النظام",
+    "audit_logs": "سجلات التدقيق",
+    "settings": "الإعدادات",
+    "api_settings": "باقة الدفع",
+    "multi_agency_panel": "الفواتير والاشتراكات"
+  },
+
+
+
+  "overview_page": {
+        "title": "نظرة عامة على لوحة القيادة",
+        "subtitle": "مراقبة أداء المنصة والمقاييس الرئيسية",
+         "B2B": "من شركة إلى شركة",
+         "B2C": "من شركة إلى مستهلك",
+  
+         "stats": {
+    "totalUsers": "إجمالي المستخدمين",
+    "activeAgencies": "الوكالات النشطة",
+    "activeCandidates": "المرشحون النشطون",
+    "totalEvaluations": "إجمالي التقييمات",
+    "revenue": "الإيرادات (يورو)"
+  },
+        "charts": {
+    "systemLoadTrend": "اتجاه تحميل النظام",
+    "userGrowthTrend": "اتجاه نمو المستخدمين",
+    "evaluationTypesDistribution": "توزيع أنواع التقييم",
+    "packageContribution": "مساهمة الباقات"
+  },
+        "months": {
+          "jan": "يناير",
+          "feb": "فبراير",
+          "mar": "مارس",
+          "apr": "أبريل",
+          "may": "مايو",
+          "jun": "يونيو",
+          "jul": "يوليو",
+          "aug": "أغسطس",
+          "sep": "سبتمبر",
+          "oct": "أكتوبر",
+          "nov": "نوفمبر",
+          "dec": "ديسمبر"
+        },
+        "weeks": {
+          "week": "أسبوع"
+        },
+        "evaluationTypes": {
+    "Basic": "أساسي",
+    "Advanced": "متقدم",
+    "Essential": "ضروري",
+    "Premium": "مميز"
+  },
+         "packages": {
+    "Basic": "أساسي",
+    "Advanced": "متقدم",
+    "Essential": "ضروري",
+    "Premium": "مميز"
+  }
+      },
+      "userRoleManagement": {
+        "title": "إدارة المستخدمين والصلاحيات",
+        "access": "الوصول: للمشرف العام فقط",
+
+        "actions": {
+          "createUser": "إنشاء مستخدم داخلي",
+          "activityLog": "عرض سجل الأنشطة العام"
+        },
+
+        "table": {
+          "title": "مستخدمي النظام الحاليين",
+          "headers": {
+            "userName": "اسم المستخدم",
+            "role": "الدور الحالي",
+            "status": "الحالة",
+            "actions": "إجراءات الإدارة"
+          },
+          "actions": {
+            "assignRole": "تعيين دور",
+            "resetPassword": "إعادة تعيين كلمة المرور",
+            "viewActivity": "عرض سجل النشاط",
+            "disable": "تعطيل المستخدم",
+            "enable": "تفعيل المستخدم"
+          }
+        },
+
+        "roles": {
+          "superAdmin": "مشرف عام",
+          "recruiterAdmin": "مشرف توظيف",
+          "viewer": "مشاهد"
+        },
+
+        "status": {
+          "active": "نشط",
+          "disabled": "معطل"
+        }
+      },
+        "candidateManagement": {
+        "title": "لوحة إدارة المرشحين",
+        "subtitle": "مركز العمليات للمسؤولين ومسؤولي التوظيف لإضافة وتقييم وإدارة المواهب.",
+
+        "quickActions": {
+          "title": "إجراءات سريعة:",
+          "add": "إضافة مرشح جديد",
+          "bulkUpload": "رفع جماعي PDF / CSV",
+          "archive": "أرشفة إعلانات الفيديو"
+        },
+
+        "table": {
+          "title": "المرشحون الحاليون",
+          "headers": {
+            "name": "اسم المرشح",
+            "role": "الدور / الصلاحية",
+            "jobRole": "المسمى الوظيفي",
+            "language": "اللغة",
+            "evaluation": "حالة التقييم",
+            "documents": "حالة المستندات",
+            "actions": "الإجراءات"
+          }
+        },
+
+        "roles": {
+          "admin": "مشرف",
+          "recruiter": "مسؤول توظيف",
+          "viewer": "مشاهد"
+        },
+
+        "jobRoles": {
+          "seniorDev": "مطور أول",
+          "marketingLead": "قائد التسويق",
+          "productManager": "مدير المنتج"
+        },
+
+        "languages": {
+          "en": "الإنجليزية",
+          "es": "الإسبانية"
+        },
+
+        "evaluationStatus": {
+          "successful": "مكتمل (ناجح)",
+          "pending": "قيد التقييم",
+          "failed": "راسب"
+        },
+
+        "documentStatus": {
+          "uploadedAttached": "مرفوع | مستندات مرفقة",
+          "uploadedMissing": "مرفوع | مستندات ناقصة",
+          "missingAttached": "مفقود | مستندات مرفقة"
+        },
+
+        "actions": {
+          "downloadView": "تحميل التقرير | عرض رابط التعديل",
+          "sendUpload": "إرسال التقييم | رفع عرض العمل",
+          "sendDownload": "إرسال / تعديل | تحميل التقرير"
+        }
+      },
+      
+      "rbac": {
+        "title": "إدارة الصلاحيات حسب الأدوار",
+        "explorerTitle": "مستكشف التحكم في الصلاحيات",
+        "description": "تحدد هذه المصفوفة قواعد التفويض بناءً على أدوار النظام.",
+        "selectSystem": "اختر النظام",
+        "selectRole": "اختر الدور",
+        "placeholders": {
+          "system": "اختر النظام",
+          "role": "اختر الدور"
+        },
+        "systems": {
+          "b2bEnterprise": "مسؤول شركات B2B المتقدم",
+          "b2bBasic": "مسؤول شركات B2B الأساسي",
+          "b2cAdmin": "مسؤول B2C"
+        },
+        "roles": {
+          "superAdmin": "مشرف عام",
+          "admin": "مشرف",
+          "manager": "مدير",
+          "user": "مستخدم",
+          "moderator": "مشرف محتوى"
+        },
+        "access": {
+          "authentication": "المصادقة",
+          "readOnly": "قراءة فقط",
+          "writeManage": "كتابة وإدارة"
+        },
+        "table": {
+          "dialog": "الوحدة",
+          "email": "البريد الإلكتروني",
+          "feature": "الميزة / الإجراء",
+          "access": "الصلاحية",
+          "nationalId": "الرقم الوطني",
+          "nationalIdAlt": "رقم وطني إضافي"
+        },
+        "dialogs": {
+          "auth": "المصادقة",
+          "candidate": "المرشح",
+          "company": "الشركة"
+        },
+        "features": {
+          "loginValidation": "التحقق من تسجيل الدخول",
+          "evaluationSummary": "ملخص التقييمات",
+          "profileReset": "إعادة تعيين الملف الشخصي"
+        }
+      }, 
+       "profile": {
+        "title": "إعدادات ملف المشرف",
+        "subtitle": "إدارة الحساب والشركة والفوترة",
+        "companyManagement": "إدارة الشركة",
+        "lightMode": "فاتح",
+        "language": "العربية",
+        "allowMode": "وضع السماح",
+        "logout": "تسجيل الخروج",
+
+        "tabs": {
+          "msa": "الموافقة على العقود",
+          "profile": "تعديل الملف",
+          "billing": "الفوترة والاشتراك"
+        },
+
+        "msa": {
+          "title": "اتفاقية الخدمة الرئيسية",
+          "description": "بانتظار موافقة المشرف العام لتفعيل الميزات المتقدمة.",
+          "review": "مراجعة والموافقة"
+        },
+
+        "table": {
+          "contract": "اسم العقد",
+          "date": "التاريخ",
+          "status": "الحالة",
+          "pdf": "ملف PDF",
+          "type": "النوع",
+          "amount": "القيمة"
+        },
+
+        "contracts": {
+          "update1": "تحديث سياسة الخصوصية 1",
+          "update2": "تحديث سياسة الخصوصية 2",
+          "update3": "تحديث سياسة الخصوصية 3"
+        },
+
+        "status": {
+          "pending": "قيد الانتظار",
+          "success": "مكتمل / ناجح",
+          "failed": "فشل",
+          "active": "نشط"
+        },
+
+        "jobRoles": {
+          "houseKeeper": "مدبرة منزل",
+          "cleaner": "عامل نظافة",
+          "driver": "سائق"
+        },
+
+        "billing": {
+          "title": "سجل الاستهلاك",
+          "types": {
+            "evaluation": "تقييم",
+            "subscription": "تجديد الاشتراك"
+          }
+        },
+
+        "download": "تحميل",
+        "companyName": "اسم الشركة",
+        "email": "البريد الإلكتروني",
+        "save": "حفظ",
+        "saveChanges": "حفظ التغييرات"
+      },
+      "systemSecurity": {
+        "title": "أمان النظام",
+        "subtitle": "مراقبة نشاط الأمان وإدارة وصول المسؤول",
+        "description": "إدارة إعدادات التطبيق الهامة وسياسات الأمان، ضوابط الوصول، وإعدادات الإشعارات.",
+
+        "quickActions": {
+          "title": "إجراءات سريعة:",
+          "viewLogs": "عرض محاولات تسجيل الدخول الفاشلة",
+          "clearLogs": "مسح سجلات تسجيل الدخول الفاشلة",
+          "createUser": "إنشاء مستخدم جديد",
+          "manageRoles": "إدارة الأدوار"
+        },
+
+        "stats": {
+          "failedLogins": "محاولات تسجيل دخول فاشلة",
+          "activeUsers": "المستخدمون النشطون",
+          "pendingApprovals": "الموافقات المعلقة"
+        },
+
+        "alerts": {
+          "title": "تنبيهات وإشعارات النظام",
+          "failedLoginThreshold": "تجاوز حد محاولات تسجيل الدخول الفاشلة (10+ محاولات)",
+          "newUserCreated": "تم إنشاء حساب مستخدم جديد",
+          "dbConnectionError": "خطأ في اتصال قاعدة البيانات",
+          "systemUpgradeCompleted": "اكتمل ترقية النظام"
+        },
+
+        "table": {
+          "title": "المستخدمون الحاليون في النظام",
+          "headers": {
+            "user": "المستخدم",
+            "role": "الدور",
+            "status": "الحالة",
+            "actions": "الإجراءات"
+          }
+        },
+
+        "roles": {
+          "superAdmin": "المسؤول الأعلى",
+          "recruiterAdmin": "مسؤول التوظيف",
+          "viewer": "عارض"
+        },
+
+        "status": {
+          "active": "نشط",
+          "disabled": "معطل"
+        },
+
+        "actions": {
+          "edit": "تعديل",
+          "reset": "إعادة تعيين",
+          "revoke": "إلغاء الوصول"
+        }
+      },
+      "auditLog": {
+        "title": "سجلات التدقيق ومركز التقييم",
+        "tabs": {
+          "evaluation": "مركز التقييم",
+          "audit": "سجلات التدقيق"
+        },
+        "roles": {
+          "superAdmin": "المسؤول الأعلى"
+        },
+        "evaluationCenter": {
+          "contractListTitle": "قائمة عقود المرشحين",
+          "table": {
+            "headers": {
+              "candidate": "المرشح",
+              "readiness": "الجاهزية",
+              "status": "الحالة",
+              "action": "الإجراء"
+            },
+            "statusTypes": {
+              "pending": "في انتظار التصحيح",
+              "approved": "تمت الموافقة",
+              "inprogress": "قيد التنفيذ"
+            }
+          },
+          "detailsPanel": {
+            "labels": {
+              "candidateName": "اسم المرشح",
+              "code": "الرمز",
+              "readiness": "الجاهزية",
+              "status": "الحالة",
+              "email": "البريد الإلكتروني",
+              "date": "التاريخ"
+            },
+            "buttons": {
+              "viewDetails": "عرض التفاصيل",
+              "downloadReport": "تنزيل التقرير"
+            },
+            "noSelection": {
+              "title": "لا يوجد تحديد",
+              "description": "اختر مرشحًا لعرض السجلات وتنفيذ الإجراءات."
+            }
+          }
+        },
+        "auditLog": {
+        "title": "سجلات التدقيق",
+        "tabs": {
+          "evaluation": "مركز التقييم",
+          "audit": "سجلات التدقيق"
+        },
+        "table": {
+          "headers": {
+            "customer": "العميل",
+            "resourceTarget": "المورد المستهدف",
+            "actionType": "نوع الإجراء",
+            "timestamp": "الوقت",
+            "category": "الفئة",
+            "description": "الوصف"
+          }
+        },
+        "statusTypes": {
+          "pending": "قيد الانتظار",
+          "approved": "معتمد",
+          "inprogress": "قيد التنفيذ"
+        },
+        "categories": {
+          "security": "الأمان",
+          "override": "تجاوز",
+          "billing": "الفوترة",
+          "ui": "واجهة المستخدم",
+          "system": "النظام"
+        },
+        "actions": {
+          "viewDetails": "عرض التفاصيل",
+          "downloadReport": "تحميل التقرير"
+        },
+        "noSelection": {
+          "title": "لا يوجد اختيار",
+          "description": "حدد مرشحًا لعرض السجلات وتنفيذ الإجراءات."
+        },
+        "pagination": {
+          "showing": "عرض",
+          "of": "من",
+          "prev": "السابق",
+          "next": "التالي"
+        }
+      }
+      },
+
+    "billing": {
+        "title": "الفوترة والاشتراكات",
+        "paymentSuccess": {
+          "title": "تم الدفع بنجاح!",
+          "description": "تمت معالجة دفعتك بنجاح. ستتلقى رسالة تأكيد عبر البريد الإلكتروني قريبًا.",
+          "amount": "المبلغ",
+          "transactionId": "رقم المعاملة",
+          "paymentMethod": "طريقة الدفع",
+          "date": "التاريخ",
+          "enterprise": "الشركة",
+          "receiptSent": "تم إرسال الإيصال إلى"
+        },
+        "quickActions": {
+          "downloadReceipt": "تحميل الإيصال",
+          "back": "رجوع",
+          "home": "الرئيسية"
+        },
+        "form": {
+          "creditCardInfo": "معلومات بطاقة الائتمان",
+          "paymentMethodLabel": "اختر طريقة الدفع",
+          "methods": {
+            "card": "بطاقة",
+            "bank": "تحويل بنكي",
+            "wallet": "محفظة إلكترونية",
+            "more": "المزيد"
+          },
+          "fields": {
+            "cardNumber": "رقم البطاقة",
+            "expiry": "تاريخ الانتهاء",
+            "cvc": "رمز التحقق",
+            "fullName": "الاسم الكامل",
+            "bankNo": "رقم البنك",
+            "bankName": "اسم البنك",
+            "country": "الدولة",
+            "postalCode": "الرمز البريدي"
+          },
+          "banks": {
+            "commercial": "البنك التجاري",
+            "national": "البنك الوطني",
+            "international": "البنك الدولي"
+          }
+        },
+        "membership": {
+          "title": "نوع الاشتراك",
+          "options": {
+            "monthly": {
+              "title": "الدفع الشهري",
+              "description": "50 يورو / الشهر لكل عضو"
+            },
+            "annual": {
+              "title": "الدفع السنوي",
+              "description": "600 يورو / الشهر لكل عضو"
+            },
+            "accelerator": {
+              "title": "معجل الذكاء الاصطناعي",
+              "description": "20,000 $ / الشهر لكل عضو",
+              "details": "استخدام غير محدود للذكاء الاصطناعي في الأسئلة والأجوبة، الإكمال التلقائي، الكتابة، وأكثر"
+            }
+          },
+          "addons": "الإضافات",
+          "terms": "بالاستمرار فإنك توافق على الشروط والأحكام الخاصة بنا",
+          "upgradeButton": "الترقية إلى بلس",
+          "proceedButton": "المتابعة"
+        },
+        "paymentProviders": {
+          "apple": "الدفع",
+          "stripe": "سترايب",
+          "paypal": "باي بال",
+          "google": "الدفع"
+        }
+      }
+    }, 
+    
+   "business": {
+  "user_type": "شركة",
+  "page_type": "شركة",
+  "pages_list": {
+    "overview": "لوحة القيادة",
+    "profile_management": "الملف الشخصي للمستخدم",
+    "candidate_management": "مقارنة المرشحين",
+    "multi_agency_panel": "إدارة التقييمات",
+    "assessments_monitor": "متابعة التقييمات",
+    "reports_certificates": "التقارير والشهادات",
+    "analytics_insights": "التحليلات والرؤى",
+    "performance_scorecard": "بطاقة الأداء",
+    "user_management": "إدارة المستخدمين",
+    "business_management": "إدارة الدرجات",
+    "audit_logs": "الدفع",
+    "notifications": "الإشعارات والتنبيهات",
+    "system_configuration": "ملف الشركة"
+  },
+   "overview": {
+      "package": {
+        "expires": "تنتهي الباقة خلال {days} أيام!",
+        "renew": "تجديد الآن"
+      },
+      "search": {
+        "placeholder": "بحث..."
+      },
+      "metrics": {
+        "evaluationsCompleted": "التقييمات المكتملة",
+        "activeCandidates": "المرشحون النشطون",
+        "certificatesIssued": "الشهادات الصادرة",
+        "pointsBalance": "رصيد النقاط",
+        "successRate": "معدل النجاح",
+        "changes": {
+          "growth": "نمو بنسبة {value}٪",
+          "increase": "زيادة بنسبة {value}٪",
+          "used": "تم استخدام {value}٪ خلال الشهر",
+          "negativeMonthly": "انخفاض بنسبة {value}٪ شهريًا"
+        },
+        "actions": {
+          "addPoints": "إضافة نقاط"
+        }
+      },
+      "alerts": {
+        "critical": "تنبيه عاجل",
+        "contractRejection": "رفض العقد",
+        "lowSuccessRate": "معدل النجاح أقل من 50%. راجع التقييمات الأخيرة."
+      }
+    },
+   "candidateEvaluation": {
+        "title": "تقييم المرشح",
+        "columns": {
+          "candidate": "المرشح",
+          "status": "الحالة",
+          "certificateStatus": "حالة الشهادة",
+          "reportStatus": "حالة التقرير",
+          "lastEvalDate": "تاريخ آخر تقييم",
+          "writeNotes": "كتابة ملاحظات",
+          "notifyCandidates": "إشعار المرشحين"
+        },
+        "status": {
+          "inProgress": "جاري التنفيذ",
+          "complete": "مكتمل",
+          "pending": "قيد الانتظار",
+          "approved": "معتمد",
+          "rejected": "مرفوض",
+          "needTraining": "تحتاج تدريب",
+          "accepted": "تم قبول"
+        },
+        "statusColors": {
+          "inProgress": "bg-yellow-100 text-yellow-700",
+          "complete": "bg-green-100 text-green-700",
+          "pending": "bg-orange-100 text-orange-700",
+          "approved": "bg-blue-100 text-blue-700",
+          "rejected": "bg-red-100 text-red-600",
+          "needTraining": "bg-red-100 text-red-600",
+          "accepted": "bg-green-100 text-green-700"
+        },
+        "pagination": {
+          "rowsPerPage": "عدد الصفوف في الصفحة"
+        }
+      },
+        "performanceChart": {
+        "title": "الأداء",
+        "tabs": {
+          "users": "المستخدمون",
+          "projects": "المشاريع",
+          "operatingStatus": "حالة التشغيل"
+        },
+        "months": {
+          "jan": "يناير",
+          "feb": "فبراير",
+          "mar": "مارس",
+          "apr": "أبريل",
+          "may": "مايو",
+          "jun": "يونيو"
+        }
+      },
+       "pointConsumptionChart": {
+        "title": "استهلاك النقاط حسب الخدمة",
+        "services": {
+          "cleaner": "عامل نظافة",
+          "maintenance": "الصيانة",
+          "companion": "مرافق",
+          "sales": "المبيعات"
+        }
+      },
+       "readinessIndexChart": {
+        "title": "مؤشر الجاهزية العام",
+        "levels": {
+          "ready": "جاهز",
+          "nearReady": "قريب من الجاهزية",
+          "lowReadiness": "جاهزية منخفضة"
+        }
+      },
+         "languageDistributionChart": {
+        "title": "توزيع لغات التقييم",
+        "tooltip": {
+          "usage": "نسبة الاستخدام"
+        },
+        "languages": {
+          "english": "الإنجليزية",
+          "arabic": "العربية",
+          "french": "الفرنسية",
+          "spanish": "الإسبانية"
+        }
+      },
+      "ageDistributionChart": {
+        "tabs": {
+          "age": "العمر",
+          "nationality": "الجنسية",
+          "experience": "الخبرة"
+        },
+        "legend": {
+          "accepted": "مقبول",
+          "rejected": "مرفوض"
+        },
+        "categories": {
+          "age_18_25": {
+            "label": "الفئة العمرية (18–25)",
+            "short": "18–25"
+          },
+          "age_26_35": {
+            "label": "الفئة العمرية (26–35)",
+            "short": "26–35"
+          },
+          "appearance_4_6": {
+            "label": "المظهر / الشكل (4–6)",
+            "short": "المظهر"
+          },
+          "work_attitude_intermediate": {
+            "label": "سلوك العمل (متوسط)",
+            "short": "السلوك"
+          }
+        }
+      },
+  
+   "score-distribution-chart": {
+        "title": "توزيع درجات المرشحين حسب الدور الوظيفي",
+        "score": "الدرجة",
+        "roles": {
+          "agent": "وكيل",
+          "housekeeper": "مدبرة منزل",
+          "companion": "مرافق",
+          "manager": "مدير"
+        }
+      },
+      "score-management": {
+        "quickActions": "الإجراءات السريعة",
+        "title": "إدارة الدرجات",
+        "search": "بحث...",
+        "roles": {
+          "maintenance": "صيانة",
+          "housekeeper": "مدبرة منزل",
+          "nanny": "مربية",
+          "elderCompanion": "مرافق مسن"
+        },
+        "skills": {
+          "communications": "التواصل",
+          "cleaning": "التنظيف",
+          "maintenance": "الصيانة",
+          "companionship": "المرافقة",
+          "cooking": "الطبخ"
+        },
+        "tableHeaders": {
+          "name": "الاسم",
+          "cleaning": "التنظيف",
+          "maintenance": "الصيانة",
+          "companionship": "المرافقة",
+          "cooking": "الطبخ",
+          "avgScore": "متوسط الدرجات"
+        },
+        "pagination": {
+          "showing": "عرض",
+          "of": "من"
+        }
+      },
+      "company-profile": {
+        "title": "ملف الشركة",
+        "myProfile": "ملفي الشخصي",
+        "notification": "الإشعارات",
+        "more": "المزيد",
+        "logout": "تسجيل الخروج",
+
+        "companyDescription": "وصف الشركة",
+        "uploadLogo": "رفع الشعار",
+        "companyName": "اسم الشركة",
+        "companyDescriptionText": "إدارة تفاصيل الشركة والأدوار.",
+        "agency": "وكالة",
+        "sales": "مبيعات",
+        "market": "تسويق",
+        "addRole": "إضافة دور",
+
+        "email": "البريد الإلكتروني",
+        "address": "العنوان",
+        "phone": "الهاتف",
+        "website": "الموقع الإلكتروني",
+
+        "manageUsers": "إدارة المستخدمين",
+        "addUser": "إضافة مستخدم",
+
+        "columns": {
+          "user": "المستخدم",
+          "userRole": "دور المستخدم",
+          "systemRole": "دور النظام",
+          "permission": "الصلاحيات"
+        },
+
+        "roles": {
+          "businessManager": "مدير أعمال",
+          "agent": "وكيل",
+          "analyst": "محلل"
+        },
+
+        "permissions": {
+          "fullAccess": "وصول كامل",
+          "standard": "قياسي",
+          "readOnly": "قراءة فقط"
+        },
+
+        "partnerships": "الشراكات",
+
+        "tabs": {
+          "myConnections": "اتصالاتي",
+          "discover": "اكتشف"
+        },
+
+        "connect": "اتصال",
+
+        "candidatesStatus": "حالة المرشحين",
+        "downloadFiles": "تحميل الملفات",
+        "downloadAllowed": "ملفات CSV و PDF مسموح بها",
+        "uploadFiles": "رفع الملفات",
+        "uploadCandidatesFile": "رفع ملف قائمة المرشحين",
+
+        "settings": "الإعدادات",
+        "theme": "المظهر",
+        "light": "فاتح",
+        "dark": "داكن",
+        "language": "اللغة",
+        "english": "الإنجليزية",
+        "spanish": "الإسبانية",
+        "push": "إشعارات فورية",
+        "save": "حفظ",
+
+        "billing": "الفوترة وحالة الاشتراك",
+        "currentPlan": "الخطة الحالية",
+        "premium": "بريميوم",
+        "monthlyCosts": "التكلفة الشهرية",
+        "nextBilling": "الفاتورة القادمة",
+        "update": "تحديث",
+
+        "saveChanges": "حفظ التغييرات"
+      },
+       "payment": {
+        "title": "الخطة المناسبة لنشاطك التجاري",
+        "subtitle": "بناءً على الدور المختار واحتياجات التغطية. يمكنك الترقية أو التخفيض في أي وقت.",
+        "billMonthly": "الدفع شهريًا",
+        "billAnnually": "الدفع سنويًا",
+        "month": "شهر",
+        "custom": "مخصص",
+        "getStarted": "ابدأ الآن",
+
+        "plans": {
+          "starter": { "name": "المبتدئ" },
+          "growth": { "name": "النمو" },
+          "business": { "name": "الأعمال" },
+          "enterprise": { "name": "المؤسسات" }
+        },
+
+        "features": {
+          "eval5": "تقييمات شهرية حتى 5",
+          "essentialAdvanced": "اختبارات أساسية ومتقدمة",
+          "pdfReports": "تقارير PDF",
+          "employerSummary": "تقرير ملخص لصاحب العمل (PDF)",
+          "simulation": "محاكاة عملية (5–30 دقيقة)",
+          "referenceVerification": "التحقق الرقمي من المراجع",
+
+          "eval50": "تقييمات شهرية حتى 50",
+          "dashboardAnalytics": "لوحة تحكم وتحليلات",
+          "simulationTests": "اختبارات المحاكاة العملية",
+          "comprehensionResilience": "اختبارات الفهم والمرونة",
+          "benchmarking": "المقارنة المعيارية ومجموعات الأداء",
+          "videoIntro": "تسجيل فيديو تعريفي",
+          "smartInsights": "تحليلات ذكية",
+          "jobMatching": "مطابقة الدور الوظيفي",
+
+          "eval100": "تقييمات شهرية حتى 100",
+          "addonDiscount": "خصم 10٪ على الإضافات",
+          "automations": "أتمتة مخصصة",
+          "auditLogs": "سجلات التدقيق",
+          "personalitySnapshot": "ملخص الشخصية",
+          "behavioralModels": "نماذج سلوكية مخصصة",
+          "regulatoryMode": "وضع التدقيق التنظيمي",
+
+          "unlimitedEval": "تقييمات شهرية غير محدودة",
+          "unlimitedAddons": "إضافات غير محدودة",
+          "discount": "خصم",
+          "multiAgency": "لوحة تنسيق متعددة الوكالات",
+          "customFeatures": "جميع الميزات المخصصة"
+        }
+      },
+       "candidate-evaluation": {
+        "title": "تقييم المرشح",
+        "quickActions": "إجراءات سريعة:",
+        "search": "بحث...",
+        "filters": {
+          "role": "تصفية حسب الدور",
+          "status": "تصفية حسب الحالة"
+        },
+        "tableHeaders": {
+          "candidate": "المرشح",
+          "passport": "رقم الهوية / جواز السفر",
+          "role": "الدور الوظيفي",
+          "certificate": "حالة الشهادة",
+          "evaluationDate": "تاريخ آخر تقييم",
+          "language": "اللغة المفضلة",
+          "actions": "تحميل / نسخ الرابط"
+        },
+        "roles": {
+          "housekeeper": "مدبرة منزل",
+          "nanny": "مربية",
+          "elderCompanion": "مرافق كبار السن",
+          "kitchenAssistant": "مساعد مطبخ",
+          "maintenance": "عامل صيانة"
+        },
+        "certificates": {
+          "inProgress": "قيد التقدم",
+          "complete": "اكتمل",
+          "ready": "جاهز للعمل",
+          "needTraining": "يحتاج تدريب"
+        },
+        "languages": {
+          "english": "الإنجليزية",
+          "arabic": "العربية",
+          "spanish": "الإسبانية"
+        }
+      }
+     
+  
+},
+
+"indivisual": {
+  "user_type": "فرد",
+  "page_type": "فرد",
+  "pages_list": {
+    "overview": "لوحة التحكم",
+    "candidate_management": "المرشحون",
+    "evaluation_setup": "التقييمات",
+    "assessments_monitor": "مراقبة التقييمات",
+    "reports_certificates": "التقارير والشهادات",
+    "profile_management": "الملف الشخصي",
+    "packages_subscription": "الباقات والاشتراك",
+    "notifications": "الإشعارات"
+  },
+
+  "payment": {
+    "title": "الخطة المناسبة لأعمالك",
+    "subtitle": "استنادًا إلى الأدوار الوظيفية المختارة ومجالات التركيز الرئيسية وقياسات التقييم، اختر خطة الاشتراك المناسبة.",
+    "billingMonthly": "فوترة شهرية",
+    "billingAnnual": "فوترة سنوية",
+    "getStarted": "ابدأ الآن",
+    "finish": "إنهاء",
+    "priceCustom": "مخصص",
+    "plans": {
+      "basic": {
+        "name": "أساسي",
+        "description": "/شهر",
+        "features": {
+          "identityVerification": "التحقق من الهوية",
+          "basicMedicalCheck": "الفحص الطبي الأساسي",
+          "basicQA": "الأسئلة النظرية الأساسية",
+          "multilingualCertificate": "شهادة متعددة اللغات",
+          "pdfSummary": "تقرير ملخص PDF",
+          "employerSummary": "تقرير ملخص لصاحب العمل"
+        }
+      },
+      "essential": {
+        "name": "أساسي متقدم",
+        "description": "/شهر",
+        "features": {
+          "practicalSimulation": "محاكاة عملية",
+          "comprehensiveTest": "اختبار شامل (إضافة: +€50)"
+        }
+      },
+      "advanced": {
+        "name": "متقدم",
+        "description": "/شهر",
+        "badge": "وفر €10",
+        "features": {
+          "skillsBehavioralAssessment": "تقييم المهارات والسلوك",
+          "comprehensiveBehavioralTest": "اختبار شامل وسلوكي",
+          "jobRoleMatching": "توصية بمطابقة الدور الوظيفي",
+          "personalitySnapshot": "تقرير لمحة شخصية",
+          "dashboardAnalytics": "تحليلات لوحة القيادة"
+        }
+      },
+      "premium": {
+        "name": "ممتاز",
+        "description": "/شهر",
+        "features": {
+          "culturalAdaptability": "التكيف الثقافي",
+          "emotionalResilience": "المرونة العاطفية",
+          "motivationFit": "الدافع والملاءمة طويلة الأجل",
+          "digitalVerification": "التحقق الرقمي من التفضيلات",
+          "videoRecording": "تسجيل فيديو تقديمي (إضافة: +€30)"
+        }
+      }
+    }
+  },
+   "evaluations": {
+        "title": "إدارة التقييمات",
+        "scheduleEvaluation": "جدولة تقييم جديد",
+        "searchPlaceholder": "بحث...",
+        "filters": {
+          "role": "تصفية حسب الدور",
+          "status": "تصفية حسب الحالة",
+          "language": "تصفية حسب اللغة"
+        },
+        "roles": {
+          "housekeeping": "الأعمال المنزلية",
+          "elderCaregiver": "مقدم رعاية كبار السن",
+          "nursingAssistant": "مساعد تمريض",
+          "maintenance": "عامل صيانة",
+          "securityAssistant": "مساعد أمني",
+          "ceo": "المدير التنفيذي",
+          "kitchenAssistant": "مساعد مطبخ"
+        },
+        "certificateStatus": {
+          "complete": "مكتمل",
+          "inProgress": "قيد التقدم",
+          "ready": "جاهز للتقييم",
+          "needTraining": "بحاجة إلى تدريب"
+        },
+        "languages": {
+          "english": "الإنجليزية",
+          "spanish": "الإسبانية",
+          "arabic": "العربية"
+        }
+      },
+
+       "candidates": {
+        "title": "أداة مقارنة المرشحين",
+        "subtitle": "قارن ما يصل إلى 4 مرشحين عبر مؤشرات الأداء الرئيسية في الوقت الفعلي.",
+        "selectCandidates": "اختر المرشحين (الحد الأقصى 4)",
+        "selectMetrics": "اختر المؤشرات",
+        "radarChartTitle": "مقارنة الأداء (مخطط الرادار)",
+        "metrics": {
+          "clearing": "التنظيف",
+          "maintenance": "الصيانة",
+          "communication": "الاتصال",
+          "score": "درجة المرشح",
+          "experience": "الخبرة"
+        },
+        "subjects": {
+          "experience": "الخبرة",
+          "hardSkill": "المهارة الصعبة",
+          "softSkill": "المهارة الناعمة"
+        },
+        "exportPNG": "تصدير كصورة PNG",
+        "exportPDF": "تصدير كتقرير PDF",
+        "linkAnalytics": "رابط لتحليلات المجموعة"
+      },
+
+"profile": {
+        "pageTitle": "إعدادات الملف الشخصي"
+      },
+
+      "settings-tabs": {
+        "editProfile": "تعديل الملف الشخصي",
+        "security": "الأمان",
+        "billing": "الفوترة والاشتراك"
+      },
+
+      "settings": {
+        "edit-profile-tab": {
+          "profilePictureTitle": "صورة الملف الشخصي",
+          "profilePictureSubtitle": "قم بتحديث صورة ملفك الشخصي",
+          "changeButton": "تغيير",
+
+          "yourName": "الاسم الكامل",
+          "userName": "اسم المستخدم",
+          "email": "البريد الإلكتروني",
+          "password": "كلمة المرور",
+          "dob": "تاريخ الميلاد",
+          "presentAddress": "العنوان الحالي",
+          "country": "الدولة",
+          "city": "المدينة",
+          "permanentAddress": "العنوان الدائم",
+          "preferredLanguage": "اللغة المفضلة",
+
+          "saveButton": "حفظ التغييرات"
+        },
+
+        "billing-tab": {
+          "remainingPoints": "النقاط المتبقية",
+          "currentPackage": "الباقة الحالية",
+          "availablePoints": "النقاط المتاحة",
+
+          "consumptionHistory": "سجل الاستهلاك",
+          "date": "التاريخ",
+          "description": "الوصف",
+          "amount": "المبلغ",
+
+          "Evaluation": "تقييم",
+          "Subscription Renewal": "تجديد الاشتراك",
+
+          "saveButton": "حفظ التغييرات"
+        },
+        "security-tab": {
+          "changeEmailTitle": "تغيير البريد الإلكتروني",
+          "currentEmail": "البريد الإلكتروني الحالي",
+          "currentEmailPlaceholder": "أدخل بريدك الإلكتروني الحالي",
+          "newEmail": "البريد الإلكتروني الجديد",
+          "newEmailPlaceholder": "أدخل بريدك الإلكتروني الجديد",
+
+          "changePasswordTitle": "تغيير كلمة المرور",
+          "currentPassword": "كلمة المرور الحالية",
+          "currentPasswordPlaceholder": "أدخل كلمة المرور الحالية",
+          "newPassword": "كلمة المرور الجديدة",
+          "newPasswordPlaceholder": "أدخل كلمة مرور جديدة",
+
+          "deleteAccountTitle": "حذف الحساب",
+          "deleteAccountSubtitle": "حذف حسابك إجراء نهائي وسيؤدي إلى إزالة جميع البيانات المرتبطة به. لا يمكن التراجع عن هذا الإجراء.",
+          "deleteButton": "حذف الحساب",
+
+          "saveButton": "حفظ التغييرات"
+        }
+      },
+       "evaluationManagement": {
+        "title": "إدارة التقييمات",
+        "addBulkSchedule": "إضافة جدول جماعي",
+
+        "tabs": {
+          "scheduled": "مجدولة",
+          "inProgress": "قيد التنفيذ",
+          "completed": "مكتملة"
+        },
+
+        "filters": {
+          "type": "نوع التقييم",
+          "role": "المسمى الوظيفي",
+          "language": "اللغة"
+        },
+
+        "types": {
+          "interview": "مقابلة",
+          "assessment": "تقييم",
+          "technicalTest": "اختبار تقني",
+          "languageProficiency": "إتقان اللغة"
+        },
+
+        "roles": {
+          "elderCompanion": "مرافق كبار السن",
+          "cook": "طباخ",
+          "maintenance": "صيانة",
+          "housekeeper": "مدبرة منزل"
+        },
+
+        "languages": {
+          "english": "الإنجليزية",
+          "arabic": "العربية",
+          "french": "الفرنسية"
+        },
+
+        "status": {
+          "inProgress": "قيد التنفيذ",
+          "scheduled": "مجدولة",
+          "completed": "مكتملة"
+        }
+      },
+       "candidateList": {
+      "title": "قائمة المرشحين",
+      "table": {
+        "name": "الاسم",
+        "role": "الدور",
+        "notes": "ملاحظات",
+        "evaluation": "التقييم",
+        "action": "الإجراء",
+        "viewResults": "عرض النتائج"
+      },
+      "roles": {
+        "houseKeeper": "مدبرة منزل",
+        "nanny": "مربية أطفال",
+        "elderCompanion": "مرافق كبار السن",
+        "kitchenAssistant": "مساعد مطبخ",
+        "maintenanceWorker": "عامل صيانة"
+      },
+      "notes": {
+        "needsMoreEvaluation": "يحتاج لمزيد من التقييم"
+      },
+      "pagination": {
+        "rowsPerPage": "عدد الصفوف لكل صفحة"
+      }
+    },
+     
+     "candidateComparison": {
+      "title": "مقارنة المرشحين",
+      "accepted": "مقبول",
+      "rejected": "مرفوض",
+      "roles": {
+        "agent": "وكيل",
+        "housekeeper": "مدبرة منزل",
+        "maintenance": "صيانة",
+        "cleaner": "منظف",
+        "sales": "مبيعات"
+      }
+    },
+      "dashboard": {
+        "packageExpires": "تنتهي صلاحية الحزمة خلال {days} أيام!",
+        "search": "بحث...",
+        "notification": "الإشعارات",
+        "metrics": {
+          "evaluationsCompleted": "التقييمات المكتملة",
+          "certificatesIssued": "الشهادات الصادرة",
+          "remainingPoints": "النقاط المتبقية",
+          "successRate": "نسبة النجاح",
+          "thisMonth": "هذا الشهر",
+          "thisMonthIncrease": "+{value}% هذا الشهر",
+          "usedThisMonth": "{value}% تم استخدامها هذا الشهر",
+          "increase": "زيادة {value}%"
+        },
+        "quickAction": "إجراء سريع",
+        "buyPoints": "شراء {value} نقاط",
+        "resumeSubscription": "استئناف الاشتراك",
+        "notifications": {
+          "pendingEvaluation": "تقييم معلق",
+          "newReport": "تقرير جديد جاهز"
+        }
+      },
+  "pointConsumption": {
+    "title": "استهلاك النقاط حسب الخدمة",
+    "services": {
+      "cleaner": "عامل تنظيف",
+      "cook": "طباخ",
+      "companion": "مرافق",
+      "nanny": "جليسة أطفال",
+      "others": "أخرى"
+    }
+  },
+  "timeRange": {
+    "title": "الفترة الزمنية",
+    "tabs": {
+      "monthly": "شهري",
+      "quarterly": "ربع سنوي",
+      "yearly": "سنوي"
+    },
+    "months": {
+      "jan": "يناير",
+      "feb": "فبراير",
+      "mar": "مارس",
+      "apr": "أبريل",
+      "may": "مايو",
+      "jun": "يونيو"
+    }
+  },
+  "scheduleEvaluation": {
+        "title": "جدولة التقييم",
+        "addBulkSchedule": "اختيار المرشح",
+        "cancel": "إلغاء",
+        "schedule": "جدولة",
+
+        "filters": {
+          "type": "البريد الإلكتروني",
+          "role": "الدور الوظيفي",
+          "language": "تاريخ التقييم / اللغة"
+        },
+
+        "roles": {
+          "elderCompanion": "مرافق مسنين",
+          "cook": "طباخ",
+          "maintenance": "صيانة",
+          "housekeeper": "مدبرة منزل"
+        },
+
+        "languages": {
+          "english": "الإنجليزية",
+          "arabic": "العربية",
+          "french": "الفرنسية"
+        },
+
+        "types": {
+          "interview": "مقابلة",
+          "assessment": "تقييم",
+          "technicalTest": "اختبار تقني",
+          "languageProficiency": "إتقان اللغة"
+        },
+
+        "placeholders": {
+          "email": "example@email.com"
+        }
+      },
+      "notifications": {
+        "title": "الإشعارات",
+
+        "items": {
+          "comment": {
+            "title": "أرسل {name} تعليقًا",
+            "message": "في مهمة التقييم"
+          },
+          "status": {
+            "title": "تم تحديث حالة المرشح",
+            "message": "تم التعيين إلى قيد التنفيذ"
+          },
+          "lowPoints": {
+            "title": "عنصر مراجعة نقاط منخفضة",
+            "message": "تمت الإضافة إلى قائمة المهام"
+          },
+          "report": {
+            "title": "تقرير {name} جاهز",
+            "message": "تنزيل ومراجعة"
+          }
+        },
+
+        "time": {
+          "daysAgo": "منذ {value} يوم",
+          "hoursAgo": "منذ {value} ساعة",
+          "hoursMinutesAgo": "منذ {hours} ساعة و {minutes} دقيقة",
+          "yesterday": "أمس {time}"
+        }
+      }
+
+   
+
+      
+}
+
+
+
+  },
+  "zodErrors": {
+    "email_required": "البريد الإلكتروني مطلوب",
+    "email_invalid": "الرجاء إدخال عنوان بريد إلكتروني صحيح",
+    "password_min": "يجب أن تتكون كلمة المرور من 6 أحرف على الأقل",
+    "password_min_8": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل",
+    "full_name_min": "يجب أن يتكون الاسم الكامل من حرفين على الأقل",
+    "mobile_min": "يجب أن يتكون رقم الجوال من 8 أرقام على الأقل",
+    "country_required": "الرجاء اختيار الدولة",
+    "city_required": "الرجاء اختيار المدينة",
+    "confirm_password_required": "الرجاء تأكيد كلمة المرور الخاصة بك",
+    "agree_terms_required": "يجب أن توافق على الشروط والأحكام",
+    "passwords_not_match": "كلمتا المرور غير متطابقتين",
+    "company_name_min": "يجب أن يتكون اسم الشركة من حرفين على الأقل",
+    "manager_name_min": "يجب أن يتكون اسم المدير من حرفين على الأقل",
+    "license_number_required": "رقم الترخيص مطلوب",
+    "official_email_required": "البريد الإلكتروني الرسمي مطلوب",
+    "company_phone_min": "يجب أن يتكون هاتف الشركة من 8 أرقام على الأقل",
+    "email_or_phone_required": "البريد الإلكتروني أو رقم الهاتف مطلوب",
+    "email_or_phone_invalid": "الرجاء إدخال عنوان بريد إلكتروني أو رقم هاتف صحيح",
+    "password_requirements": "يجب أن تحتوي كلمة المرور على حرف كبير واحد على الأقل، وحرف صغير واحد، ورقم واحد"
+  }
+}
