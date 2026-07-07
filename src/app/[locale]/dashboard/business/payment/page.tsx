@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { CreditCard, History } from "lucide-react";
+import { CreditCard, History, Loader2 } from "lucide-react";
 import { PlansTab } from "../components/plans-tab";
 import { BillingTab } from "../components/settings/billing-tab";
 import { SubscriptionProvider } from "@/app/context/SubscriptionContext";
@@ -11,6 +11,18 @@ import { SubscriptionProvider } from "@/app/context/SubscriptionContext";
 type TabType = 'plans' | 'billing';
 
 export default function PaymentPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-purple-500" />
+      </div>
+    }>
+      <PaymentPageContent />
+    </Suspense>
+  );
+}
+
+function PaymentPageContent() {
   const t = useTranslations("dashboard.indivisual.payment");
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState<TabType>(

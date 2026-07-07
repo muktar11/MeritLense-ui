@@ -21,8 +21,11 @@ export interface AdminSubscription {
     unit_amount: string;
     currency: string;
     formatted_price: string;
+    billing_type: 'RECURRING' | 'ONE_TIME';
     interval: string;
     interval_count: number;
+    evaluation_tier?: 'FULL' | 'SCREENING' | 'BOTH' | null;
+    task_observation_enabled: boolean;
     features: Record<string, any>;
     feature_limits: Record<string, number>;
     is_active: boolean;

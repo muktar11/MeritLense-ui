@@ -1,6 +1,7 @@
 // src/app/[locale]/layout.tsx
 import { Geist, Geist_Mono } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
+import { setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { locales, rtlLocales, type Locale } from "@/config/locales";
 import "../globals.css";
@@ -38,6 +39,10 @@ export default async function LocaleLayout({
   if (!locales.includes(locale)) {
     notFound();
   }
+
+  // Required so next-intl resolves the locale from the static route param
+  // instead of request headers, which are unavailable during static export.
+  setRequestLocale(locale);
 
   const isRtl = rtlLocales.includes(locale);
 
