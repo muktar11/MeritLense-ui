@@ -11,6 +11,7 @@ interface UsageMeterProps {
 
 export function UsageMeter({ used, limit, label, unit = 'items' }: UsageMeterProps) {
   const percentage = (used / limit) * 100;
+  const remaining = Math.max(0, limit - used);
   const isNearLimit = percentage >= 80;
   const isAtLimit = percentage >= 100;
 
@@ -22,13 +23,14 @@ export function UsageMeter({ used, limit, label, unit = 'items' }: UsageMeterPro
 
   return (
     <div className="space-y-2">
-      <div className="flex justify-between text-sm">
+      <div className="flex justify-between text-sm items-baseline">
         <span className="text-gray-600">{label}</span>
-        <span className="font-medium">
-          {used} / {limit} {unit}
+        <span className="text-right">
+          <span className="font-semibold text-gray-900">{remaining} remaining</span>
+          <span className="text-gray-400"> ({used} / {limit} {unit} used)</span>
         </span>
       </div>
-      
+
       <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
         <div
           className={`h-full ${getColor()} transition-all duration-300`}

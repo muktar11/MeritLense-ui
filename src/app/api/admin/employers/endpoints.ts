@@ -1,10 +1,11 @@
 // app/api/admin/employers/service.ts
-import { apiClient } from '@/app/api/auth/client';
+import { apiClient, apiFormDataClient } from '@/app/api/auth/client';
 import {
   Employer,
   UpdateEmployerStatusData,
   PaginatedResponse
 } from './types';
+import type { B2CRegistrationData, B2BRegistrationData } from '@/app/api/auth/auth';
 import { API_BASE_URL } from '@/lib/config/env';
 
 class EmployerService {
@@ -47,6 +48,40 @@ class EmployerService {
   async updateEmployerStatus(userId: number, data: UpdateEmployerStatusData): Promise<{ message: string; user: Employer }> {
     this.ensureAuthToken();
     const response = await apiClient.patch(`${this.baseURL}/${userId}`, data);
+    return response.data;
+  }
+
+  // Admin: create a new individual (B2C) employer account
+  async createEmployerB2C(data: B2CRegistrationData): Promise<{ message: string; employer: Employer }> {
+    this.ensureAuthToken();
+    const formData = new FormData();
+
+    Object.entries(data).forEach(([key, value]) => {
+      if (value instanceof File) {
+        formData.append(key, value);
+      } else if (value !== undefined && value !== null) {
+        formData.append(key, String(value));
+      }
+    });
+
+    const response = await apiFormDataClient.post(`${this.baseURL}/create/b2c`, formData);
+    return response.data;
+  }
+
+  // Admin: create a new company (B2B) employer account
+  async createEmployerB2B(data: B2BRegistrationData): Promise<{ message: string; employer: Employer }> {
+    this.ensureAuthToken();
+    const formData = new FormData();
+
+    Object.entries(data).forEach(([key, value]) => {
+      if (value instanceof File) {
+        formData.append(key, value);
+      } else if (value !== undefined && value !== null && value !== '') {
+        formData.append(key, String(value));
+      }
+    });
+
+    const response = await apiFormDataClient.post(`${this.baseURL}/create/b2b`, formData);
     return response.data;
   }
 

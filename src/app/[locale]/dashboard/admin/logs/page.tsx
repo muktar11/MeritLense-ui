@@ -149,7 +149,7 @@ export default function AuditLog() {
     }
   }
 
-  const handleVerifyDocuments = async (userId: number, notes: string) => {
+  const handleVerifyDocuments = async (userId: string, notes: string) => {
     await auditService.verifyDocuments({
       user_id: userId,
       status: 'APPROVED',
@@ -159,7 +159,7 @@ export default function AuditLog() {
     await fetchAuditLogs()
   }
 
-  const handleRejectDocuments = async (userId: number, reason: string, notes: string) => {
+  const handleRejectDocuments = async (userId: string, reason: string, notes: string) => {
     await auditService.rejectDocuments({
       user_id: userId,
       rejection_reason: reason,

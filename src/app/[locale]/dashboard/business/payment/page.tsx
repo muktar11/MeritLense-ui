@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { CreditCard, History } from "lucide-react";
 import { PlansTab } from "../components/plans-tab";
@@ -11,7 +12,10 @@ type TabType = 'plans' | 'billing';
 
 export default function PaymentPage() {
   const t = useTranslations("dashboard.indivisual.payment");
-  const [activeTab, setActiveTab] = useState<TabType>('plans');
+  const searchParams = useSearchParams();
+  const [activeTab, setActiveTab] = useState<TabType>(
+    () => (searchParams.get("tab") as TabType) || 'plans'
+  );
 
   const tabs = [
     { id: 'plans', label: t('tabs.plans'), icon: CreditCard },

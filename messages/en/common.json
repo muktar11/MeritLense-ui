@@ -14,18 +14,18 @@
     },
     "hero": {
       "badge": "AI-Powered Evaluation Platform",
-      "title_part1": "Discover Talent with Clarity",
-      "title_part2_ai_power": "Powered by AI",
-      "description": "MeritLens is your smart evaluation platform that helps you choose the right person with confidence and ease.",
+      "title_part1": "AI-Powered",
+      "title_part2_ai_power": "Workforce Assessment Platform",
+      "description": "Evaluate candidates objectively. Certify readiness. Support smarter hiring decisions.",
       "cta_start_evaluating": "Start Evaluating Smarter",
       "cta_explore_platform": "Explore the Platform",
       "image_alt": "MeritLense Dashboard Preview"
     },
     "stats": {
-      "active_users": "hiring entities",
-      "evaluations": "Evaluations",
-      "countries": "Countries",
-      "success_rate": "User Satisfaction"
+      "role_packages": "Role Assessment Packages",
+      "workforce_sectors": "Workforce Sectors",
+      "voice_evaluation": "AI-Powered Voice Evaluation",
+      "multilingual_gcc": "Multilingual & GCC-Ready"
     },
     "features": {
       "section_title": "Why Choose MeritLense?",
@@ -34,13 +34,13 @@
         "title": "Smart evaluations tailored to your needs",
         "description": "Create professional assessments once and apply them across multiple roles with ease. Add video intros, real-world simulations, and AI-powered behavioral analysis — for a clear, comprehensive view of every candidate.",
         "list_item1": "Reusable evaluation templates",
-        "list_item2": "AI-powered behavioral analysis",
+        "list_item2": "AI-assisted behavioral and communication insights",
         "list_item3": "Custom skill assessments",
         "image_alt": "Smart Evaluations Dashboard"
       },
       "predictive_reporting": {
         "title": "Predictive Reports — See Beyond the Numbers for Smarter Hiring",
-        "description": "Take your hiring decisions to the next level with our intelligent predictive analytics. Using advanced AI-powered algorithms, MeritLens helps you forecast candidate stability, retention likelihood, and cultural fit — before you hire.",
+        "description": "Take your hiring decisions to the next level with our intelligent predictive analytics. Using advanced AI-powered algorithms, MeritLense helps you forecast candidate stability, retention likelihood, and cultural fit — before you hire.",
         "list_item1": "Job stability predictions",
         "list_item2": "Retention forecasting",
         "list_item3": "Cultural fit analysis",
@@ -56,8 +56,12 @@
       },
       "additional_features": [
         {
+          "title": "Role-Specific Assessment Framework",
+          "description": "21 role packages across 11 workforce sectors — structured competency evaluation per job title with multilingual voice assessment and AI-powered scoring."
+        },
+        {
           "title": "Legal Neutrality",
-          "description": "Objective, compliant evaluation tools that deliver accurate insights without biasing hiring decisions."
+          "description": "Legally neutral assessment methodology designed to support objective workforce decisions without replacing employer judgment."
         },
         {
           "title": "Multilingual Support",
@@ -73,7 +77,7 @@
         },
         {
           "title": "Trusted Certifications",
-          "description": "Issue AI-backed certificates with QR codes for instant verification and high credibility."
+          "description": "QR-verifiable workforce assessment certificates — issued per role, multilingual, instantly scannable."
         },
         {
           "title": "Seamless Team Collaboration",
@@ -131,7 +135,7 @@
             ]
           },
           {
-            "name": "Pro",
+            "name": "Advanced",
             "candidates_count": "10 candidates",
             "features": [
               "Everything in Essential",
@@ -141,7 +145,7 @@
             ]
           },
           {
-            "name": "Elite",
+            "name": "Premium",
             "candidates_count": "20 candidates",
             "features": [
               "Everything in Pro",
@@ -179,7 +183,7 @@
           },
           {
             "name": "Business",
-            "candidates_count": "100 evaluations/mo",
+            "candidates_count": "500 evaluations/mo",
             "features": [
               "Everything in Growth",
               "Benchmarking",
@@ -209,7 +213,7 @@
     },
     "footer": {
       "logo_alt": "MeritLense Logo",
-      "mission_statement": "MeritLens equips recruitment entities—whether individual employers, licensed agencies, or HR teams—with AI-powered tools to evaluate candidates objectively, uncover hidden strengths, and make confident hiring decisions based on data, not assumptions.",
+      "mission_statement": "MeritLense equips employers, agencies, and HR teams with AI-powered tools to evaluate candidates objectively — based on data, not assumptions.",
       "links_section_title": "Quick Links",
       "link_features": "Features",
       "link_how_it_works": "How It Works",
@@ -454,7 +458,8 @@
           "audit_logs": "Audit Logs",
           "settings": "Settings",
           "api_settings": "Payment Package",
-          "multi_agency_panel": "Billing ans Subscription"
+          "multi_agency_panel": "Billing ans Subscription",
+          "package_management": "Package Management"
         }
 ,
       "overview_page": {
@@ -472,7 +477,12 @@
           "totalUsers": "Total Users",
           "activeAgencies": "Active Agencies",
           "totalEvaluations": "Total Evaluations",
-          "revenue": "Monthly Revenue"
+          "revenue": "Monthly Revenue",
+          "currentlyActive": "Currently active",
+          "userBreakdown": "{b2c} B2C · {b2b} B2B",
+          "verifiedAgencies": "Verified agencies",
+          "completedPercent": "{value}% completed",
+          "activeSubscriptions": "{value} active subscriptions"
         },
          "charts": {
          "systemLoadTrend": "System Load Trend",
@@ -1144,7 +1154,12 @@
             "growth": "+{value}% growth",
             "negativeMonthly": "-{value}% monthly",
             "used": "{value} used",
-            "increase": "+{value}% increase"
+            "increase": "+{value}% increase",
+            "totalEvaluations": "{value} total evaluations",
+            "evalsPerCandidate": "{value} evaluations per candidate",
+            "certifiedRate": "{value}% of completed certified",
+            "activeTeam": "Active team members",
+            "basedOnEvaluations": "Based on {value} evaluations"
           }
         },
       "alerts": {
@@ -1964,7 +1979,10 @@
           "thisMonth": "this month",
           "thisMonthIncrease": "+{value}% this month",
           "usedThisMonth": "{value}% used this month",
-          "increase": "{value}% increase"
+          "increase": "{value}% increase",
+          "totalEvaluations": "{value} total evaluations",
+          "basedOnEvaluations": "Based on {value} evaluations",
+          "noActivePlan": "No active plan"
         },
         "quickAction": "Quick Action",
         "buyPoints": "Buy {value} points",

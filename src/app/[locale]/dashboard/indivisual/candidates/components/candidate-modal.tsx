@@ -36,7 +36,8 @@ export function CandidateModal({
   mode,
   candidate,
   onSuccess,
-  userRole = 'B2C'}: CandidateModalProps) {
+  userRole = 'B2C',
+  currentUserId}: CandidateModalProps) {
   const t = useTranslations("dashboard.candidates.modal")
   
   const [formData, setFormData] = useState<CandidateFormData>({
@@ -237,8 +238,8 @@ export function CandidateModal({
   const isViewMode = mode === 'view'
   const isEditMode = mode === 'edit'
   const isCreateMode = mode === 'create'
-  const canEdit = (isCreateMode || isEditMode) && 
-    (userRole !== 'B2B_TEAM_MEMBER' || candidate?.created_by === candidate?.id)
+  const canEdit = (isCreateMode || isEditMode) &&
+    (userRole !== 'B2B_TEAM_MEMBER' || candidate?.created_by === currentUserId)
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -624,7 +625,7 @@ export function CandidateModal({
                   )}
 
                   <div className="flex justify-end gap-3 pt-4 border-t sticky bottom-0 bg-white pb-2">
-                    {isViewMode && candidate?.created_by === candidate?.id && (
+                    {isViewMode && candidate?.created_by === currentUserId && (
                       <button
                         type="button"
                         onClick={handleDelete}

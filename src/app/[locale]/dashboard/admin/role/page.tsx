@@ -60,8 +60,8 @@ export default function UserRoleManagement() {
       const response = await adminUserService.getAdminUsers({
         page: currentPage,
         page_size: pageSize,
-        role: roleFilter || undefined,
-        is_active: statusFilter ? statusFilter === 'active' : undefined,
+        role: roleFilter && roleFilter !== 'all' ? roleFilter : undefined,
+        is_active: statusFilter && statusFilter !== 'all' ? statusFilter === 'active' : undefined,
         search: searchTerm || undefined
       })
       setUsers(response.results)

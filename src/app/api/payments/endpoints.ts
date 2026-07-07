@@ -21,7 +21,7 @@ import {
 import { API_BASE_URL } from '@/lib/config/env';
 
 class PaymentService {
-  private baseURL = `${API_BASE_URL}/payments`;
+  private baseURL = `${API_BASE_URL}/payments/`;
 
   private ensureAuthToken() {
     const token = localStorage.getItem('accessToken');
@@ -40,7 +40,7 @@ class PaymentService {
     return response.data;
   }
 
-  async getPrice(id: number): Promise<Price> {
+  async getPrice(id: string): Promise<Price> {
     this.ensureAuthToken();
     const response = await apiClient.get(`${this.baseURL}prices/${id}`);
     return response.data;
@@ -141,7 +141,7 @@ class PaymentService {
     }
   }
 
-  async getUpcomingInvoice(id: number, params?: { price_id?: number; quantity?: number }): Promise<UpcomingInvoiceResponse> {
+  async getUpcomingInvoice(id: number, params?: { price_id?: string; quantity?: number }): Promise<UpcomingInvoiceResponse> {
     this.ensureAuthToken();
     const response = await apiClient.get(`${this.baseURL}subscriptions/${id}/upcoming_invoice`, { params });
     return response.data;

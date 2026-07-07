@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState, useMemo } from "react";
 import { useInView } from "react-intersection-observer";
+import { Mic, Globe2 } from "lucide-react";
 
 function useCountUp(target: number, durationMs = 1200, start = false) {
   const [value, setValue] = useState(0);
@@ -36,25 +37,34 @@ export function Stats() {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.2 });
   const t = useTranslations("landing-page.stats");
 
-  const stats = useMemo(() => [
-    { label: "active_users", value: 10000, suffix: "+" },
-    { label: "evaluations", value: 50000, suffix: "+" },
-    { label: "countries", value: 25, suffix: "+" },
-    { label: "success_rate", value: 95, suffix: "%" },
+  const numberStats = useMemo(() => [
+    { label: "role_packages", value: 21, suffix: "" },
+    { label: "workforce_sectors", value: 11, suffix: "" },
   ], []);
 
-  const animatedValues = stats.map(stat => useCountUp(stat.value, 1200, inView));
+  const iconStats = useMemo(() => [
+    { label: "voice_evaluation", icon: Mic },
+    { label: "multilingual_gcc", icon: Globe2 },
+  ], []);
+
+  const animatedValues = numberStats.map(stat => useCountUp(stat.value, 1200, inView));
   const numberFmt = new Intl.NumberFormat();
 
   return (
     <section ref={ref} className="py-20 bg-gray-50">
       <div className="container mx-auto px-6 lg:px-12">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-12">
-          {stats.map((stat, idx) => (
+          {numberStats.map((stat, idx) => (
             <div key={stat.label} className="text-center">
               <div className="text-4xl lg:text-5xl font-bold text-foreground mb-2 tabular-nums">
                 {numberFmt.format(animatedValues[idx])}{stat.suffix}
               </div>
+              <div className="text-foreground-muted">{t(stat.label)}</div>
+            </div>
+          ))}
+          {iconStats.map((stat) => (
+            <div key={stat.label} className="text-center flex flex-col items-center">
+              <stat.icon className="h-10 w-10 lg:h-12 lg:w-12 text-primary mb-2" />
               <div className="text-foreground-muted">{t(stat.label)}</div>
             </div>
           ))}

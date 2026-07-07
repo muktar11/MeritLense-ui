@@ -18,6 +18,7 @@ import {
 import { Plus, Archive, Upload, Search, Loader2, ChevronLeft, ChevronRight, Eye } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { EmployerDetailModal } from "./components/employer-detail-modal"
+import { AddEmployerModal } from "./components/add-employer-modal"
 import employerService from "@/app/api/admin/employers/endpoints"
 import type { Employer } from "@/app/api/admin/employers/types"
 import { format } from "date-fns"
@@ -50,6 +51,7 @@ export default function CandidateManagementConsole() {
   const [loading, setLoading] = useState(true)
   const [selectedEmployer, setSelectedEmployer] = useState<Employer | null>(null)
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   
   // Filters
   const [searchTerm, setSearchTerm] = useState("")
@@ -72,9 +74,9 @@ export default function CandidateManagementConsole() {
       const response = await employerService.getEmployers({
         page: currentPage,
         page_size: pageSize,
-        role: roleFilter || undefined,
-        verification_status: verificationFilter || undefined,
-        documents_verified: docVerifiedFilter ? docVerifiedFilter === 'true' : undefined,
+        role: roleFilter && roleFilter !== 'all' ? roleFilter : undefined,
+        verification_status: verificationFilter && verificationFilter !== 'all' ? verificationFilter : undefined,
+        documents_verified: docVerifiedFilter && docVerifiedFilter !== 'all' ? docVerifiedFilter === 'true' : undefined,
         search: searchTerm || undefined,
         ordering: '-created_at'
       })
@@ -113,7 +115,10 @@ export default function CandidateManagementConsole() {
               {t("quickActions.title")}
             </span>
 
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white gap-2">
+            <Button
+              onClick={() => setIsAddModalOpen(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white gap-2"
+            >
               <Plus className="w-4 h-4" />
               {t("quickActions.add")}
             </Button>
@@ -312,6 +317,13 @@ export default function CandidateManagementConsole() {
           setSelectedEmployer(null);
         }}
         employer={selectedEmployer}
+      />
+
+      {/* Add Employer Modal */}
+      <AddEmployerModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSuccess={fetchEmployers}
       />
     </div>
   )

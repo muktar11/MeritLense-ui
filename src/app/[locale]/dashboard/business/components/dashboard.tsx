@@ -19,9 +19,10 @@ import { RecentActivityTable } from "./recent-activity-table";
 import { EvaluationTrendChart } from "./evaluation-trend-chart";
 import { StatusDistributionChart } from "./status-distribution-chart";
 import b2bDashboardService from "@/app/api/dashboard/b2b/endpoints";
-import type { 
-  DashboardStats, 
-  RecentEvaluation, 
+import paymentService from "@/app/api/payments/endpoints";
+import type {
+  DashboardStats,
+  RecentEvaluation,
   ScoreDistribution,
   EvaluationTrend,
   LanguageDistribution,
@@ -29,6 +30,7 @@ import type {
   EvaluationStatusDistribution,
   MonthlyActivity
 } from "@/app/api/dashboard/b2b/types";
+import type { Subscription } from "@/app/api/payments/types";
 import { Loader2 } from "lucide-react";
 
 export function Dashboard() {
@@ -44,6 +46,7 @@ export function Dashboard() {
   const [performanceMetrics, setPerformanceMetrics] = useState<PerformanceMetric[]>([]);
   const [statusDistribution, setStatusDistribution] = useState<EvaluationStatusDistribution[]>([]);
   const [monthlyActivity, setMonthlyActivity] = useState<MonthlyActivity[]>([]);
+  const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
@@ -86,6 +89,23 @@ export function Dashboard() {
     } finally {
       setLoading(false);
     }
+
+    fetchSubscription();
+  };
+
+  const fetchSubscription = async () => {
+    try {
+      const activeSubscriptions = await paymentService.getActiveSubscriptions();
+      if (activeSubscriptions.length > 0) {
+        const fullSubscription = await paymentService.getSubscription(activeSubscriptions[0].id);
+        setSubscription(fullSubscription);
+      } else {
+        setSubscription(null);
+      }
+    } catch (error) {
+      console.error('Failed to fetch subscription:', error);
+      setSubscription(null);
+    }
   };
 
   if (loading) {
@@ -116,21 +136,35 @@ export function Dashboard() {
     value: item.percentage
   }));
 
+  const evalsPerCandidate = stats && stats.total_candidates > 0
+    ? (stats.total_evaluations / stats.total_candidates).toFixed(1)
+    : "0";
+
+  const certifiedRate = stats && stats.completed_evaluations > 0
+    ? Math.round((stats.certificates_issued / stats.completed_evaluations) * 100)
+    : 0;
+
   return (
     <div dir={locale === "ar" ? "rtl" : "ltr"} className="min-h-screen bg-[#f8f9fc]">
       {/* Package Banner */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 px-4 sm:px-6 py-3">
-        <div className="bg-amber-400 text-amber-900 px-4 py-1.5 rounded-full text-sm font-medium">
-          {t("package.expires", { days: 7 })}
+      {subscription && subscription.days_remaining > 0 && (
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 px-4 sm:px-6 py-3">
+          <div className="bg-amber-400 text-amber-900 px-4 py-1.5 rounded-full text-sm font-medium">
+            {t("package.expires", { days: subscription.days_remaining })}
+          </div>
+
+          <Button
+            size="sm"
+            className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-4 h-8"
+          >
+            {t("package.renew")}
+          </Button>
+
+          <div className="flex-1" />
         </div>
+      )}
 
-        <Button
-          size="sm"
-          className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-4 h-8"
-        >
-          {t("package.renew")}
-        </Button>
-
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 px-4 sm:px-6 py-3">
         <div className="flex-1" />
 
         <div className="relative w-full sm:w-auto">
@@ -153,16 +187,16 @@ export function Dashboard() {
             <MetricCard
               title={t("metrics.evaluationsCompleted")}
               value={stats.completed_evaluations.toString()}
-              change={t("metrics.changes.growth", { value: Math.round(stats.success_rate) })}
-              changeType="positive"
+              change={t("metrics.changes.totalEvaluations", { value: stats.total_evaluations })}
+              changeType="neutral"
               icon="clipboard"
             />
 
             <MetricCard
               title={t("metrics.activeCandidates")}
               value={stats.total_candidates.toString()}
-              change={t("metrics.changes.growth", { value: 6 })}
-              changeType="positive"
+              change={t("metrics.changes.evalsPerCandidate", { value: evalsPerCandidate })}
+              changeType="neutral"
               icon="users"
               highlight
             />
@@ -170,15 +204,15 @@ export function Dashboard() {
             <MetricCard
               title={t("metrics.certificatesIssued")}
               value={stats.certificates_issued.toString()}
-              change={t("metrics.changes.negativeMonthly", { value: 5 })}
-              changeType="negative"
+              change={t("metrics.changes.certifiedRate", { value: certifiedRate })}
+              changeType="neutral"
               icon="certificate"
             />
 
             <MetricCard
               title={t("metrics.teamMembers")}
               value={stats.team_members_count.toString()}
-              change={t("metrics.changes.used", { value: 0 })}
+              change={t("metrics.changes.activeTeam")}
               changeType="neutral"
               icon="users"
             />
@@ -186,8 +220,8 @@ export function Dashboard() {
             <MetricCard
               title={t("metrics.successRate")}
               value={`${stats.success_rate}%`}
-              change={t("metrics.changes.increase", { value: Math.round(stats.success_rate - 60) })}
-              changeType="positive"
+              change={t("metrics.changes.basedOnEvaluations", { value: stats.completed_evaluations })}
+              changeType="neutral"
               icon="trending"
             />
 

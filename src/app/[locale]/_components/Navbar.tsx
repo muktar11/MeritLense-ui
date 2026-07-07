@@ -21,11 +21,11 @@ export function Navbar() {
         {/* Logo */}
         <Link href={withLocale("/")} className="flex items-center space-x-3">
           <Image
-            src="/logo.svg"
+            src="/meritlense-logo-v2-stacked.svg"
             alt={t("logo_alt")}
-            width={150}
-            height={40}
-            className="h-12 w-32"
+            width={278}
+            height={174}
+            className="h-14 w-auto"
             priority
           />
         </Link>

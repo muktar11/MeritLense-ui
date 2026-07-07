@@ -25,6 +25,13 @@ export interface B2BProfileData {
   preferred_language?: string
 }
 
+export interface AdminProfileData {
+  first_name: string
+  last_name: string
+  department?: string
+  phone_number?: string
+}
+
 export interface ChangePasswordData {
   current_password: string
   new_password: string
@@ -46,7 +53,7 @@ export const profileAPI = {
     return response.data
   },
 
-  updateProfile: async (data: B2CProfileData | B2BProfileData) => {
+  updateProfile: async (data: B2CProfileData | B2BProfileData | AdminProfileData) => {
     const response = await profileClient.patch('/me', data)
     return response.data
   },

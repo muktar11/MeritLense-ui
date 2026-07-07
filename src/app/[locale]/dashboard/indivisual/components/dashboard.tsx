@@ -14,15 +14,17 @@ import { CandidateComparison } from "./candidate-comparison"
 import { StatusDistributionChart } from "./status-distribution-chart"
 import { useTranslations } from "next-intl"
 import b2cDashboardService from "@/app/api/dashboard/b2c/endpoints"
-import type { 
-  DashboardStats, 
-  RecentCandidate, 
+import paymentService from "@/app/api/payments/endpoints"
+import type {
+  DashboardStats,
+  RecentCandidate,
   RecentEvaluation,
   EvaluationTimeRange,
   EvaluationStatusDistribution,
   JobRoleDistribution,
   ScoreTrend
 } from "@/app/api/dashboard/b2c/types"
+import type { Subscription } from "@/app/api/payments/types"
 import { ScoreTrendChart } from "./score-trend-chart"
 
 export function Dashboard() {
@@ -36,6 +38,7 @@ export function Dashboard() {
   const [statusDistribution, setStatusDistribution] = useState<EvaluationStatusDistribution[]>([])
   const [jobRoleDistribution, setJobRoleDistribution] = useState<JobRoleDistribution[]>([])
   const [scoreTrend, setScoreTrend] = useState<ScoreTrend[]>([])
+  const [subscription, setSubscription] = useState<Subscription | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [activeTab, setActiveTab] = useState<"scheduled" | "inProgress" | "completed">("inProgress")
 
@@ -74,13 +77,30 @@ export function Dashboard() {
       setStatusDistribution(statusData)
       setJobRoleDistribution(jobRoleData)
       setScoreTrend(scoreTrendData)
-      
+
       // Fetch initial evaluations
       await fetchEvaluationsByStatus()
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error)
     } finally {
       setLoading(false)
+    }
+
+    fetchSubscription()
+  }
+
+  const fetchSubscription = async () => {
+    try {
+      const activeSubscriptions = await paymentService.getActiveSubscriptions()
+      if (activeSubscriptions.length > 0) {
+        const fullSubscription = await paymentService.getSubscription(activeSubscriptions[0].id)
+        setSubscription(fullSubscription)
+      } else {
+        setSubscription(null)
+      }
+    } catch (error) {
+      console.error('Failed to fetch subscription:', error)
+      setSubscription(null)
     }
   }
 
@@ -105,14 +125,21 @@ export function Dashboard() {
     )
   }
 
+  const evaluationUsage = subscription?.usage_percentages?.["evaluation_limit"]
+  const remainingPoints = evaluationUsage
+    ? Math.max(0, evaluationUsage.limit - evaluationUsage.used)
+    : null
+
   return (
     <div className="min-h-screen bg-background">
       {/* Package Banner */}
-      <div className="bg-yellow-400 text-black px-4 sm:px-6 py-2 flex items-center">
-        <span className="font-semibold text-xs sm:text-sm">
-          📦 {t("packageExpires", { days: 7 })}
-        </span>
-      </div>
+      {subscription && subscription.days_remaining > 0 && (
+        <div className="bg-yellow-400 text-black px-4 sm:px-6 py-2 flex items-center">
+          <span className="font-semibold text-xs sm:text-sm">
+            📦 {t("packageExpires", { days: subscription.days_remaining })}
+          </span>
+        </div>
+      )}
 
       {/* Header */}
       <header className="border-b bg-card p-4 sm:p-6">
@@ -150,7 +177,7 @@ export function Dashboard() {
             <MetricCard
               title={t("metrics.evaluationsCompleted")}
               value={stats.completed_evaluations.toString()}
-              change={t("metrics.thisMonthIncrease", { value: 2 })}
+              change={t("metrics.totalEvaluations", { value: stats.total_evaluations })}
               icon="📋"
             />
             <MetricCard
@@ -161,14 +188,18 @@ export function Dashboard() {
             />
             <MetricCard
               title={t("metrics.remainingPoints")}
-              value="1200"
-              change={t("metrics.usedThisMonth", { value: 8 })}
+              value={remainingPoints !== null ? remainingPoints.toString() : "-"}
+              change={
+                evaluationUsage
+                  ? t("metrics.usedThisMonth", { value: Math.round(evaluationUsage.percentage) })
+                  : t("metrics.noActivePlan")
+              }
               icon="🎯"
             />
             <MetricCard
               title={t("metrics.successRate")}
               value={`${stats.success_rate}%`}
-              change={t("metrics.increase", { value: Math.round(stats.success_rate - 60) })}
+              change={t("metrics.basedOnEvaluations", { value: stats.completed_evaluations })}
               icon="📈"
             />
 

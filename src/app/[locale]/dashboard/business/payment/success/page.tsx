@@ -4,29 +4,22 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CheckCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useSubscription } from "@/app/context/SubscriptionContext";
 
 export default function PaymentSuccessPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { refreshSubscription } = useSubscription();
   const [loading, setLoading] = useState(true);
-  
+
   const type = searchParams.get('type') || 'subscription';
 
   useEffect(() => {
-    const handleSuccess = async () => {
-      await refreshSubscription();
-      
-      setTimeout(() => {
-        router.push('/dashboard/individual/settings?tab=billing');
-      }, 3000);
-      
-      setLoading(false);
-    };
+    setLoading(false);
+    const timer = setTimeout(() => {
+      router.push('/dashboard/business/payment?tab=billing');
+    }, 3000);
 
-    handleSuccess();
-  }, [refreshSubscription, router]);
+    return () => clearTimeout(timer);
+  }, [router]);
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -66,7 +59,7 @@ export default function PaymentSuccessPage() {
               </Link>
               
               <Link
-                href="/dashboard/individual/settings?tab=billing"
+                href="/dashboard/business/payment?tab=billing"
                 className="block w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
               >
                 View Billing Details

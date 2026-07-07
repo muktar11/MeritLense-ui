@@ -117,7 +117,7 @@ export default function AdminProfileSettings() {
     const success = await updateProfile({
       first_name: profileForm.first_name,
       last_name: profileForm.last_name,
-      industry: profileForm.department,
+      department: profileForm.department,
       phone_number: profileForm.phone_number,
     })
 

@@ -1,13 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import DashboardHeader from "../components/dashboard-header";
 import SettingsTabs from "../components/settings-tabs";
 import { useTranslations } from "next-intl";
 
 export default function SettingsPage() {
   const t = useTranslations("dashboard.indivisual.profile");
-  const [activeTab, setActiveTab] = useState("profile");
+  const searchParams = useSearchParams();
+  const [activeTab, setActiveTab] = useState(() => searchParams.get("tab") || "profile");
 
   return (
     <div className="min-h-screen bg-gray-50">

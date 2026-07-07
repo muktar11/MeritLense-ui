@@ -5,6 +5,7 @@ import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Breadcrumb } from "@/components/app/Breadcrumb";
 import { LanguageSelector } from "@/components/app/LanguageSelector";
 import AuthGuard from "@/components/auth/AuthGuard";
+import { useAuth } from "@/app/hooks/useAuth";
 import { useTranslations, useLocale } from "next-intl";
 
 import {
@@ -17,6 +18,7 @@ import {
   Network,
   UserCheck,
   SlidersHorizontal,
+  Package,
 } from "lucide-react";
 
 // Optional: locale code → human-readable name map
@@ -32,6 +34,7 @@ export default function AdminLayout({
 }) {
   const t = useTranslations("dashboard.admin");
   const locale = useLocale(); // ✅ current locale
+  const { userRole } = useAuth();
 
   const ADMIN_SIDEBAR_ITEMS = useMemo(
     () => [
@@ -40,6 +43,12 @@ export default function AdminLayout({
         icon: LayoutDashboard,
         href: `/${locale}/dashboard/admin`,
       },
+
+      ...(userRole === 'SUPERADMIN' ? [{
+        label: t("pages_list.package_management"),
+        icon: Package,
+        href: `/${locale}/dashboard/admin/packages`,
+      }] : []),
 
       {
         label: t("pages_list.user_management"),
@@ -84,7 +93,7 @@ export default function AdminLayout({
 
       
     ],
-    [t, locale]
+    [t, locale, userRole]
   );
 
   return (

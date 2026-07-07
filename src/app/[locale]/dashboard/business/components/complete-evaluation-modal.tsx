@@ -9,13 +9,15 @@ interface CompleteEvaluationModalProps {
   onClose: () => void
   onSubmit: (data: { score?: number; feedback?: string; certificate_status?: string; certificate_url?: string }) => Promise<boolean>
   candidateName: string
+  certificateEnabled?: boolean
 }
 
 export default function CompleteEvaluationModal({
   isOpen,
   onClose,
   onSubmit,
-  candidateName
+  candidateName,
+  certificateEnabled = true,
 }: CompleteEvaluationModalProps) {
   const [formData, setFormData] = useState({
     score: "",
@@ -28,7 +30,7 @@ export default function CompleteEvaluationModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     const newErrors: Record<string, string> = {}
     if (formData.score && (Number(formData.score) < 0 || Number(formData.score) > 100)) {
       newErrors.score = "Score must be between 0 and 100"
@@ -43,11 +45,15 @@ export default function CompleteEvaluationModal({
     const success = await onSubmit({
       score: formData.score ? Number(formData.score) : undefined,
       feedback: formData.feedback || undefined,
-      certificate_status: formData.certificate_status,
-      certificate_url: formData.certificate_url || undefined
+      ...(certificateEnabled
+        ? {
+            certificate_status: formData.certificate_status,
+            certificate_url: formData.certificate_url || undefined,
+          }
+        : {}),
     })
     setSubmitting(false)
-    
+
     if (success) {
       onClose()
     }
@@ -58,7 +64,7 @@ export default function CompleteEvaluationModal({
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
       <div className="fixed inset-0 bg-black/50 pointer-events-auto" onClick={onClose} />
-      
+
       <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md pointer-events-auto relative">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-bold text-gray-900">Complete Evaluation</h3>
@@ -103,36 +109,40 @@ export default function CompleteEvaluationModal({
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Certificate Status
-            </label>
-            <select
-              value={formData.certificate_status}
-              onChange={(e) => setFormData({ ...formData, certificate_status: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-            >
-              {CERTIFICATE_STATUS.map(status => (
-                <option key={status.value} value={status.value}>
-                  {status.label}
-                </option>
-              ))}
-            </select>
-          </div>
+          {certificateEnabled && (
+            <>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Certificate Status
+                </label>
+                <select
+                  value={formData.certificate_status}
+                  onChange={(e) => setFormData({ ...formData, certificate_status: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                >
+                  {CERTIFICATE_STATUS.map(status => (
+                    <option key={status.value} value={status.value}>
+                      {status.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-          {formData.certificate_status === 'ISSUED' && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Certificate URL
-              </label>
-              <input
-                type="url"
-                value={formData.certificate_url}
-                onChange={(e) => setFormData({ ...formData, certificate_url: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                placeholder="https://..."
-              />
-            </div>
+              {formData.certificate_status === 'ISSUED' && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Certificate URL
+                  </label>
+                  <input
+                    type="url"
+                    value={formData.certificate_url}
+                    onChange={(e) => setFormData({ ...formData, certificate_url: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                    placeholder="https://..."
+                  />
+                </div>
+              )}
+            </>
           )}
 
           <div className="flex justify-end gap-3 mt-6">

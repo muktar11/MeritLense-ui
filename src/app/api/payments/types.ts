@@ -53,7 +53,7 @@ export type InvoiceStatus = typeof INVOICE_STATUS[keyof typeof INVOICE_STATUS];
 export type CompanySize = typeof COMPANY_SIZE[keyof typeof COMPANY_SIZE];
 
 export interface Price {
-  id: number;
+  id: string;
   name: string;
   stripe_price_id: string;
   stripe_product_id: string;
@@ -64,13 +64,17 @@ export interface Price {
   unit_amount: number;
   currency: string;
   formatted_price: string;
+  billing_type: 'RECURRING' | 'ONE_TIME';
   interval: BillingInterval;
   interval_count: number;
+  evaluation_tier?: 'FULL' | 'SCREENING' | 'BOTH' | null;
+  task_observation_enabled: boolean;
   features: Record<string, any>;
   feature_limits: {
     candidate_limit?: number;
     evaluation_limit?: number;
     team_member_limit?: number;
+    points_granted?: number;
     [key: string]: number | undefined;
   };
   is_active: boolean;
@@ -219,7 +223,7 @@ export interface Invoice {
 }
 
 export interface CreatePaymentIntentRequest {
-  price_id?: number;
+  price_id?: string;
   amount?: number;
   currency?: string;
   payment_method_id?: string;
@@ -242,14 +246,14 @@ export interface AttachPaymentMethodRequest {
 }
 
 export interface CreateSubscriptionRequest {
-  price_id: number;
+  price_id: string;
   payment_method_id?: string;
   trial_period_days?: number;
   quantity?: number;
 }
 
 export interface ChangePlanRequest {
-  price_id: number;
+  price_id: string;
   prorate?: boolean;
 }
 

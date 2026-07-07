@@ -3,7 +3,7 @@
 import type React from "react"
 import { useState, useEffect } from "react"
 import { useTranslations } from "next-intl"
-import { X, Loader2, Calendar, MapPin, Video, FileText } from "lucide-react"
+import { X, Loader2, Calendar, MapPin, Video, FileText, AlertCircle } from "lucide-react"
 import { EVALUATION_TYPES, EVALUATION_STATUS, type Evaluation, type CreateEvaluationData } from "@/app/api/evaluations/types"
 import { format } from "date-fns"
 
@@ -18,6 +18,8 @@ interface EvaluationModalProps {
   evaluation?: Evaluation | null
   candidates?: Array<{ id: string; full_name: string; email: string; job_role: string }>
   userRole?: string
+  currentUserId?: string
+  errorMessage?: string | null
 }
 
 export default function EvaluationModal({
@@ -28,7 +30,9 @@ export default function EvaluationModal({
   mode,
   evaluation,
   candidates = [],
-  userRole = 'B2C'
+  userRole = 'B2C',
+  currentUserId,
+  errorMessage
 }: EvaluationModalProps) {
   const t = useTranslations("dashboard.indivisual.evaluations")
   
@@ -176,8 +180,8 @@ export default function EvaluationModal({
   const isCreateMode = mode === 'create'
   const isRescheduleMode = mode === 'reschedule'
   
-  const canEdit = (isCreateMode || isEditMode || isRescheduleMode) && 
-    (userRole !== 'B2B_TEAM_MEMBER' || evaluation?.created_by === evaluation?.id)
+  const canEdit = (isCreateMode || isEditMode || isRescheduleMode) &&
+    (userRole !== 'B2B_TEAM_MEMBER' || evaluation?.created_by === currentUserId)
 
   if (!isOpen) return null
 
@@ -334,6 +338,12 @@ export default function EvaluationModal({
 
         {(isCreateMode || isEditMode) && (
           <form onSubmit={handleSubmit} className="space-y-4">
+            {errorMessage && (
+              <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+                <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+                <span>{errorMessage}</span>
+              </div>
+            )}
             {isCreateMode && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">

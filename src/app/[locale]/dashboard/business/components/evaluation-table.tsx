@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Copy, Eye, Calendar, XCircle, CheckCircle, Edit } from "lucide-react"
+import { Copy, Eye, Calendar, XCircle, CheckCircle, Edit, Mic } from "lucide-react"
 import type { EvaluationListItem } from "@/app/api/evaluations/types"
 import { format } from "date-fns"
 
@@ -12,6 +12,7 @@ interface EvaluationTableProps {
   onComplete?: (evaluation: EvaluationListItem) => void
   onCancel?: (evaluation: EvaluationListItem) => void
   onReschedule?: (evaluation: EvaluationListItem) => void
+  onStartSession?: (evaluation: EvaluationListItem) => void
   userRole?: string
 }
 
@@ -41,13 +42,14 @@ function getInitials(name: string): string {
     .slice(0, 2)
 }
 
-export default function EvaluationTable({ 
-  data, 
+export default function EvaluationTable({
+  data,
   onViewDetails,
   onEdit,
   onComplete,
   onCancel,
   onReschedule,
+  onStartSession,
   userRole = 'B2C'
 }: EvaluationTableProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null)
@@ -114,7 +116,7 @@ export default function EvaluationTable({
                     >
                       <Eye className="w-4 h-4" />
                     </button>
-                    
+
                     {canEdit && (item.status === 'SCHEDULED' || item.status === 'RESCHEDULED') && (
                       <button
                         onClick={() => onEdit?.(item)}
@@ -124,7 +126,7 @@ export default function EvaluationTable({
                         <Edit className="w-4 h-4" />
                       </button>
                     )}
-                    
+
                     {canManage && item.status === 'SCHEDULED' && (
                       <button
                         onClick={() => onReschedule?.(item)}
@@ -134,7 +136,7 @@ export default function EvaluationTable({
                         <Calendar className="w-4 h-4" />
                       </button>
                     )}
-                    
+
                     {canManage && (item.status === 'SCHEDULED' || item.status === 'RESCHEDULED') && (
                       <button
                         onClick={() => onComplete?.(item)}
@@ -144,7 +146,7 @@ export default function EvaluationTable({
                         <CheckCircle className="w-4 h-4" />
                       </button>
                     )}
-                    
+
                     {canManage && (item.status === 'SCHEDULED' || item.status === 'RESCHEDULED') && (
                       <button
                         onClick={() => onCancel?.(item)}
@@ -154,7 +156,17 @@ export default function EvaluationTable({
                         <XCircle className="w-4 h-4" />
                       </button>
                     )}
-                    
+
+                    {onStartSession && item.status !== 'CANCELLED' && (
+                      <button
+                        onClick={() => onStartSession(item)}
+                        className="p-1 hover:bg-gray-100 rounded transition-colors text-gray-500 hover:text-indigo-600"
+                        title="Start AI Interview"
+                      >
+                        <Mic className="w-4 h-4" />
+                      </button>
+                    )}
+
                     {(item.status === 'SCHEDULED' || item.status === 'RESCHEDULED') && (
                       <button
                         onClick={() => handleCopyMeetingLink(item)}

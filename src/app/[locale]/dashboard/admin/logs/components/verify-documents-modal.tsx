@@ -12,8 +12,8 @@ interface VerifyDocumentsModalProps {
   isOpen: boolean;
   onClose: () => void;
   user: PendingVerificationUser | null;
-  onVerify: (userId: number, notes: string) => Promise<void>;
-  onReject: (userId: number, reason: string, notes: string) => Promise<void>;
+  onVerify: (userId: string, notes: string) => Promise<void>;
+  onReject: (userId: string, reason: string, notes: string) => Promise<void>;
 }
 
 export function VerifyDocumentsModal({ 

@@ -325,7 +325,9 @@ export default function BillingAndSubscriptions() {
                             <div>
                               <p className="font-medium">{sub.price_details?.name || 'Unknown'}</p>
                               <p className="text-xs text-gray-500">
-                                {sub.price_details?.interval?.toLowerCase() || 'monthly'}
+                                {sub.price_details?.billing_type === 'ONE_TIME'
+                                  ? 'one-time'
+                                  : (sub.price_details?.interval?.toLowerCase() || 'monthly')}
                               </p>
                             </div>
                           </TableCell>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { Download, Loader2, Building2 } from "lucide-react";
+import { Download, Loader2 } from "lucide-react";
 import { useSubscription } from "@/app/context/SubscriptionContext";
 import paymentService from "@/app/api/payments/endpoints";
 import type { PaymentMethod, Invoice } from "@/app/api/payments/types";
@@ -203,15 +203,6 @@ export function BillingTab() {
         </div>
       )}
 
-      <div className="bg-linear-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
-        <div className="flex items-center gap-3">
-          <Building2 className="w-5 h-5 text-blue-600" />
-          <p className="text-sm text-blue-800">
-            {t('companySubscription')}
-          </p>
-        </div>
-      </div>
-
       <div className="flex gap-2 mb-4 flex-wrap">
 
         <button
@@ -231,11 +222,6 @@ export function BillingTab() {
               <p className="text-sm text-gray-600">
                 {subscription.price_details?.name || subscription.stripe_price?.name || t('noActivePlan')} - {subscription.status_display}
               </p>
-              {subscription.company_name && (
-                <p className="text-xs text-gray-500 mt-1">
-                  Company: {subscription.company_name}
-                </p>
-              )}
             </div>
             <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm">
               {subscription.cancel_at_period_end ? t('cancelsAtPeriodEnd') : t('active')}
@@ -363,6 +349,7 @@ export function BillingTab() {
                 used={usage.usage_percentages.candidate_limit.used}
                 limit={usage.usage_percentages.candidate_limit.limit}
                 label={t('candidates')}
+                unit="candidates"
               />
             )}
             {usage.usage_percentages.evaluation_limit && (
@@ -370,6 +357,7 @@ export function BillingTab() {
                 used={usage.usage_percentages.evaluation_limit.used}
                 limit={usage.usage_percentages.evaluation_limit.limit}
                 label={t('evaluations')}
+                unit="evaluations"
               />
             )}
             {usage.usage_percentages.team_member_limit && (
@@ -377,8 +365,78 @@ export function BillingTab() {
                 used={usage.usage_percentages.team_member_limit.used}
                 limit={usage.usage_percentages.team_member_limit.limit}
                 label={t('teamMembers')}
+                unit="team members"
               />
             )}
+          </div>
+        </div>
+      )}
+
+      {showCancelModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+          <div className="fixed inset-0 bg-black/50 pointer-events-auto" onClick={() => setShowCancelModal(false)} />
+
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-md pointer-events-auto relative">
+            <div className="p-6">
+              <h3 className="text-lg font-bold text-gray-900 mb-4">Cancel Subscription</h3>
+
+              <p className="text-sm text-gray-600 mb-4">
+                Are you sure you want to cancel your subscription?
+                {cancelAtPeriodEnd
+                  ? ' You will continue to have access until the end of your billing period.'
+                  : ' Your subscription will be cancelled immediately.'}
+              </p>
+
+              <div className="mb-4">
+                <label className="flex items-center gap-2 mb-2">
+                  <input
+                    type="radio"
+                    checked={cancelAtPeriodEnd}
+                    onChange={() => setCancelAtPeriodEnd(true)}
+                    className="text-purple-600"
+                  />
+                  <span className="text-sm text-gray-700">
+                    Cancel at end of billing period (recommended)
+                  </span>
+                </label>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Reason for cancelling (optional)
+                </label>
+                <textarea
+                  value={cancelReason}
+                  onChange={(e) => setCancelReason(e.target.value)}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  placeholder="Tell us why you're cancelling..."
+                />
+              </div>
+
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => setShowCancelModal(false)}
+                  className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg text-sm hover:bg-gray-50"
+                >
+                  Keep Subscription
+                </button>
+                <button
+                  onClick={handleCancelSubscription}
+                  disabled={cancelling}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 disabled:opacity-50 flex items-center gap-2"
+                >
+                  {cancelling ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Cancelling...
+                    </>
+                  ) : (
+                    'Confirm Cancellation'
+                  )}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

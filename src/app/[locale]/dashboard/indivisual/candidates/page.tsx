@@ -305,6 +305,7 @@ export default function CandidateComparison() {
         mode={modalMode}
         onSuccess={handleModalSuccess}
         userRole={userRole || 'B2C'}
+        currentUserId={userId || undefined}
       />
 
       {selectedCandidate && (

@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
-import { profileAPI, B2CProfileData, B2BProfileData, ChangePasswordData } from './../api/profile/endpoints'
+import { profileAPI, B2CProfileData, B2BProfileData, AdminProfileData, ChangePasswordData } from './../api/profile/endpoints'
 
 interface UseProfileReturn {
   profile: any
   loading: boolean
   error: string | null
   fetchProfile: () => Promise<void>
-  updateProfile: (data: B2CProfileData | B2BProfileData) => Promise<boolean>
+  updateProfile: (data: B2CProfileData | B2BProfileData | AdminProfileData) => Promise<boolean>
   changePassword: (data: ChangePasswordData) => Promise<boolean>
   uploadDocument: (documentType: string, file: File) => Promise<boolean>
 }
@@ -33,7 +33,7 @@ export const useProfile = (): UseProfileReturn => {
     fetchProfile()
   }, [])
 
-  const updateProfile = async (data: B2CProfileData | B2BProfileData): Promise<boolean> => {
+  const updateProfile = async (data: B2CProfileData | B2BProfileData | AdminProfileData): Promise<boolean> => {
     setLoading(true)
     setError(null)
     try {

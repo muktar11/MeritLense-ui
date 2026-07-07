@@ -47,7 +47,9 @@ const StatCard = ({ title, value, change, icon: Icon, trend, iconColor }: any) =
             <p className="text-2xl font-bold text-gray-900">{value}</p>
             <Icon className={`w-5 h-5 ${iconColor}`} />
           </div>
-          <p className={`text-xs font-medium ${trend === "up" ? "text-green-500" : "text-red-500"}`}>{change}</p>
+          <p className={`text-xs font-medium ${
+            trend === "up" ? "text-green-500" : trend === "down" ? "text-red-500" : "text-gray-500"
+          }`}>{change}</p>
         </div>
       </div>
     </CardContent>
@@ -151,31 +153,35 @@ const systemLoadChartData = systemLoad
             <StatCard
               title={t("stats.activeCandidates")}
               value={adminDashboardService.formatNumber(stats.active_candidates)}
-              change={`+${Math.round(stats.active_candidates / 10)}%`}
-              trend="up"
+              change={t("stats.currentlyActive")}
+              trend="neutral"
               icon={UserCheck}
               iconColor="text-blue-500"
             />
             <StatCard
               title={t("stats.totalUsers")}
               value={adminDashboardService.formatNumber(stats.total_users)}
-              change={`+${Math.round(stats.b2c_users + stats.b2b_users / 10)}%`}
-              trend="up"
+              change={t("stats.userBreakdown", { b2c: stats.b2c_users, b2b: stats.b2b_users })}
+              trend="neutral"
               icon={Users}
               iconColor="text-purple-500"
             />
             <StatCard
               title={t("stats.activeAgencies")}
               value={adminDashboardService.formatNumber(stats.active_agencies)}
-              change={`+${Math.round(stats.active_agencies / 10)}%`}
-              trend="up"
+              change={t("stats.verifiedAgencies")}
+              trend="neutral"
               icon={Building2}
               iconColor="text-gray-500"
             />
             <StatCard
               title={t("stats.totalEvaluations")}
               value={adminDashboardService.formatNumber(stats.total_evaluations)}
-              change={`${Math.round(stats.completed_evaluations / stats.total_evaluations * 100)}% completed`}
+              change={t("stats.completedPercent", {
+                value: stats.total_evaluations > 0
+                  ? Math.round((stats.completed_evaluations / stats.total_evaluations) * 100)
+                  : 0
+              })}
               trend="up"
               icon={FileText}
               iconColor="text-gray-500"
@@ -183,8 +189,8 @@ const systemLoadChartData = systemLoad
             <StatCard
               title={t("stats.revenue")}
               value={adminDashboardService.formatCurrency(stats.monthly_recurring_revenue)}
-              change={`MRR: ${adminDashboardService.formatCurrency(stats.monthly_recurring_revenue)}`}
-              trend="up"
+              change={t("stats.activeSubscriptions", { value: stats.active_subscriptions_count })}
+              trend="neutral"
               icon={DollarSign}
               iconColor="text-blue-500"
             />

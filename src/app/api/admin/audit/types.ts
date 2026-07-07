@@ -59,7 +59,7 @@ export interface AuditLogFilter {
 }
 
 export interface PendingVerificationUser {
-  id: number;
+  id: string;
   email: string;
   first_name: string;
   last_name: string;
@@ -83,7 +83,7 @@ export interface PendingVerificationResponse {
 }
 
 export interface DocumentVerificationRequest {
-  user_id: number;
+  user_id: string;
   status: 'APPROVED' | 'REJECTED';
   verification_notes?: string;
   rejection_reason?: string;

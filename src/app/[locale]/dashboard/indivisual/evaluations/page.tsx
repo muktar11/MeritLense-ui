@@ -7,33 +7,37 @@ import { Search, Filter } from "lucide-react";
 import EvaluationTable from "../components/evaluation-table";
 import EvaluationModal from "../components/schedule-evaluation-modal";
 import CompleteEvaluationModal from "../components/complete-evaluation-modal";
+import StartSessionModal from "../../business/components/start-session-modal";
 import evaluationService from "@/app/api/evaluations/endpoints";
 import candidateService from "@/app/api/candidates/endpoints";
 import type { EvaluationListItem, Evaluation, CreateEvaluationData } from "@/app/api/evaluations/types";
 import type { Candidate } from "@/app/api/candidates/types";
+import type { InterviewSession } from "@/app/api/interviews/types";
 import { EVALUATION_TYPES, EVALUATION_STATUS } from "@/app/api/evaluations/types";
-import { useTranslations } from "next-intl";
 
 type ModalMode = 'view' | 'create' | 'edit' | 'reschedule';
 
 export default function EvaluationManagement() {
-  const t = useTranslations("dashboard.indivisual.evaluations");
-  const { userRole } = useAuth();
+  const { userRole, userId } = useAuth();
 
   const [evaluations, setEvaluations] = useState<EvaluationListItem[]>([]);
   const [filteredEvaluations, setFilteredEvaluations] = useState<EvaluationListItem[]>([]);
   const [candidates, setCandidates] = useState<Candidate[]>([]);
-  const [loading, setLoading] = useState(true);
-  
+  const [, setLoading] = useState(true);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<ModalMode>('create');
   const [selectedEvaluation, setSelectedEvaluation] = useState<Evaluation | null>(null);
-  
+
   const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
-  
+
+  const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
+  const [sessionCandidate, setSessionCandidate] = useState<Candidate | null>(null);
+
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [typeFilter, setTypeFilter] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchData();
@@ -73,7 +77,7 @@ export default function EvaluationManagement() {
 
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(e => 
+      filtered = filtered.filter(e =>
         e.candidate_name.toLowerCase().includes(term)
       );
     }
@@ -84,6 +88,7 @@ export default function EvaluationManagement() {
   const handleOpenCreateModal = () => {
     setModalMode('create');
     setSelectedEvaluation(null);
+    setSubmitError(null);
     setIsModalOpen(true);
   };
 
@@ -120,30 +125,49 @@ export default function EvaluationManagement() {
     }
   };
 
-  const handleOpenCompleteModal = (item: EvaluationListItem) => {
-    setSelectedEvaluation(item as any);
-    setIsCompleteModalOpen(true);
+  const handleOpenCompleteModal = async (item: EvaluationListItem) => {
+    try {
+      const fullEvaluation = await evaluationService.getEvaluation(item.id);
+      setSelectedEvaluation(fullEvaluation);
+      setIsCompleteModalOpen(true);
+    } catch (error) {
+      console.error('Failed to fetch evaluation details:', error);
+    }
+  };
+
+  const handleOpenSessionModal = (item: EvaluationListItem) => {
+    const matched = candidates.find(c => c.full_name === item.candidate_name) ?? null;
+    setSessionCandidate(matched);
+    setIsSessionModalOpen(true);
   };
 
   const handleCreateEvaluation = async (data: CreateEvaluationData): Promise<boolean> => {
+    setSubmitError(null);
     try {
       await evaluationService.createEvaluation(data);
       await fetchData();
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to create evaluation:', error);
+      setSubmitError(
+        error?.detail || error?.error || error?.response?.data?.detail || 'Failed to schedule evaluation. Please try again.'
+      );
       return false;
     }
   };
 
   const handleEditEvaluation = async (data: CreateEvaluationData): Promise<boolean> => {
     if (!selectedEvaluation) return false;
+    setSubmitError(null);
     try {
       await evaluationService.updateEvaluation(selectedEvaluation.id, data);
       await fetchData();
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to update evaluation:', error);
+      setSubmitError(
+        error?.detail || error?.error || error?.response?.data?.detail || 'Failed to update evaluation. Please try again.'
+      );
       return false;
     }
   };
@@ -232,12 +256,20 @@ export default function EvaluationManagement() {
         <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-gray-900">Evaluation Management</h2>
-            <button
-              onClick={handleOpenCreateModal}
-              className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-2"
-            >
-              + Schedule Evaluation
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => { setSessionCandidate(null); setIsSessionModalOpen(true); }}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-2"
+              >
+                + Start AI Interview
+              </button>
+              <button
+                onClick={handleOpenCreateModal}
+                className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-2"
+              >
+                + Schedule Evaluation
+              </button>
+            </div>
           </div>
 
           <EvaluationTable
@@ -247,6 +279,7 @@ export default function EvaluationManagement() {
             onComplete={handleOpenCompleteModal}
             onCancel={handleCancelEvaluation}
             onReschedule={handleOpenRescheduleModal}
+            onStartSession={handleOpenSessionModal}
             userRole={userRole || undefined}
           />
         </div>
@@ -254,13 +287,15 @@ export default function EvaluationManagement() {
 
       <EvaluationModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => { setIsModalOpen(false); setSubmitError(null); }}
         onSubmit={modalMode === 'create' ? handleCreateEvaluation : handleEditEvaluation}
         onReschedule={handleRescheduleEvaluation}
         mode={modalMode}
         evaluation={selectedEvaluation || undefined}
         candidates={candidates}
         userRole={userRole || undefined}
+        currentUserId={userId || undefined}
+        errorMessage={submitError}
       />
 
       {selectedEvaluation && (
@@ -274,6 +309,14 @@ export default function EvaluationManagement() {
           candidateName={selectedEvaluation.candidate_first_name + ' ' + selectedEvaluation.candidate_last_name}
         />
       )}
+
+      <StartSessionModal
+        isOpen={isSessionModalOpen}
+        onClose={() => { setIsSessionModalOpen(false); setSessionCandidate(null); }}
+        candidate={sessionCandidate}
+        candidates={candidates}
+        onSuccess={(_session: InterviewSession) => fetchData()}
+      />
     </main>
   );
 }

@@ -107,7 +107,7 @@ async getAuditLogs(filters?: AuditLogFilter): Promise<{
     return response.data;
   }
 
-  async rejectDocuments(data: { user_id: number; rejection_reason: string; verification_notes?: string }): Promise<any> {
+  async rejectDocuments(data: { user_id: string; rejection_reason: string; verification_notes?: string }): Promise<any> {
     this.ensureAuthToken();
     const response = await apiClient.post(`${API_BASE_URL}/auth/admin/employers/reject-documents`, data);
     return response.data;

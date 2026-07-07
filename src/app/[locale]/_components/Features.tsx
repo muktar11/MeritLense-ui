@@ -3,14 +3,14 @@
 import { forwardRef } from "react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import { Brain, CheckCircle2, Shield, Globe, Zap, Lock, FileCheck, Users } from "lucide-react";
+import { Brain, CheckCircle2, Briefcase, Shield, Globe, Zap, Lock, FileCheck, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 export const Features = forwardRef<HTMLElement>(function Features(_, ref) {
   const { ref: inViewRef, inView } = useInView({ triggerOnce: true, threshold: 0.1 });
   const t = useTranslations("landing-page.features");
 
-  const featureIcons = [Shield, Globe, Zap, Lock, FileCheck, Users];
+  const featureIcons = [Briefcase, Shield, Globe, Zap, Lock, FileCheck, Users];
 
   const setRefs = (node: HTMLElement) => {
     if (ref) (ref as any).current = node;

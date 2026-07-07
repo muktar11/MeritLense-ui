@@ -36,7 +36,7 @@ export function SubscriptionForm({ price, onSuccess, onError }: SubscriptionForm
         elements,
         redirect: 'if_required',
         confirmParams: {
-          return_url: `${window.location.origin}${locale}/dashboard/indivisual/payment/`,
+          return_url: `${window.location.origin}/${locale}/dashboard/indivisual/payment/success?type=subscription`,
         },
       });
 
@@ -53,10 +53,10 @@ export function SubscriptionForm({ price, onSuccess, onError }: SubscriptionForm
       });
 
       console.log('Subscription created:', subscription);
-      
+
       onSuccess?.();
-      
-      window.location.href = `/${locale}/dashboard/indivisual/payment/`;
+
+      window.location.href = `/${locale}/dashboard/indivisual/payment/success?type=subscription`;
       
     } catch (err: any) {
       console.error('Subscription error:', err);
