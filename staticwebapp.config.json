@@ -3,16 +3,6 @@
     "rewrite": "/index.html",
     "exclude": ["/_next/*", "/images/*", "/*.ico", "/*.png", "/*.svg"]
   },
-  "routes": [
-    {
-      "route": "/en/*",
-      "rewrite": "/en/index.html"
-    },
-    {
-      "route": "/ar/*",
-      "rewrite": "/ar/index.html"
-    }
-  ],
   "globalHeaders": {
     "X-Content-Type-Options": "nosniff",
     "X-Frame-Options": "SAMEORIGIN"
