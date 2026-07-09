@@ -1,33 +1,44 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { useTranslations, useLocale } from "next-intl"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Upload, Download, LogOut, Loader2, Plus, MoreVertical, Mail, UserCheck, Clock } from "lucide-react"
+import { Upload, Download, LogOut, Loader2, Plus, MoreVertical, Mail, UserCheck, Clock, FileSignature, CheckCircle2, History } from "lucide-react"
 import { useProfile } from "../../../../hooks/useProfile"
 import { useAuth } from "../../../../hooks/useAuth"
 import { LANGUAGES } from "../../../../api/auth/endpoints"
 import { ChangePassword } from "./change-password"
 import { InviteTeamModal } from "./invite-team-modal"
 import { PendingInvitations } from "./pending-invitations"
+import { AuditTrailModal } from "@/components/agreements/AuditTrailModal"
 import teamService from "@/app/api/team/endpoints"
 import type { TeamMember, TeamInvitation } from "@/app/api/team/types"
+import agreementService from "@/app/api/agreements/endpoints"
+import type { Agreement } from "@/app/api/agreements/types"
 import { format } from "date-fns"
+
+const REQUIRED_AGREEMENT_TYPES = ["B2B_AGREEMENT", "DPA"] as const
 
 export function CompanyProfile() {
   const t = useTranslations("dashboard.business.company-profile")
   const locale = useLocale()
+  const router = useRouter()
   const { profile, loading, error, updateProfile } = useProfile()
   const { logout } = useAuth()
-  
+
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([])
   const [pendingInvitations, setPendingInvitations] = useState<TeamInvitation[]>([])
   const [teamLoading, setTeamLoading] = useState(false)
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
+
+  const [agreements, setAgreements] = useState<Agreement[]>([])
+  const [agreementsLoading, setAgreementsLoading] = useState(false)
+  const [auditTarget, setAuditTarget] = useState<{ id: string; label: string } | null>(null)
   const [updatingMember, setUpdatingMember] = useState<number | null>(null)
   
   const [activeTab, setActiveTab] = useState("profile")
@@ -68,7 +79,29 @@ export function CompanyProfile() {
 
   useEffect(() => {
     fetchTeamData()
+    fetchAgreements()
   }, [])
+
+  const handleDownloadAgreement = async (agreementId: string) => {
+    try {
+      const { url } = await agreementService.getDownloadUrl(agreementId)
+      window.open(url, "_blank", "noopener,noreferrer")
+    } catch (error) {
+      console.error('Failed to get agreement download URL:', error)
+    }
+  }
+
+  const fetchAgreements = async () => {
+    setAgreementsLoading(true)
+    try {
+      const data = await agreementService.getStatus()
+      setAgreements(data)
+    } catch (error) {
+      console.error('Failed to fetch agreement status:', error)
+    } finally {
+      setAgreementsLoading(false)
+    }
+  }
 
   const fetchTeamData = async () => {
     setTeamLoading(true)
@@ -580,6 +613,80 @@ export function CompanyProfile() {
               </CardContent>
             </Card>
 
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <FileSignature className="w-4 h-4" />
+                  {t("agreements.title")}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <p className="text-xs text-muted-foreground">{t("agreements.description")}</p>
+                {agreementsLoading ? (
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    {t("agreements.loading")}
+                  </div>
+                ) : (
+                  <>
+                    <div className="space-y-2">
+                      {REQUIRED_AGREEMENT_TYPES.map((type) => {
+                        const agreement = agreements.find((a) => a.agreement_type === type)
+                        const isSigned = agreement?.status === "SIGNED"
+                        const label = agreement?.agreement_type_display || type
+                        return (
+                          <div key={type} className="flex items-center justify-between text-xs gap-2">
+                            <span className="truncate">{label}</span>
+                            <div className="flex items-center gap-2 shrink-0">
+                              {isSigned ? (
+                                <span className="inline-flex items-center gap-1 text-green-600">
+                                  <CheckCircle2 className="w-3 h-3" /> {t("agreements.signed")}
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 text-amber-600">
+                                  <Clock className="w-3 h-3" /> {t("agreements.pending")}
+                                </span>
+                              )}
+                              {isSigned && agreement && (
+                                <>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleDownloadAgreement(agreement.id)}
+                                    title="Download PDF"
+                                    className="text-gray-400 hover:text-purple-600"
+                                  >
+                                    <Download className="w-3.5 h-3.5" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => setAuditTarget({ id: agreement.id, label })}
+                                    title="View Audit Trail"
+                                    className="text-gray-400 hover:text-purple-600"
+                                  >
+                                    <History className="w-3.5 h-3.5" />
+                                  </button>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                    <Button
+                      className="w-full bg-purple-600 hover:bg-purple-700 text-white text-xs"
+                      onClick={() => router.push(`/${locale}/dashboard/business/sign-agreements`)}
+                    >
+                      {REQUIRED_AGREEMENT_TYPES.every((type) =>
+                        agreements.find((a) => a.agreement_type === type)?.status === "SIGNED"
+                      )
+                        ? t("agreements.viewButton")
+                        : t("agreements.signButton")}
+                    </Button>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+
             <ChangePassword />
 
             <Card>
@@ -643,6 +750,12 @@ export function CompanyProfile() {
         isOpen={isInviteModalOpen}
         onClose={() => setIsInviteModalOpen(false)}
         onSuccess={handleInviteSuccess}
+      />
+
+      <AuditTrailModal
+        agreementId={auditTarget?.id ?? null}
+        agreementLabel={auditTarget?.label ?? ""}
+        onClose={() => setAuditTarget(null)}
       />
     </div>
   )

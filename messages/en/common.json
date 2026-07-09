@@ -1433,6 +1433,16 @@
         "uploadFiles": "Upload Files",
         "uploadCandidatesFile": "Upload candidates list file",
 
+        "agreements": {
+          "title": "Legal Agreements",
+          "description": "Review and sign the B2B Agreement and Data Processing Agreement required to use MeritLense.",
+          "signed": "Signed",
+          "pending": "Pending Signature",
+          "signButton": "Sign Agreements",
+          "viewButton": "View Signed Documents",
+          "loading": "Checking agreement status..."
+        },
+
         "settings": "Settings",
         "theme": "Theme",
         "light": "Light",
@@ -1798,7 +1808,8 @@
       "settings-tabs": {
         "editProfile": "Edit Profile",
         "security": "Security",
-        "billing": "Billing & Subscription"
+        "billing": "Billing & Subscription",
+        "agreements": "Agreements"
       },
 
       "settings": {
@@ -1858,6 +1869,16 @@
           "invoiceNumber": "Invoice Number",
           "status": "Status",
           "action": "Action"
+        },
+        "agreements-tab": {
+          "title": "Legal Agreements",
+          "description": "Review and sign the B2C Agreement required to use MeritLense.",
+          "loading": "Checking agreement status...",
+          "signed": "Signed",
+          "pending": "Pending Signature",
+          "signButton": "Sign Agreement",
+          "download": "Download",
+          "viewAuditTrail": "View Audit Trail"
         },
         "security-tab": {
           "changeEmailTitle": "Change Email",

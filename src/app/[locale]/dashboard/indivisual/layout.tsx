@@ -3,6 +3,7 @@
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Breadcrumb } from "@/components/app/Breadcrumb";
 import AuthGuard from "@/components/auth/AuthGuard";
+import { AgreementGuard } from "./components/agreement-guard";
 
 import {
   LayoutDashboard,
@@ -72,18 +73,20 @@ export default function AdminLayout({
 
   return (
     <AuthGuard allowedRoles={["B2C"]}>
-      <DashboardLayout
-        sidebarItems={BUSINESS_SIDEBAR_ITEMS}
-        userType={t("user_type")}
-      >
-        <div className="lg:px-8 px-0">
-          <div className="w-full bg-white h-16 rounded-b shadow-2xl/5 flex items-center justify-between pl-18 lg:pl-4 pr-4">
-            <Breadcrumb />
-            <LanguageSelector />
+      <AgreementGuard>
+        <DashboardLayout
+          sidebarItems={BUSINESS_SIDEBAR_ITEMS}
+          userType={t("user_type")}
+        >
+          <div className="lg:px-8 px-0">
+            <div className="w-full bg-white h-16 rounded-b shadow-2xl/5 flex items-center justify-between pl-18 lg:pl-4 pr-4">
+              <Breadcrumb />
+              <LanguageSelector />
+            </div>
+            <div className="sm:px-8 px-4">{children}</div>
           </div>
-          <div className="sm:px-8 px-4">{children}</div>
-        </div>
-      </DashboardLayout>
+        </DashboardLayout>
+      </AgreementGuard>
     </AuthGuard>
   );
 }

@@ -1198,6 +1198,16 @@
         "uploadFiles": "رفع الملفات",
         "uploadCandidatesFile": "رفع ملف قائمة المرشحين",
 
+        "agreements": {
+          "title": "الاتفاقيات القانونية",
+          "description": "راجع ووقّع اتفاقية B2B واتفاقية معالجة البيانات المطلوبة لاستخدام MeritLense.",
+          "signed": "تم التوقيع",
+          "pending": "بانتظار التوقيع",
+          "signButton": "توقيع الاتفاقيات",
+          "viewButton": "عرض المستندات الموقعة",
+          "loading": "جارٍ التحقق من حالة الاتفاقية..."
+        },
+
         "settings": "الإعدادات",
         "theme": "المظهر",
         "light": "فاتح",
@@ -1434,7 +1444,8 @@
       "settings-tabs": {
         "editProfile": "تعديل الملف الشخصي",
         "security": "الأمان",
-        "billing": "الفوترة والاشتراك"
+        "billing": "الفوترة والاشتراك",
+        "agreements": "الاتفاقيات"
       },
 
       "settings": {
@@ -1471,6 +1482,16 @@
           "Subscription Renewal": "تجديد الاشتراك",
 
           "saveButton": "حفظ التغييرات"
+        },
+        "agreements-tab": {
+          "title": "الاتفاقيات القانونية",
+          "description": "راجع ووقّع اتفاقية B2C المطلوبة لاستخدام MeritLense.",
+          "loading": "جارٍ التحقق من حالة الاتفاقية...",
+          "signed": "تم التوقيع",
+          "pending": "بانتظار التوقيع",
+          "signButton": "توقيع الاتفاقية",
+          "download": "تحميل",
+          "viewAuditTrail": "عرض سجل التدقيق"
         },
         "security-tab": {
           "changeEmailTitle": "تغيير البريد الإلكتروني",

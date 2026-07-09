@@ -3,6 +3,7 @@
 import EditProfileTab from "./settings/edit-profile-tab";
 import SecurityTab from "./settings/security-tab";
 import {BillingTab} from "./settings/billing-tab";
+import AgreementsTab from "./settings/agreements-tab";
 import { useTranslations } from "next-intl";
 import { SubscriptionProvider } from "@/app/context/SubscriptionContext";
 
@@ -42,16 +43,25 @@ export default function SettingsTabs({ activeTab, setActiveTab }: SettingsTabsPr
         >
           {t("billing")}
         </button>
+        <button
+          onClick={() => setActiveTab("agreements")}
+          className={`px-6 py-4 font-medium text-sm transition-colors ${
+            activeTab === "agreements" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-600 hover:text-gray-900"
+          }`}
+        >
+          {t("agreements")}
+        </button>
       </div>
 
       {/* Tab Content */}
       <div className="p-8">
         {activeTab === "profile" && <EditProfileTab />}
         {activeTab === "security" && <SecurityTab />}
-        {activeTab === "billing" && 
+        {activeTab === "billing" &&
         <SubscriptionProvider>
               <BillingTab />
             </SubscriptionProvider>}
+        {activeTab === "agreements" && <AgreementsTab />}
       </div>
     </div>
   );
