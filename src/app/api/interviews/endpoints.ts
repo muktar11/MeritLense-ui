@@ -33,6 +33,12 @@ class InterviewService {
     return response.data;
   }
 
+  async startSession(id: string): Promise<InterviewSession> {
+    setToken();
+    const response = await apiClient.post(`${this.sessionsURL}/${id}/start/`, {});
+    return response.data;
+  }
+
   async getSession(id: string): Promise<InterviewSession> {
     setToken();
     const response = await apiClient.get(`${this.sessionsURL}/${id}/`);

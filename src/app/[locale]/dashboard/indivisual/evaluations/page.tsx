@@ -8,6 +8,7 @@ import EvaluationTable from "../components/evaluation-table";
 import EvaluationModal from "../components/schedule-evaluation-modal";
 import CompleteEvaluationModal from "../components/complete-evaluation-modal";
 import StartSessionModal from "../../business/components/start-session-modal";
+import { EvaluationResultsModal } from "@/components/evaluations/EvaluationResultsModal";
 import evaluationService from "@/app/api/evaluations/endpoints";
 import candidateService from "@/app/api/candidates/endpoints";
 import type { EvaluationListItem, Evaluation, CreateEvaluationData } from "@/app/api/evaluations/types";
@@ -33,6 +34,9 @@ export default function EvaluationManagement() {
 
   const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
   const [sessionCandidate, setSessionCandidate] = useState<Candidate | null>(null);
+
+  const [resultsEvaluationId, setResultsEvaluationId] = useState<string | null>(null);
+  const [resultsCandidateName, setResultsCandidateName] = useState("");
 
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [typeFilter, setTypeFilter] = useState<string>("");
@@ -139,6 +143,11 @@ export default function EvaluationManagement() {
     const matched = candidates.find(c => c.full_name === item.candidate_name) ?? null;
     setSessionCandidate(matched);
     setIsSessionModalOpen(true);
+  };
+
+  const handleOpenResultsModal = (item: EvaluationListItem) => {
+    setResultsCandidateName(item.candidate_name);
+    setResultsEvaluationId(item.id);
   };
 
   const handleCreateEvaluation = async (data: CreateEvaluationData): Promise<boolean> => {
@@ -280,6 +289,7 @@ export default function EvaluationManagement() {
             onCancel={handleCancelEvaluation}
             onReschedule={handleOpenRescheduleModal}
             onStartSession={handleOpenSessionModal}
+            onViewResults={handleOpenResultsModal}
             userRole={userRole || undefined}
           />
         </div>
@@ -316,6 +326,12 @@ export default function EvaluationManagement() {
         candidate={sessionCandidate}
         candidates={candidates}
         onSuccess={(_session: InterviewSession) => fetchData()}
+      />
+
+      <EvaluationResultsModal
+        evaluationId={resultsEvaluationId}
+        candidateName={resultsCandidateName}
+        onClose={() => setResultsEvaluationId(null)}
       />
     </main>
   );

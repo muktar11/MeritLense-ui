@@ -44,6 +44,8 @@ export interface InterviewSession {
   total_questions: number;
   progress_percent: number;
   access_token: string;
+  linked_evaluation_id: string | null;
+  latest_scoring_summary: unknown | null;
   started_at: string | null;
   ended_at: string | null;
   expires_at: string;

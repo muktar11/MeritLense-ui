@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Copy, Eye, Calendar, XCircle, CheckCircle, Edit, Mic } from "lucide-react"
+import { Copy, Eye, Calendar, XCircle, CheckCircle, Edit, Mic, BarChart3 } from "lucide-react"
 import type { EvaluationListItem } from "@/app/api/evaluations/types"
 import { format } from "date-fns"
 
@@ -13,6 +13,7 @@ interface EvaluationTableProps {
   onCancel?: (evaluation: EvaluationListItem) => void
   onReschedule?: (evaluation: EvaluationListItem) => void
   onStartSession?: (evaluation: EvaluationListItem) => void
+  onViewResults?: (evaluation: EvaluationListItem) => void
   userRole?: string
 }
 
@@ -50,6 +51,7 @@ export default function EvaluationTable({
   onCancel,
   onReschedule,
   onStartSession,
+  onViewResults,
   userRole = 'B2C'
 }: EvaluationTableProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null)
@@ -154,6 +156,16 @@ export default function EvaluationTable({
                         title="Cancel"
                       >
                         <XCircle className="w-4 h-4" />
+                      </button>
+                    )}
+
+                    {onViewResults && item.status === 'COMPLETED' && (
+                      <button
+                        onClick={() => onViewResults(item)}
+                        className="p-1 hover:bg-gray-100 rounded transition-colors text-gray-500 hover:text-purple-600"
+                        title="View AI Results"
+                      >
+                        <BarChart3 className="w-4 h-4" />
                       </button>
                     )}
 

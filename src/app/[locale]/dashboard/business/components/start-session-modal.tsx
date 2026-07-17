@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { X, Loader2, ArrowRight, AlertCircle, CheckCircle2 } from "lucide-react"
+import { useLocale } from "next-intl"
+import { X, Loader2, ArrowRight, AlertCircle, CheckCircle2, Copy, Check } from "lucide-react"
 import type { Candidate } from "@/app/api/candidates/types"
 import interviewService from "@/app/api/interviews/endpoints"
 import type { InterviewConfig, InterviewSession, RolePackage } from "@/app/api/interviews/types"
@@ -9,7 +10,6 @@ import {
   getCoverageFromTier,
   getCoverageColor,
   buildRolePackages,
-  CANDIDATE_JOB_ROLES,
 } from "@/app/api/interviews/types"
 
 interface StartSessionModalProps {
@@ -27,6 +27,7 @@ export default function StartSessionModal({
   candidates = [],
   onSuccess,
 }: StartSessionModalProps) {
+  const locale = useLocale()
   const [configs, setConfigs] = useState<InterviewConfig[]>([])
   const [loadingConfigs, setLoadingConfigs] = useState(false)
   const [selectedCandidateId, setSelectedCandidateId] = useState("")
@@ -35,6 +36,7 @@ export default function StartSessionModal({
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState("")
   const [createdSession, setCreatedSession] = useState<InterviewSession | null>(null)
+  const [linkCopied, setLinkCopied] = useState(false)
 
   useEffect(() => {
     if (isOpen) {
@@ -91,8 +93,14 @@ export default function StartSessionModal({
         candidate_id: selectedCandidateId,
         config_id: selectedConfigId,
       })
-      setCreatedSession(session)
-      onSuccess?.(session)
+      // Staff always starts the session immediately: the candidate-facing
+      // token flow can only self-start once consent/device-check/etc.
+      // prechecks are complete, and nothing in the product sets those yet —
+      // so the candidate's link must always land on an already-started
+      // session, straight into the question flow.
+      const started = await interviewService.startSession(session.id)
+      setCreatedSession(started)
+      onSuccess?.(started)
     } catch (err: any) {
       const msg =
         err?.response?.data?.detail ??
@@ -102,6 +110,17 @@ export default function StartSessionModal({
     } finally {
       setSubmitting(false)
     }
+  }
+
+  const sessionLink = createdSession
+    ? `${window.location.origin}/${locale}/interview?sessionId=${createdSession.id}&token=${createdSession.access_token}`
+    : ""
+
+  const handleCopyLink = async () => {
+    if (!sessionLink) return
+    await navigator.clipboard.writeText(sessionLink)
+    setLinkCopied(true)
+    setTimeout(() => setLinkCopied(false), 2000)
   }
 
   if (!isOpen) return null
@@ -144,8 +163,18 @@ export default function StartSessionModal({
               </span>
             </p>
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 text-xs text-gray-600 mb-6 text-left">
-              <p className="font-medium text-gray-700 mb-1">Session token</p>
-              <p className="font-mono break-all">{createdSession.access_token}</p>
+              <p className="font-medium text-gray-700 mb-1">Interview link — share this with the candidate</p>
+              <div className="flex items-center gap-2">
+                <p className="font-mono break-all flex-1">{sessionLink}</p>
+                <button
+                  type="button"
+                  onClick={handleCopyLink}
+                  className="shrink-0 p-1.5 rounded-md bg-white border border-gray-200 text-gray-500 hover:text-purple-600 hover:border-purple-300"
+                  title="Copy link"
+                >
+                  {linkCopied ? <Check className="w-3.5 h-3.5 text-green-600" /> : <Copy className="w-3.5 h-3.5" />}
+                </button>
+              </div>
             </div>
             <button
               onClick={onClose}
