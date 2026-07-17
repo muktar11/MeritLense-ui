@@ -19,6 +19,7 @@ import {
   UserCheck,
   SlidersHorizontal,
   Package,
+  ClipboardList,
 } from "lucide-react";
 
 // Optional: locale code → human-readable name map
@@ -49,6 +50,12 @@ export default function AdminLayout({
         icon: Package,
         href: `/${locale}/dashboard/admin/packages`,
       }] : []),
+
+      {
+        label: t("pages_list.interview_setup"),
+        icon: ClipboardList,
+        href: `/${locale}/dashboard/admin/interview-setup`,
+      },
 
       {
         label: t("pages_list.user_management"),

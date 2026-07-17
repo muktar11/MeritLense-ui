@@ -459,7 +459,8 @@
           "settings": "Settings",
           "api_settings": "Payment Package",
           "multi_agency_panel": "Billing ans Subscription",
-          "package_management": "Package Management"
+          "package_management": "Package Management",
+          "interview_setup": "Interview Setup"
         }
 ,
       "overview_page": {

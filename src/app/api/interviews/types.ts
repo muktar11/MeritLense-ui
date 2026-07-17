@@ -2,6 +2,133 @@ export type EvaluationTier = 'FULL' | 'SCREENING' | 'BOTH';
 
 export type PackageCoverage = 'Full' | 'Screening' | 'Partial';
 
+export type QuestionDifficulty = 'EASY' | 'MEDIUM' | 'HARD';
+export type QuestionType = 'safety' | 'integrity' | 'behavioral' | 'communication' | 'situational' | 'scenario' | 'knowledge';
+export type QuestionFormat = 'TEXT' | 'SCENARIO' | 'TASK';
+export type ExpectedAnswerType = 'short' | 'structured' | 'multi_step';
+export type QuestionStatus = 'active' | 'draft' | 'deprecated' | 'archived';
+
+export const QUESTION_DIFFICULTIES: { value: QuestionDifficulty; label: string }[] = [
+  { value: 'EASY', label: 'Easy' },
+  { value: 'MEDIUM', label: 'Medium' },
+  { value: 'HARD', label: 'Hard' },
+];
+
+export const QUESTION_TYPES: { value: QuestionType; label: string }[] = [
+  { value: 'safety', label: 'Safety' },
+  { value: 'integrity', label: 'Integrity' },
+  { value: 'behavioral', label: 'Behavioral' },
+  { value: 'communication', label: 'Communication' },
+  { value: 'situational', label: 'Situational' },
+  { value: 'scenario', label: 'Scenario' },
+  { value: 'knowledge', label: 'Knowledge' },
+];
+
+export const QUESTION_FORMATS: { value: QuestionFormat; label: string }[] = [
+  { value: 'TEXT', label: 'Text' },
+  { value: 'SCENARIO', label: 'Scenario' },
+  { value: 'TASK', label: 'Task' },
+];
+
+export const EXPECTED_ANSWER_TYPES: { value: ExpectedAnswerType; label: string }[] = [
+  { value: 'short', label: 'Short' },
+  { value: 'structured', label: 'Structured' },
+  { value: 'multi_step', label: 'Multi Step' },
+];
+
+export const QUESTION_STATUSES: { value: QuestionStatus; label: string }[] = [
+  { value: 'active', label: 'Active' },
+  { value: 'draft', label: 'Draft' },
+  { value: 'deprecated', label: 'Deprecated' },
+  { value: 'archived', label: 'Archived' },
+];
+
+export const EVALUATION_TIERS: { value: EvaluationTier; label: string }[] = [
+  { value: 'FULL', label: 'Full Evaluation' },
+  { value: 'SCREENING', label: 'Screening' },
+  { value: 'BOTH', label: 'Both' },
+];
+
+export interface QuestionTemplate {
+  id: string;
+  role_name: string;
+  role_code: string;
+  question_code: string;
+  question_version: string;
+  question_status: QuestionStatus;
+  domain: string;
+  skill_tag: string;
+  skill_id: string;
+  skill: string;
+  sequence_number: number | null;
+  difficulty: QuestionDifficulty;
+  question_text: string;
+  question_type: QuestionType;
+  question_format: QuestionFormat;
+  expected_steps: string[];
+  keywords: string[];
+  weight: string;
+  language: string;
+  scoring_type: string;
+  difficulty_score: number;
+  estimated_time_seconds: number;
+  expected_answer_type: ExpectedAnswerType;
+  evaluation_tier: EvaluationTier;
+  rubric_version: string;
+  question_set_version: string;
+  is_mandatory: boolean;
+  follow_up_allowed: boolean;
+  critical_question: boolean;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface QuestionTemplatePayload {
+  role_name: string;
+  role_code: string;
+  question_code?: string;
+  question_version?: string;
+  question_status: QuestionStatus;
+  domain: string;
+  skill_tag: string;
+  skill: string;
+  sequence_number?: number | null;
+  difficulty: QuestionDifficulty;
+  question_text: string;
+  question_type: QuestionType;
+  question_format: QuestionFormat;
+  weight?: string;
+  language: string;
+  scoring_type?: string;
+  estimated_time_seconds?: number;
+  expected_answer_type: ExpectedAnswerType;
+  evaluation_tier: EvaluationTier;
+  rubric_version?: string;
+  question_set_version?: string;
+  is_mandatory: boolean;
+  follow_up_allowed: boolean;
+  critical_question: boolean;
+  is_active: boolean;
+}
+
+export interface InterviewConfigPayload {
+  role_name: string;
+  role_code: string;
+  language: string;
+  evaluation_tier: EvaluationTier;
+  duration_minutes: number;
+  total_questions: number;
+  allow_retries: boolean;
+  max_retries: number;
+  enable_translation: boolean;
+  enable_task_module: boolean;
+  enable_integrity_checks: boolean;
+  rubric_version?: string;
+  question_set_version?: string;
+  is_active: boolean;
+}
+
 export interface InterviewConfig {
   id: string;
   role_name: string;
