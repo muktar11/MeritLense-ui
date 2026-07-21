@@ -1,4 +1,5 @@
 import { Candidate } from '../candidates/types';
+import type { EvaluationTier } from '../interviews/types';
 
 export const EVALUATION_TYPES = [
   { value: 'INTERVIEW', label: 'Interview' },
@@ -189,6 +190,87 @@ export interface CompetencyEvaluationResult {
   completed_response_count: number;
   incomplete_response_count: number;
   rule_set_version: string;
+}
+
+export type ScoringMethod =
+  | 'ALL_OR_NOTHING'
+  | 'WEIGHTED_INDICATOR_MATCH'
+  | 'REQUIRED_INDICATOR_GATE'
+  | 'CRITICAL_FAILURE_OVERRIDE';
+
+export const SCORING_METHODS: { value: ScoringMethod; label: string }[] = [
+  { value: 'WEIGHTED_INDICATOR_MATCH', label: 'Weighted Indicator Match' },
+  { value: 'ALL_OR_NOTHING', label: 'All Or Nothing' },
+  { value: 'REQUIRED_INDICATOR_GATE', label: 'Required Indicator Gate' },
+  { value: 'CRITICAL_FAILURE_OVERRIDE', label: 'Critical Failure Override' },
+];
+
+export interface ScoringRule {
+  id: string;
+  rule_set: string;
+  competency_code: string;
+  competency_name: string;
+  question_template: string | null;
+  question_code: string;
+  question_type: string;
+  expected_indicators: string[];
+  required_indicators: string[];
+  weighted_indicators: Record<string, string>;
+  critical_failure_indicators: string[];
+  risk_flags: string[];
+  max_score: string;
+  pass_threshold: string;
+  weight: string;
+  scoring_method: ScoringMethod;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ScoringRulePayload {
+  rule_set?: string;
+  competency_code: string;
+  competency_name?: string;
+  question_template?: string | null;
+  question_code?: string;
+  question_type?: string;
+  expected_indicators: string[];
+  required_indicators: string[];
+  weighted_indicators: Record<string, number>;
+  critical_failure_indicators: string[];
+  risk_flags: string[];
+  max_score: string;
+  pass_threshold: string;
+  weight?: string;
+  scoring_method: ScoringMethod;
+  is_active: boolean;
+}
+
+export interface ScoringRuleSet {
+  id: string;
+  name: string;
+  version: string;
+  description: string;
+  role_code: string;
+  role_name: string;
+  evaluation_tier: EvaluationTier;
+  is_active: boolean;
+  has_usage: boolean;
+  created_by: string | null;
+  rules: ScoringRule[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ScoringRuleSetPayload {
+  name: string;
+  version: string;
+  description?: string;
+  role_code: string;
+  role_name: string;
+  evaluation_tier: EvaluationTier;
+  is_active: boolean;
+  rules: ScoringRulePayload[];
 }
 
 export interface EvaluationListItem {

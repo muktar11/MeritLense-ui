@@ -9,12 +9,15 @@ import {
   CancelEvaluationData,
   SessionEvaluationSummary,
   ResponseEvaluationResult,
-  CompetencyEvaluationResult
+  CompetencyEvaluationResult,
+  ScoringRuleSet,
+  ScoringRuleSetPayload
 } from './types';
 import { API_BASE_URL } from '@/lib/config/env';
 
 class EvaluationService {
   private baseURL = `${API_BASE_URL}/evaluations/evaluations`;
+  private ruleSetsURL = `${API_BASE_URL}/evaluations/rule-sets`;
 
   private getToken(): string | null {
     if (typeof window !== 'undefined') {
@@ -142,6 +145,35 @@ class EvaluationService {
       rule_set_id: ruleSetId,
     });
     return response.data;
+  }
+
+  async getRuleSets(): Promise<ScoringRuleSet[]> {
+    this.ensureAuthToken();
+    const response = await authClient.get(this.ruleSetsURL);
+    return response.data;
+  }
+
+  async getRuleSet(id: string): Promise<ScoringRuleSet> {
+    this.ensureAuthToken();
+    const response = await authClient.get(`${this.ruleSetsURL}/${id}`);
+    return response.data;
+  }
+
+  async createRuleSet(data: ScoringRuleSetPayload): Promise<ScoringRuleSet> {
+    this.ensureAuthToken();
+    const response = await authClient.post(this.ruleSetsURL, data);
+    return response.data;
+  }
+
+  async updateRuleSet(id: string, data: ScoringRuleSetPayload): Promise<ScoringRuleSet> {
+    this.ensureAuthToken();
+    const response = await authClient.patch(`${this.ruleSetsURL}/${id}`, data);
+    return response.data;
+  }
+
+  async deleteRuleSet(id: string): Promise<void> {
+    this.ensureAuthToken();
+    await authClient.delete(`${this.ruleSetsURL}/${id}`);
   }
 }
 

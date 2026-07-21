@@ -14,12 +14,15 @@ import {
 } from "@/components/ui/table";
 import { Plus, Loader2, Pencil, Trash2 } from "lucide-react";
 import interviewService from "@/app/api/interviews/endpoints";
+import evaluationService from "@/app/api/evaluations/endpoints";
 import type { InterviewConfig, QuestionTemplate } from "@/app/api/interviews/types";
 import { CANDIDATE_JOB_ROLES } from "@/app/api/interviews/types";
+import type { ScoringRuleSet } from "@/app/api/evaluations/types";
 import { QuestionTemplateModal } from "./components/question-template-modal";
 import { InterviewConfigModal } from "./components/interview-config-modal";
+import { ScoringRuleSetModal } from "./components/scoring-rule-set-modal";
 
-type Tab = "questions" | "configs";
+type Tab = "questions" | "configs" | "rulesets";
 
 function roleName(code: string): string {
   return CANDIDATE_JOB_ROLES.find(r => r.code === code)?.name ?? code;
@@ -30,6 +33,7 @@ export default function InterviewSetupPage() {
 
   const [templates, setTemplates] = useState<QuestionTemplate[]>([]);
   const [configs, setConfigs] = useState<InterviewConfig[]>([]);
+  const [ruleSets, setRuleSets] = useState<ScoringRuleSet[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
@@ -38,6 +42,9 @@ export default function InterviewSetupPage() {
   const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
   const [editingConfig, setEditingConfig] = useState<InterviewConfig | null>(null);
 
+  const [isRuleSetModalOpen, setIsRuleSetModalOpen] = useState(false);
+  const [editingRuleSet, setEditingRuleSet] = useState<ScoringRuleSet | null>(null);
+
   useEffect(() => {
     fetchAll();
   }, []);
@@ -45,12 +52,14 @@ export default function InterviewSetupPage() {
   const fetchAll = async () => {
     setLoading(true);
     try {
-      const [templatesData, configsData] = await Promise.all([
+      const [templatesData, configsData, ruleSetsData] = await Promise.all([
         interviewService.getQuestionTemplates(),
         interviewService.getConfigs(),
+        evaluationService.getRuleSets(),
       ]);
       setTemplates(templatesData);
       setConfigs(configsData);
+      setRuleSets(ruleSetsData);
     } catch (error) {
       console.error("Failed to fetch interview setup data:", error);
     } finally {
@@ -100,6 +109,27 @@ export default function InterviewSetupPage() {
     }
   };
 
+  const handleAddRuleSet = () => {
+    setEditingRuleSet(null);
+    setIsRuleSetModalOpen(true);
+  };
+
+  const handleEditRuleSet = (ruleSet: ScoringRuleSet) => {
+    setEditingRuleSet(ruleSet);
+    setIsRuleSetModalOpen(true);
+  };
+
+  const handleDeleteRuleSet = async (ruleSet: ScoringRuleSet) => {
+    if (!confirm(`Delete the ${ruleSet.name} (${ruleSet.version}) scoring rule set? This cannot be undone.`)) return;
+    try {
+      await evaluationService.deleteRuleSet(ruleSet.id);
+      fetchAll();
+    } catch (error) {
+      console.error("Failed to delete scoring rule set:", error);
+      alert("Failed to delete scoring rule set. If it has already been used to score an evaluation, the backend keeps it for historical accuracy and won't allow deletion.");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-7xl mx-auto">
@@ -111,11 +141,11 @@ export default function InterviewSetupPage() {
             </p>
           </div>
           <Button
-            onClick={tab === "questions" ? handleAddTemplate : handleAddConfig}
+            onClick={tab === "questions" ? handleAddTemplate : tab === "configs" ? handleAddConfig : handleAddRuleSet}
             className="bg-purple-600 hover:bg-purple-700 text-white"
           >
             <Plus className="w-4 h-4 mr-2" />
-            {tab === "questions" ? "New Question" : "New Configuration"}
+            {tab === "questions" ? "New Question" : tab === "configs" ? "New Configuration" : "New Rule Set"}
           </Button>
         </div>
 
@@ -135,6 +165,14 @@ export default function InterviewSetupPage() {
             }`}
           >
             Interview Configurations ({configs.length})
+          </button>
+          <button
+            onClick={() => setTab("rulesets")}
+            className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px ${
+              tab === "rulesets" ? "border-purple-600 text-purple-700" : "border-transparent text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            Scoring Rule Sets ({ruleSets.length})
           </button>
         </div>
 
@@ -204,7 +242,7 @@ export default function InterviewSetupPage() {
                 </TableBody>
               </Table>
             </div>
-          ) : (
+          ) : tab === "configs" ? (
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
@@ -265,6 +303,72 @@ export default function InterviewSetupPage() {
                 </TableBody>
               </Table>
             </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-gray-50">
+                    <TableHead>Role</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Tier</TableHead>
+                    <TableHead>Rules</TableHead>
+                    <TableHead>Used</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {ruleSets.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={7} className="text-center py-8 text-gray-500">
+                        No scoring rule sets yet — add one so &quot;Run Scoring&quot; has something to score against for this role.
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    ruleSets.map((rs) => (
+                      <TableRow key={rs.id} className="hover:bg-gray-50">
+                        <TableCell>
+                          <p className="font-medium text-gray-900">{roleName(rs.role_code)}</p>
+                          <p className="text-xs text-gray-400">{rs.role_code}</p>
+                        </TableCell>
+                        <TableCell>
+                          <p className="text-sm text-gray-700">{rs.name}</p>
+                          <p className="text-xs text-gray-400">{rs.version}</p>
+                        </TableCell>
+                        <TableCell>
+                          <Badge className="bg-blue-100 text-blue-800 border-0">{rs.evaluation_tier}</Badge>
+                        </TableCell>
+                        <TableCell>
+                          <span className="text-sm text-gray-600">{rs.rules.length}</span>
+                        </TableCell>
+                        <TableCell>
+                          {rs.has_usage ? (
+                            <Badge className="bg-amber-100 text-amber-800 border-0">Used — locked</Badge>
+                          ) : (
+                            <span className="text-xs text-gray-400">Not yet used</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <Badge className={rs.is_active ? 'bg-green-100 text-green-800 border-0' : 'bg-gray-100 text-gray-600 border-0'}>
+                            {rs.is_active ? 'Active' : 'Inactive'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            <Button variant="ghost" size="sm" onClick={() => handleEditRuleSet(rs)} className="text-blue-600 hover:text-blue-700">
+                              <Pencil className="w-4 h-4" />
+                            </Button>
+                            <Button variant="ghost" size="sm" onClick={() => handleDeleteRuleSet(rs)} className="text-red-600 hover:text-red-700">
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
           )}
         </Card>
       </div>
@@ -281,6 +385,13 @@ export default function InterviewSetupPage() {
         onClose={() => setIsConfigModalOpen(false)}
         onSuccess={fetchAll}
         configToEdit={editingConfig}
+      />
+
+      <ScoringRuleSetModal
+        isOpen={isRuleSetModalOpen}
+        onClose={() => setIsRuleSetModalOpen(false)}
+        onSuccess={fetchAll}
+        ruleSetToEdit={editingRuleSet}
       />
     </div>
   );
