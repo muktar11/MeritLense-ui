@@ -6,6 +6,9 @@ import type {
   SubmitTextResponseData,
   SubmitResponseResult,
   CandidateResponseUpload,
+  PrecheckStatus,
+  IdentityVerificationResult,
+  IntegrityEventResult,
 } from './types';
 
 class InterviewSessionClientService {
@@ -70,6 +73,65 @@ class InterviewSessionClientService {
 
   async completeSession(sessionId: string, token: string): Promise<InterviewSessionPublic> {
     const response = await interviewSessionClient.post(`/${sessionId}/complete/`, { token });
+    return response.data;
+  }
+
+  async getPrecheckStatus(sessionId: string, token: string): Promise<PrecheckStatus> {
+    const response = await interviewSessionClient.get(`/${sessionId}/prechecks/status/`, { params: { token } });
+    return response.data;
+  }
+
+  async getReferenceImage(sessionId: string, token: string): Promise<Blob> {
+    const response = await interviewSessionClient.get(`/${sessionId}/prechecks/reference-image/`, {
+      params: { token },
+      responseType: 'blob',
+    });
+    return response.data;
+  }
+
+  async submitIdentityVerification(
+    sessionId: string,
+    token: string,
+    data: {
+      selfieBlob: Blob;
+      faceMatchScore: number;
+      singleFaceDetected: boolean;
+      livenessPassed: boolean;
+    }
+  ): Promise<IdentityVerificationResult> {
+    const formData = new FormData();
+    formData.append('token', token);
+    formData.append('selfie_image_file', data.selfieBlob, 'selfie.jpg');
+    formData.append('face_match_score', data.faceMatchScore.toFixed(2));
+    formData.append('single_face_detected', String(data.singleFaceDetected));
+    formData.append('liveness_passed', String(data.livenessPassed));
+
+    const response = await interviewSessionClient.post(`/${sessionId}/prechecks/identity-verify/`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  }
+
+  async logIntegrityEvent(
+    sessionId: string,
+    token: string,
+    data: {
+      eventType?: string;
+      severity?: string;
+      singleFaceDetected: boolean;
+      faceCount: number;
+    }
+  ): Promise<IntegrityEventResult> {
+    const formData = new FormData();
+    formData.append('token', token);
+    if (data.eventType) formData.append('event_type', data.eventType);
+    formData.append('severity', data.severity ?? 'INFO');
+    formData.append('single_face_detected', String(data.singleFaceDetected));
+    formData.append('face_count', String(data.faceCount));
+
+    const response = await interviewSessionClient.post(`/${sessionId}/integrity-events/`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
     return response.data;
   }
 }

@@ -21,6 +21,7 @@ export interface InterviewSessionPublic {
   started_at: string | null;
   ended_at: string | null;
   expires_at: string;
+  identity_verified: boolean;
 }
 
 export interface SessionQuestion {
@@ -79,4 +80,58 @@ export interface CandidateResponseUpload {
   audio_mime_type: string | null;
   transcript: string;
   stt_status: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'FAILED';
+}
+
+export interface PrecheckStatus {
+  session_id: string;
+  status: SessionStatus;
+  candidate_prechecks_complete: boolean;
+  verification_status: 'NOT_STARTED' | 'PENDING' | 'VERIFIED' | 'FAILED';
+  identity_verified: boolean;
+  face_match_score: string | null;
+  single_face_detected: boolean;
+  candidate_consent_completed: boolean;
+  privacy_notice_acknowledged: boolean;
+  device_check_completed: boolean;
+  verbal_confirmation_completed: boolean;
+  latest_integrity_event: {
+    event_type: string;
+    severity: string;
+    detected_at: string;
+    details: Record<string, unknown>;
+  } | null;
+}
+
+export interface IdentityVerificationResult {
+  precheck_status: PrecheckStatus;
+  verification: {
+    provider: string;
+    verification_status: 'VERIFIED' | 'FAILED' | 'PENDING';
+    identity_verified: boolean;
+    face_match_score: string | null;
+    single_face_detected: boolean;
+    liveness_passed: boolean;
+    reason: string;
+  };
+  artifacts: Array<{ id: string; artifact_type: string; file_url: string }>;
+}
+
+export interface IntegrityEventResult {
+  status: 'RECORDED';
+  integrity_event: {
+    event_type: string;
+    severity: string;
+    detected_at: string;
+    details: Record<string, unknown>;
+  };
+  analysis: {
+    provider: string;
+    event_type: string;
+    severity: string;
+    single_face_detected: boolean;
+    face_count: number | null;
+    liveness_passed: boolean;
+    reason: string;
+  } | null;
+  artifact: { id: string; artifact_type: string; file_url: string } | null;
 }

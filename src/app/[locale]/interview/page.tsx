@@ -12,8 +12,18 @@ import {
 import { QuestionCard } from "./components/question-card";
 import { AnswerTextForm } from "./components/answer-text-form";
 import { AnswerRecorder } from "./components/answer-recorder";
+import { IdentityVerification } from "./components/identity-verification";
+import { IntegrityMonitor } from "./components/integrity-monitor";
 
-type PageState = "loading" | "not-ready" | "unavailable" | "question" | "submitting" | "completed" | "error";
+type PageState =
+  | "loading"
+  | "not-ready"
+  | "unavailable"
+  | "precheck"
+  | "question"
+  | "submitting"
+  | "completed"
+  | "error";
 type AnswerMode = "audio" | "text";
 
 export default function InterviewSessionPage() {
@@ -87,6 +97,8 @@ function InterviewSessionContent() {
           setPageState("unavailable");
         } else if (data.status === "CREATED") {
           setPageState("not-ready");
+        } else if (!data.identity_verified) {
+          setPageState("precheck");
         } else {
           await loadCurrentQuestion();
         }
@@ -173,6 +185,12 @@ function InterviewSessionContent() {
     );
   }
 
+  if (pageState === "precheck") {
+    return (
+      <IdentityVerification sessionId={sessionId} token={token} onContinue={loadCurrentQuestion} />
+    );
+  }
+
   if (pageState === "unavailable") {
     return (
       <CenteredCard>
@@ -217,6 +235,8 @@ function InterviewSessionContent() {
         {session && (
           <h1 className="text-xl font-bold text-gray-900">{session.role_name} Interview</h1>
         )}
+
+        <IntegrityMonitor sessionId={sessionId} token={token} />
 
         {question && (
           <QuestionCard
