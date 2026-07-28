@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Camera, CheckCircle2, Loader2, RotateCcw, ShieldCheck, Users, XCircle } from "lucide-react";
+import { AlertCircle, Camera, CheckCircle2, Loader2, RotateCcw, ShieldCheck, Users, XCircle } from "lucide-react";
 import interviewSessionService from "@/app/api/interview-session/endpoints";
 import { ensureModelsLoaded } from "./face-detection";
 
@@ -18,13 +18,24 @@ type Step =
   | "captured"
   | "comparing"
   | "result"
+  | "no-face-detected"
   | "multiple-people"
   | "unavailable";
 
-// face-api.js descriptor distances below ~0.6 are generally considered the
-// same person; we scale that into a friendlier 0-100 "match score" for the
-// candidate/staff to read, rather than exposing raw distance units.
+// face-api.js's own documented heuristic: a descriptor distance below ~0.6
+// generally indicates the same person. We display a friendlier 0-100 "match
+// score" scaled against that same boundary (distance 0 -> 100%, distance
+// 0.6 -> 0%), so a positive score already means "within the same-person
+// range" - see PASS_SCORE_THRESHOLD below for where the actual pass line
+// sits within that range.
 const MATCH_DISTANCE_THRESHOLD = 0.6;
+
+// Requiring the full 100% (an almost-identical photo) is unrealistic for a
+// real candidate selfie vs. a passport photo taken years apart under
+// different lighting - this sits partway into the "same person" range
+// rather than at its very edge, as a deliberate, moderate security margin.
+// Tune this directly if it proves too strict or too lenient in practice.
+const PASS_SCORE_THRESHOLD = 40;
 
 // Identity verification always takes this long from the candidate's
 // perspective, regardless of how fast the actual comparison finishes -
@@ -145,7 +156,11 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
       const referenceImg = referenceImgRef.current;
       if (!referenceImg) throw new Error("Reference image not available");
 
-      const detectorOptions = new faceapi.TinyFaceDetectorOptions();
+      // SsdMobilenetv1 is slower to load than TinyFaceDetector but
+      // meaningfully more reliable under imperfect lighting/angle - worth
+      // the extra second here since this only runs once, unlike the
+      // repeated in-interview presence checks.
+      const detectorOptions = new faceapi.SsdMobilenetv1Options();
       const selfieResults = await faceapi
         .detectAllFaces(selfieImg, detectorOptions)
         .withFaceLandmarks()
@@ -164,33 +179,45 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
           livenessPassed: true,
         }).catch(() => {});
         nextStep = "multiple-people";
+      } else if (selfieResults.length === 0) {
+        // Distinct from "detected a face but it didn't match closely
+        // enough" - no comparison was even attempted, most commonly caused
+        // by poor lighting, backlighting, or the face not being framed in
+        // the shot. Actionable and different advice from a genuine mismatch.
+        nextStep = "no-face-detected";
       } else {
         const selfieResult = selfieResults[0];
-        const referenceResult = await faceapi
-          .detectSingleFace(referenceImg, detectorOptions)
+        const referenceResults = await faceapi
+          .detectAllFaces(referenceImg, detectorOptions)
           .withFaceLandmarks()
-          .withFaceDescriptor();
+          .withFaceDescriptors();
+        const referenceResult = referenceResults[0];
 
-        const singleFaceDetected = Boolean(selfieResult);
-        let score = 0;
-        if (selfieResult && referenceResult) {
+        if (!referenceResult) {
+          // The reference document itself isn't readable as a face (poor
+          // scan quality, ID photo obscured, etc.) - a system/data issue
+          // rather than something the candidate can fix by retaking their
+          // own photo, so route to the same guidance as "unavailable"
+          // rather than implying a retry would help.
+          nextStep = "unavailable";
+        } else {
           const distance = faceapi.euclideanDistance(selfieResult.descriptor, referenceResult.descriptor);
-          score = Math.max(0, Math.min(100, (1 - distance / MATCH_DISTANCE_THRESHOLD) * 100));
+          const score = Math.max(0, Math.min(100, (1 - distance / MATCH_DISTANCE_THRESHOLD) * 100));
+
+          setMatchScore(score);
+          setPassed(score >= PASS_SCORE_THRESHOLD);
+
+          await interviewSessionService.submitIdentityVerification(sessionId, token, {
+            selfieBlob,
+            faceMatchScore: score,
+            singleFaceDetected: true,
+            // face-api.js does basic 2D face matching but no real liveness/anti-spoofing
+            // check (e.g. detecting a photo held up to the camera) - reporting true
+            // here reflects that limitation honestly rather than implying a check
+            // that isn't actually happening.
+            livenessPassed: true,
+          });
         }
-
-        setMatchScore(score);
-        setPassed(score >= 85 && singleFaceDetected);
-
-        await interviewSessionService.submitIdentityVerification(sessionId, token, {
-          selfieBlob,
-          faceMatchScore: score,
-          singleFaceDetected,
-          // face-api.js does basic 2D face matching but no real liveness/anti-spoofing
-          // check (e.g. detecting a photo held up to the camera) - reporting true
-          // here reflects that limitation honestly rather than implying a check
-          // that isn't actually happening.
-          livenessPassed: true,
-        });
       }
     } catch {
       setMatchScore(0);
@@ -225,8 +252,8 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
         <XCircle className="w-14 h-14 text-red-500 mx-auto mb-4" />
         <h1 className="text-xl font-bold text-red-700 mb-2">Identification Failed</h1>
         <p className="text-gray-600 mb-2">
-          We couldn&apos;t set up automatic identity verification for this session (no reference photo on file, or
-          your browser doesn&apos;t support the required camera features).
+          We couldn&apos;t set up automatic identity verification for this session (no readable reference photo on
+          file, or your browser doesn&apos;t support the required camera features).
         </p>
         <p className="text-gray-600">
           Please contact the person who invited you to this interview — your session cannot proceed until this is
@@ -270,6 +297,7 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
             left={<Placeholder label="You" icon={<Camera className="w-8 h-8" />} />}
             right={referenceImg ? <LabeledPane label="ID on file">{referenceImg}</LabeledPane> : <Placeholder label="ID on file" />}
           />
+          <VerificationTips />
           <button
             type="button"
             onClick={handleStartCamera}
@@ -333,6 +361,37 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
         </div>
       )}
 
+      {step === "no-face-detected" && selfieUrl && (
+        <div className="space-y-4">
+          <CompareLayout
+            left={
+              <div className="relative">
+                <LabeledPane label="You">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={selfieUrl} alt="Captured selfie" className="w-full h-full object-cover" style={{ transform: "scaleX(-1)" }} />
+                </LabeledPane>
+                <VerificationBadge passed={false} icon={<AlertCircle className="w-6 h-6 text-white" />} />
+              </div>
+            }
+            right={referenceImg ? <LabeledPane label="ID on file">{referenceImg}</LabeledPane> : <Placeholder label="ID on file" />}
+          />
+          <h2 className="text-lg font-bold text-red-700">No Face Detected</h2>
+          <div className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm bg-red-50 text-red-700 border border-red-200">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span>We couldn&apos;t find a clear face in that photo — this isn&apos;t a match result, we simply
+              couldn&apos;t analyze the image.</span>
+          </div>
+          <VerificationTips />
+          <button
+            type="button"
+            onClick={handleRetry}
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium"
+          >
+            <RotateCcw className="w-4 h-4" /> Retry
+          </button>
+        </div>
+      )}
+
       {step === "multiple-people" && selfieUrl && (
         <div className="space-y-4">
           <CompareLayout
@@ -391,6 +450,7 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
                 : `${matchScore?.toFixed(0)}% match — this doesn't meet the required threshold.`}
             </span>
           </div>
+          {!passed && <VerificationTips />}
           {passed ? (
             <ContinueButton onClick={onContinue} />
           ) : (
@@ -405,6 +465,20 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
         </div>
       )}
     </CenteredCard>
+  );
+}
+
+function VerificationTips() {
+  return (
+    <div className="text-left bg-gray-50 border border-gray-200 rounded-lg p-3">
+      <p className="text-xs font-semibold text-gray-700 mb-1.5">For a successful match:</p>
+      <ul className="text-xs text-gray-600 space-y-1 list-disc list-inside">
+        <li>Face a light source — avoid sitting with a window or light behind you</li>
+        <li>Look directly at the camera with your full face visible</li>
+        <li>Remove sunglasses or anything covering your face</li>
+        <li>Make sure only you are in frame</li>
+      </ul>
+    </div>
   );
 }
 

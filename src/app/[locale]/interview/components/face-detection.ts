@@ -28,7 +28,13 @@ export async function ensureModelsLoaded() {
       }
       await tf.ready();
       await Promise.all([
+        // TinyFaceDetector: fast, used for the repeated in-interview presence
+        // checks where speed matters more than precision.
         faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+        // SsdMobilenetv1: slower but meaningfully more accurate under
+        // imperfect lighting/angle - used for the one-time identity match,
+        // where accuracy matters far more than the extra load time.
+        faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
         faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
         faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
       ]);
