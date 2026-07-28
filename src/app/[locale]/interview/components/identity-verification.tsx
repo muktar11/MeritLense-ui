@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Camera, CheckCircle2, Loader2, RotateCcw, ShieldCheck, XCircle } from "lucide-react";
+import { Camera, CheckCircle2, Loader2, RotateCcw, ShieldCheck, Users, XCircle } from "lucide-react";
 import interviewSessionService from "@/app/api/interview-session/endpoints";
 import { ensureModelsLoaded } from "./face-detection";
 
@@ -11,7 +11,15 @@ interface IdentityVerificationProps {
   onContinue: () => void;
 }
 
-type Step = "loading" | "ready" | "camera-active" | "captured" | "comparing" | "result" | "unavailable";
+type Step =
+  | "loading"
+  | "ready"
+  | "camera-active"
+  | "captured"
+  | "comparing"
+  | "result"
+  | "multiple-people"
+  | "unavailable";
 
 // face-api.js descriptor distances below ~0.6 are generally considered the
 // same person; we scale that into a friendlier 0-100 "match score" for the
@@ -86,6 +94,11 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
   const handleCapture = async () => {
     const video = videoRef.current;
     if (!video) return;
+    // Capture from the raw video stream, not the mirrored <video> element's
+    // CSS transform - the mirror is a display-only treatment so the
+    // candidate sees themselves naturally; drawImage reads the underlying
+    // stream pixels regardless of CSS, so the captured frame stays
+    // unflipped, which is what we actually want to compare/store.
     const canvas = document.createElement("canvas");
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
@@ -118,10 +131,32 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
       if (!referenceImg) throw new Error("Reference image not available");
 
       const detectorOptions = new faceapi.TinyFaceDetectorOptions();
-      const [selfieResult, referenceResult] = await Promise.all([
-        faceapi.detectSingleFace(selfieImg, detectorOptions).withFaceLandmarks().withFaceDescriptor(),
-        faceapi.detectSingleFace(referenceImg, detectorOptions).withFaceLandmarks().withFaceDescriptor(),
-      ]);
+      const selfieResults = await faceapi
+        .detectAllFaces(selfieImg, detectorOptions)
+        .withFaceLandmarks()
+        .withFaceDescriptors();
+
+      if (selfieResults.length > 1) {
+        // Hard block - this is the one case in this flow that isn't a soft
+        // gate. A second person visible at the very start of the interview
+        // is an unambiguous problem, distinct from "the photo didn't match
+        // well" (which stays soft, since bad lighting/camera shouldn't lock
+        // a legitimate candidate out).
+        await interviewSessionService.submitIdentityVerification(sessionId, token, {
+          selfieBlob,
+          faceMatchScore: 0,
+          singleFaceDetected: false,
+          livenessPassed: true,
+        }).catch(() => {});
+        setStep("multiple-people");
+        return;
+      }
+
+      const selfieResult = selfieResults[0];
+      const referenceResult = await faceapi
+        .detectSingleFace(referenceImg, detectorOptions)
+        .withFaceLandmarks()
+        .withFaceDescriptor();
 
       const singleFaceDetected = Boolean(selfieResult);
       let score = 0;
@@ -143,10 +178,10 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
         // that isn't actually happening.
         livenessPassed: true,
       });
+      setStep("result");
     } catch {
       setMatchScore(0);
       setPassed(false);
-    } finally {
       setStep("result");
     }
   };
@@ -216,7 +251,14 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
 
       {step === "camera-active" && (
         <div className="space-y-3">
-          <video ref={videoRef} autoPlay playsInline muted className="w-full rounded-lg bg-black aspect-video" />
+          <video
+            ref={videoRef}
+            autoPlay
+            playsInline
+            muted
+            style={{ transform: "scaleX(-1)" }}
+            className="w-full rounded-lg bg-black aspect-video"
+          />
           <button
             type="button"
             onClick={handleCapture}
@@ -230,17 +272,41 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
       {(step === "captured" || step === "comparing") && selfieUrl && (
         <div className="space-y-3">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={selfieUrl} alt="Captured selfie" className="w-full rounded-lg" />
+          <img src={selfieUrl} alt="Captured selfie" className="w-full rounded-lg" style={{ transform: "scaleX(-1)" }} />
           <div className="flex items-center justify-center gap-2 text-sm text-gray-600 py-2">
             <Loader2 className="w-4 h-4 animate-spin" /> Comparing…
           </div>
         </div>
       )}
 
+      {step === "multiple-people" && selfieUrl && (
+        <div className="space-y-4">
+          <div className="relative inline-block w-full">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={selfieUrl} alt="Captured selfie" className="w-full rounded-lg" style={{ transform: "scaleX(-1)" }} />
+            <VerificationBadge passed={false} icon={<Users className="w-7 h-7 text-white" />} />
+          </div>
+          <div className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm bg-red-50 text-red-700 border border-red-200">
+            <Users className="w-4 h-4 shrink-0" />
+            <span>More than one person was detected. Please make sure only you are visible, then try again.</span>
+          </div>
+          <button
+            type="button"
+            onClick={handleRetry}
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium"
+          >
+            <RotateCcw className="w-4 h-4" /> Retry
+          </button>
+        </div>
+      )}
+
       {step === "result" && selfieUrl && (
         <div className="space-y-4">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={selfieUrl} alt="Captured selfie" className="w-full rounded-lg" />
+          <div className="relative inline-block w-full">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={selfieUrl} alt="Captured selfie" className="w-full rounded-lg" style={{ transform: "scaleX(-1)" }} />
+            <VerificationBadge passed={passed} />
+          </div>
           <div
             className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm ${
               passed ? "bg-green-50 text-green-700 border border-green-200" : "bg-amber-50 text-amber-700 border border-amber-200"
@@ -268,6 +334,18 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
         </div>
       )}
     </CenteredCard>
+  );
+}
+
+function VerificationBadge({ passed, icon }: { passed: boolean; icon?: React.ReactNode }) {
+  return (
+    <div
+      className={`absolute -bottom-3 -right-3 rounded-full p-2.5 border-4 border-white shadow-lg ${
+        passed ? "bg-green-500" : "bg-amber-500"
+      }`}
+    >
+      {icon ?? (passed ? <CheckCircle2 className="w-7 h-7 text-white" /> : <XCircle className="w-7 h-7 text-white" />)}
+    </div>
   );
 }
 

@@ -2,12 +2,13 @@
 
 import { Suspense, useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { CheckCircle2, Loader2, Mic, Type, XCircle, Clock } from "lucide-react";
+import { CheckCircle2, Loader2, Mic, PauseCircle, Type, XCircle, Clock, ShieldAlert } from "lucide-react";
 import interviewSessionService from "@/app/api/interview-session/endpoints";
 import {
   isSessionCompleted,
   type InterviewSessionPublic,
   type SessionQuestion,
+  type SessionStatus,
 } from "@/app/api/interview-session/types";
 import { QuestionCard } from "./components/question-card";
 import { AnswerTextForm } from "./components/answer-text-form";
@@ -22,6 +23,8 @@ type PageState =
   | "precheck"
   | "question"
   | "submitting"
+  | "paused"
+  | "terminated"
   | "completed"
   | "error";
 type AnswerMode = "audio" | "text";
@@ -97,6 +100,11 @@ function InterviewSessionContent() {
           setPageState("unavailable");
         } else if (data.status === "CREATED") {
           setPageState("not-ready");
+        } else if (data.status === "PAUSED") {
+          // Reload mid-pause (e.g. candidate refreshed the page) - current-question
+          // would reject this anyway since the session isn't IN_PROGRESS, so show
+          // the same blocking screen the live callback below would show.
+          setPageState("paused");
         } else if (!data.identity_verified) {
           setPageState("precheck");
         } else {
@@ -114,6 +122,19 @@ function InterviewSessionContent() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId, token]);
+
+  const handleIntegrityStatusChange = (status: SessionStatus) => {
+    if (status === "PAUSED") {
+      setPageState("paused");
+    } else if (status === "FAILED") {
+      setPageState("terminated");
+    } else if (status === "IN_PROGRESS") {
+      // Auto-resumed after a pause - the last-loaded question is still valid
+      // (the backend guard never let it change while paused), so just
+      // return to the question view rather than re-fetching.
+      setPageState((current) => (current === "paused" ? "question" : current));
+    }
+  };
 
   const handlePlayAudio = async () => {
     setLoadingAudio(true);
@@ -191,6 +212,35 @@ function InterviewSessionContent() {
     );
   }
 
+  if (pageState === "paused") {
+    return (
+      <CenteredCard>
+        <PauseCircle className="w-14 h-14 text-amber-500 mx-auto mb-4" />
+        <h1 className="text-xl font-bold text-gray-900 mb-2">Interview paused</h1>
+        <p className="text-gray-600">
+          We noticed more than one person in view. Please make sure you&apos;re alone in front of the camera —
+          your interview will resume automatically.
+        </p>
+        <div className="mt-4">
+          <IntegrityMonitor sessionId={sessionId} token={token} onSessionStatusChange={handleIntegrityStatusChange} />
+        </div>
+      </CenteredCard>
+    );
+  }
+
+  if (pageState === "terminated") {
+    return (
+      <CenteredCard>
+        <ShieldAlert className="w-14 h-14 text-red-500 mx-auto mb-4" />
+        <h1 className="text-xl font-bold text-gray-900 mb-2">Interview ended</h1>
+        <p className="text-gray-600">
+          This interview was ended due to repeated integrity violations. Please contact the person who invited
+          you if you believe this is a mistake.
+        </p>
+      </CenteredCard>
+    );
+  }
+
   if (pageState === "unavailable") {
     return (
       <CenteredCard>
@@ -236,7 +286,7 @@ function InterviewSessionContent() {
           <h1 className="text-xl font-bold text-gray-900">{session.role_name} Interview</h1>
         )}
 
-        <IntegrityMonitor sessionId={sessionId} token={token} />
+        <IntegrityMonitor sessionId={sessionId} token={token} onSessionStatusChange={handleIntegrityStatusChange} />
 
         {question && (
           <QuestionCard

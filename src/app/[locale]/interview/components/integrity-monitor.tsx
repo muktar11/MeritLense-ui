@@ -4,15 +4,17 @@ import { useEffect, useRef, useState } from "react";
 import { AlertTriangle } from "lucide-react";
 import interviewSessionService from "@/app/api/interview-session/endpoints";
 import { ensureModelsLoaded } from "./face-detection";
+import type { SessionStatus } from "@/app/api/interview-session/types";
 
 interface IntegrityMonitorProps {
   sessionId: string;
   token: string;
+  onSessionStatusChange?: (status: SessionStatus) => void;
 }
 
 const CHECK_INTERVAL_MS = 45_000;
 
-export function IntegrityMonitor({ sessionId, token }: IntegrityMonitorProps) {
+export function IntegrityMonitor({ sessionId, token, onSessionStatusChange }: IntegrityMonitorProps) {
   const [warning, setWarning] = useState<string | null>(null);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -59,10 +61,17 @@ export function IntegrityMonitor({ sessionId, token }: IntegrityMonitorProps) {
               setWarning(null);
             }
 
-            await interviewSessionService.logIntegrityEvent(sessionId, token, {
+            const result = await interviewSessionService.logIntegrityEvent(sessionId, token, {
               singleFaceDetected,
               faceCount,
             });
+            if (!active) return;
+            onSessionStatusChange?.(result.session_status);
+            if (result.session_status === "FAILED") {
+              // Nothing left to monitor - the session is over.
+              if (intervalRef.current) clearInterval(intervalRef.current);
+              streamRef.current?.getTracks().forEach((t) => t.stop());
+            }
           } catch {
             // Silently skip a failed check - this is a best-effort, non-blocking
             // monitor; one missed frame shouldn't interrupt the interview.
@@ -80,6 +89,7 @@ export function IntegrityMonitor({ sessionId, token }: IntegrityMonitorProps) {
       if (intervalRef.current) clearInterval(intervalRef.current);
       streamRef.current?.getTracks().forEach((t) => t.stop());
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId, token]);
 
   if (!warning) return null;

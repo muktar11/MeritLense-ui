@@ -3,6 +3,7 @@ export type SessionStatus =
   | 'VERIFICATION_PENDING'
   | 'READY'
   | 'IN_PROGRESS'
+  | 'PAUSED'
   | 'COMPLETED'
   | 'FAILED'
   | 'EXPIRED'
@@ -118,6 +119,8 @@ export interface IdentityVerificationResult {
 
 export interface IntegrityEventResult {
   status: 'RECORDED';
+  session_status: SessionStatus;
+  integrity_violation_count: number;
   integrity_event: {
     event_type: string;
     severity: string;
