@@ -216,6 +216,21 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
     );
   }
 
+  // Reference photo is always visible (side-by-side against the live camera
+  // / captured selfie) once we have one, from "ready" onward - the candidate
+  // should be able to see exactly what's being compared, not just trust a
+  // hidden background process.
+  const referenceImg = referenceUrl && (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      ref={referenceImgRef}
+      src={referenceUrl}
+      alt="ID on file"
+      crossOrigin="anonymous"
+      className="w-full h-full object-cover"
+    />
+  );
+
   return (
     <CenteredCard wide>
       <ShieldCheck className="w-12 h-12 text-purple-500 mx-auto mb-3" />
@@ -224,40 +239,42 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
         Take a quick photo so we can confirm it&apos;s you before starting the interview.
       </p>
 
-      {referenceUrl && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          ref={referenceImgRef}
-          src={referenceUrl}
-          alt="Reference document on file"
-          crossOrigin="anonymous"
-          className="hidden"
-        />
-      )}
-
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded-lg text-sm mb-4">{error}</div>
       )}
 
       {step === "ready" && (
-        <button
-          type="button"
-          onClick={handleStartCamera}
-          className="w-full flex items-center justify-center gap-2 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium"
-        >
-          <Camera className="w-4 h-4" /> Start Camera
-        </button>
+        <div className="space-y-4">
+          <CompareLayout
+            left={<Placeholder label="You" icon={<Camera className="w-8 h-8" />} />}
+            right={referenceImg ? <LabeledPane label="ID on file">{referenceImg}</LabeledPane> : <Placeholder label="ID on file" />}
+          />
+          <button
+            type="button"
+            onClick={handleStartCamera}
+            className="w-full flex items-center justify-center gap-2 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium"
+          >
+            <Camera className="w-4 h-4" /> Start Camera
+          </button>
+        </div>
       )}
 
       {step === "camera-active" && (
         <div className="space-y-3">
-          <video
-            ref={videoRef}
-            autoPlay
-            playsInline
-            muted
-            style={{ transform: "scaleX(-1)" }}
-            className="w-full rounded-lg bg-black aspect-video"
+          <CompareLayout
+            left={
+              <LabeledPane label="You">
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  style={{ transform: "scaleX(-1)" }}
+                  className="w-full h-full object-cover bg-black"
+                />
+              </LabeledPane>
+            }
+            right={referenceImg ? <LabeledPane label="ID on file">{referenceImg}</LabeledPane> : <Placeholder label="ID on file" />}
           />
           <button
             type="button"
@@ -271,8 +288,15 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
 
       {(step === "captured" || step === "comparing") && selfieUrl && (
         <div className="space-y-3">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={selfieUrl} alt="Captured selfie" className="w-full rounded-lg" style={{ transform: "scaleX(-1)" }} />
+          <CompareLayout
+            left={
+              <LabeledPane label="You">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={selfieUrl} alt="Captured selfie" className="w-full h-full object-cover" style={{ transform: "scaleX(-1)" }} />
+              </LabeledPane>
+            }
+            right={referenceImg ? <LabeledPane label="ID on file">{referenceImg}</LabeledPane> : <Placeholder label="ID on file" />}
+          />
           <div className="flex items-center justify-center gap-2 text-sm text-gray-600 py-2">
             <Loader2 className="w-4 h-4 animate-spin" /> Comparing…
           </div>
@@ -281,11 +305,18 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
 
       {step === "multiple-people" && selfieUrl && (
         <div className="space-y-4">
-          <div className="relative inline-block w-full">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={selfieUrl} alt="Captured selfie" className="w-full rounded-lg" style={{ transform: "scaleX(-1)" }} />
-            <VerificationBadge passed={false} icon={<Users className="w-7 h-7 text-white" />} />
-          </div>
+          <CompareLayout
+            left={
+              <div className="relative">
+                <LabeledPane label="You">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={selfieUrl} alt="Captured selfie" className="w-full h-full object-cover" style={{ transform: "scaleX(-1)" }} />
+                </LabeledPane>
+                <VerificationBadge passed={false} icon={<Users className="w-6 h-6 text-white" />} />
+              </div>
+            }
+            right={referenceImg ? <LabeledPane label="ID on file">{referenceImg}</LabeledPane> : <Placeholder label="ID on file" />}
+          />
           <div className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm bg-red-50 text-red-700 border border-red-200">
             <Users className="w-4 h-4 shrink-0" />
             <span>More than one person was detected. Please make sure only you are visible, then try again.</span>
@@ -302,21 +333,28 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
 
       {step === "result" && selfieUrl && (
         <div className="space-y-4">
-          <div className="relative inline-block w-full">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={selfieUrl} alt="Captured selfie" className="w-full rounded-lg" style={{ transform: "scaleX(-1)" }} />
-            <VerificationBadge passed={passed} />
-          </div>
+          <CompareLayout
+            left={
+              <div className="relative">
+                <LabeledPane label="You">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={selfieUrl} alt="Captured selfie" className="w-full h-full object-cover" style={{ transform: "scaleX(-1)" }} />
+                </LabeledPane>
+                <VerificationBadge passed={passed} />
+              </div>
+            }
+            right={referenceImg ? <LabeledPane label="ID on file">{referenceImg}</LabeledPane> : <Placeholder label="ID on file" />}
+          />
           <div
-            className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm ${
+            className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium ${
               passed ? "bg-green-50 text-green-700 border border-green-200" : "bg-amber-50 text-amber-700 border border-amber-200"
             }`}
           >
             {passed ? <CheckCircle2 className="w-4 h-4 shrink-0" /> : <XCircle className="w-4 h-4 shrink-0" />}
             <span>
               {passed
-                ? `Verified — ${matchScore?.toFixed(0)}% match.`
-                : `This didn't match automatically (${matchScore?.toFixed(0)}% match) — your session will be flagged for staff review.`}
+                ? `Access confirmed — ${matchScore?.toFixed(0)}% match.`
+                : `Access not confirmed automatically (${matchScore?.toFixed(0)}% match) — your session will be flagged for staff review.`}
             </span>
           </div>
           <div className="flex gap-2">
@@ -337,14 +375,42 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
   );
 }
 
+function CompareLayout({ left, right }: { left: React.ReactNode; right: React.ReactNode }) {
+  return (
+    <div className="grid grid-cols-2 gap-3">
+      {left}
+      {right}
+    </div>
+  );
+}
+
+function LabeledPane({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <p className="text-xs font-medium text-gray-500 mb-1 text-center">{label}</p>
+      <div className="rounded-lg overflow-hidden bg-gray-100 aspect-square border border-gray-200">{children}</div>
+    </div>
+  );
+}
+
+function Placeholder({ label, icon }: { label: string; icon?: React.ReactNode }) {
+  return (
+    <LabeledPane label={label}>
+      <div className="w-full h-full flex items-center justify-center text-gray-300">
+        {icon ?? <Loader2 className="w-6 h-6 animate-spin" />}
+      </div>
+    </LabeledPane>
+  );
+}
+
 function VerificationBadge({ passed, icon }: { passed: boolean; icon?: React.ReactNode }) {
   return (
     <div
-      className={`absolute -bottom-3 -right-3 rounded-full p-2.5 border-4 border-white shadow-lg ${
+      className={`absolute -bottom-2 -right-2 rounded-full p-2 border-4 border-white shadow-lg ${
         passed ? "bg-green-500" : "bg-amber-500"
       }`}
     >
-      {icon ?? (passed ? <CheckCircle2 className="w-7 h-7 text-white" /> : <XCircle className="w-7 h-7 text-white" />)}
+      {icon ?? (passed ? <CheckCircle2 className="w-5 h-5 text-white" /> : <XCircle className="w-5 h-5 text-white" />)}
     </div>
   );
 }
@@ -364,7 +430,7 @@ function ContinueButton({ onClick }: { onClick: () => void }) {
 function CenteredCard({ children, wide }: { children: React.ReactNode; wide?: boolean }) {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className={`bg-white rounded-2xl shadow-lg p-8 text-center ${wide ? "max-w-md w-full" : "max-w-md"}`}>
+      <div className={`bg-white rounded-2xl shadow-lg p-8 text-center ${wide ? "max-w-lg w-full" : "max-w-md"}`}>
         {children}
       </div>
     </div>

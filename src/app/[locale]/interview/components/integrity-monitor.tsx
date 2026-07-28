@@ -16,6 +16,7 @@ const CHECK_INTERVAL_MS = 45_000;
 
 export function IntegrityMonitor({ sessionId, token, onSessionStatusChange }: IntegrityMonitorProps) {
   const [warning, setWarning] = useState<string | null>(null);
+  const [cameraReady, setCameraReady] = useState(false);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -35,14 +36,12 @@ export function IntegrityMonitor({ sessionId, token, onSessionStatusChange }: In
           return;
         }
         streamRef.current = stream;
-
-        const video = document.createElement("video");
-        video.autoplay = true;
-        video.playsInline = true;
-        video.muted = true;
-        video.srcObject = stream;
-        await video.play();
-        videoRef.current = video;
+        setCameraReady(true);
+        // videoRef only mounts once cameraReady flips true, so attach on
+        // the next tick once the element actually exists.
+        requestAnimationFrame(() => {
+          if (videoRef.current) videoRef.current.srcObject = stream;
+        });
 
         intervalRef.current = setInterval(async () => {
           const el = videoRef.current;
@@ -92,12 +91,30 @@ export function IntegrityMonitor({ sessionId, token, onSessionStatusChange }: In
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId, token]);
 
-  if (!warning) return null;
+  if (!cameraReady) return null;
 
   return (
-    <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-700 px-3 py-2 rounded-lg text-sm">
-      <AlertTriangle className="w-4 h-4 shrink-0" />
-      <span>{warning}</span>
+    <div className="fixed bottom-4 right-4 z-40 flex flex-col items-end gap-2">
+      {warning && (
+        <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-700 px-3 py-2 rounded-lg text-sm shadow-md max-w-xs">
+          <AlertTriangle className="w-4 h-4 shrink-0" />
+          <span>{warning}</span>
+        </div>
+      )}
+      <div
+        className={`w-28 h-28 sm:w-36 sm:h-36 rounded-full overflow-hidden border-4 shadow-lg bg-black ${
+          warning ? "border-amber-400" : "border-white"
+        }`}
+      >
+        <video
+          ref={videoRef}
+          autoPlay
+          playsInline
+          muted
+          style={{ transform: "scaleX(-1)" }}
+          className="w-full h-full object-cover"
+        />
+      </div>
     </div>
   );
 }
