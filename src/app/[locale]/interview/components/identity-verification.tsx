@@ -26,6 +26,12 @@ type Step =
 // candidate/staff to read, rather than exposing raw distance units.
 const MATCH_DISTANCE_THRESHOLD = 0.6;
 
+// Identity verification always takes this long from the candidate's
+// perspective, regardless of how fast the actual comparison finishes -
+// gives the process a consistent, deliberate feel instead of resolving
+// instantly (which reads as untrustworthy) or unpredictably.
+const VERIFICATION_DURATION_SECONDS = 30;
+
 export function IdentityVerification({ sessionId, token, onContinue }: IdentityVerificationProps) {
   const [step, setStep] = useState<Step>("loading");
   const [error, setError] = useState<string | null>(null);
@@ -33,12 +39,14 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
   const [selfieUrl, setSelfieUrl] = useState<string | null>(null);
   const [matchScore, setMatchScore] = useState<number | null>(null);
   const [passed, setPassed] = useState(false);
+  const [countdown, setCountdown] = useState(VERIFICATION_DURATION_SECONDS);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const referenceImgRef = useRef<HTMLImageElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const selfieBlobRef = useRef<Blob | null>(null);
   const hasReferenceRef = useRef(false);
+  const countdownIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -54,9 +62,6 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
         setStep("ready");
       } catch {
         if (!active) return;
-        // No usable reference photo on file, or models failed to load -
-        // this is a soft gate, so let the candidate through rather than
-        // block them on something outside their control.
         hasReferenceRef.current = false;
         setStep("unavailable");
       }
@@ -69,6 +74,7 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
   useEffect(() => {
     return () => {
       streamRef.current?.getTracks().forEach((t) => t.stop());
+      if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
       if (referenceUrl) URL.revokeObjectURL(referenceUrl);
       if (selfieUrl) URL.revokeObjectURL(selfieUrl);
     };
@@ -123,6 +129,15 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
 
   const runComparison = async (selfieBlob: Blob) => {
     setStep("comparing");
+    setCountdown(VERIFICATION_DURATION_SECONDS);
+    const startedAt = Date.now();
+    countdownIntervalRef.current = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - startedAt) / 1000);
+      setCountdown(Math.max(0, VERIFICATION_DURATION_SECONDS - elapsed));
+    }, 250);
+    const minDuration = new Promise<void>((resolve) => setTimeout(resolve, VERIFICATION_DURATION_SECONDS * 1000));
+
+    let nextStep: Step = "result";
     try {
       const faceapi = await ensureModelsLoaded();
 
@@ -140,50 +155,51 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
         // Hard block - this is the one case in this flow that isn't a soft
         // gate. A second person visible at the very start of the interview
         // is an unambiguous problem, distinct from "the photo didn't match
-        // well" (which stays soft, since bad lighting/camera shouldn't lock
-        // a legitimate candidate out).
+        // well" (which is now also a hard gate, but shows the ordinary
+        // failure screen instead of this specific one).
         await interviewSessionService.submitIdentityVerification(sessionId, token, {
           selfieBlob,
           faceMatchScore: 0,
           singleFaceDetected: false,
           livenessPassed: true,
         }).catch(() => {});
-        setStep("multiple-people");
-        return;
+        nextStep = "multiple-people";
+      } else {
+        const selfieResult = selfieResults[0];
+        const referenceResult = await faceapi
+          .detectSingleFace(referenceImg, detectorOptions)
+          .withFaceLandmarks()
+          .withFaceDescriptor();
+
+        const singleFaceDetected = Boolean(selfieResult);
+        let score = 0;
+        if (selfieResult && referenceResult) {
+          const distance = faceapi.euclideanDistance(selfieResult.descriptor, referenceResult.descriptor);
+          score = Math.max(0, Math.min(100, (1 - distance / MATCH_DISTANCE_THRESHOLD) * 100));
+        }
+
+        setMatchScore(score);
+        setPassed(score >= 85 && singleFaceDetected);
+
+        await interviewSessionService.submitIdentityVerification(sessionId, token, {
+          selfieBlob,
+          faceMatchScore: score,
+          singleFaceDetected,
+          // face-api.js does basic 2D face matching but no real liveness/anti-spoofing
+          // check (e.g. detecting a photo held up to the camera) - reporting true
+          // here reflects that limitation honestly rather than implying a check
+          // that isn't actually happening.
+          livenessPassed: true,
+        });
       }
-
-      const selfieResult = selfieResults[0];
-      const referenceResult = await faceapi
-        .detectSingleFace(referenceImg, detectorOptions)
-        .withFaceLandmarks()
-        .withFaceDescriptor();
-
-      const singleFaceDetected = Boolean(selfieResult);
-      let score = 0;
-      if (selfieResult && referenceResult) {
-        const distance = faceapi.euclideanDistance(selfieResult.descriptor, referenceResult.descriptor);
-        score = Math.max(0, Math.min(100, (1 - distance / MATCH_DISTANCE_THRESHOLD) * 100));
-      }
-
-      setMatchScore(score);
-      setPassed(score >= 85 && singleFaceDetected);
-
-      await interviewSessionService.submitIdentityVerification(sessionId, token, {
-        selfieBlob,
-        faceMatchScore: score,
-        singleFaceDetected,
-        // face-api.js does basic 2D face matching but no real liveness/anti-spoofing
-        // check (e.g. detecting a photo held up to the camera) - reporting true
-        // here reflects that limitation honestly rather than implying a check
-        // that isn't actually happening.
-        livenessPassed: true,
-      });
-      setStep("result");
     } catch {
       setMatchScore(0);
       setPassed(false);
-      setStep("result");
     }
+
+    await minDuration;
+    if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
+    setStep(nextStep);
   };
 
   const handleRetry = () => {
@@ -206,12 +222,16 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
   if (step === "unavailable") {
     return (
       <CenteredCard>
-        <ShieldCheck className="w-14 h-14 text-amber-500 mx-auto mb-4" />
-        <h1 className="text-xl font-bold text-gray-900 mb-2">Identity verification unavailable</h1>
-        <p className="text-gray-600 mb-6">
-          We couldn&apos;t set up automatic verification for this session. You can continue to your interview.
+        <XCircle className="w-14 h-14 text-red-500 mx-auto mb-4" />
+        <h1 className="text-xl font-bold text-red-700 mb-2">Identification Failed</h1>
+        <p className="text-gray-600 mb-2">
+          We couldn&apos;t set up automatic identity verification for this session (no reference photo on file, or
+          your browser doesn&apos;t support the required camera features).
         </p>
-        <ContinueButton onClick={onContinue} />
+        <p className="text-gray-600">
+          Please contact the person who invited you to this interview — your session cannot proceed until this is
+          resolved.
+        </p>
       </CenteredCard>
     );
   }
@@ -236,7 +256,8 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
       <ShieldCheck className="w-12 h-12 text-purple-500 mx-auto mb-3" />
       <h1 className="text-xl font-bold text-gray-900 mb-2">Verify your identity</h1>
       <p className="text-gray-600 text-sm mb-6">
-        Take a quick photo so we can confirm it&apos;s you before starting the interview.
+        Take a quick photo so we can confirm it&apos;s you. You won&apos;t be able to start the interview until this
+        passes.
       </p>
 
       {error && (
@@ -297,8 +318,17 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
             }
             right={referenceImg ? <LabeledPane label="ID on file">{referenceImg}</LabeledPane> : <Placeholder label="ID on file" />}
           />
-          <div className="flex items-center justify-center gap-2 text-sm text-gray-600 py-2">
-            <Loader2 className="w-4 h-4 animate-spin" /> Comparing…
+          <div className="flex flex-col items-center justify-center gap-2 text-sm text-gray-600 py-2">
+            {step === "comparing" ? (
+              <>
+                <div className="w-14 h-14 rounded-full border-4 border-purple-100 border-t-purple-600 animate-spin" />
+                <span className="font-medium">Verifying identity… {countdown}s</span>
+              </>
+            ) : (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" /> Preparing…
+              </>
+            )}
           </div>
         </div>
       )}
@@ -317,6 +347,7 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
             }
             right={referenceImg ? <LabeledPane label="ID on file">{referenceImg}</LabeledPane> : <Placeholder label="ID on file" />}
           />
+          <h2 className="text-lg font-bold text-red-700">Identification Failed</h2>
           <div className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm bg-red-50 text-red-700 border border-red-200">
             <Users className="w-4 h-4 shrink-0" />
             <span>More than one person was detected. Please make sure only you are visible, then try again.</span>
@@ -345,6 +376,9 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
             }
             right={referenceImg ? <LabeledPane label="ID on file">{referenceImg}</LabeledPane> : <Placeholder label="ID on file" />}
           />
+          <h2 className={`text-lg font-bold ${passed ? "text-green-700" : "text-red-700"}`}>
+            {passed ? "Identity Verified" : "Identification Failed"}
+          </h2>
           <div
             className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium ${
               passed ? "bg-green-50 text-green-700 border border-green-200" : "bg-amber-50 text-amber-700 border border-amber-200"
@@ -353,22 +387,21 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
             {passed ? <CheckCircle2 className="w-4 h-4 shrink-0" /> : <XCircle className="w-4 h-4 shrink-0" />}
             <span>
               {passed
-                ? `Access confirmed — ${matchScore?.toFixed(0)}% match.`
-                : `Access not confirmed automatically (${matchScore?.toFixed(0)}% match) — your session will be flagged for staff review.`}
+                ? `${matchScore?.toFixed(0)}% match.`
+                : `${matchScore?.toFixed(0)}% match — this doesn't meet the required threshold.`}
             </span>
           </div>
-          <div className="flex gap-2">
+          {passed ? (
+            <ContinueButton onClick={onContinue} />
+          ) : (
             <button
               type="button"
               onClick={handleRetry}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50"
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium"
             >
               <RotateCcw className="w-4 h-4" /> Retry
             </button>
-            <div className="flex-1">
-              <ContinueButton onClick={onContinue} />
-            </div>
-          </div>
+          )}
         </div>
       )}
     </CenteredCard>
