@@ -20,6 +20,7 @@ type Step =
   | "result"
   | "no-face-detected"
   | "multiple-people"
+  | "setup-failed"
   | "unavailable";
 
 // face-api.js's own documented heuristic: a descriptor distance below ~0.6
@@ -58,32 +59,48 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
   const selfieBlobRef = useRef<Blob | null>(null);
   const hasReferenceRef = useRef(false);
   const countdownIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const mountedRef = useRef(true);
+
+  const loadSetup = async () => {
+    setStep("loading");
+    // These two are deliberately separate try/catches, not a single
+    // Promise.all - they fail for very different reasons and need very
+    // different messaging. A missing/unreadable reference photo needs staff
+    // to fix (no amount of retrying helps), while model loading can fail on
+    // a slow/flaky connection and often just needs a real retry.
+    let blob: Blob;
+    try {
+      blob = await interviewSessionService.getReferenceImage(sessionId, token);
+    } catch {
+      if (!mountedRef.current) return;
+      hasReferenceRef.current = false;
+      setStep("unavailable");
+      return;
+    }
+
+    try {
+      await ensureModelsLoaded();
+    } catch {
+      if (!mountedRef.current) return;
+      setStep("setup-failed");
+      return;
+    }
+
+    if (!mountedRef.current) return;
+    setReferenceUrl(URL.createObjectURL(blob));
+    hasReferenceRef.current = true;
+    setStep("ready");
+  };
 
   useEffect(() => {
-    let active = true;
-    (async () => {
-      try {
-        const [blob] = await Promise.all([
-          interviewSessionService.getReferenceImage(sessionId, token),
-          ensureModelsLoaded(),
-        ]);
-        if (!active) return;
-        setReferenceUrl(URL.createObjectURL(blob));
-        hasReferenceRef.current = true;
-        setStep("ready");
-      } catch {
-        if (!active) return;
-        hasReferenceRef.current = false;
-        setStep("unavailable");
-      }
-    })();
-    return () => {
-      active = false;
-    };
+    loadSetup();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId, token]);
 
   useEffect(() => {
+    mountedRef.current = true;
     return () => {
+      mountedRef.current = false;
       streamRef.current?.getTracks().forEach((t) => t.stop());
       if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
       if (referenceUrl) URL.revokeObjectURL(referenceUrl);
@@ -252,13 +269,31 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
         <XCircle className="w-14 h-14 text-red-500 mx-auto mb-4" />
         <h1 className="text-xl font-bold text-red-700 mb-2">Identification Failed</h1>
         <p className="text-gray-600 mb-2">
-          We couldn&apos;t set up automatic identity verification for this session (no readable reference photo on
-          file, or your browser doesn&apos;t support the required camera features).
+          We couldn&apos;t find a readable reference photo on file for this session.
         </p>
         <p className="text-gray-600">
           Please contact the person who invited you to this interview — your session cannot proceed until this is
           resolved.
         </p>
+      </CenteredCard>
+    );
+  }
+
+  if (step === "setup-failed") {
+    return (
+      <CenteredCard>
+        <AlertCircle className="w-14 h-14 text-amber-500 mx-auto mb-4" />
+        <h1 className="text-xl font-bold text-gray-900 mb-2">Couldn&apos;t load verification</h1>
+        <p className="text-gray-600 mb-6">
+          This is usually a temporary connection issue. Please check your internet connection and try again.
+        </p>
+        <button
+          type="button"
+          onClick={() => loadSetup()}
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium"
+        >
+          <RotateCcw className="w-4 h-4" /> Retry
+        </button>
       </CenteredCard>
     );
   }

@@ -19,26 +19,35 @@ let modelsLoadingPromise: Promise<typeof import("@vladmandic/face-api")> | null 
 export async function ensureModelsLoaded() {
   if (!modelsLoadingPromise) {
     modelsLoadingPromise = (async () => {
-      const faceapi = await import("@vladmandic/face-api");
-      const tf = faceapi.tf as unknown as TfBackendControls;
       try {
-        await tf.setBackend("webgl");
-      } catch {
-        await tf.setBackend("cpu");
+        const faceapi = await import("@vladmandic/face-api");
+        const tf = faceapi.tf as unknown as TfBackendControls;
+        try {
+          await tf.setBackend("webgl");
+        } catch {
+          await tf.setBackend("cpu");
+        }
+        await tf.ready();
+        await Promise.all([
+          // TinyFaceDetector: fast, used for the repeated in-interview presence
+          // checks where speed matters more than precision.
+          faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+          // SsdMobilenetv1: slower but meaningfully more accurate under
+          // imperfect lighting/angle - used for the one-time identity match,
+          // where accuracy matters far more than the extra load time.
+          faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
+          faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+          faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
+        ]);
+        return faceapi;
+      } catch (err) {
+        // Don't cache a failed load - a network blip loading ~13MB of model
+        // weights is often transient, and caching the rejection would make
+        // every future call (including a candidate's own retry) replay the
+        // same failure forever instead of actually trying again.
+        modelsLoadingPromise = null;
+        throw err;
       }
-      await tf.ready();
-      await Promise.all([
-        // TinyFaceDetector: fast, used for the repeated in-interview presence
-        // checks where speed matters more than precision.
-        faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-        // SsdMobilenetv1: slower but meaningfully more accurate under
-        // imperfect lighting/angle - used for the one-time identity match,
-        // where accuracy matters far more than the extra load time.
-        faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
-        faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
-        faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
-      ]);
-      return faceapi;
     })();
   }
   return modelsLoadingPromise;
