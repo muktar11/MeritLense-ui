@@ -1,4 +1,15 @@
-const MODEL_URL = "/models";
+// Azure Static Web Apps was confirmed (directly, via curl against
+// production) to serve large model binaries extremely slowly and
+// unreliably - even the ~6.4MB face recognition model, which is required
+// and can't be shrunk away, sometimes failed to fully transfer at all.
+// jsDelivr is a real CDN built for exactly this (serving npm package
+// assets at scale) and measured dramatically faster/more consistent in
+// the same test. Pinned to the installed package version so an upstream
+// release can't silently change what gets served. The local /models copy
+// is kept only as a fallback if the CDN itself is unreachable (e.g. a
+// corporate firewall blocking jsdelivr.net).
+const CDN_MODEL_URL = "https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.15/model";
+const LOCAL_MODEL_URL = "/models";
 
 // TinyFaceDetector defaults (inputSize 416, scoreThreshold 0.5) are tuned
 // for speed over accuracy. For the one-time identity check specifically,
@@ -38,26 +49,26 @@ export async function ensureModelsLoaded() {
         }
         await tf.ready();
         // Deliberately only TinyFaceDetector (~200KB), not the heavier
-        // SsdMobilenetv1 (~5.6MB) that was here briefly - a real candidate
-        // hit a load failure that traced back to Azure Static Web Apps
-        // serving large model files extremely slowly (confirmed directly:
-        // a multi-MB file transferring at ~30-50KB/s, sometimes not
-        // completing at all). A large binary sitting in the critical path
-        // of "can this candidate even start their interview" is a
-        // reliability risk that isn't worth the accuracy gain - see
-        // IDENTITY_DETECTOR_TUNING above for how detection accuracy is
-        // instead improved by tuning this same lightweight model.
-        await Promise.all([
-          faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-          faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
-          faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
-        ]);
+        // SsdMobilenetv1 (~5.6MB) that was here briefly - not worth the
+        // extra weight over tuning this lighter model (see
+        // IDENTITY_DETECTOR_TUNING above).
+        const loadFrom = (url: string) =>
+          Promise.all([
+            faceapi.nets.tinyFaceDetector.loadFromUri(url),
+            faceapi.nets.faceLandmark68Net.loadFromUri(url),
+            faceapi.nets.faceRecognitionNet.loadFromUri(url),
+          ]);
+        try {
+          await loadFrom(CDN_MODEL_URL);
+        } catch {
+          await loadFrom(LOCAL_MODEL_URL);
+        }
         return faceapi;
       } catch (err) {
-        // Don't cache a failed load - a network blip loading ~13MB of model
-        // weights is often transient, and caching the rejection would make
-        // every future call (including a candidate's own retry) replay the
-        // same failure forever instead of actually trying again.
+        // Don't cache a failed load (even after the CDN-then-local
+        // fallback above) - caching a rejection would make every future
+        // call, including a candidate's own retry, replay the same
+        // failure forever instead of actually trying again.
         modelsLoadingPromise = null;
         throw err;
       }
