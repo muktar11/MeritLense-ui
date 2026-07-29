@@ -133,9 +133,20 @@ export type PassportPhotoQualityStatus =
   | "low-quality"
   | "skipped";
 
+export interface FaceBox {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 export interface PassportPhotoQualityResult {
   status: PassportPhotoQualityStatus;
   faceCount: number;
+  // Only set when exactly one face was found (any status derived from that
+  // single-face path) - lets a caller crop the same face the check itself
+  // evaluated, without re-running detection.
+  box?: FaceBox;
 }
 
 // Best-effort, client-side-only hint shown at upload time so candidates
@@ -166,15 +177,16 @@ export async function checkPassportPhotoQuality(file: File): Promise<PassportPho
     if (detections.length > 1) return { status: "multiple-faces", faceCount: detections.length };
 
     const detection = detections[0];
+    const box: FaceBox = detection.box;
     const tooSmall =
-      detection.box.width / image.naturalWidth < MIN_FACE_WIDTH_RATIO ||
-      detection.box.height / image.naturalHeight < MIN_FACE_HEIGHT_RATIO;
-    if (tooSmall) return { status: "face-too-small", faceCount: 1 };
+      box.width / image.naturalWidth < MIN_FACE_WIDTH_RATIO ||
+      box.height / image.naturalHeight < MIN_FACE_HEIGHT_RATIO;
+    if (tooSmall) return { status: "face-too-small", faceCount: 1, box };
 
     const lowConfidence = detection.score < LOW_CONFIDENCE_SCORE_THRESHOLD;
-    const blurry = computeBlurVariance(image, detection.box) < BLUR_VARIANCE_THRESHOLD;
+    const blurry = computeBlurVariance(image, box) < BLUR_VARIANCE_THRESHOLD;
     const unstable = await isDescriptorUnstable(faceapi, image);
-    return { status: lowConfidence || blurry || unstable ? "low-quality" : "ok", faceCount: 1 };
+    return { status: lowConfidence || blurry || unstable ? "low-quality" : "ok", faceCount: 1, box };
   } catch {
     return { status: "skipped", faceCount: 0 };
   } finally {
@@ -253,4 +265,54 @@ function computeBlurVariance(
   }
   const mean = sum / count;
   return sumSq / count - mean * mean;
+}
+
+// Padding around the raw detection box so the crop includes a little
+// forehead/chin/ear margin rather than a razor-tight bounding box - both
+// for the landmark detector's benefit when it's re-run on this crop later,
+// and so the photo doesn't look oddly cropped when shown to a human for
+// confirmation.
+const CROP_PADDING_RATIO = 0.4;
+// Cap the output size rather than force a fixed square - forcing a square
+// would stretch the aspect ratio (faces aren't square), and upscaling
+// beyond the source resolution would just invent detail that isn't there.
+const CROP_MAX_DIMENSION = 600;
+
+// Crop the region around a previously-detected face out of the original
+// passport image, for use as a standalone verification reference photo -
+// see Candidate.verification_photo. Takes the box from an earlier
+// checkPassportPhotoQuality() call rather than re-detecting, since that
+// call already confirmed exactly one usable face and where it is.
+export async function cropFaceFromFile(file: File, box: FaceBox): Promise<Blob> {
+  const objectUrl = URL.createObjectURL(file);
+  try {
+    const image = await loadImage(objectUrl);
+    const padX = box.width * CROP_PADDING_RATIO;
+    const padY = box.height * CROP_PADDING_RATIO;
+    const sx = Math.max(0, box.x - padX);
+    const sy = Math.max(0, box.y - padY);
+    const sw = Math.min(image.naturalWidth - sx, box.width + padX * 2);
+    const sh = Math.min(image.naturalHeight - sy, box.height + padY * 2);
+
+    const scale = Math.min(1, CROP_MAX_DIMENSION / Math.max(sw, sh));
+    const outW = Math.max(1, Math.round(sw * scale));
+    const outH = Math.max(1, Math.round(sh * scale));
+
+    const canvas = document.createElement("canvas");
+    canvas.width = outW;
+    canvas.height = outH;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("Canvas not supported");
+    ctx.drawImage(image, sx, sy, sw, sh, 0, 0, outW, outH);
+
+    return await new Promise<Blob>((resolve, reject) => {
+      canvas.toBlob(
+        (blob) => (blob ? resolve(blob) : reject(new Error("Failed to crop face image"))),
+        "image/jpeg",
+        0.92
+      );
+    });
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
 }

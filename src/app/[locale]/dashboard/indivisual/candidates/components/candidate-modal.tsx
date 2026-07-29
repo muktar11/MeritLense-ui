@@ -2,12 +2,13 @@
 
 import { useState, useEffect, Fragment } from "react"
 import { useTranslations } from "next-intl"
-import { 
-  X, 
-  Upload, 
-  Loader2, 
+import {
+  X,
+  Upload,
+  Loader2,
   FileText,
-  Trash2
+  Trash2,
+  CheckCircle2
 } from "lucide-react"
 import Image from "next/image"
 import { Dialog, Transition } from '@headlessui/react'
@@ -19,7 +20,7 @@ import {
   JOB_ROLES,
   LANGUAGES
 } from "../../../../../api/candidates/types"
-import { checkPassportPhotoQuality, PassportPhotoQualityResult } from "@/lib/face-detection"
+import { checkPassportPhotoQuality, cropFaceFromFile, PassportPhotoQualityResult } from "@/lib/face-detection"
 import { PASSPORT_PHOTO_GUIDELINES } from "@/lib/photo-guidelines"
 
 type PhotoField = 'passport_document' | 'profile_photo'
@@ -54,6 +55,7 @@ export function CandidateModal({
     preferred_language: "EN",
     passport_document: null,
     profile_photo: null,
+    verification_photo: null,
   })
 
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -71,6 +73,8 @@ export function CandidateModal({
     passport_document: false,
     profile_photo: false,
   })
+  const [verificationCrop, setVerificationCrop] = useState<{ url: string; blob: Blob } | null>(null)
+  const [verificationCropConfirmed, setVerificationCropConfirmed] = useState(false)
 
   useEffect(() => {
     if (isOpen) {
@@ -85,12 +89,15 @@ export function CandidateModal({
           preferred_language: candidate.preferred_language,
           passport_document: null,
           profile_photo: null,
+          verification_photo: null,
         })
         setSkillsList(candidate.skills_list || [])
         setPreviewPhoto(candidate.profile_photo || null)
         setPreviewDocument(null)
         setPhotoQuality({ passport_document: null, profile_photo: null })
         setPhotoQualityChecking({ passport_document: false, profile_photo: false })
+        setVerificationCrop(null)
+        setVerificationCropConfirmed(false)
       } else {
         setFormData({
           first_name: "",
@@ -102,12 +109,15 @@ export function CandidateModal({
           preferred_language: "EN",
           passport_document: null,
           profile_photo: null,
+          verification_photo: null,
         })
         setSkillsList([])
         setPreviewPhoto(null)
         setPreviewDocument(null)
         setPhotoQuality({ passport_document: null, profile_photo: null })
         setPhotoQualityChecking({ passport_document: false, profile_photo: false })
+        setVerificationCrop(null)
+        setVerificationCropConfirmed(false)
       }
       setErrors({})
       setTouchedFields({})
@@ -116,6 +126,7 @@ export function CandidateModal({
     return () => {
       if (previewPhoto?.startsWith('blob:')) URL.revokeObjectURL(previewPhoto)
       if (previewDocument?.startsWith('blob:')) URL.revokeObjectURL(previewDocument)
+      if (verificationCrop) URL.revokeObjectURL(verificationCrop.url)
     }
   }, [isOpen, mode, candidate])
 
@@ -147,14 +158,42 @@ export function CandidateModal({
         setPreviewPhoto(url)
       } else {
         setPreviewDocument(url)
+        setVerificationCrop(prev => {
+          if (prev) URL.revokeObjectURL(prev.url)
+          return null
+        })
+        setVerificationCropConfirmed(false)
+        setFormData(prev => ({ ...prev, verification_photo: null }))
       }
 
       setPhotoQuality(prev => ({ ...prev, [field]: null }))
       setPhotoQualityChecking(prev => ({ ...prev, [field]: true }))
       checkPassportPhotoQuality(file)
-        .then(result => setPhotoQuality(prev => ({ ...prev, [field]: result })))
+        .then(async (result) => {
+          setPhotoQuality(prev => ({ ...prev, [field]: result }))
+          if (field === 'passport_document' && result.status === 'ok' && result.box) {
+            try {
+              const blob = await cropFaceFromFile(file, result.box)
+              setVerificationCrop(prev => {
+                if (prev) URL.revokeObjectURL(prev.url)
+                return { url: URL.createObjectURL(blob), blob }
+              })
+            } catch {
+              // Best-effort - if cropping fails for any reason, just skip the
+              // confirm step and fall back to the full document as before.
+              setVerificationCrop(null)
+            }
+          }
+        })
         .finally(() => setPhotoQualityChecking(prev => ({ ...prev, [field]: false })))
     }
+  }
+
+  const handleConfirmVerificationPhoto = () => {
+    if (!verificationCrop) return
+    const croppedFile = new File([verificationCrop.blob], 'verification-photo.jpg', { type: 'image/jpeg' })
+    setFormData(prev => ({ ...prev, verification_photo: croppedFile }))
+    setVerificationCropConfirmed(true)
   }
 
   const handleBlur = (field: string) => {
@@ -201,6 +240,8 @@ export function CandidateModal({
       newErrors.passport_document = "The face in this photo is too small to use for identity verification. Please upload a closer photo, or crop it to focus on your face."
     } else if (formData.passport_document && photoQuality.passport_document?.status === 'low-quality') {
       newErrors.passport_document = "This passport photo looks too blurry or unclear to use for identity verification. Please upload a sharper, unobstructed photo."
+    } else if (formData.passport_document && verificationCrop && !verificationCropConfirmed) {
+      newErrors.passport_document = "Please confirm the verification photo below before submitting."
     }
 
     if (formData.profile_photo && photoQualityChecking.profile_photo) {
@@ -659,6 +700,36 @@ export function CandidateModal({
                               Tip: upload a JPG or PNG (not a PDF) so we can check this automatically before you submit.
                             </p>
                           </div>
+                          {verificationCrop && (
+                            <div className="mt-2 rounded-lg border border-purple-200 bg-purple-50 p-3">
+                              <p className="text-sm text-gray-700 mb-2">
+                                We&apos;ll use this close-up for identity verification during the interview instead of the full document — does it clearly show the candidate&apos;s face?
+                              </p>
+                              <div className="flex items-center gap-3">
+                                <Image
+                                  src={verificationCrop.url}
+                                  alt="Verification photo preview"
+                                  width={72}
+                                  height={72}
+                                  className="w-18 h-18 rounded-lg object-cover border border-purple-200"
+                                />
+                                {verificationCropConfirmed ? (
+                                  <span className="text-sm text-green-600 font-medium flex items-center gap-1">
+                                    <CheckCircle2 size={16} />
+                                    Confirmed
+                                  </span>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={handleConfirmVerificationPhoto}
+                                    className="px-3 py-1.5 bg-purple-500 text-white text-sm rounded-lg hover:bg-purple-600 transition"
+                                  >
+                                    Looks good, confirm
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>

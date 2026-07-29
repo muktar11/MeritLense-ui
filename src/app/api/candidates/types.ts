@@ -12,6 +12,7 @@ export interface Candidate {
   status: string;
   passport_document: string;
   profile_photo: string | null;
+  verification_photo: string | null;
   created_by: string;
   created_by_name: string;
   company: string | null;
@@ -31,6 +32,7 @@ export interface CandidateFormData {
   preferred_language: string;
   passport_document: File | null;
   profile_photo: File | null;
+  verification_photo: File | null;
 }
 
 export type CandidateModalMode = 'view' | 'edit' | 'create';

@@ -39,7 +39,7 @@ class CandidateService {
     
     Object.entries(data).forEach(([key, value]) => {
       if (value !== null && value !== undefined) {
-        if (key === 'passport_document' || key === 'profile_photo') {
+        if (key === 'passport_document' || key === 'profile_photo' || key === 'verification_photo') {
           if (value instanceof File) {
             formData.append(key, value);
           }
@@ -59,7 +59,7 @@ class CandidateService {
     
     Object.entries(data).forEach(([key, value]) => {
       if (value !== null && value !== undefined) {
-        if (key === 'passport_document' || key === 'profile_photo') {
+        if (key === 'passport_document' || key === 'profile_photo' || key === 'verification_photo') {
           if (value instanceof File) {
             formData.append(key, value);
           }
@@ -118,6 +118,7 @@ class CandidateService {
       preferred_language: candidate.preferred_language,
       passport_document: null,
       profile_photo: null,
+      verification_photo: null,
     };
   }
 }
