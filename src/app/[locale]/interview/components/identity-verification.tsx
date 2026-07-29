@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AlertCircle, Camera, CheckCircle2, Loader2, RotateCcw, ShieldCheck, Users, XCircle } from "lucide-react";
 import interviewSessionService from "@/app/api/interview-session/endpoints";
-import { ensureModelsLoaded, IDENTITY_DETECTOR_TUNING } from "./face-detection";
+import { ensureModelsLoaded, IDENTITY_DETECTOR_TUNING } from "@/lib/face-detection";
 
 interface IdentityVerificationProps {
   sessionId: string;

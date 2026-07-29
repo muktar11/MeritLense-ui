@@ -76,3 +76,69 @@ export async function ensureModelsLoaded() {
   }
   return modelsLoadingPromise;
 }
+
+// Below same confidence, TinyFaceDetector did find *a* face but isn't
+// confident about it - in practice this correlates strongly with the kind
+// of blurry/low-res/poorly-lit passport scans that later defeat the real
+// selfie-vs-passport match at interview time. Deliberately higher than
+// IDENTITY_DETECTOR_TUNING.scoreThreshold (0.3, which only gates whether a
+// detection is returned at all) - this is a stricter bar used only to warn
+// at upload time, not to decide whether a face exists.
+const LOW_CONFIDENCE_SCORE_THRESHOLD = 0.6;
+
+export type PassportPhotoQualityStatus =
+  | "ok"
+  | "no-face"
+  | "multiple-faces"
+  | "low-quality"
+  | "skipped";
+
+export interface PassportPhotoQualityResult {
+  status: PassportPhotoQualityStatus;
+  faceCount: number;
+}
+
+// Best-effort, client-side-only hint shown at upload time so candidates
+// catch an unusable passport photo before it ever reaches an interview -
+// by then it's too late to ask them to re-upload. Deliberately never
+// throws: any failure (model load, image decode) just skips the hint
+// rather than blocking a candidate-creation form on a heuristic.
+export async function checkPassportPhotoQuality(file: File): Promise<PassportPhotoQualityResult> {
+  if (!file.type.startsWith("image/")) {
+    // PDF passports can't be rasterized in the browser without pulling in
+    // a full PDF renderer - the backend already converts PDF passports to
+    // PNG for the real verification step, so this upload-time hint simply
+    // doesn't apply to them.
+    return { status: "skipped", faceCount: 0 };
+  }
+
+  let objectUrl: string | null = null;
+  try {
+    objectUrl = URL.createObjectURL(file);
+    const image = await loadImage(objectUrl);
+    const faceapi = await ensureModelsLoaded();
+    const detections = await faceapi.detectAllFaces(
+      image,
+      new faceapi.TinyFaceDetectorOptions(IDENTITY_DETECTOR_TUNING)
+    );
+
+    if (detections.length === 0) return { status: "no-face", faceCount: 0 };
+    if (detections.length > 1) return { status: "multiple-faces", faceCount: detections.length };
+
+    const lowConfidence = detections[0].score < LOW_CONFIDENCE_SCORE_THRESHOLD;
+    return { status: lowConfidence ? "low-quality" : "ok", faceCount: 1 };
+  } catch {
+    return { status: "skipped", faceCount: 0 };
+  } finally {
+    if (objectUrl) URL.revokeObjectURL(objectUrl);
+  }
+}
+
+function loadImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error("Failed to load image"));
+    img.src = src;
+  });
+}

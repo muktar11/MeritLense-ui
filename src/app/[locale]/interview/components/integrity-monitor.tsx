@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AlertTriangle } from "lucide-react";
 import interviewSessionService from "@/app/api/interview-session/endpoints";
-import { ensureModelsLoaded } from "./face-detection";
+import { ensureModelsLoaded } from "@/lib/face-detection";
 import type { SessionStatus } from "@/app/api/interview-session/types";
 
 interface IntegrityMonitorProps {

@@ -12,13 +12,14 @@ import {
 import Image from "next/image"
 import { Dialog, Transition } from '@headlessui/react'
 import candidateService from "../../../../../api/candidates/endpoints"
-import { 
-  Candidate, 
-  CandidateFormData, 
+import {
+  Candidate,
+  CandidateFormData,
   CandidateModalMode,
   JOB_ROLES,
-  LANGUAGES 
+  LANGUAGES
 } from "../../../../../api/candidates/types"
+import { checkPassportPhotoQuality, PassportPhotoQualityResult } from "@/lib/face-detection"
 
 interface CandidateModalProps {
   isOpen: boolean
@@ -59,6 +60,8 @@ export function CandidateModal({
   const [skillsList, setSkillsList] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [deleteLoading, setDeleteLoading] = useState(false)
+  const [passportQuality, setPassportQuality] = useState<PassportPhotoQualityResult | null>(null)
+  const [passportQualityChecking, setPassportQualityChecking] = useState(false)
 
   useEffect(() => {
     if (isOpen) {
@@ -77,6 +80,7 @@ export function CandidateModal({
         setSkillsList(candidate.skills_list || [])
         setPreviewPhoto(candidate.profile_photo || null)
         setPreviewDocument(null)
+        setPassportQuality(null)
       } else {
         setFormData({
           first_name: "",
@@ -92,6 +96,7 @@ export function CandidateModal({
         setSkillsList([])
         setPreviewPhoto(null)
         setPreviewDocument(null)
+        setPassportQuality(null)
       }
       setErrors({})
       setTouchedFields({})
@@ -125,12 +130,17 @@ export function CandidateModal({
     const file = e.target.files?.[0]
     if (file) {
       setFormData(prev => ({ ...prev, [field]: file }))
-      
+
       const url = URL.createObjectURL(file)
       if (field === 'profile_photo') {
         setPreviewPhoto(url)
       } else {
         setPreviewDocument(url)
+        setPassportQuality(null)
+        setPassportQualityChecking(true)
+        checkPassportPhotoQuality(file)
+          .then(setPassportQuality)
+          .finally(() => setPassportQualityChecking(false))
       }
     }
   }
@@ -169,6 +179,12 @@ export function CandidateModal({
 
     if (mode === 'create' && !formData.passport_document && !candidate?.passport_document) {
       newErrors.passport_document = "Passport document is required"
+    } else if (formData.passport_document && passportQualityChecking) {
+      newErrors.passport_document = "Still checking photo quality — please wait a moment and try again."
+    } else if (formData.passport_document && passportQuality?.status === 'no-face') {
+      newErrors.passport_document = "We couldn't detect a face in this document. Please upload a clearer passport photo."
+    } else if (formData.passport_document && passportQuality?.status === 'multiple-faces') {
+      newErrors.passport_document = "This document appears to show more than one face. Please upload a passport photo showing only you."
     }
 
     setErrors(newErrors)
@@ -588,6 +604,17 @@ export function CandidateModal({
                           <p className="mt-1 text-xs text-gray-500">PDF, JPG, JPEG, or PNG (Max 10MB)</p>
                           {touchedFields.passport_document && errors.passport_document && (
                             <p className="mt-1 text-xs text-red-600">{errors.passport_document}</p>
+                          )}
+                          {passportQualityChecking && (
+                            <p className="mt-1 text-xs text-gray-500 flex items-center gap-1">
+                              <Loader2 size={12} className="animate-spin" />
+                              Checking photo quality...
+                            </p>
+                          )}
+                          {!passportQualityChecking && passportQuality?.status === 'low-quality' && (
+                            <p className="mt-1 text-xs text-amber-600">
+                              This photo may be too blurry or low quality for identity verification later. Consider uploading a sharper photo if possible.
+                            </p>
                           )}
                         </div>
                       )}
