@@ -81,6 +81,7 @@ export function CandidateModal({
         setPreviewPhoto(candidate.profile_photo || null)
         setPreviewDocument(null)
         setPassportQuality(null)
+        setPassportQualityChecking(false)
       } else {
         setFormData({
           first_name: "",
@@ -97,6 +98,7 @@ export function CandidateModal({
         setPreviewPhoto(null)
         setPreviewDocument(null)
         setPassportQuality(null)
+        setPassportQualityChecking(false)
       }
       setErrors({})
       setTouchedFields({})
@@ -185,6 +187,8 @@ export function CandidateModal({
       newErrors.passport_document = "We couldn't detect a face in this document. Please upload a clearer passport photo."
     } else if (formData.passport_document && passportQuality?.status === 'multiple-faces') {
       newErrors.passport_document = "This document appears to show more than one face. Please upload a passport photo showing only you."
+    } else if (formData.passport_document && passportQuality?.status === 'low-quality') {
+      newErrors.passport_document = "This passport photo looks too blurry or unclear to use for identity verification. Please upload a sharper, unobstructed photo."
     }
 
     setErrors(newErrors)
@@ -611,11 +615,6 @@ export function CandidateModal({
                               Checking photo quality...
                             </p>
                           )}
-                          {!passportQualityChecking && passportQuality?.status === 'low-quality' && (
-                            <p className="mt-1 text-xs text-amber-600">
-                              This photo may be too blurry or low quality for identity verification later. Consider uploading a sharper photo if possible.
-                            </p>
-                          )}
                         </div>
                       )}
                     </div>
@@ -684,7 +683,7 @@ export function CandidateModal({
                     {!isViewMode && canEdit && (
                       <button
                         type="submit"
-                        disabled={isLoading}
+                        disabled={isLoading || passportQualityChecking}
                         className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                       >
                         {isLoading ? (
