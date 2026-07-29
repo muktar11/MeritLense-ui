@@ -20,6 +20,9 @@ import {
   LANGUAGES
 } from "../../../../../api/candidates/types"
 import { checkPassportPhotoQuality, PassportPhotoQualityResult } from "@/lib/face-detection"
+import { PASSPORT_PHOTO_GUIDELINES } from "@/lib/photo-guidelines"
+
+type PhotoField = 'passport_document' | 'profile_photo'
 
 interface CandidateModalProps {
   isOpen: boolean
@@ -60,8 +63,14 @@ export function CandidateModal({
   const [skillsList, setSkillsList] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [deleteLoading, setDeleteLoading] = useState(false)
-  const [passportQuality, setPassportQuality] = useState<PassportPhotoQualityResult | null>(null)
-  const [passportQualityChecking, setPassportQualityChecking] = useState(false)
+  const [photoQuality, setPhotoQuality] = useState<Record<PhotoField, PassportPhotoQualityResult | null>>({
+    passport_document: null,
+    profile_photo: null,
+  })
+  const [photoQualityChecking, setPhotoQualityChecking] = useState<Record<PhotoField, boolean>>({
+    passport_document: false,
+    profile_photo: false,
+  })
 
   useEffect(() => {
     if (isOpen) {
@@ -80,8 +89,8 @@ export function CandidateModal({
         setSkillsList(candidate.skills_list || [])
         setPreviewPhoto(candidate.profile_photo || null)
         setPreviewDocument(null)
-        setPassportQuality(null)
-        setPassportQualityChecking(false)
+        setPhotoQuality({ passport_document: null, profile_photo: null })
+        setPhotoQualityChecking({ passport_document: false, profile_photo: false })
       } else {
         setFormData({
           first_name: "",
@@ -97,8 +106,8 @@ export function CandidateModal({
         setSkillsList([])
         setPreviewPhoto(null)
         setPreviewDocument(null)
-        setPassportQuality(null)
-        setPassportQualityChecking(false)
+        setPhotoQuality({ passport_document: null, profile_photo: null })
+        setPhotoQualityChecking({ passport_document: false, profile_photo: false })
       }
       setErrors({})
       setTouchedFields({})
@@ -128,7 +137,7 @@ export function CandidateModal({
     }
   }
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'passport_document' | 'profile_photo') => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: PhotoField) => {
     const file = e.target.files?.[0]
     if (file) {
       setFormData(prev => ({ ...prev, [field]: file }))
@@ -138,12 +147,13 @@ export function CandidateModal({
         setPreviewPhoto(url)
       } else {
         setPreviewDocument(url)
-        setPassportQuality(null)
-        setPassportQualityChecking(true)
-        checkPassportPhotoQuality(file)
-          .then(setPassportQuality)
-          .finally(() => setPassportQualityChecking(false))
       }
+
+      setPhotoQuality(prev => ({ ...prev, [field]: null }))
+      setPhotoQualityChecking(prev => ({ ...prev, [field]: true }))
+      checkPassportPhotoQuality(file)
+        .then(result => setPhotoQuality(prev => ({ ...prev, [field]: result })))
+        .finally(() => setPhotoQualityChecking(prev => ({ ...prev, [field]: false })))
     }
   }
 
@@ -181,14 +191,24 @@ export function CandidateModal({
 
     if (mode === 'create' && !formData.passport_document && !candidate?.passport_document) {
       newErrors.passport_document = "Passport document is required"
-    } else if (formData.passport_document && passportQualityChecking) {
+    } else if (formData.passport_document && photoQualityChecking.passport_document) {
       newErrors.passport_document = "Still checking photo quality — please wait a moment and try again."
-    } else if (formData.passport_document && passportQuality?.status === 'no-face') {
+    } else if (formData.passport_document && photoQuality.passport_document?.status === 'no-face') {
       newErrors.passport_document = "We couldn't detect a face in this document. Please upload a clearer passport photo."
-    } else if (formData.passport_document && passportQuality?.status === 'multiple-faces') {
+    } else if (formData.passport_document && photoQuality.passport_document?.status === 'multiple-faces') {
       newErrors.passport_document = "This document appears to show more than one face. Please upload a passport photo showing only you."
-    } else if (formData.passport_document && passportQuality?.status === 'low-quality') {
+    } else if (formData.passport_document && photoQuality.passport_document?.status === 'low-quality') {
       newErrors.passport_document = "This passport photo looks too blurry or unclear to use for identity verification. Please upload a sharper, unobstructed photo."
+    }
+
+    if (formData.profile_photo && photoQualityChecking.profile_photo) {
+      newErrors.profile_photo = "Still checking photo quality — please wait a moment and try again."
+    } else if (formData.profile_photo && photoQuality.profile_photo?.status === 'no-face') {
+      newErrors.profile_photo = "We couldn't detect a face in this photo. Please upload a clearer photo of your face."
+    } else if (formData.profile_photo && photoQuality.profile_photo?.status === 'multiple-faces') {
+      newErrors.profile_photo = "This photo appears to show more than one face. Please upload a photo showing only you."
+    } else if (formData.profile_photo && photoQuality.profile_photo?.status === 'low-quality') {
+      newErrors.profile_photo = "This photo looks too blurry or unclear. Please upload a sharper photo."
     }
 
     setErrors(newErrors)
@@ -341,6 +361,15 @@ export function CandidateModal({
                     <div>
                       <p className="text-sm font-medium text-gray-700">Profile Photo</p>
                       <p className="text-xs text-gray-500">JPG, JPEG or PNG (Max 5MB)</p>
+                      {photoQualityChecking.profile_photo && (
+                        <p className="mt-1 text-xs text-gray-500 flex items-center gap-1">
+                          <Loader2 size={12} className="animate-spin" />
+                          Checking photo quality...
+                        </p>
+                      )}
+                      {touchedFields.profile_photo && errors.profile_photo && (
+                        <p className="mt-1 text-xs text-red-600">{errors.profile_photo}</p>
+                      )}
                     </div>
                   </div>
 
@@ -609,12 +638,23 @@ export function CandidateModal({
                           {touchedFields.passport_document && errors.passport_document && (
                             <p className="mt-1 text-xs text-red-600">{errors.passport_document}</p>
                           )}
-                          {passportQualityChecking && (
+                          {photoQualityChecking.passport_document && (
                             <p className="mt-1 text-xs text-gray-500 flex items-center gap-1">
                               <Loader2 size={12} className="animate-spin" />
                               Checking photo quality...
                             </p>
                           )}
+                          <div className="mt-2 rounded-lg bg-blue-50 border border-blue-100 p-2">
+                            <p className="text-xs font-medium text-blue-800 mb-1">For a photo that verifies successfully:</p>
+                            <ul className="text-xs text-blue-700 list-disc list-inside space-y-0.5">
+                              {PASSPORT_PHOTO_GUIDELINES.map((tip) => (
+                                <li key={tip}>{tip}</li>
+                              ))}
+                            </ul>
+                            <p className="text-xs text-blue-700 mt-1">
+                              Tip: upload a JPG or PNG (not a PDF) so we can check this automatically before you submit.
+                            </p>
+                          </div>
                         </div>
                       )}
                     </div>
@@ -683,7 +723,7 @@ export function CandidateModal({
                     {!isViewMode && canEdit && (
                       <button
                         type="submit"
-                        disabled={isLoading || passportQualityChecking}
+                        disabled={isLoading || photoQualityChecking.passport_document || photoQualityChecking.profile_photo}
                         className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                       >
                         {isLoading ? (
