@@ -1,5 +1,14 @@
 const MODEL_URL = "/models";
 
+// TinyFaceDetector defaults (inputSize 416, scoreThreshold 0.5) are tuned
+// for speed over accuracy. For the one-time identity check specifically,
+// a larger inputSize (more detail preserved, still far lighter than
+// switching detector models entirely) and a lower scoreThreshold (catches
+// borderline detections instead of silently returning zero faces) trade a
+// bit of speed for meaningfully better detection under imperfect lighting -
+// without adding any extra model weights to load.
+export const IDENTITY_DETECTOR_TUNING = { inputSize: 512, scoreThreshold: 0.3 };
+
 // @vladmandic/face-api's bundled type declarations expose `tf` as a much
 // narrower type than what's actually available at runtime (the full
 // TensorFlow.js core API, including setBackend/ready) - this is just enough
@@ -28,14 +37,18 @@ export async function ensureModelsLoaded() {
           await tf.setBackend("cpu");
         }
         await tf.ready();
+        // Deliberately only TinyFaceDetector (~200KB), not the heavier
+        // SsdMobilenetv1 (~5.6MB) that was here briefly - a real candidate
+        // hit a load failure that traced back to Azure Static Web Apps
+        // serving large model files extremely slowly (confirmed directly:
+        // a multi-MB file transferring at ~30-50KB/s, sometimes not
+        // completing at all). A large binary sitting in the critical path
+        // of "can this candidate even start their interview" is a
+        // reliability risk that isn't worth the accuracy gain - see
+        // IDENTITY_DETECTOR_TUNING above for how detection accuracy is
+        // instead improved by tuning this same lightweight model.
         await Promise.all([
-          // TinyFaceDetector: fast, used for the repeated in-interview presence
-          // checks where speed matters more than precision.
           faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-          // SsdMobilenetv1: slower but meaningfully more accurate under
-          // imperfect lighting/angle - used for the one-time identity match,
-          // where accuracy matters far more than the extra load time.
-          faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
           faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
           faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
         ]);

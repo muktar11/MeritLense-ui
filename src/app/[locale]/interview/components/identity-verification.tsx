@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AlertCircle, Camera, CheckCircle2, Loader2, RotateCcw, ShieldCheck, Users, XCircle } from "lucide-react";
 import interviewSessionService from "@/app/api/interview-session/endpoints";
-import { ensureModelsLoaded } from "./face-detection";
+import { ensureModelsLoaded, IDENTITY_DETECTOR_TUNING } from "./face-detection";
 
 interface IdentityVerificationProps {
   sessionId: string;
@@ -173,11 +173,7 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
       const referenceImg = referenceImgRef.current;
       if (!referenceImg) throw new Error("Reference image not available");
 
-      // SsdMobilenetv1 is slower to load than TinyFaceDetector but
-      // meaningfully more reliable under imperfect lighting/angle - worth
-      // the extra second here since this only runs once, unlike the
-      // repeated in-interview presence checks.
-      const detectorOptions = new faceapi.SsdMobilenetv1Options();
+      const detectorOptions = new faceapi.TinyFaceDetectorOptions(IDENTITY_DETECTOR_TUNING);
       const selfieResults = await faceapi
         .detectAllFaces(selfieImg, detectorOptions)
         .withFaceLandmarks()
