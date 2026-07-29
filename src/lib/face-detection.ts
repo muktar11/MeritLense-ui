@@ -108,6 +108,23 @@ const BLUR_VARIANCE_THRESHOLD = 100;
 const MIN_FACE_WIDTH_RATIO = 0.08;
 const MIN_FACE_HEIGHT_RATIO = 0.08;
 
+// Confidence and blur-variance are both blind to one real failure mode: a
+// passport photo printed under a fine repeating security-pattern overlay.
+// The overlay's own fine lines register as high-frequency detail, which
+// keeps the blur-variance score high (it looks "sharp") even though the
+// pattern is actively corrupting the face detail underneath - and
+// TinyFaceDetector's confidence just answers "is there a face-shaped blob
+// here", not "can I precisely resolve its features". The thing that
+// actually matters is whether this photo produces a STABLE identity
+// descriptor - the same 128-d embedding the interview-time matcher will
+// compare against a live selfie. Extract it twice, using the exact same
+// landmark + recognition nets the real match uses, under two slightly
+// different detector settings (a form of test-retest reliability): a
+// clean photo yields nearly the same descriptor both times, while a
+// corrupted one doesn't, because the network is effectively guessing at
+// obscured/interference-corrupted detail differently each pass.
+const DESCRIPTOR_STABILITY_THRESHOLD = 0.3;
+
 export type PassportPhotoQualityStatus =
   | "ok"
   | "no-face"
@@ -156,11 +173,38 @@ export async function checkPassportPhotoQuality(file: File): Promise<PassportPho
 
     const lowConfidence = detection.score < LOW_CONFIDENCE_SCORE_THRESHOLD;
     const blurry = computeBlurVariance(image, detection.box) < BLUR_VARIANCE_THRESHOLD;
-    return { status: lowConfidence || blurry ? "low-quality" : "ok", faceCount: 1 };
+    const unstable = await isDescriptorUnstable(faceapi, image);
+    return { status: lowConfidence || blurry || unstable ? "low-quality" : "ok", faceCount: 1 };
   } catch {
     return { status: "skipped", faceCount: 0 };
   } finally {
     if (objectUrl) URL.revokeObjectURL(objectUrl);
+  }
+}
+
+async function isDescriptorUnstable(
+  faceapi: Awaited<ReturnType<typeof ensureModelsLoaded>>,
+  image: HTMLImageElement
+): Promise<boolean> {
+  try {
+    const [first, second] = await Promise.all([
+      faceapi
+        .detectSingleFace(image, new faceapi.TinyFaceDetectorOptions({ inputSize: 512, scoreThreshold: 0.3 }))
+        .withFaceLandmarks()
+        .withFaceDescriptor(),
+      faceapi
+        .detectSingleFace(image, new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.3 }))
+        .withFaceLandmarks()
+        .withFaceDescriptor(),
+    ]);
+    // Couldn't extract a descriptor consistently at all - that's itself a
+    // reliability problem, not a reason to skip the check.
+    if (!first || !second) return true;
+    return faceapi.euclideanDistance(first.descriptor, second.descriptor) > DESCRIPTOR_STABILITY_THRESHOLD;
+  } catch {
+    // This is a supplementary signal on top of confidence/blur - an error
+    // here shouldn't fail the whole upload-time check.
+    return false;
   }
 }
 
