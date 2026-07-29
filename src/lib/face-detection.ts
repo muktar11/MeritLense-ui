@@ -83,8 +83,10 @@ export async function ensureModelsLoaded() {
 // selfie-vs-passport match at interview time. Deliberately higher than
 // IDENTITY_DETECTOR_TUNING.scoreThreshold (0.3, which only gates whether a
 // detection is returned at all) - this is a stricter bar used to actually
-// reject an upload, not just decide whether a face exists at all.
-const LOW_CONFIDENCE_SCORE_THRESHOLD = 0.6;
+// reject an upload, not just decide whether a face exists at all. Raised
+// from an initial 0.6 after a real-world example (a passport photo printed
+// under a security-pattern ghost overlay) still passed at that bar.
+const LOW_CONFIDENCE_SCORE_THRESHOLD = 0.75;
 
 // Detector confidence alone doesn't reliably catch every bad passport scan -
 // a face can be detected with reasonable confidence even when it's visually
@@ -92,13 +94,25 @@ const LOW_CONFIDENCE_SCORE_THRESHOLD = 0.6;
 // scan resolution). Laplacian-variance is a standard, cheap sharpness proxy:
 // sharp edges produce a high-variance response, blur flattens it out. Run
 // only on the detected face crop (not the whole document) so background
-// texture/print patterns elsewhere on the page don't skew the result.
-const BLUR_VARIANCE_THRESHOLD = 50;
+// texture/print patterns elsewhere on the page don't skew the result. Raised
+// from an initial 50 for the same reason as the confidence threshold above.
+const BLUR_VARIANCE_THRESHOLD = 100;
+
+// A face that's only a small fraction of the uploaded image - typically a
+// full passport bio-page scan where the photo is one small element among
+// the MRZ, text fields, and page border - starves the recognition net of
+// the pixel detail it needs to build a reliable descriptor, independent of
+// whether the crop is otherwise sharp. Deliberately low: a normally-scanned
+// passport photo page still clears this comfortably; this only catches a
+// face that's genuinely small/lost within a much larger image.
+const MIN_FACE_WIDTH_RATIO = 0.08;
+const MIN_FACE_HEIGHT_RATIO = 0.08;
 
 export type PassportPhotoQualityStatus =
   | "ok"
   | "no-face"
   | "multiple-faces"
+  | "face-too-small"
   | "low-quality"
   | "skipped";
 
@@ -135,6 +149,11 @@ export async function checkPassportPhotoQuality(file: File): Promise<PassportPho
     if (detections.length > 1) return { status: "multiple-faces", faceCount: detections.length };
 
     const detection = detections[0];
+    const tooSmall =
+      detection.box.width / image.naturalWidth < MIN_FACE_WIDTH_RATIO ||
+      detection.box.height / image.naturalHeight < MIN_FACE_HEIGHT_RATIO;
+    if (tooSmall) return { status: "face-too-small", faceCount: 1 };
+
     const lowConfidence = detection.score < LOW_CONFIDENCE_SCORE_THRESHOLD;
     const blurry = computeBlurVariance(image, detection.box) < BLUR_VARIANCE_THRESHOLD;
     return { status: lowConfidence || blurry ? "low-quality" : "ok", faceCount: 1 };

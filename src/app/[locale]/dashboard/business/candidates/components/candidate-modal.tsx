@@ -196,6 +196,8 @@ export function CandidateModal({
       newErrors.passport_document = "We couldn't detect a face in this document. Please upload a clearer passport photo."
     } else if (formData.passport_document && photoQuality.passport_document?.status === 'multiple-faces') {
       newErrors.passport_document = "This document appears to show more than one face. Please upload a passport photo showing only you."
+    } else if (formData.passport_document && photoQuality.passport_document?.status === 'face-too-small') {
+      newErrors.passport_document = "The face in this photo is too small to use for identity verification. Please upload a closer photo, or crop it to focus on your face."
     } else if (formData.passport_document && photoQuality.passport_document?.status === 'low-quality') {
       newErrors.passport_document = "This passport photo looks too blurry or unclear to use for identity verification. Please upload a sharper, unobstructed photo."
     }
@@ -206,6 +208,8 @@ export function CandidateModal({
       newErrors.profile_photo = "We couldn't detect a face in this photo. Please upload a clearer photo of your face."
     } else if (formData.profile_photo && photoQuality.profile_photo?.status === 'multiple-faces') {
       newErrors.profile_photo = "This photo appears to show more than one face. Please upload a photo showing only you."
+    } else if (formData.profile_photo && photoQuality.profile_photo?.status === 'face-too-small') {
+      newErrors.profile_photo = "The face in this photo is too small to use for identity verification. Please upload a closer photo."
     } else if (formData.profile_photo && photoQuality.profile_photo?.status === 'low-quality') {
       newErrors.profile_photo = "This photo looks too blurry or unclear. Please upload a sharper photo."
     }
