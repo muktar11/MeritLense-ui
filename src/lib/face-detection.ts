@@ -140,6 +140,37 @@ export interface FaceBox {
   height: number;
 }
 
+// Human-readable explanation for a blocking quality status, or null for
+// statuses that don't need one ("ok" - nothing to say; "skipped" - the
+// check didn't run at all, e.g. a PDF, so there's nothing to report).
+// Shared so the message shown immediately after a check completes and the
+// message used to actually block form submission never drift apart.
+export function passportQualityMessage(
+  status: PassportPhotoQualityStatus,
+  kind: "document" | "photo"
+): string | null {
+  switch (status) {
+    case "no-face":
+      return kind === "document"
+        ? "We couldn't detect a face in this document. Please upload a clearer passport photo."
+        : "We couldn't detect a face in this photo. Please upload a clearer photo of your face.";
+    case "multiple-faces":
+      return kind === "document"
+        ? "This document appears to show more than one face. Please upload a passport photo showing only you."
+        : "This photo appears to show more than one face. Please upload a photo showing only you.";
+    case "face-too-small":
+      return kind === "document"
+        ? "The face in this photo is too small to use for identity verification. Please upload a closer photo, or crop it to focus on your face."
+        : "The face in this photo is too small to use for identity verification. Please upload a closer photo.";
+    case "low-quality":
+      return kind === "document"
+        ? "This passport photo looks too blurry or unclear to use for identity verification. Please upload a sharper, unobstructed photo."
+        : "This photo looks too blurry or unclear. Please upload a sharper photo.";
+    default:
+      return null;
+  }
+}
+
 export interface PassportPhotoQualityResult {
   status: PassportPhotoQualityStatus;
   faceCount: number;

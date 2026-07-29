@@ -20,7 +20,7 @@ import {
   JOB_ROLES,
   LANGUAGES
 } from "../../../../../api/candidates/types"
-import { checkPassportPhotoQuality, cropFaceFromFile, PassportPhotoQualityResult } from "@/lib/face-detection"
+import { checkPassportPhotoQuality, cropFaceFromFile, passportQualityMessage, PassportPhotoQualityResult } from "@/lib/face-detection"
 import { PASSPORT_PHOTO_GUIDELINES } from "@/lib/photo-guidelines"
 
 type PhotoField = 'passport_document' | 'profile_photo'
@@ -231,28 +231,16 @@ export function CandidateModal({
       newErrors.passport_document = "Passport document is required"
     } else if (formData.passport_document && photoQualityChecking.passport_document) {
       newErrors.passport_document = "Still checking photo quality — please wait a moment and try again."
-    } else if (formData.passport_document && photoQuality.passport_document?.status === 'no-face') {
-      newErrors.passport_document = "We couldn't detect a face in this document. Please upload a clearer passport photo."
-    } else if (formData.passport_document && photoQuality.passport_document?.status === 'multiple-faces') {
-      newErrors.passport_document = "This document appears to show more than one face. Please upload a passport photo showing only you."
-    } else if (formData.passport_document && photoQuality.passport_document?.status === 'face-too-small') {
-      newErrors.passport_document = "The face in this photo is too small to use for identity verification. Please upload a closer photo, or crop it to focus on your face."
-    } else if (formData.passport_document && photoQuality.passport_document?.status === 'low-quality') {
-      newErrors.passport_document = "This passport photo looks too blurry or unclear to use for identity verification. Please upload a sharper, unobstructed photo."
+    } else if (formData.passport_document && photoQuality.passport_document && passportQualityMessage(photoQuality.passport_document.status, 'document')) {
+      newErrors.passport_document = passportQualityMessage(photoQuality.passport_document.status, 'document')!
     } else if (formData.passport_document && verificationCrop && !verificationCropConfirmed) {
       newErrors.passport_document = "Please confirm the verification photo below before submitting."
     }
 
     if (formData.profile_photo && photoQualityChecking.profile_photo) {
       newErrors.profile_photo = "Still checking photo quality — please wait a moment and try again."
-    } else if (formData.profile_photo && photoQuality.profile_photo?.status === 'no-face') {
-      newErrors.profile_photo = "We couldn't detect a face in this photo. Please upload a clearer photo of your face."
-    } else if (formData.profile_photo && photoQuality.profile_photo?.status === 'multiple-faces') {
-      newErrors.profile_photo = "This photo appears to show more than one face. Please upload a photo showing only you."
-    } else if (formData.profile_photo && photoQuality.profile_photo?.status === 'face-too-small') {
-      newErrors.profile_photo = "The face in this photo is too small to use for identity verification. Please upload a closer photo."
-    } else if (formData.profile_photo && photoQuality.profile_photo?.status === 'low-quality') {
-      newErrors.profile_photo = "This photo looks too blurry or unclear. Please upload a sharper photo."
+    } else if (formData.profile_photo && photoQuality.profile_photo && passportQualityMessage(photoQuality.profile_photo.status, 'photo')) {
+      newErrors.profile_photo = passportQualityMessage(photoQuality.profile_photo.status, 'photo')!
     }
 
     setErrors(newErrors)
@@ -322,8 +310,21 @@ export function CandidateModal({
   const isViewMode = mode === 'view'
   const isEditMode = mode === 'edit'
   const isCreateMode = mode === 'create'
-  const canEdit = (isCreateMode || isEditMode) && 
+  const canEdit = (isCreateMode || isEditMode) &&
     (userRole !== 'B2B_TEAM_MEMBER' || candidate?.created_by === candidate?.id)
+
+  // Shown as soon as the check completes, independent of touchedFields/
+  // submit attempts - without this, a failed quality check produced zero
+  // visible feedback (the "Checking..." spinner just disappeared) until
+  // the candidate happened to try submitting the form.
+  const passportQualityIssue =
+    formData.passport_document && photoQuality.passport_document
+      ? passportQualityMessage(photoQuality.passport_document.status, 'document')
+      : null
+  const profilePhotoQualityIssue =
+    formData.profile_photo && photoQuality.profile_photo
+      ? passportQualityMessage(photoQuality.profile_photo.status, 'photo')
+      : null
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -411,8 +412,8 @@ export function CandidateModal({
                           Checking photo quality...
                         </p>
                       )}
-                      {touchedFields.profile_photo && errors.profile_photo && (
-                        <p className="mt-1 text-xs text-red-600">{errors.profile_photo}</p>
+                      {!photoQualityChecking.profile_photo && profilePhotoQualityIssue && (
+                        <p className="mt-1 text-xs text-red-600">{profilePhotoQualityIssue}</p>
                       )}
                     </div>
                   </div>
@@ -679,7 +680,7 @@ export function CandidateModal({
                             />
                           </label>
                           <p className="mt-1 text-xs text-gray-500">PDF, JPG, JPEG, or PNG (Max 10MB)</p>
-                          {touchedFields.passport_document && errors.passport_document && (
+                          {touchedFields.passport_document && errors.passport_document && !passportQualityIssue && (
                             <p className="mt-1 text-xs text-red-600">{errors.passport_document}</p>
                           )}
                           {photoQualityChecking.passport_document && (
@@ -687,6 +688,9 @@ export function CandidateModal({
                               <Loader2 size={12} className="animate-spin" />
                               Checking photo quality...
                             </p>
+                          )}
+                          {!photoQualityChecking.passport_document && passportQualityIssue && (
+                            <p className="mt-1 text-xs text-red-600">{passportQualityIssue}</p>
                           )}
                           <div className="mt-2 rounded-lg bg-blue-50 border border-blue-100 p-2">
                             <p className="text-xs font-medium text-blue-800 mb-1">For a photo that verifies successfully:</p>
