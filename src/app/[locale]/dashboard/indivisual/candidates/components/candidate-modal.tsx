@@ -22,6 +22,7 @@ import {
 } from "../../../../../api/candidates/types"
 import { checkPassportPhotoQuality, cropFaceFromFile, passportQualityMessage, PassportPhotoQualityResult } from "@/lib/face-detection"
 import { PASSPORT_PHOTO_GUIDELINES } from "@/lib/photo-guidelines"
+import { ManualPhotoCropModal } from "@/components/dashboard/ManualPhotoCropModal"
 
 type PhotoField = 'passport_document' | 'profile_photo'
 
@@ -75,6 +76,7 @@ export function CandidateModal({
   })
   const [verificationCrop, setVerificationCrop] = useState<{ url: string; blob: Blob } | null>(null)
   const [verificationCropConfirmed, setVerificationCropConfirmed] = useState(false)
+  const [showManualCrop, setShowManualCrop] = useState(false)
 
   useEffect(() => {
     if (isOpen) {
@@ -98,6 +100,7 @@ export function CandidateModal({
         setPhotoQualityChecking({ passport_document: false, profile_photo: false })
         setVerificationCrop(null)
         setVerificationCropConfirmed(false)
+        setShowManualCrop(false)
       } else {
         setFormData({
           first_name: "",
@@ -118,6 +121,7 @@ export function CandidateModal({
         setPhotoQualityChecking({ passport_document: false, profile_photo: false })
         setVerificationCrop(null)
         setVerificationCropConfirmed(false)
+        setShowManualCrop(false)
       }
       setErrors({})
       setTouchedFields({})
@@ -163,6 +167,7 @@ export function CandidateModal({
           return null
         })
         setVerificationCropConfirmed(false)
+        setShowManualCrop(false)
         setFormData(prev => ({ ...prev, verification_photo: null }))
       }
 
@@ -194,6 +199,20 @@ export function CandidateModal({
     const croppedFile = new File([verificationCrop.blob], 'verification-photo.jpg', { type: 'image/jpeg' })
     setFormData(prev => ({ ...prev, verification_photo: croppedFile }))
     setVerificationCropConfirmed(true)
+  }
+
+  const handleManualCropConfirm = (blob: Blob) => {
+    setVerificationCrop(prev => {
+      if (prev) URL.revokeObjectURL(prev.url)
+      return { url: URL.createObjectURL(blob), blob }
+    })
+    const croppedFile = new File([blob], 'verification-photo.jpg', { type: 'image/jpeg' })
+    setFormData(prev => ({ ...prev, verification_photo: croppedFile }))
+    // Drawing and confirming the crop in the modal already is the human
+    // confirmation step - no need to make them click "confirm" a second
+    // time in the panel below.
+    setVerificationCropConfirmed(true)
+    setShowManualCrop(false)
   }
 
   const handleBlur = (field: string) => {
@@ -326,8 +345,10 @@ export function CandidateModal({
     formData.profile_photo && photoQuality.profile_photo
       ? passportQualityMessage(photoQuality.profile_photo.status, 'photo')
       : null
+  const passportIsImage = formData.passport_document?.type.startsWith('image/') ?? false
 
   return (
+    <>
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-50" onClose={onClose}>
         <Transition.Child
@@ -693,6 +714,15 @@ export function CandidateModal({
                           {!photoQualityChecking.passport_document && passportQualityIssue && (
                             <p className="mt-1 text-xs text-red-600">{passportQualityIssue}</p>
                           )}
+                          {!photoQualityChecking.passport_document && passportIsImage && !verificationCrop && (
+                            <button
+                              type="button"
+                              onClick={() => setShowManualCrop(true)}
+                              className="mt-1 text-xs text-purple-600 hover:text-purple-700 underline"
+                            >
+                              {passportQualityIssue ? "Or crop the photo yourself" : "Prefer to crop it yourself?"}
+                            </button>
+                          )}
                           <div className="mt-2 rounded-lg bg-blue-50 border border-blue-100 p-2">
                             <p className="text-xs font-medium text-blue-800 mb-1">For a photo that verifies successfully:</p>
                             <ul className="text-xs text-blue-700 list-disc list-inside space-y-0.5">
@@ -732,6 +762,13 @@ export function CandidateModal({
                                   </button>
                                 )}
                               </div>
+                              <button
+                                type="button"
+                                onClick={() => setShowManualCrop(true)}
+                                className="mt-2 text-xs text-purple-600 hover:text-purple-700 underline"
+                              >
+                                Not quite right? Crop it manually
+                              </button>
                             </div>
                           )}
                         </div>
@@ -823,5 +860,13 @@ export function CandidateModal({
         </div>
       </Dialog>
     </Transition>
+    {showManualCrop && formData.passport_document && (
+      <ManualPhotoCropModal
+        file={formData.passport_document}
+        onCancel={() => setShowManualCrop(false)}
+        onConfirm={handleManualCropConfirm}
+      />
+    )}
+    </>
   )
 }
