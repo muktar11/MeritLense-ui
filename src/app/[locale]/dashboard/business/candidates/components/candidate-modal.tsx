@@ -250,6 +250,10 @@ export function CandidateModal({
       newErrors.passport_document = "Passport document is required"
     } else if (formData.passport_document && photoQualityChecking.passport_document) {
       newErrors.passport_document = "Still checking photo quality — please wait a moment and try again."
+    } else if (formData.passport_document && verificationCropConfirmed) {
+      // A confirmed crop (automatic or manual) overrides the original
+      // document's own automated quality result - that's the whole point
+      // of offering a crop as a fallback/override in the first place.
     } else if (formData.passport_document && photoQuality.passport_document && passportQualityMessage(photoQuality.passport_document.status, 'document')) {
       newErrors.passport_document = passportQualityMessage(photoQuality.passport_document.status, 'document')!
     } else if (formData.passport_document && verificationCrop && !verificationCropConfirmed) {
@@ -337,7 +341,7 @@ export function CandidateModal({
   // visible feedback (the "Checking..." spinner just disappeared) until
   // the candidate happened to try submitting the form.
   const passportQualityIssue =
-    formData.passport_document && photoQuality.passport_document
+    formData.passport_document && photoQuality.passport_document && !verificationCropConfirmed
       ? passportQualityMessage(photoQuality.passport_document.status, 'document')
       : null
   const passportIsImage = formData.passport_document?.type.startsWith('image/') ?? false
