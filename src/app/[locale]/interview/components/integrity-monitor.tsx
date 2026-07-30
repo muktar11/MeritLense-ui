@@ -44,9 +44,57 @@ export function IntegrityMonitor({ sessionId, token, onSessionStatusChange }: In
         });
 
         intervalRef.current = setInterval(async () => {
+          if (!active) return;
+
+          // If the stream has died (camera turned off, permission revoked,
+          // device disconnected) since the last check, try to get it back
+          // before anything else - a candidate re-enabling their camera
+          // should be able to auto-resume, the same way stepping back into
+          // frame already does for a soft "no face" reading.
+          let track = streamRef.current?.getVideoTracks()[0];
+          if (!track || track.readyState !== "live") {
+            try {
+              const freshStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+              if (!active) {
+                freshStream.getTracks().forEach((t) => t.stop());
+                return;
+              }
+              streamRef.current?.getTracks().forEach((t) => t.stop());
+              streamRef.current = freshStream;
+              track = freshStream.getVideoTracks()[0];
+              if (videoRef.current) videoRef.current.srcObject = freshStream;
+            } catch {
+              // Still unavailable - fall through and report it below.
+            }
+          }
+
           const el = videoRef.current;
-          if (!el || el.videoWidth === 0) return;
+          const cameraUnavailable = !track || track.readyState !== "live" || !el || el.videoWidth === 0;
+
           try {
+            if (cameraUnavailable) {
+              // Distinct from - and treated more seriously than - a brief
+              // "no face" reading: the camera being off entirely means
+              // nothing is being observed at all, so unlike a momentary
+              // "stepped out of frame" this counts toward termination the
+              // same way a second person in frame does (see backend
+              // _apply_integrity_escalation).
+              setWarning("Your camera appears to be off or unavailable — this counts as an integrity violation.");
+              const result = await interviewSessionService.logIntegrityEvent(sessionId, token, {
+                eventType: "CAMERA_UNAVAILABLE",
+                severity: "WARNING",
+                singleFaceDetected: false,
+                faceCount: 0,
+              });
+              if (!active) return;
+              onSessionStatusChange?.(result.session_status);
+              if (result.session_status === "FAILED") {
+                if (intervalRef.current) clearInterval(intervalRef.current);
+                streamRef.current?.getTracks().forEach((t) => t.stop());
+              }
+              return;
+            }
+
             const detections = await faceapi.detectAllFaces(el, new faceapi.TinyFaceDetectorOptions());
             const faceCount = detections.length;
             const singleFaceDetected = faceCount === 1;
