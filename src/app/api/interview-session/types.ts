@@ -29,6 +29,9 @@ export interface InterviewSessionPublic {
   config_details?: {
     duration_minutes: number;
   };
+  // Also already present in the actual response - the session's default
+  // read-aloud language (e.g. "en-US"), used to seed the language picker.
+  tts_language_code?: string;
 }
 
 export interface SessionQuestion {

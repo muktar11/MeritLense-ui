@@ -56,6 +56,7 @@ function InterviewSessionContent() {
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [loadingAudio, setLoadingAudio] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [readAloudLanguage, setReadAloudLanguage] = useState("en-US");
 
   const loadCurrentQuestion = useCallback(async () => {
     setAudioUrl(null);
@@ -94,6 +95,7 @@ function InterviewSessionContent() {
         const data = await interviewSessionService.getSession(sessionId, token);
         if (!active) return;
         setSession(data);
+        if (data.tts_language_code) setReadAloudLanguage(data.tts_language_code);
 
         if (data.status === "COMPLETED") {
           setPageState("completed");
@@ -153,13 +155,21 @@ function InterviewSessionContent() {
   const handlePlayAudio = async () => {
     setLoadingAudio(true);
     try {
-      const artifact = await interviewSessionService.getQuestionAudio(sessionId, token);
+      const artifact = await interviewSessionService.getQuestionAudio(sessionId, token, readAloudLanguage);
       setAudioUrl(artifact.audio_url);
     } catch {
       // audio is optional — silently ignore, candidate can still read the question
     } finally {
       setLoadingAudio(false);
     }
+  };
+
+  const handleReadAloudLanguageChange = (languageCode: string) => {
+    setReadAloudLanguage(languageCode);
+    // Clear any already-playing audio from the previous language selection -
+    // it doesn't match the new choice, and would otherwise keep showing/
+    // playing until the candidate clicks play again.
+    setAudioUrl(null);
   };
 
   const handleTextSubmit = async (text: string) => {
@@ -319,6 +329,8 @@ function InterviewSessionContent() {
             onPlayAudio={handlePlayAudio}
             audioUrl={audioUrl}
             loadingAudio={loadingAudio}
+            readAloudLanguage={readAloudLanguage}
+            onReadAloudLanguageChange={handleReadAloudLanguageChange}
           />
         )}
 

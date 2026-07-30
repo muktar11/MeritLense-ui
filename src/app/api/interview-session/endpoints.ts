@@ -22,8 +22,11 @@ class InterviewSessionClientService {
     return response.data;
   }
 
-  async getQuestionAudio(sessionId: string, token: string): Promise<QuestionAudioArtifact> {
-    const response = await interviewSessionClient.post(`/${sessionId}/question-audio/`, { token });
+  async getQuestionAudio(sessionId: string, token: string, languageCode?: string): Promise<QuestionAudioArtifact> {
+    const response = await interviewSessionClient.post(`/${sessionId}/question-audio/`, {
+      token,
+      ...(languageCode ? { language_code: languageCode } : {}),
+    });
     return response.data;
   }
 
