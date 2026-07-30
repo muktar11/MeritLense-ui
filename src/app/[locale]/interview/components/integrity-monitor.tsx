@@ -14,6 +14,33 @@ interface IntegrityMonitorProps {
 
 const CHECK_INTERVAL_MS = 45_000;
 
+// A camera blocked at the OS level (e.g. Windows' camera-privacy toggle) or
+// physically covered can keep delivering a "live" track and non-zero video
+// dimensions while every actual frame is solid black - technically
+// indistinguishable from a working camera by track.readyState/videoWidth
+// alone. Sampling the frame's average brightness catches this: a real room,
+// even dimly lit, has far more variation than a deliberately blanked feed.
+// Conservative (near-pure-black) specifically so normal low light doesn't
+// misfire.
+const BLACK_FRAME_BRIGHTNESS_THRESHOLD = 8;
+
+function isFrameEssentiallyBlack(el: HTMLVideoElement): boolean {
+  const canvas = document.createElement("canvas");
+  const size = 48;
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return false; // can't evaluate - don't false-positive
+  ctx.drawImage(el, 0, 0, size, size);
+  const { data } = ctx.getImageData(0, 0, size, size);
+  let sum = 0;
+  const pixelCount = size * size;
+  for (let i = 0; i < data.length; i += 4) {
+    sum += 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+  }
+  return sum / pixelCount < BLACK_FRAME_BRIGHTNESS_THRESHOLD;
+}
+
 export function IntegrityMonitor({ sessionId, token, onSessionStatusChange }: IntegrityMonitorProps) {
   const [warning, setWarning] = useState<string | null>(null);
   const [cameraReady, setCameraReady] = useState(false);
@@ -69,7 +96,12 @@ export function IntegrityMonitor({ sessionId, token, onSessionStatusChange }: In
           }
 
           const el = videoRef.current;
-          const cameraUnavailable = !track || track.readyState !== "live" || !el || el.videoWidth === 0;
+          const cameraUnavailable =
+            !track ||
+            track.readyState !== "live" ||
+            !el ||
+            el.videoWidth === 0 ||
+            isFrameEssentiallyBlack(el);
 
           try {
             if (cameraUnavailable) {
