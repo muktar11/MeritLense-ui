@@ -1,6 +1,12 @@
 import axios from 'axios'
 import { API_BASE_URL } from '@/lib/config/env'
+import { attachAuthInterceptors } from '@/lib/auth-session'
 
+// authClient/authFormDataClient are for the *unauthenticated* auth flows
+// (login, register, refresh, forgot/reset password, email verification) -
+// a 401 here (e.g. wrong password) is an expected, normal outcome the
+// calling form already handles, not a sign the session expired, so these
+// deliberately do NOT get the refresh/force-logout treatment.
 export const authClient = axios.create({
   baseURL: `${API_BASE_URL}/auth`,
   headers: {
@@ -15,6 +21,8 @@ export const authFormDataClient = axios.create({
   },
 })
 
+// apiClient/apiFormDataClient are the general-purpose authenticated
+// clients used across most of the app.
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -35,96 +43,45 @@ export const setAuthToken = (token: string | null) => {
     authFormDataClient.defaults.headers.common['Authorization'] = `Bearer ${token}`
     apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`
     apiFormDataClient.defaults.headers.common['Authorization'] = `Bearer ${token}`
-    console.log('Auth token set for all clients');
   } else {
     delete authClient.defaults.headers.common['Authorization']
     delete authFormDataClient.defaults.headers.common['Authorization']
     delete apiClient.defaults.headers.common['Authorization']
     delete apiFormDataClient.defaults.headers.common['Authorization']
-    console.log('Auth token removed from all clients');
   }
 }
 
-apiClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('accessToken');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-
-apiClient.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-
-      try {
-        const refreshToken = localStorage.getItem('refreshToken');
-        if (!refreshToken) {
-          throw new Error('No refresh token');
-        }
-
-        const response = await authClient.post('/refresh', { refresh: refreshToken });
-        const { access } = response.data;
-
-        localStorage.setItem('accessToken', access);
-        setAuthToken(access);
-
-        originalRequest.headers['Authorization'] = `Bearer ${access}`;
-        return apiClient(originalRequest);
-      } catch (refreshError) {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        setAuthToken(null);
-        
-        if (typeof window !== 'undefined') {
-          window.location.href = '/auth/login';
-        }
-        
-        return Promise.reject(refreshError);
-      }
-    }
-
-    return Promise.reject(error);
-  }
-);
+attachAuthInterceptors(apiClient)
+attachAuthInterceptors(apiFormDataClient)
 
 authClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response) {
-      console.error('Auth API Error:', error.response.data);
-      return Promise.reject(error.response.data);
+      console.error('Auth API Error:', error.response.data)
+      return Promise.reject(error.response.data)
     } else if (error.request) {
-      console.error('No response received:', error.request);
-      return Promise.reject({ error: 'No response from server' });
+      console.error('No response received:', error.request)
+      return Promise.reject({ error: 'No response from server' })
     } else {
-      console.error('Request error:', error.message);
-      return Promise.reject({ error: error.message });
+      console.error('Request error:', error.message)
+      return Promise.reject({ error: error.message })
     }
   }
-);
+)
 
 authFormDataClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response) {
-      console.error('Auth API Error:', error.response.data);
-      return Promise.reject(error.response.data);
+      console.error('Auth API Error:', error.response.data)
+      return Promise.reject(error.response.data)
     } else if (error.request) {
-      console.error('No response received:', error.request);
-      return Promise.reject({ error: 'No response from server' });
+      console.error('No response received:', error.request)
+      return Promise.reject({ error: 'No response from server' })
     } else {
-      console.error('Request error:', error.message);
-      return Promise.reject({ error: error.message });
+      console.error('Request error:', error.message)
+      return Promise.reject({ error: error.message })
     }
   }
-);
+)
