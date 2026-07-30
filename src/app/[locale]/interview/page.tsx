@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { CheckCircle2, Loader2, Mic, PauseCircle, Type, XCircle, Clock, ShieldAlert } from "lucide-react";
 import interviewSessionService from "@/app/api/interview-session/endpoints";
@@ -15,6 +15,7 @@ import { AnswerTextForm } from "./components/answer-text-form";
 import { AnswerRecorder } from "./components/answer-recorder";
 import { IdentityVerification } from "./components/identity-verification";
 import { IntegrityMonitor } from "./components/integrity-monitor";
+import { TestTimer } from "./components/test-timer";
 
 type PageState =
   | "loading"
@@ -121,6 +122,19 @@ function InterviewSessionContent() {
       active = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionId, token]);
+
+  const hasAutoCompletedRef = useRef(false);
+  const handleTimeUp = useCallback(async () => {
+    if (hasAutoCompletedRef.current) return;
+    hasAutoCompletedRef.current = true;
+    try {
+      await interviewSessionService.completeSession(sessionId, token);
+    } catch {
+      // Time's up either way - show the completed screen even if the
+      // session was already closed by some other means in the meantime.
+    }
+    setPageState("completed");
   }, [sessionId, token]);
 
   const handleIntegrityStatusChange = (status: SessionStatus) => {
@@ -283,7 +297,16 @@ function InterviewSessionContent() {
     <div className="min-h-screen bg-gray-50 py-10 px-4">
       <div className="max-w-2xl mx-auto space-y-6">
         {session && (
-          <h1 className="text-xl font-bold text-gray-900">{session.role_name} Interview</h1>
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <h1 className="text-xl font-bold text-gray-900">{session.role_name} Interview</h1>
+            {session.started_at && session.config_details?.duration_minutes ? (
+              <TestTimer
+                startedAt={session.started_at}
+                durationMinutes={session.config_details.duration_minutes}
+                onTimeUp={handleTimeUp}
+              />
+            ) : null}
+          </div>
         )}
 
         <IntegrityMonitor sessionId={sessionId} token={token} onSessionStatusChange={handleIntegrityStatusChange} />

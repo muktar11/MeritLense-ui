@@ -23,6 +23,12 @@ export interface InterviewSessionPublic {
   ended_at: string | null;
   expires_at: string;
   identity_verified: boolean;
+  // Already present in the actual API response (InterviewSessionSerializer
+  // includes config_details for every consumer, staff and candidate alike)
+  // but wasn't declared here yet - used to compute the overall test timer.
+  config_details?: {
+    duration_minutes: number;
+  };
 }
 
 export interface SessionQuestion {

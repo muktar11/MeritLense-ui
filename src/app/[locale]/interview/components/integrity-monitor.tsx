@@ -12,7 +12,22 @@ interface IntegrityMonitorProps {
   onSessionStatusChange?: (status: SessionStatus) => void;
 }
 
-const CHECK_INTERVAL_MS = 45_000;
+// Local-only cadence for watching the camera/face state and driving the
+// grace-period countdown below - decoupled from how often we actually
+// report to the backend (REPORT_INTERVAL_MS), so a problem starting gets
+// noticed within a couple of seconds without hammering the API every
+// couple of seconds for the whole interview.
+const WATCH_INTERVAL_MS = 2_000;
+// Steady-state "everything's fine" heartbeat cadence - keeps the backend's
+// paused-session auto-resume check current without reporting on every
+// single watch tick.
+const REPORT_INTERVAL_MS = 45_000;
+// How long a newly-detected problem (no face, second person, camera
+// blocked) has to resolve itself before it's actually reported and counted
+// as a violation - long enough that briefly adjusting your seat, glancing
+// away, or a one-frame camera glitch doesn't get punished, short enough to
+// still be a real deterrent.
+const GRACE_PERIOD_SECONDS = 10;
 
 // A camera blocked at the OS level (e.g. Windows' camera-privacy toggle) or
 // physically covered can keep delivering a "live" track and non-zero video
@@ -41,13 +56,24 @@ function isFrameEssentiallyBlack(el: HTMLVideoElement): boolean {
   return sum / pixelCount < BLACK_FRAME_BRIGHTNESS_THRESHOLD;
 }
 
+type ProblemType = "NO_FACE_DETECTED" | "MULTIPLE_FACES_DETECTED" | "CAMERA_UNAVAILABLE";
+
+const PROBLEM_LABELS: Record<ProblemType, string> = {
+  NO_FACE_DETECTED: "We can't see you",
+  MULTIPLE_FACES_DETECTED: "Multiple faces detected",
+  CAMERA_UNAVAILABLE: "Your camera appears to be off or unavailable",
+};
+
 export function IntegrityMonitor({ sessionId, token, onSessionStatusChange }: IntegrityMonitorProps) {
-  const [warning, setWarning] = useState<string | null>(null);
+  const [graceCountdown, setGraceCountdown] = useState<{ type: ProblemType; secondsLeft: number } | null>(null);
   const [cameraReady, setCameraReady] = useState(false);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const lastReportAtRef = useRef<number>(0);
+  const needsImmediateOkReportRef = useRef(false);
+  const graceProblemRef = useRef<{ type: ProblemType; secondsLeft: number } | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -70,6 +96,42 @@ export function IntegrityMonitor({ sessionId, token, onSessionStatusChange }: In
           if (videoRef.current) videoRef.current.srcObject = stream;
         });
 
+        const reportProblem = async (type: ProblemType, faceCount: number) => {
+          needsImmediateOkReportRef.current = true;
+          try {
+            const result = await interviewSessionService.logIntegrityEvent(sessionId, token, {
+              eventType: type,
+              severity: "WARNING",
+              singleFaceDetected: false,
+              faceCount,
+            });
+            lastReportAtRef.current = Date.now();
+            if (!active) return;
+            onSessionStatusChange?.(result.session_status);
+            if (result.session_status === "FAILED") {
+              if (intervalRef.current) clearInterval(intervalRef.current);
+              streamRef.current?.getTracks().forEach((t) => t.stop());
+            }
+          } catch {
+            // best-effort
+          }
+        };
+
+        const reportOk = async (faceCount: number) => {
+          try {
+            const result = await interviewSessionService.logIntegrityEvent(sessionId, token, {
+              singleFaceDetected: faceCount === 1,
+              faceCount,
+            });
+            lastReportAtRef.current = Date.now();
+            needsImmediateOkReportRef.current = false;
+            if (!active) return;
+            onSessionStatusChange?.(result.session_status);
+          } catch {
+            // best-effort
+          }
+        };
+
         intervalRef.current = setInterval(async () => {
           if (!active) return;
 
@@ -91,71 +153,66 @@ export function IntegrityMonitor({ sessionId, token, onSessionStatusChange }: In
               track = freshStream.getVideoTracks()[0];
               if (videoRef.current) videoRef.current.srcObject = freshStream;
             } catch {
-              // Still unavailable - fall through and report it below.
+              // Still unavailable - falls through to CAMERA_UNAVAILABLE below.
             }
           }
 
           const el = videoRef.current;
-          const cameraUnavailable =
-            !track ||
-            track.readyState !== "live" ||
-            !el ||
-            el.videoWidth === 0 ||
-            isFrameEssentiallyBlack(el);
+          let problemType: ProblemType | null = null;
+          let faceCount = 0;
 
           try {
-            if (cameraUnavailable) {
-              // Distinct from - and treated more seriously than - a brief
-              // "no face" reading: the camera being off entirely means
-              // nothing is being observed at all, so unlike a momentary
-              // "stepped out of frame" this counts toward termination the
-              // same way a second person in frame does (see backend
-              // _apply_integrity_escalation).
-              setWarning("Your camera appears to be off or unavailable — this counts as an integrity violation.");
-              const result = await interviewSessionService.logIntegrityEvent(sessionId, token, {
-                eventType: "CAMERA_UNAVAILABLE",
-                severity: "WARNING",
-                singleFaceDetected: false,
-                faceCount: 0,
-              });
-              if (!active) return;
-              onSessionStatusChange?.(result.session_status);
-              if (result.session_status === "FAILED") {
-                if (intervalRef.current) clearInterval(intervalRef.current);
-                streamRef.current?.getTracks().forEach((t) => t.stop());
-              }
-              return;
-            }
-
-            const detections = await faceapi.detectAllFaces(el, new faceapi.TinyFaceDetectorOptions());
-            const faceCount = detections.length;
-            const singleFaceDetected = faceCount === 1;
-
-            if (!active) return;
-            if (faceCount === 0) {
-              setWarning("We can't see you — please make sure you're visible to the camera.");
-            } else if (faceCount > 1) {
-              setWarning("Multiple faces detected — please make sure you're alone.");
+            if (!track || track.readyState !== "live" || !el || el.videoWidth === 0 || (el && isFrameEssentiallyBlack(el))) {
+              problemType = "CAMERA_UNAVAILABLE";
             } else {
-              setWarning(null);
-            }
-
-            const result = await interviewSessionService.logIntegrityEvent(sessionId, token, {
-              singleFaceDetected,
-              faceCount,
-            });
-            if (!active) return;
-            onSessionStatusChange?.(result.session_status);
-            if (result.session_status === "FAILED") {
-              // Nothing left to monitor - the session is over.
-              if (intervalRef.current) clearInterval(intervalRef.current);
-              streamRef.current?.getTracks().forEach((t) => t.stop());
+              const detections = await faceapi.detectAllFaces(el, new faceapi.TinyFaceDetectorOptions());
+              faceCount = detections.length;
+              if (faceCount === 0) problemType = "NO_FACE_DETECTED";
+              else if (faceCount > 1) problemType = "MULTIPLE_FACES_DETECTED";
             }
           } catch {
-            // Silently skip a failed check - this is a best-effort, non-blocking
-            // monitor; one missed frame shouldn't interrupt the interview.
+            return; // best-effort - skip this tick entirely on an unexpected error
           }
-        }, CHECK_INTERVAL_MS);
+
+          if (!active) return;
+
+          if (problemType) {
+            const current = graceProblemRef.current;
+            if (!current || current.type !== problemType) {
+              // A brand new problem, or a switch from one problem to a
+              // different one (e.g. camera comes back but now shows a
+              // second person) - start a fresh grace countdown rather than
+              // reporting immediately.
+              graceProblemRef.current = { type: problemType, secondsLeft: GRACE_PERIOD_SECONDS };
+              setGraceCountdown({ type: problemType, secondsLeft: GRACE_PERIOD_SECONDS });
+            } else {
+              const secondsLeft = current.secondsLeft - 1;
+              if (secondsLeft <= 0) {
+                graceProblemRef.current = null;
+                setGraceCountdown(null);
+                await reportProblem(problemType, faceCount);
+              } else {
+                current.secondsLeft = secondsLeft;
+                setGraceCountdown({ type: problemType, secondsLeft });
+              }
+            }
+            return;
+          }
+
+          // All clear - cancel any in-progress grace countdown (the
+          // candidate self-corrected before it ever counted against them).
+          if (graceProblemRef.current) {
+            graceProblemRef.current = null;
+            setGraceCountdown(null);
+          }
+
+          // Report immediately if we just reported a problem (so a paused
+          // session can auto-resume as soon as possible), otherwise stick
+          // to the normal steady-state heartbeat cadence.
+          if (needsImmediateOkReportRef.current || Date.now() - lastReportAtRef.current >= REPORT_INTERVAL_MS) {
+            await reportOk(faceCount);
+          }
+        }, WATCH_INTERVAL_MS);
       } catch {
         // Camera unavailable or permission denied for the monitor - this is a
         // soft, best-effort feature, so fail silently rather than blocking
@@ -175,15 +232,18 @@ export function IntegrityMonitor({ sessionId, token, onSessionStatusChange }: In
 
   return (
     <div className="fixed bottom-4 right-4 z-40 flex flex-col items-end gap-2">
-      {warning && (
-        <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-700 px-3 py-2 rounded-lg text-sm shadow-md max-w-xs">
+      {graceCountdown && (
+        <div className="flex items-center gap-2 bg-red-50 border border-red-300 text-red-700 px-3 py-2 rounded-lg text-sm shadow-md max-w-xs font-medium">
           <AlertTriangle className="w-4 h-4 shrink-0" />
-          <span>{warning}</span>
+          <span>
+            {PROBLEM_LABELS[graceCountdown.type]} — this will be flagged as an integrity violation in{" "}
+            {graceCountdown.secondsLeft}s unless resolved.
+          </span>
         </div>
       )}
       <div
         className={`w-28 h-28 sm:w-36 sm:h-36 rounded-full overflow-hidden border-4 shadow-lg bg-black ${
-          warning ? "border-amber-400" : "border-white"
+          graceCountdown ? "border-red-500" : "border-white"
         }`}
       >
         <video
