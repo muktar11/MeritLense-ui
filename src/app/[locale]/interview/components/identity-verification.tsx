@@ -33,10 +33,12 @@ const MATCH_DISTANCE_THRESHOLD = 0.6;
 
 // Requiring the full 100% (an almost-identical photo) is unrealistic for a
 // real candidate selfie vs. a passport photo taken years apart under
-// different lighting - this sits partway into the "same person" range
-// rather than at its very edge, as a deliberate, moderate security margin.
-// Tune this directly if it proves too strict or too lenient in practice.
-const PASS_SCORE_THRESHOLD = 40;
+// different lighting. Lowered from an initial 40 after real candidates with
+// genuine matches were still failing at that bar - 20 sits closer to the
+// permissive edge of the same-person range (distance <= 0.48 of the 0.6
+// same-person boundary) to prioritize not blocking real matches. Tune this
+// directly if it proves too strict or too lenient in practice.
+const PASS_SCORE_THRESHOLD = 20;
 
 // Identity verification always takes this long from the candidate's
 // perspective, regardless of how fast the actual comparison finishes -
