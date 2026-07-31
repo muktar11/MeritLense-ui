@@ -96,6 +96,11 @@ function InterviewSessionContent() {
         if (!active) return;
         setSession(data);
         if (data.tts_language_code) setReadAloudLanguage(data.tts_language_code);
+        // Afaan Oromo has no working speech-to-text provider (confirmed
+        // directly - Whisper doesn't list it as supported), so recorded
+        // audio answers would transcribe unreliably at best. Force text
+        // answers instead of silently producing bad transcriptions.
+        if (data.candidate_language === "OM") setAnswerMode("text");
 
         if (data.status === "COMPLETED") {
           setPageState("completed");
@@ -302,6 +307,9 @@ function InterviewSessionContent() {
   const submitting = pageState === "submitting";
   const totalQuestions = session?.total_questions ?? 0;
   const questionNumber = question ? question.question_order : 0;
+  // No working speech-to-text provider for Afaan Oromo - see the mount
+  // effect above, which also force-switches answerMode to "text".
+  const audioAnswersUnavailable = session?.candidate_language === "OM";
 
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4">
@@ -336,17 +344,19 @@ function InterviewSessionContent() {
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex gap-2 mb-4">
-            <button
-              type="button"
-              onClick={() => setAnswerMode("audio")}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium border ${
-                answerMode === "audio"
-                  ? "border-purple-500 bg-purple-50 text-purple-700"
-                  : "border-gray-200 text-gray-500"
-              }`}
-            >
-              <Mic className="w-4 h-4" /> Record Answer
-            </button>
+            {!audioAnswersUnavailable && (
+              <button
+                type="button"
+                onClick={() => setAnswerMode("audio")}
+                className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium border ${
+                  answerMode === "audio"
+                    ? "border-purple-500 bg-purple-50 text-purple-700"
+                    : "border-gray-200 text-gray-500"
+                }`}
+              >
+                <Mic className="w-4 h-4" /> Record Answer
+              </button>
+            )}
             <button
               type="button"
               onClick={() => setAnswerMode("text")}
@@ -359,6 +369,11 @@ function InterviewSessionContent() {
               <Type className="w-4 h-4" /> Type Answer
             </button>
           </div>
+          {audioAnswersUnavailable && (
+            <p className="text-xs text-gray-500 -mt-2 mb-4">
+              Audio answers aren&apos;t available in Afaan Oromo yet — please type your answer.
+            </p>
+          )}
 
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded-lg text-sm mb-4">

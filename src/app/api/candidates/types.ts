@@ -1,3 +1,6 @@
+import { LANGUAGES } from '@/lib/languages';
+export { LANGUAGES };
+
 export interface Candidate {
   id: string;
   first_name: string;
@@ -45,17 +48,6 @@ export const JOB_ROLES = [
   { key: 'KA', label: 'Kitchen Assistant' },
   { key: 'MW', label: 'Maintenance Worker' },
   { key: 'OT', label: 'Other' },
-];
-
-export const LANGUAGES = [
-  { key: 'EN', label: 'English' },
-  { key: 'ES', label: 'Spanish' },
-  { key: 'FR', label: 'French' },
-  { key: 'DE', label: 'German' },
-  { key: 'ZH', label: 'Chinese' },
-  { key: 'AR', label: 'Arabic' },
-  { key: 'RU', label: 'Russian' },
-  { key: 'PT', label: 'Portuguese' },
 ];
 
 export const CANDIDATE_STATUS = [

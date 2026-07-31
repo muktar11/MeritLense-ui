@@ -114,14 +114,7 @@ export const NATIONALITIES = [
   { key: 'OT', label: 'Other' },
 ]
 
-export const LANGUAGES = [
-  { key: 'EN', label: 'English' },
-  { key: 'ES', label: 'Spanish' },
-  { key: 'FR', label: 'French' },
-  { key: 'AR', label: 'Arabic' },
-  { key: 'DE', label: 'German' },
-  { key: 'ZH', label: 'Chinese' },
-]
+export { LANGUAGES } from '@/lib/languages'
 
 export const COMPANY_SIZES = [
   { key: '1-10', label: '1-10 employees' },
