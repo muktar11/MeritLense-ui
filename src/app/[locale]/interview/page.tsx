@@ -101,14 +101,16 @@ function InterviewSessionContent() {
           setReadAloudLanguage(data.tts_language_code);
           setAnswerLanguage(data.tts_language_code);
         }
-        // Afaan Oromo has no working speech-to-text provider (confirmed
-        // directly - Whisper doesn't list it as supported), so recorded
-        // audio answers would transcribe unreliably at best. Force text
-        // answers instead of silently producing bad transcriptions. Also
-        // re-applied reactively below (handleAnswerLanguageChange) if the
-        // candidate switches their answer language away from Oromo, or to
-        // it, mid-interview.
-        if (data.candidate_language === "OM") setAnswerMode("text");
+        // Some languages have no working speech-to-text provider (confirmed
+        // directly against Whisper's documented supported-language list -
+        // see LANGUAGES' `stt` flag), so recorded audio answers for those
+        // would transcribe unreliably at best. Force text answers instead
+        // of silently producing bad transcriptions. Also re-applied
+        // reactively below (handleAnswerLanguageChange) if the candidate
+        // switches their answer language to/from an stt-incapable one
+        // mid-interview.
+        const candidateLang = LANGUAGES.find((lang) => lang.key === data.candidate_language);
+        if (candidateLang && !candidateLang.stt) setAnswerMode("text");
 
         if (data.status === "COMPLETED") {
           setPageState("completed");
@@ -187,11 +189,12 @@ function InterviewSessionContent() {
 
   const handleAnswerLanguageChange = (languageCode: string) => {
     setAnswerLanguage(languageCode);
-    // No working speech-to-text for Afaan Oromo - switching to it mid-
-    // interview should force text answers the same way the initial
-    // session-language check does; switching away doesn't force back to
-    // audio, since the candidate may still prefer typing.
-    if (languageCode === "om-ET") setAnswerMode("text");
+    // Switching to an stt-incapable language mid-interview should force
+    // text answers the same way the initial session-language check does;
+    // switching away doesn't force back to audio, since the candidate may
+    // still prefer typing.
+    const lang = LANGUAGES.find((l) => l.code === languageCode);
+    if (lang && !lang.stt) setAnswerMode("text");
   };
 
   const handleTextSubmit = async (text: string) => {
@@ -325,10 +328,10 @@ function InterviewSessionContent() {
   const submitting = pageState === "submitting";
   const totalQuestions = session?.total_questions ?? 0;
   const questionNumber = question ? question.question_order : 0;
-  // No working speech-to-text provider for Afaan Oromo - tracks the live
-  // answer-language selection (not just the session's fixed default), so
-  // switching to/from Oromo via the picker below reacts immediately.
-  const audioAnswersUnavailable = answerLanguage === "om-ET";
+  // Tracks the live answer-language selection's `stt` capability (not just
+  // the session's fixed default), so switching to/from an stt-incapable
+  // language via the picker below reacts immediately.
+  const audioAnswersUnavailable = !LANGUAGES.find((lang) => lang.code === answerLanguage)?.stt;
 
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4">
@@ -405,7 +408,9 @@ function InterviewSessionContent() {
           </div>
           {audioAnswersUnavailable && (
             <p className="text-xs text-gray-500 -mt-2 mb-4">
-              Audio answers aren&apos;t available in Afaan Oromo yet — please type your answer.
+              Audio answers aren&apos;t available in{" "}
+              {LANGUAGES.find((lang) => lang.code === answerLanguage)?.label ?? "this language"} yet — please type
+              your answer.
             </p>
           )}
 
