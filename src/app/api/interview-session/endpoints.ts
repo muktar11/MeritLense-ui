@@ -65,11 +65,13 @@ class InterviewSessionClientService {
   async transcribeResponse(
     sessionId: string,
     token: string,
-    responseId: string
+    responseId: string,
+    languageCode?: string
   ): Promise<CandidateResponseUpload> {
     const response = await interviewSessionClient.post(`/${sessionId}/transcribe-response/`, {
       token,
       response_id: responseId,
+      ...(languageCode ? { language_code: languageCode } : {}),
     });
     return response.data;
   }

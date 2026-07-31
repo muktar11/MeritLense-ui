@@ -16,6 +16,7 @@ import { AnswerRecorder } from "./components/answer-recorder";
 import { IdentityVerification } from "./components/identity-verification";
 import { IntegrityMonitor } from "./components/integrity-monitor";
 import { TestTimer } from "./components/test-timer";
+import { LANGUAGES } from "@/lib/languages";
 
 type PageState =
   | "loading"
@@ -57,6 +58,7 @@ function InterviewSessionContent() {
   const [loadingAudio, setLoadingAudio] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [readAloudLanguage, setReadAloudLanguage] = useState("en-US");
+  const [answerLanguage, setAnswerLanguage] = useState("en-US");
 
   const loadCurrentQuestion = useCallback(async () => {
     setAudioUrl(null);
@@ -95,11 +97,17 @@ function InterviewSessionContent() {
         const data = await interviewSessionService.getSession(sessionId, token);
         if (!active) return;
         setSession(data);
-        if (data.tts_language_code) setReadAloudLanguage(data.tts_language_code);
+        if (data.tts_language_code) {
+          setReadAloudLanguage(data.tts_language_code);
+          setAnswerLanguage(data.tts_language_code);
+        }
         // Afaan Oromo has no working speech-to-text provider (confirmed
         // directly - Whisper doesn't list it as supported), so recorded
         // audio answers would transcribe unreliably at best. Force text
-        // answers instead of silently producing bad transcriptions.
+        // answers instead of silently producing bad transcriptions. Also
+        // re-applied reactively below (handleAnswerLanguageChange) if the
+        // candidate switches their answer language away from Oromo, or to
+        // it, mid-interview.
         if (data.candidate_language === "OM") setAnswerMode("text");
 
         if (data.status === "COMPLETED") {
@@ -177,6 +185,15 @@ function InterviewSessionContent() {
     setAudioUrl(null);
   };
 
+  const handleAnswerLanguageChange = (languageCode: string) => {
+    setAnswerLanguage(languageCode);
+    // No working speech-to-text for Afaan Oromo - switching to it mid-
+    // interview should force text answers the same way the initial
+    // session-language check does; switching away doesn't force back to
+    // audio, since the candidate may still prefer typing.
+    if (languageCode === "om-ET") setAnswerMode("text");
+  };
+
   const handleTextSubmit = async (text: string) => {
     if (!question) return;
     setPageState("submitting");
@@ -186,6 +203,7 @@ function InterviewSessionContent() {
         question_id: question.id,
         transcript: text,
         text_response: text,
+        language_code: answerLanguage,
       });
       await loadCurrentQuestion();
     } catch {
@@ -206,7 +224,7 @@ function InterviewSessionContent() {
         blob,
         durationSeconds
       );
-      await interviewSessionService.transcribeResponse(sessionId, token, uploaded.id);
+      await interviewSessionService.transcribeResponse(sessionId, token, uploaded.id, answerLanguage);
       await loadCurrentQuestion();
     } catch {
       setError("Failed to submit your recording. Please try again.");
@@ -307,9 +325,10 @@ function InterviewSessionContent() {
   const submitting = pageState === "submitting";
   const totalQuestions = session?.total_questions ?? 0;
   const questionNumber = question ? question.question_order : 0;
-  // No working speech-to-text provider for Afaan Oromo - see the mount
-  // effect above, which also force-switches answerMode to "text".
-  const audioAnswersUnavailable = session?.candidate_language === "OM";
+  // No working speech-to-text provider for Afaan Oromo - tracks the live
+  // answer-language selection (not just the session's fixed default), so
+  // switching to/from Oromo via the picker below reacts immediately.
+  const audioAnswersUnavailable = answerLanguage === "om-ET";
 
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4">
@@ -343,6 +362,21 @@ function InterviewSessionContent() {
         )}
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center justify-between gap-3 mb-3">
+            <label className="text-xs text-gray-500">Answering in:</label>
+            <select
+              value={answerLanguage}
+              onChange={(e) => handleAnswerLanguageChange(e.target.value)}
+              title="Answer language"
+              className="text-xs border border-gray-200 rounded-lg px-1.5 py-1 text-gray-600 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+            >
+              {LANGUAGES.map((lang) => (
+                <option key={lang.code} value={lang.code}>
+                  {lang.label}
+                </option>
+              ))}
+            </select>
+          </div>
           <div className="flex gap-2 mb-4">
             {!audioAnswersUnavailable && (
               <button

@@ -75,6 +75,7 @@ export interface SubmitTextResponseData {
   transcript: string;
   text_response?: string;
   duration_seconds?: number;
+  language_code?: string;
 }
 
 export interface SubmitResponseResult {
