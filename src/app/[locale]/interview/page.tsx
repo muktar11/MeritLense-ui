@@ -119,20 +119,23 @@ function InterviewSessionContent() {
           setPageState("scheduled");
           return;
         }
+        // Due (or never scheduled). The backend requires consent, identity
+        // verification, device check, and privacy acknowledgement to all be
+        // complete before it will let a candidate-initiated start through -
+        // none of those require the session to already be IN_PROGRESS, so
+        // send an unverified candidate to prechecks first rather than
+        // trying (and failing) to start immediately. Starting happens once
+        // prechecks finish - see handlePrecheckContinue.
+        if (!data.identity_verified) {
+          setPageState("precheck");
+          return;
+        }
         try {
           const started = await interviewSessionService.startSession(sessionId, token);
           if (!active()) return;
           setSession(started);
-          if (!started.identity_verified) {
-            setPageState("precheck");
-          } else {
-            await loadCurrentQuestion();
-          }
+          await loadCurrentQuestion();
         } catch {
-          // Not due yet after all (e.g. a race right at the scheduled
-          // boundary), or some other reason the backend won't start it -
-          // either way, fall back to the generic "not ready" screen rather
-          // than erroring out.
           if (active()) setPageState("not-ready");
         }
       } else if (data.status === "PAUSED") {
@@ -196,6 +199,27 @@ function InterviewSessionContent() {
       clearInterval(interval);
     };
   }, [pageState, sessionId, token, resolveSessionState]);
+
+  // Prechecks can finish while the session is still "CREATED" (a
+  // scheduled interview the candidate is completing ahead of time, or one
+  // that just became due) - in that case the session needs to actually be
+  // started before fetching the first question, which the backend only
+  // allows now that prechecks are done. If it's already IN_PROGRESS (the
+  // pre-scheduling norm, where staff start it at creation), this is a
+  // no-op fallthrough straight to the question.
+  const handlePrecheckContinue = useCallback(async () => {
+    if (session?.status === "CREATED") {
+      try {
+        const started = await interviewSessionService.startSession(sessionId, token);
+        setSession(started);
+      } catch {
+        setError("Your interview couldn't be started. Please refresh the page or contact the person who invited you.");
+        setPageState("not-ready");
+        return;
+      }
+    }
+    await loadCurrentQuestion();
+  }, [session, sessionId, token, loadCurrentQuestion]);
 
   const hasAutoCompletedRef = useRef(false);
   const handleTimeUp = useCallback(async () => {
@@ -337,7 +361,7 @@ function InterviewSessionContent() {
 
   if (pageState === "precheck") {
     return (
-      <IdentityVerification sessionId={sessionId} token={token} onContinue={loadCurrentQuestion} />
+      <IdentityVerification sessionId={sessionId} token={token} onContinue={handlePrecheckContinue} />
     );
   }
 
