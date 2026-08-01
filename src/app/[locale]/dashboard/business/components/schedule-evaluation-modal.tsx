@@ -132,7 +132,17 @@ export default function EvaluationModal({
 
     setLoading(true)
     if (onSubmit) {
-      const success = await onSubmit(formData)
+      // formData.scheduled_date is a datetime-local value (local wall-clock
+      // digits, no timezone) - sending it as-is would have the backend
+      // (TIME_ZONE=UTC, no per-request timezone activation) interpret it AS
+      // UTC instead of the browser's actual local time, silently shifting
+      // the stored instant by the local UTC offset. new Date(...) parses a
+      // timezone-less datetime string as local time per spec, so
+      // toISOString() here correctly converts it to the real UTC instant.
+      const success = await onSubmit({
+        ...formData,
+        scheduled_date: new Date(formData.scheduled_date).toISOString(),
+      })
       setLoading(false)
       if (success) {
         onClose()
@@ -158,7 +168,12 @@ export default function EvaluationModal({
 
     setLoading(true)
     if (onReschedule) {
-      const success = await onReschedule(rescheduleData)
+      // Same local-time-to-UTC conversion as the create/edit path above -
+      // rescheduleData.new_date is a naive datetime-local value.
+      const success = await onReschedule({
+        ...rescheduleData,
+        new_date: new Date(rescheduleData.new_date).toISOString(),
+      })
       setLoading(false)
       if (success) {
         onClose()
