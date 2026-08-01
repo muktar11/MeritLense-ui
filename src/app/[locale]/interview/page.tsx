@@ -14,6 +14,7 @@ import { QuestionCard } from "./components/question-card";
 import { AnswerTextForm } from "./components/answer-text-form";
 import { AnswerRecorder } from "./components/answer-recorder";
 import { IdentityVerification } from "./components/identity-verification";
+import { ScheduledPrechecks } from "./components/scheduled-prechecks";
 import { IntegrityMonitor } from "./components/integrity-monitor";
 import { TestTimer } from "./components/test-timer";
 import { LANGUAGES } from "@/lib/languages";
@@ -360,7 +361,14 @@ function InterviewSessionContent() {
   }
 
   if (pageState === "precheck") {
-    return (
+    // Scheduled interviews (session.scheduled_start_at set) use the
+    // password-based flow - a link opened well ahead of its scheduled time
+    // doesn't lend itself to a live camera comparison the way an
+    // immediately-started session does. Non-scheduled sessions keep the
+    // existing camera-based identity verification, unchanged.
+    return session?.scheduled_start_at ? (
+      <ScheduledPrechecks sessionId={sessionId} token={token} onContinue={handlePrecheckContinue} />
+    ) : (
       <IdentityVerification sessionId={sessionId} token={token} onContinue={handlePrecheckContinue} />
     );
   }
