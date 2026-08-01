@@ -1,7 +1,9 @@
 {
-  "navigationFallback": {
-    "rewrite": "/index.html",
-    "exclude": ["/_next/*", "/images/*", "/*.ico", "/*.png", "/*.svg"]
+  "responseOverrides": {
+    "404": {
+      "rewrite": "/404.html",
+      "statusCode": 404
+    }
   },
   "globalHeaders": {
     "X-Content-Type-Options": "nosniff",

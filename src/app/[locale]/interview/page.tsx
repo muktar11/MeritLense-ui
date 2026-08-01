@@ -368,14 +368,19 @@ function InterviewSessionContent() {
   }
 
   if (pageState === "unavailable") {
+    const isExpired = session?.status === "EXPIRED";
     return (
       <CenteredCard>
         <XCircle className="w-14 h-14 text-red-500 mx-auto mb-4" />
-        <h1 className="text-xl font-bold text-gray-900 mb-2">This interview link is no longer active</h1>
+        <h1 className="text-xl font-bold text-gray-900 mb-2">
+          {isExpired ? "This interview link has expired" : "This interview link is no longer active"}
+        </h1>
         <p className="text-gray-600">
           {session?.status === "CANCELLED" && session.cancellation_reason
             ? `This interview was cancelled: ${session.cancellation_reason}`
-            : error ?? "This session has expired or is no longer available."}
+            : isExpired
+              ? "Please contact the person who invited you to request a new link."
+              : (error ?? "This session has expired or is no longer available.")}
         </p>
       </CenteredCard>
     );
