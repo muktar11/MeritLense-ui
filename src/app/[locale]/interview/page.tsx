@@ -324,7 +324,10 @@ function InterviewSessionContent() {
                 weekday: "long",
                 month: "long",
                 day: "numeric",
-              })} at ${scheduledAt.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })}.`
+              })} at ${scheduledAt.toLocaleTimeString(undefined, {
+                hour: "numeric",
+                minute: "2-digit",
+              })} (your device's local time).`
             : "This interview hasn't started yet."}{" "}
           This page will continue automatically once it&apos;s time — you can leave it open, or come back later.
         </p>
