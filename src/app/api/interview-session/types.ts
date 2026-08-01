@@ -121,15 +121,6 @@ export interface PrecheckStatus {
   } | null;
 }
 
-export interface AccessPasswordVerifyResult {
-  precheck_status: PrecheckStatus;
-}
-
-export interface VerbalConfirmationResult {
-  precheck_status: PrecheckStatus;
-  artifact: { id: string; artifact_type: string; file_url: string } | null;
-}
-
 export interface IdentityVerificationResult {
   precheck_status: PrecheckStatus;
   verification: {

@@ -7,8 +7,6 @@ import type {
   SubmitResponseResult,
   CandidateResponseUpload,
   PrecheckStatus,
-  AccessPasswordVerifyResult,
-  VerbalConfirmationResult,
   IdentityVerificationResult,
   IntegrityEventResult,
 } from './types';
@@ -125,50 +123,6 @@ class InterviewSessionClientService {
     formData.append('liveness_passed', String(data.livenessPassed));
 
     const response = await interviewSessionClient.post(`/${sessionId}/prechecks/identity-verify/`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
-    return response.data;
-  }
-
-  // Scheduled-interview-only alternative to submitIdentityVerification - a
-  // link opened well ahead of its scheduled time doesn't lend itself to a
-  // live camera comparison, so this proves the opener has access to the
-  // candidate's inbox (the password was emailed alongside the link) instead.
-  async verifyAccessPassword(sessionId: string, token: string, password: string): Promise<AccessPasswordVerifyResult> {
-    const response = await interviewSessionClient.post(`/${sessionId}/prechecks/verify-access-password/`, {
-      token,
-      password,
-    });
-    return response.data;
-  }
-
-  async captureConsent(sessionId: string, token: string, signatoryName: string): Promise<PrecheckStatus> {
-    const response = await interviewSessionClient.post(`/${sessionId}/prechecks/consent/`, {
-      token,
-      signatory_name: signatoryName,
-    });
-    return response.data;
-  }
-
-  async acknowledgePrivacy(sessionId: string, token: string): Promise<PrecheckStatus> {
-    const response = await interviewSessionClient.post(`/${sessionId}/prechecks/privacy-acknowledgement/`, { token });
-    return response.data;
-  }
-
-  async completeDeviceCheck(sessionId: string, token: string, passed: boolean): Promise<PrecheckStatus> {
-    const response = await interviewSessionClient.post(`/${sessionId}/prechecks/device-check/`, {
-      token,
-      passed,
-    });
-    return response.data;
-  }
-
-  async submitVerbalConfirmation(sessionId: string, token: string, audioBlob: Blob): Promise<VerbalConfirmationResult> {
-    const formData = new FormData();
-    formData.append('token', token);
-    formData.append('recording_file', audioBlob, 'verbal-confirmation.webm');
-
-    const response = await interviewSessionClient.post(`/${sessionId}/prechecks/verbal-confirmation/`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
     return response.data;
