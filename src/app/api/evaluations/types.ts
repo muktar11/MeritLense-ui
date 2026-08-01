@@ -285,4 +285,11 @@ export interface EvaluationListItem {
   score?: number;
   created_by: string;
   created_at: string;
+  // Not yet returned by the list endpoint (EvaluationListSerializer only
+  // exposes these on the single-evaluation detail response today) - needs
+  // a backend change to add them to the list serializer too. Left optional
+  // so the table can use them the moment that lands, without another
+  // frontend change.
+  meeting_link?: string;
+  session_id?: string;
 }

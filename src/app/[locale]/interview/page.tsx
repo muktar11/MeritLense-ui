@@ -21,6 +21,7 @@ import { LANGUAGES } from "@/lib/languages";
 type PageState =
   | "loading"
   | "not-ready"
+  | "scheduled"
   | "unavailable"
   | "precheck"
   | "question"
@@ -85,6 +86,69 @@ function InterviewSessionContent() {
     }
   }, [sessionId, token]);
 
+  // Shared by the initial mount check and the "scheduled" screen's re-check
+  // poll below - resolves what to show for a freshly-fetched session. A
+  // CREATED session with a future scheduled_start_at gets the "scheduled"
+  // waiting screen; once due (or if it was never scheduled at all - the
+  // pre-scheduling behavior, where staff always create+start together),
+  // the candidate self-serves the start themselves, since nothing else in
+  // the product starts a scheduled session automatically at its due time.
+  const resolveSessionState = useCallback(
+    async (data: InterviewSessionPublic, active: () => boolean) => {
+      if (data.tts_language_code) {
+        setReadAloudLanguage(data.tts_language_code);
+        setAnswerLanguage(data.tts_language_code);
+      }
+      // Some languages have no working speech-to-text provider (confirmed
+      // directly against Whisper's documented supported-language list -
+      // see LANGUAGES' `stt` flag), so recorded audio answers for those
+      // would transcribe unreliably at best. Force text answers instead
+      // of silently producing bad transcriptions. Also re-applied
+      // reactively below (handleAnswerLanguageChange) if the candidate
+      // switches their answer language to/from an stt-incapable one
+      // mid-interview.
+      const candidateLang = LANGUAGES.find((lang) => lang.key === data.candidate_language);
+      if (candidateLang && !candidateLang.stt) setAnswerMode("text");
+
+      if (data.status === "COMPLETED") {
+        setPageState("completed");
+      } else if (["EXPIRED", "CANCELLED", "FAILED"].includes(data.status)) {
+        setPageState("unavailable");
+      } else if (data.status === "CREATED") {
+        if (data.scheduled_start_at && new Date(data.scheduled_start_at).getTime() > Date.now()) {
+          setPageState("scheduled");
+          return;
+        }
+        try {
+          const started = await interviewSessionService.startSession(sessionId, token);
+          if (!active()) return;
+          setSession(started);
+          if (!started.identity_verified) {
+            setPageState("precheck");
+          } else {
+            await loadCurrentQuestion();
+          }
+        } catch {
+          // Not due yet after all (e.g. a race right at the scheduled
+          // boundary), or some other reason the backend won't start it -
+          // either way, fall back to the generic "not ready" screen rather
+          // than erroring out.
+          if (active()) setPageState("not-ready");
+        }
+      } else if (data.status === "PAUSED") {
+        // Reload mid-pause (e.g. candidate refreshed the page) - current-question
+        // would reject this anyway since the session isn't IN_PROGRESS, so show
+        // the same blocking screen the live callback below would show.
+        setPageState("paused");
+      } else if (!data.identity_verified) {
+        setPageState("precheck");
+      } else {
+        await loadCurrentQuestion();
+      }
+    },
+    [sessionId, token, loadCurrentQuestion]
+  );
+
   useEffect(() => {
     if (!sessionId || !token) {
       setError("This interview link is missing required information.");
@@ -97,37 +161,7 @@ function InterviewSessionContent() {
         const data = await interviewSessionService.getSession(sessionId, token);
         if (!active) return;
         setSession(data);
-        if (data.tts_language_code) {
-          setReadAloudLanguage(data.tts_language_code);
-          setAnswerLanguage(data.tts_language_code);
-        }
-        // Some languages have no working speech-to-text provider (confirmed
-        // directly against Whisper's documented supported-language list -
-        // see LANGUAGES' `stt` flag), so recorded audio answers for those
-        // would transcribe unreliably at best. Force text answers instead
-        // of silently producing bad transcriptions. Also re-applied
-        // reactively below (handleAnswerLanguageChange) if the candidate
-        // switches their answer language to/from an stt-incapable one
-        // mid-interview.
-        const candidateLang = LANGUAGES.find((lang) => lang.key === data.candidate_language);
-        if (candidateLang && !candidateLang.stt) setAnswerMode("text");
-
-        if (data.status === "COMPLETED") {
-          setPageState("completed");
-        } else if (["EXPIRED", "CANCELLED", "FAILED"].includes(data.status)) {
-          setPageState("unavailable");
-        } else if (data.status === "CREATED") {
-          setPageState("not-ready");
-        } else if (data.status === "PAUSED") {
-          // Reload mid-pause (e.g. candidate refreshed the page) - current-question
-          // would reject this anyway since the session isn't IN_PROGRESS, so show
-          // the same blocking screen the live callback below would show.
-          setPageState("paused");
-        } else if (!data.identity_verified) {
-          setPageState("precheck");
-        } else {
-          await loadCurrentQuestion();
-        }
+        await resolveSessionState(data, () => active);
       } catch {
         if (active) {
           setError("We couldn't find this interview session. The link may be invalid.");
@@ -140,6 +174,28 @@ function InterviewSessionContent() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId, token]);
+
+  // While waiting for a scheduled interview's start time, periodically
+  // re-check rather than making the candidate manually refresh the page.
+  useEffect(() => {
+    if (pageState !== "scheduled") return;
+    let active = true;
+    const interval = setInterval(async () => {
+      try {
+        const data = await interviewSessionService.getSession(sessionId, token);
+        if (!active) return;
+        setSession(data);
+        await resolveSessionState(data, () => active);
+      } catch {
+        // Transient error - the next tick will retry; no need to surface
+        // this while the candidate is just waiting.
+      }
+    }, 30_000);
+    return () => {
+      active = false;
+      clearInterval(interval);
+    };
+  }, [pageState, sessionId, token, resolveSessionState]);
 
   const hasAutoCompletedRef = useRef(false);
   const handleTimeUp = useCallback(async () => {
@@ -256,6 +312,26 @@ function InterviewSessionContent() {
     );
   }
 
+  if (pageState === "scheduled") {
+    const scheduledAt = session?.scheduled_start_at ? new Date(session.scheduled_start_at) : null;
+    return (
+      <CenteredCard>
+        <Clock className="w-14 h-14 text-amber-500 mx-auto mb-4" />
+        <h1 className="text-xl font-bold text-gray-900 mb-2">Your interview is scheduled</h1>
+        <p className="text-gray-600">
+          {scheduledAt
+            ? `This interview will begin on ${scheduledAt.toLocaleDateString(undefined, {
+                weekday: "long",
+                month: "long",
+                day: "numeric",
+              })} at ${scheduledAt.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })}.`
+            : "This interview hasn't started yet."}{" "}
+          This page will continue automatically once it&apos;s time — you can leave it open, or come back later.
+        </p>
+      </CenteredCard>
+    );
+  }
+
   if (pageState === "precheck") {
     return (
       <IdentityVerification sessionId={sessionId} token={token} onContinue={loadCurrentQuestion} />
@@ -296,7 +372,11 @@ function InterviewSessionContent() {
       <CenteredCard>
         <XCircle className="w-14 h-14 text-red-500 mx-auto mb-4" />
         <h1 className="text-xl font-bold text-gray-900 mb-2">This interview link is no longer active</h1>
-        <p className="text-gray-600">{error ?? "This session has expired or is no longer available."}</p>
+        <p className="text-gray-600">
+          {session?.status === "CANCELLED" && session.cancellation_reason
+            ? `This interview was cancelled: ${session.cancellation_reason}`
+            : error ?? "This session has expired or is no longer available."}
+        </p>
       </CenteredCard>
     );
   }

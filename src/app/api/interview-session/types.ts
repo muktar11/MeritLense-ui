@@ -32,6 +32,14 @@ export interface InterviewSessionPublic {
   // Also already present in the actual response - the session's default
   // read-aloud language (e.g. "en-US"), used to seed the language picker.
   tts_language_code?: string;
+  // Present once the interview-scheduling backend work is merged - a
+  // scheduled session sits in status "CREATED" (same as an immediately-
+  // startable one) until this time passes, at which point the candidate
+  // can self-serve POST .../start/. Optional so this stays safe to read
+  // against a backend that hasn't merged that work yet.
+  scheduled_start_at?: string | null;
+  cancelled_at?: string | null;
+  cancellation_reason?: string;
 }
 
 export interface SessionQuestion {

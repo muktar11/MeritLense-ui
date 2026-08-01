@@ -22,6 +22,17 @@ class InterviewSessionClientService {
     return response.data;
   }
 
+  // Candidate self-serve start, for a session that hasn't been started yet
+  // (status "CREATED") - the only path this happens today is a scheduled
+  // interview sitting past its scheduled_start_at with nobody having
+  // started it yet, since staff normally create+start a session together.
+  // The backend rejects this with a 400 if called before scheduled_start_at,
+  // which callers should treat as "not due yet" rather than a hard error.
+  async startSession(sessionId: string, token: string): Promise<InterviewSessionPublic> {
+    const response = await interviewSessionClient.post(`/${sessionId}/start/`, { token });
+    return response.data;
+  }
+
   async getQuestionAudio(sessionId: string, token: string, languageCode?: string): Promise<QuestionAudioArtifact> {
     const response = await interviewSessionClient.post(`/${sessionId}/question-audio/`, {
       token,

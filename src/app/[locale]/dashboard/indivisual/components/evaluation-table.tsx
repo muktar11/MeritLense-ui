@@ -57,6 +57,8 @@ export default function EvaluationTable({
   const [copiedId, setCopiedId] = useState<string | null>(null)
 
   const handleCopyMeetingLink = async (evaluation: EvaluationListItem) => {
+    if (!evaluation.meeting_link) return
+    await navigator.clipboard.writeText(evaluation.meeting_link)
     setCopiedId(evaluation.id)
     setTimeout(() => setCopiedId(null), 2000)
   }
@@ -169,7 +171,13 @@ export default function EvaluationTable({
                       </button>
                     )}
 
-                    {onStartSession && item.status !== 'CANCELLED' && (
+                    {onStartSession && item.status !== 'CANCELLED' && !item.session_id && (
+                      // Hidden once an AI interview session already exists for this
+                      // evaluation (item.session_id set - auto-linked when an
+                      // INTERVIEW-type evaluation is scheduled) - this button opens
+                      // the separate ad-hoc "Start AI Interview Session" flow, which
+                      // would otherwise create a second, unrelated session for the
+                      // same candidate.
                       <button
                         onClick={() => onStartSession(item)}
                         className="p-1 hover:bg-gray-100 rounded transition-colors text-gray-500 hover:text-indigo-600"
@@ -179,7 +187,7 @@ export default function EvaluationTable({
                       </button>
                     )}
 
-                    {(item.status === 'SCHEDULED' || item.status === 'RESCHEDULED') && (
+                    {(item.status === 'SCHEDULED' || item.status === 'RESCHEDULED') && item.meeting_link && (
                       <button
                         onClick={() => handleCopyMeetingLink(item)}
                         className="p-1 hover:bg-gray-100 rounded transition-colors text-gray-500 hover:text-gray-700"
