@@ -9,6 +9,17 @@ import { format } from "date-fns"
 
 type ModalMode = 'view' | 'create' | 'edit' | 'reschedule';
 
+// <input type="datetime-local">'s value is wall-clock digits with no
+// timezone - toISOString() converts to UTC first, so for anyone not in
+// UTC (e.g. AST, UTC+3) the picker showed a time hours off from what was
+// actually selected/stored, both as the "now + 1 hour" default and when
+// editing an existing evaluation. Build the local-time digits directly
+// instead.
+function toDateTimeLocalValue(date: Date): string {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
 interface EvaluationModalProps {
   isOpen: boolean
   onClose: () => void
@@ -39,7 +50,7 @@ export default function EvaluationModal({
   const [formData, setFormData] = useState<CreateEvaluationData>({
     candidate: "",
     evaluation_type: "INTERVIEW",
-    scheduled_date: new Date(new Date().setHours(new Date().getHours() + 1)).toISOString().slice(0, 16),
+    scheduled_date: toDateTimeLocalValue(new Date(new Date().setHours(new Date().getHours() + 1))),
     duration_minutes: 60,
     meeting_link: "",
     meeting_id: "",
@@ -63,7 +74,7 @@ export default function EvaluationModal({
         setFormData({
           candidate: evaluation.candidate,
           evaluation_type: evaluation.evaluation_type,
-          scheduled_date: new Date(evaluation.scheduled_date).toISOString().slice(0, 16),
+          scheduled_date: toDateTimeLocalValue(new Date(evaluation.scheduled_date)),
           duration_minutes: evaluation.duration_minutes,
           meeting_link: evaluation.meeting_link || "",
           meeting_id: evaluation.meeting_id || "",
@@ -72,14 +83,14 @@ export default function EvaluationModal({
         })
       } else if (mode === 'reschedule' && evaluation) {
         setRescheduleData({
-          new_date: new Date(evaluation.scheduled_date).toISOString().slice(0, 16),
+          new_date: toDateTimeLocalValue(new Date(evaluation.scheduled_date)),
           reason: ""
         })
       } else if (mode === 'create') {
         setFormData({
           candidate: candidates[0]?.id || "",
           evaluation_type: "INTERVIEW",
-          scheduled_date: new Date(new Date().setHours(new Date().getHours() + 1)).toISOString().slice(0, 16),
+          scheduled_date: toDateTimeLocalValue(new Date(new Date().setHours(new Date().getHours() + 1))),
           duration_minutes: 60,
           meeting_link: "",
           meeting_id: "",
@@ -163,7 +174,7 @@ export default function EvaluationModal({
     setFormData({
       candidate: candidates[0]?.id || "",
       evaluation_type: "INTERVIEW",
-      scheduled_date: new Date(new Date().setHours(new Date().getHours() + 1)).toISOString().slice(0, 16),
+      scheduled_date: toDateTimeLocalValue(new Date(new Date().setHours(new Date().getHours() + 1))),
       duration_minutes: 60,
       meeting_link: "",
       meeting_id: "",
