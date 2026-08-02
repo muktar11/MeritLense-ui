@@ -11,6 +11,7 @@ export type LiveCallStatus =
   | "idle"
   | "joining"
   | "waiting"
+  | "pending_admission"
   | "connecting"
   | "active"
   | "reconnecting"
@@ -46,6 +47,8 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
   const [remoteConnected, setRemoteConnected] = useState(false);
   const [languagePrefs, setLanguagePrefsState] = useState<LanguagePrefs | null>(null);
   const [translationUnavailable, setTranslationUnavailable] = useState(false);
+  // Evaluator-only: a candidate is knocking and hasn't been admitted/denied yet.
+  const [joinRequest, setJoinRequest] = useState(false);
 
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
@@ -167,6 +170,18 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
         case "ready":
           setRole(event.role);
           roleRef.current = event.role;
+          setStatus("waiting");
+          break;
+        case "waiting_for_admission":
+          setStatus("pending_admission");
+          break;
+        case "join_request":
+          setJoinRequest(true);
+          break;
+        case "join_request_dismissed":
+          setJoinRequest(false);
+          break;
+        case "admitted":
           setStatus("waiting");
           break;
         case "peer_presence":
@@ -309,6 +324,16 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
     setStatus("ended");
   }, [sendSignal, cleanupConnection, cleanupMedia]);
 
+  const admitCandidate = useCallback(() => {
+    setJoinRequest(false);
+    sendSignal({ action: "admit" });
+  }, [sendSignal]);
+
+  const denyCandidate = useCallback(() => {
+    setJoinRequest(false);
+    sendSignal({ action: "deny" });
+  }, [sendSignal]);
+
   const setLanguagePrefs = useCallback(
     async (prefs: LanguagePrefs) => {
       const updated = await liveCallService.setLanguages(sessionId, prefs, candidateToken);
@@ -327,6 +352,9 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
     languagePrefs,
     setLanguagePrefs,
     translationUnavailable,
+    joinRequest,
+    admitCandidate,
+    denyCandidate,
     endCall,
     localVideoRef,
     remoteVideoRef,

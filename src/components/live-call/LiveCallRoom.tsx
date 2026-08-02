@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2, Mic, PhoneOff, AlertTriangle, Video } from "lucide-react";
+import { Loader2, Mic, PhoneOff, AlertTriangle, Video, UserCheck, UserX } from "lucide-react";
 import { useLiveCall } from "./useLiveCall";
 import { LANGUAGES } from "@/lib/languages";
 
@@ -23,6 +23,9 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded }: LiveCallRoo
     languagePrefs,
     setLanguagePrefs,
     translationUnavailable,
+    joinRequest,
+    admitCandidate,
+    denyCandidate,
     endCall,
     localVideoRef,
     remoteVideoRef,
@@ -81,9 +84,36 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded }: LiveCallRoo
               <p className="text-sm">
                 {status === "joining" && "Joining the call…"}
                 {status === "waiting" && "Waiting for the other participant to join…"}
+                {status === "pending_admission" && "Waiting for the evaluator to let you in…"}
                 {status === "reconnecting" && "Reconnecting…"}
                 {status === "connecting" && "Connecting…"}
               </p>
+            </div>
+          </div>
+        )}
+
+        {role === "EVALUATOR" && joinRequest && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/70 z-10">
+            <div className="bg-white rounded-2xl p-6 text-center max-w-xs w-full mx-4">
+              <UserCheck className="w-10 h-10 text-purple-600 mx-auto mb-3" />
+              <h2 className="text-base font-semibold text-gray-900 mb-1">Candidate wants to join</h2>
+              <p className="text-sm text-gray-600 mb-5">Let them into the interview?</p>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={denyCandidate}
+                  className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium"
+                >
+                  <UserX className="w-4 h-4" /> Deny
+                </button>
+                <button
+                  type="button"
+                  onClick={admitCandidate}
+                  className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium"
+                >
+                  <UserCheck className="w-4 h-4" /> Admit
+                </button>
+              </div>
             </div>
           </div>
         )}

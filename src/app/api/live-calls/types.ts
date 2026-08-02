@@ -46,7 +46,9 @@ export type LiveCallClientAction =
   | { action: "ice_candidate"; data: RTCIceCandidateInit }
   | { action: "renegotiate"; data: Record<string, never> }
   | { action: "ping" }
-  | { action: "end_call" };
+  | { action: "end_call" }
+  | { action: "admit" }
+  | { action: "deny" };
 
 // Server -> client events (JSON text frames).
 export type LiveCallServerEvent =
@@ -57,6 +59,10 @@ export type LiveCallServerEvent =
   | { event: "ice_candidate"; data: RTCIceCandidateInit; from: LiveCallRole }
   | { event: "renegotiate"; data: Record<string, never>; from: LiveCallRole }
   | { event: "peer_presence"; role: LiveCallRole; connected: boolean }
+  | { event: "waiting_for_admission" }
+  | { event: "join_request" }
+  | { event: "join_request_dismissed" }
+  | { event: "admitted" }
   | { event: "translated_audio"; mime_type: string; audio: string }
   | { event: "translation_unavailable"; detail: string }
   | { event: "translation_error"; detail: string }
