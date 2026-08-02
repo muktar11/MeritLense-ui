@@ -1,7 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { Copy, Eye, Calendar, XCircle, CheckCircle, Edit, Mic, BarChart3 } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useLocale } from "next-intl"
+import { Copy, Eye, Calendar, XCircle, CheckCircle, Edit, Mic, BarChart3, Video } from "lucide-react"
 import type { EvaluationListItem } from "@/app/api/evaluations/types"
 import { format } from "date-fns"
 
@@ -55,6 +57,13 @@ export default function EvaluationTable({
   userRole = 'B2C'
 }: EvaluationTableProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null)
+  const router = useRouter()
+  const locale = useLocale()
+
+  const handleJoinLiveInterview = (evaluation: EvaluationListItem) => {
+    if (!evaluation.session_id) return
+    router.push(`/${locale}/dashboard/indivisual/live-call?sessionId=${evaluation.session_id}`)
+  }
 
   const handleCopyMeetingLink = async (evaluation: EvaluationListItem) => {
     if (!evaluation.meeting_link) return
@@ -200,6 +209,18 @@ export default function EvaluationTable({
                         )}
                       </button>
                     )}
+
+                    {item.evaluation_type === 'INTERVIEW' &&
+                      item.session_id &&
+                      ['SCHEDULED', 'RESCHEDULED', 'IN_PROGRESS'].includes(item.status) && (
+                        <button
+                          onClick={() => handleJoinLiveInterview(item)}
+                          className="p-1 hover:bg-gray-100 rounded transition-colors text-gray-500 hover:text-purple-600"
+                          title="Join Live Interview"
+                        >
+                          <Video className="w-4 h-4" />
+                        </button>
+                      )}
                   </div>
                 </td>
               </tr>

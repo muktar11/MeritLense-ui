@@ -14,6 +14,7 @@ import { QuestionCard } from "./components/question-card";
 import { AnswerTextForm } from "./components/answer-text-form";
 import { AnswerRecorder } from "./components/answer-recorder";
 import { IdentityVerification } from "./components/identity-verification";
+import { LiveCallRoom } from "@/components/live-call/LiveCallRoom";
 import { IntegrityMonitor } from "./components/integrity-monitor";
 import { TestTimer } from "./components/test-timer";
 import { LANGUAGES } from "@/lib/languages";
@@ -22,6 +23,7 @@ type PageState =
   | "loading"
   | "not-ready"
   | "scheduled"
+  | "live-call"
   | "unavailable"
   | "precheck"
   | "question"
@@ -30,6 +32,15 @@ type PageState =
   | "terminated"
   | "completed"
   | "error";
+
+// Matches the backend's LIVE_CALL_EARLY_JOIN_MINUTES default (see
+// api/live_calls/views.py) - a scheduled session's link switches from the
+// "scheduled" waiting screen into the actual live-call room this far ahead
+// of its scheduled_start_at, so the candidate can join and wait for the
+// evaluator instead of watching a second countdown first. If that backend
+// setting is ever overridden away from its default, this constant needs to
+// move in step with it.
+const LIVE_CALL_EARLY_JOIN_MINUTES = 15;
 type AnswerMode = "audio" | "text";
 
 export default function InterviewSessionPage() {
@@ -114,18 +125,26 @@ function InterviewSessionContent() {
         setPageState("completed");
       } else if (["EXPIRED", "CANCELLED", "FAILED"].includes(data.status)) {
         setPageState("unavailable");
+      } else if (data.status === "CREATED" && data.scheduled_start_at) {
+        // Scheduled interviews are a live video call between the evaluator
+        // and candidate (see LiveCallRoom), not the async text/audio Q&A
+        // flow below - that flow is reserved for sessions that were never
+        // scheduled (the original immediate-start behavior). The call
+        // itself, gated by the same session-token/staff-auth access control
+        // as everything else, is the identity check here - no separate
+        // camera or password precheck step.
+        const scheduledMs = new Date(data.scheduled_start_at).getTime();
+        const earlyJoinMs = LIVE_CALL_EARLY_JOIN_MINUTES * 60_000;
+        setPageState(Date.now() < scheduledMs - earlyJoinMs ? "scheduled" : "live-call");
       } else if (data.status === "CREATED") {
-        if (data.scheduled_start_at && new Date(data.scheduled_start_at).getTime() > Date.now()) {
-          setPageState("scheduled");
-          return;
-        }
-        // Due (or never scheduled). The backend requires consent, identity
-        // verification, device check, and privacy acknowledgement to all be
-        // complete before it will let a candidate-initiated start through -
-        // none of those require the session to already be IN_PROGRESS, so
-        // send an unverified candidate to prechecks first rather than
-        // trying (and failing) to start immediately. Starting happens once
-        // prechecks finish - see handlePrecheckContinue.
+        // Never scheduled - the original immediate-start behavior,
+        // unchanged. The backend requires consent, identity verification,
+        // device check, and privacy acknowledgement to all be complete
+        // before it will let a candidate-initiated start through - none of
+        // those require the session to already be IN_PROGRESS, so send an
+        // unverified candidate to prechecks first rather than trying (and
+        // failing) to start immediately. Starting happens once prechecks
+        // finish - see handlePrecheckContinue.
         if (!data.identity_verified) {
           setPageState("precheck");
           return;
@@ -357,6 +376,12 @@ function InterviewSessionContent() {
         </p>
       </CenteredCard>
     );
+  }
+
+  if (pageState === "live-call") {
+    // LiveCallRoom owns its own "call ended" screen internally once the
+    // call finishes - no page-level state transition needed on top of it.
+    return <LiveCallRoom sessionId={sessionId} candidateToken={token} />;
   }
 
   if (pageState === "precheck") {

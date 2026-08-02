@@ -285,11 +285,11 @@ export interface EvaluationListItem {
   score?: number;
   created_by: string;
   created_at: string;
-  // Not yet returned by the list endpoint (EvaluationListSerializer only
-  // exposes these on the single-evaluation detail response today) - needs
-  // a backend change to add them to the list serializer too. Left optional
-  // so the table can use them the moment that lands, without another
-  // frontend change.
+  // meeting_link is the auto-generated candidate interview link for
+  // INTERVIEW-type evaluations (see EvaluationCreateSerializer); session_id
+  // is the linked InterviewSession's public_id, used to open the live-call
+  // room (?sessionId=...) for INTERVIEW-type evaluations. Both null/absent
+  // for other evaluation types or ones without a linked session.
   meeting_link?: string;
   session_id?: string;
 }
