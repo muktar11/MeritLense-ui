@@ -10,7 +10,7 @@ import {
 import { API_BASE_URL } from '@/lib/config/env';
 
 class ScoreService {
-  private baseURL = `${API_BASE_URL}/scores`;
+  private baseURL = `${API_BASE_URL}/scores/`;
 
   private ensureAuthToken() {
     const token = localStorage.getItem('accessToken');
