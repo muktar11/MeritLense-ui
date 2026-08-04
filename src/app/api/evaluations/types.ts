@@ -225,11 +225,17 @@ export const SCORING_METHODS: { value: ScoringMethod; label: string }[] = [
   { value: 'CRITICAL_FAILURE_OVERRIDE', label: 'Critical Failure Override' },
 ];
 
+export type EvaluationLayer = 'COGNITIVE' | 'BEHAVIORAL' | 'TASK_EXECUTION';
+
 export interface ScoringRule {
   id: string;
   rule_set: string;
   competency_code: string;
   competency_name: string;
+  // Blank on rule sets not yet categorized into the Cognitive/Behavioral/
+  // Task Execution layers - the final score falls back to a flat
+  // score/max_score calculation in that case (see Week6ScoringService).
+  evaluation_layer: EvaluationLayer | '';
   question_template: string | null;
   question_code: string;
   question_type: string;
@@ -251,6 +257,7 @@ export interface ScoringRulePayload {
   rule_set?: string;
   competency_code: string;
   competency_name?: string;
+  evaluation_layer?: EvaluationLayer | '';
   question_template?: string | null;
   question_code?: string;
   question_type?: string;
