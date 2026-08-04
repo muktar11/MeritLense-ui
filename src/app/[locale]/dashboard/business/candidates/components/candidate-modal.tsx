@@ -20,9 +20,8 @@ import {
   JOB_ROLES,
   LANGUAGES
 } from "../../../../../api/candidates/types"
-import { checkPassportPhotoQuality, cropFaceFromFile, passportQualityMessage, PassportPhotoQualityResult } from "@/lib/face-detection"
+import { checkPassportPhotoQuality, matchFaces, passportQualityMessage, FaceMatchResult, PassportPhotoQualityResult, PASSPORT_PHOTO_MATCH_THRESHOLD } from "@/lib/face-detection"
 import { PASSPORT_PHOTO_GUIDELINES } from "@/lib/photo-guidelines"
-import { ManualPhotoCropModal } from "@/components/dashboard/ManualPhotoCropModal"
 
 type PhotoField = 'passport_document' | 'profile_photo'
 
@@ -73,9 +72,8 @@ export function CandidateModal({
     passport_document: false,
     profile_photo: false,
   })
-  const [verificationCrop, setVerificationCrop] = useState<{ url: string; blob: Blob } | null>(null)
-  const [verificationCropConfirmed, setVerificationCropConfirmed] = useState(false)
-  const [showManualCrop, setShowManualCrop] = useState(false)
+  const [passportMatch, setPassportMatch] = useState<FaceMatchResult | null>(null)
+  const [passportMatchChecking, setPassportMatchChecking] = useState(false)
 
   useEffect(() => {
     if (isOpen) {
@@ -97,9 +95,8 @@ export function CandidateModal({
         setPreviewDocument(null)
         setPhotoQuality({ passport_document: null, profile_photo: null })
         setPhotoQualityChecking({ passport_document: false, profile_photo: false })
-        setVerificationCrop(null)
-        setVerificationCropConfirmed(false)
-        setShowManualCrop(false)
+        setPassportMatch(null)
+        setPassportMatchChecking(false)
       } else {
         setFormData({
           first_name: "",
@@ -118,9 +115,8 @@ export function CandidateModal({
         setPreviewDocument(null)
         setPhotoQuality({ passport_document: null, profile_photo: null })
         setPhotoQualityChecking({ passport_document: false, profile_photo: false })
-        setVerificationCrop(null)
-        setVerificationCropConfirmed(false)
-        setShowManualCrop(false)
+        setPassportMatch(null)
+        setPassportMatchChecking(false)
       }
       setErrors({})
       setTouchedFields({})
@@ -129,9 +125,51 @@ export function CandidateModal({
     return () => {
       if (previewPhoto?.startsWith('blob:')) URL.revokeObjectURL(previewPhoto)
       if (previewDocument?.startsWith('blob:')) URL.revokeObjectURL(previewDocument)
-      if (verificationCrop) URL.revokeObjectURL(verificationCrop.url)
     }
   }, [isOpen, mode, candidate])
+
+  // Once both a passport document and a photo are present, sanity-check
+  // that they plausibly show the same person - this is a loose check (see
+  // PASSPORT_PHOTO_MATCH_THRESHOLD), not the real biometric verification
+  // that happens later at interview time. A clear mismatch almost always
+  // means the wrong document or photo was picked, so force a fresh
+  // passport upload rather than silently accepting it. On a pass, the
+  // uploaded photo (not a crop of the passport) becomes the reference
+  // image used for that later real check.
+  useEffect(() => {
+    const passport = formData.passport_document
+    const photo = formData.profile_photo
+    if (!passport || !photo) {
+      setPassportMatch(null)
+      return
+    }
+    let cancelled = false
+    setPassportMatchChecking(true)
+    matchFaces(passport, photo)
+      .then((result) => {
+        if (cancelled) return
+        setPassportMatch(result)
+        if (result.status === 'ok' && result.score !== null) {
+          if (result.score < PASSPORT_PHOTO_MATCH_THRESHOLD) {
+            setFormData(prev => ({ ...prev, passport_document: null, verification_photo: null }))
+            setPreviewDocument(null)
+            setErrors(prev => ({
+              ...prev,
+              passport_document: `This passport doesn't appear to match the uploaded photo (${result.score!.toFixed(0)}% match). Please upload a different passport document.`,
+            }))
+            setTouchedFields(prev => ({ ...prev, passport_document: true }))
+          } else {
+            setFormData(prev => ({ ...prev, verification_photo: photo }))
+          }
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setPassportMatchChecking(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [formData.passport_document, formData.profile_photo])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -161,57 +199,15 @@ export function CandidateModal({
         setPreviewPhoto(url)
       } else {
         setPreviewDocument(url)
-        setVerificationCrop(prev => {
-          if (prev) URL.revokeObjectURL(prev.url)
-          return null
-        })
-        setVerificationCropConfirmed(false)
-        setShowManualCrop(false)
         setFormData(prev => ({ ...prev, verification_photo: null }))
       }
 
       setPhotoQuality(prev => ({ ...prev, [field]: null }))
       setPhotoQualityChecking(prev => ({ ...prev, [field]: true }))
       checkPassportPhotoQuality(file)
-        .then(async (result) => {
-          setPhotoQuality(prev => ({ ...prev, [field]: result }))
-          if (field === 'passport_document' && result.status === 'ok' && result.box) {
-            try {
-              const blob = await cropFaceFromFile(file, result.box)
-              setVerificationCrop(prev => {
-                if (prev) URL.revokeObjectURL(prev.url)
-                return { url: URL.createObjectURL(blob), blob }
-              })
-            } catch {
-              // Best-effort - if cropping fails for any reason, just skip the
-              // confirm step and fall back to the full document as before.
-              setVerificationCrop(null)
-            }
-          }
-        })
+        .then((result) => setPhotoQuality(prev => ({ ...prev, [field]: result })))
         .finally(() => setPhotoQualityChecking(prev => ({ ...prev, [field]: false })))
     }
-  }
-
-  const handleConfirmVerificationPhoto = () => {
-    if (!verificationCrop) return
-    const croppedFile = new File([verificationCrop.blob], 'verification-photo.jpg', { type: 'image/jpeg' })
-    setFormData(prev => ({ ...prev, verification_photo: croppedFile }))
-    setVerificationCropConfirmed(true)
-  }
-
-  const handleManualCropConfirm = (blob: Blob) => {
-    setVerificationCrop(prev => {
-      if (prev) URL.revokeObjectURL(prev.url)
-      return { url: URL.createObjectURL(blob), blob }
-    })
-    const croppedFile = new File([blob], 'verification-photo.jpg', { type: 'image/jpeg' })
-    setFormData(prev => ({ ...prev, verification_photo: croppedFile }))
-    // Drawing and confirming the crop in the modal already is the human
-    // confirmation step - no need to make them click "confirm" a second
-    // time in the panel below.
-    setVerificationCropConfirmed(true)
-    setShowManualCrop(false)
   }
 
   const handleBlur = (field: string) => {
@@ -250,20 +246,20 @@ export function CandidateModal({
       newErrors.passport_document = "Passport document is required"
     } else if (formData.passport_document && photoQualityChecking.passport_document) {
       newErrors.passport_document = "Still checking photo quality — please wait a moment and try again."
-    } else if (formData.passport_document && verificationCropConfirmed) {
-      // A confirmed crop (automatic or manual) overrides the original
-      // document's own automated quality result - that's the whole point
-      // of offering a crop as a fallback/override in the first place.
     } else if (formData.passport_document && photoQuality.passport_document && passportQualityMessage(photoQuality.passport_document.status, 'document')) {
       newErrors.passport_document = passportQualityMessage(photoQuality.passport_document.status, 'document')!
-    } else if (formData.passport_document && verificationCrop && !verificationCropConfirmed) {
-      newErrors.passport_document = "Please confirm the verification photo below before submitting."
     }
 
-    if (formData.profile_photo && photoQualityChecking.profile_photo) {
+    if (mode === 'create' && !formData.profile_photo && !candidate?.profile_photo) {
+      newErrors.profile_photo = "A photo of the candidate is required for identity verification"
+    } else if (formData.profile_photo && photoQualityChecking.profile_photo) {
       newErrors.profile_photo = "Still checking photo quality — please wait a moment and try again."
     } else if (formData.profile_photo && photoQuality.profile_photo && passportQualityMessage(photoQuality.profile_photo.status, 'photo')) {
       newErrors.profile_photo = passportQualityMessage(photoQuality.profile_photo.status, 'photo')!
+    }
+
+    if (formData.passport_document && formData.profile_photo && passportMatchChecking) {
+      newErrors.passport_document = "Still checking this passport against your uploaded photo — please wait a moment and try again."
     }
 
     setErrors(newErrors)
@@ -341,10 +337,9 @@ export function CandidateModal({
   // visible feedback (the "Checking..." spinner just disappeared) until
   // the candidate happened to try submitting the form.
   const passportQualityIssue =
-    formData.passport_document && photoQuality.passport_document && !verificationCropConfirmed
+    formData.passport_document && photoQuality.passport_document
       ? passportQualityMessage(photoQuality.passport_document.status, 'document')
       : null
-  const passportIsImage = formData.passport_document?.type.startsWith('image/') ?? false
   const profilePhotoQualityIssue =
     formData.profile_photo && photoQuality.profile_photo
       ? passportQualityMessage(photoQuality.profile_photo.status, 'photo')
@@ -353,7 +348,7 @@ export function CandidateModal({
   return (
     <>
     <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-50" onClose={showManualCrop ? () => {} : onClose}>
+      <Dialog as="div" className="relative z-50" onClose={onClose}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -429,8 +424,12 @@ export function CandidateModal({
                       )}
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-700">Profile Photo</p>
-                      <p className="text-xs text-gray-500">JPG, JPEG or PNG (Max 5MB)</p>
+                      <p className="text-sm font-medium text-gray-700">
+                        Photo {mode === 'create' && '*'}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        JPG, JPEG or PNG (Max 5MB) — used to verify the candidate&apos;s identity at interview time
+                      </p>
                       {photoQualityChecking.profile_photo && (
                         <p className="mt-1 text-xs text-gray-500 flex items-center gap-1">
                           <Loader2 size={12} className="animate-spin" />
@@ -439,6 +438,9 @@ export function CandidateModal({
                       )}
                       {!photoQualityChecking.profile_photo && profilePhotoQualityIssue && (
                         <p className="mt-1 text-xs text-red-600">{profilePhotoQualityIssue}</p>
+                      )}
+                      {touchedFields.profile_photo && errors.profile_photo && !profilePhotoQualityIssue && (
+                        <p className="mt-1 text-xs text-red-600">{errors.profile_photo}</p>
                       )}
                     </div>
                   </div>
@@ -717,15 +719,6 @@ export function CandidateModal({
                           {!photoQualityChecking.passport_document && passportQualityIssue && (
                             <p className="mt-1 text-xs text-red-600">{passportQualityIssue}</p>
                           )}
-                          {!photoQualityChecking.passport_document && passportIsImage && !verificationCrop && (
-                            <button
-                              type="button"
-                              onClick={() => setShowManualCrop(true)}
-                              className="mt-1 text-xs text-purple-600 hover:text-purple-700 underline"
-                            >
-                              {passportQualityIssue ? "Or crop the photo yourself" : "Prefer to crop it yourself?"}
-                            </button>
-                          )}
                           <div className="mt-2 rounded-lg bg-blue-50 border border-blue-100 p-2">
                             <p className="text-xs font-medium text-blue-800 mb-1">For a photo that verifies successfully:</p>
                             <ul className="text-xs text-blue-700 list-disc list-inside space-y-0.5">
@@ -737,41 +730,31 @@ export function CandidateModal({
                               Tip: upload a JPG or PNG (not a PDF) so we can check this automatically before you submit.
                             </p>
                           </div>
-                          {verificationCrop && (
-                            <div className="mt-2 rounded-lg border border-purple-200 bg-purple-50 p-3">
-                              <p className="text-sm text-gray-700 mb-2">
-                                We&apos;ll use this close-up for identity verification during the interview instead of the full document — does it clearly show the candidate&apos;s face?
-                              </p>
-                              <div className="flex items-center gap-3">
-                                <Image
-                                  src={verificationCrop.url}
-                                  alt="Verification photo preview"
-                                  width={72}
-                                  height={72}
-                                  className="w-18 h-18 rounded-lg object-cover border border-purple-200"
-                                />
-                                {verificationCropConfirmed ? (
-                                  <span className="text-sm text-green-600 font-medium flex items-center gap-1">
-                                    <CheckCircle2 size={16} />
-                                    Confirmed
-                                  </span>
-                                ) : (
-                                  <button
-                                    type="button"
-                                    onClick={handleConfirmVerificationPhoto}
-                                    className="px-3 py-1.5 bg-purple-500 text-white text-sm rounded-lg hover:bg-purple-600 transition"
-                                  >
-                                    Looks good, confirm
-                                  </button>
-                                )}
-                              </div>
-                              <button
-                                type="button"
-                                onClick={() => setShowManualCrop(true)}
-                                className="mt-2 text-xs text-purple-600 hover:text-purple-700 underline"
-                              >
-                                Not quite right? Crop it manually
-                              </button>
+                          {formData.passport_document && formData.profile_photo && (
+                            <div className="mt-2">
+                              {passportMatchChecking ? (
+                                <p className="text-xs text-gray-500 flex items-center gap-1">
+                                  <Loader2 size={12} className="animate-spin" />
+                                  Checking that this passport matches the uploaded photo...
+                                </p>
+                              ) : passportMatch?.status === 'ok' && passportMatch.score !== null ? (
+                                <p className="text-xs text-green-600 flex items-center gap-1">
+                                  <CheckCircle2 size={12} />
+                                  Matches uploaded photo ({passportMatch.score.toFixed(0)}%)
+                                </p>
+                              ) : passportMatch?.status === 'no-face-a' ? (
+                                <p className="text-xs text-amber-600">
+                                  We couldn&apos;t detect a face in the passport document to compare against the photo.
+                                </p>
+                              ) : passportMatch?.status === 'no-face-b' ? (
+                                <p className="text-xs text-amber-600">
+                                  We couldn&apos;t detect a face in the uploaded photo to compare against the passport.
+                                </p>
+                              ) : passportMatch?.status === 'skipped' ? (
+                                <p className="text-xs text-gray-500">
+                                  Automatic match check isn&apos;t available for PDF passports — this will be reviewed manually.
+                                </p>
+                              ) : null}
                             </div>
                           )}
                         </div>
@@ -842,7 +825,7 @@ export function CandidateModal({
                     {!isViewMode && canEdit && (
                       <button
                         type="submit"
-                        disabled={isLoading || photoQualityChecking.passport_document || photoQualityChecking.profile_photo}
+                        disabled={isLoading || photoQualityChecking.passport_document || photoQualityChecking.profile_photo || passportMatchChecking}
                         className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                       >
                         {isLoading ? (
@@ -863,13 +846,6 @@ export function CandidateModal({
         </div>
       </Dialog>
     </Transition>
-    {showManualCrop && formData.passport_document && (
-      <ManualPhotoCropModal
-        file={formData.passport_document}
-        onCancel={() => setShowManualCrop(false)}
-        onConfirm={handleManualCropConfirm}
-      />
-    )}
     </>
   )
 }

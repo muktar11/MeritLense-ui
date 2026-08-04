@@ -298,52 +298,66 @@ function computeBlurVariance(
   return sumSq / count - mean * mean;
 }
 
-// Padding around the raw detection box so the crop includes a little
-// forehead/chin/ear margin rather than a razor-tight bounding box - both
-// for the landmark detector's benefit when it's re-run on this crop later,
-// and so the photo doesn't look oddly cropped when shown to a human for
-// confirmation.
-const CROP_PADDING_RATIO = 0.4;
-// Cap the output size rather than force a fixed square - forcing a square
-// would stretch the aspect ratio (faces aren't square), and upscaling
-// beyond the source resolution would just invent detail that isn't there.
-const CROP_MAX_DIMENSION = 600;
+// face-api.js's own documented heuristic: a descriptor distance below ~0.6
+// generally indicates the same person - see identity-verification.tsx's
+// MATCH_DISTANCE_THRESHOLD, which this mirrors so a "% match" means the same
+// thing wherever it's shown to a candidate or staff member.
+const MATCH_DISTANCE_THRESHOLD = 0.6;
 
-// Crop the region around a previously-detected face out of the original
-// passport image, for use as a standalone verification reference photo -
-// see Candidate.verification_photo. Takes the box from an earlier
-// checkPassportPhotoQuality() call rather than re-detecting, since that
-// call already confirmed exactly one usable face and where it is.
-export async function cropFaceFromFile(file: File, box: FaceBox): Promise<Blob> {
-  const objectUrl = URL.createObjectURL(file);
+// This is a registration-time sanity check that the uploaded photo and the
+// passport document plausibly show the same person - not a repeat of the
+// real biometric check (that happens later, live, against the candidate's
+// own webcam - see identity-verification.tsx's PASS_SCORE_THRESHOLD of 20).
+// Deliberately much lower: passport photos are often old, low-res, or
+// scanned at an angle, and this check's only job is to catch a genuinely
+// wrong document (someone else's passport, a mismatched upload) rather than
+// to gate on match quality the way the real interview-time check does.
+export const PASSPORT_PHOTO_MATCH_THRESHOLD = 15;
+
+export type FaceMatchStatus = "ok" | "no-face-a" | "no-face-b" | "skipped";
+
+export interface FaceMatchResult {
+  status: FaceMatchStatus;
+  // Only set when status is "ok".
+  score: number | null;
+}
+
+// Compares the face in two uploaded images (e.g. a passport document and a
+// separately-uploaded photo) and returns a 0-100 "% match" score using the
+// same descriptor-distance formula as the real interview-time check, so the
+// number means the same thing in both places even though the pass bar here
+// is intentionally much lower (see PASSPORT_PHOTO_MATCH_THRESHOLD above).
+export async function matchFaces(fileA: File, fileB: File): Promise<FaceMatchResult> {
+  if (!fileA.type.startsWith("image/") || !fileB.type.startsWith("image/")) {
+    // PDF passports can't be rasterized in the browser - see
+    // checkPassportPhotoQuality's identical skip for the same reason.
+    return { status: "skipped", score: null };
+  }
+
+  let urlA: string | null = null;
+  let urlB: string | null = null;
   try {
-    const image = await loadImage(objectUrl);
-    const padX = box.width * CROP_PADDING_RATIO;
-    const padY = box.height * CROP_PADDING_RATIO;
-    const sx = Math.max(0, box.x - padX);
-    const sy = Math.max(0, box.y - padY);
-    const sw = Math.min(image.naturalWidth - sx, box.width + padX * 2);
-    const sh = Math.min(image.naturalHeight - sy, box.height + padY * 2);
+    urlA = URL.createObjectURL(fileA);
+    urlB = URL.createObjectURL(fileB);
+    const [imageA, imageB] = await Promise.all([loadImage(urlA), loadImage(urlB)]);
+    const faceapi = await ensureModelsLoaded();
+    const detectorOptions = new faceapi.TinyFaceDetectorOptions(IDENTITY_DETECTOR_TUNING);
 
-    const scale = Math.min(1, CROP_MAX_DIMENSION / Math.max(sw, sh));
-    const outW = Math.max(1, Math.round(sw * scale));
-    const outH = Math.max(1, Math.round(sh * scale));
+    const [resultA, resultB] = await Promise.all([
+      faceapi.detectSingleFace(imageA, detectorOptions).withFaceLandmarks().withFaceDescriptor(),
+      faceapi.detectSingleFace(imageB, detectorOptions).withFaceLandmarks().withFaceDescriptor(),
+    ]);
 
-    const canvas = document.createElement("canvas");
-    canvas.width = outW;
-    canvas.height = outH;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) throw new Error("Canvas not supported");
-    ctx.drawImage(image, sx, sy, sw, sh, 0, 0, outW, outH);
+    if (!resultA) return { status: "no-face-a", score: null };
+    if (!resultB) return { status: "no-face-b", score: null };
 
-    return await new Promise<Blob>((resolve, reject) => {
-      canvas.toBlob(
-        (blob) => (blob ? resolve(blob) : reject(new Error("Failed to crop face image"))),
-        "image/jpeg",
-        0.92
-      );
-    });
+    const distance = faceapi.euclideanDistance(resultA.descriptor, resultB.descriptor);
+    const score = Math.max(0, Math.min(100, (1 - distance / MATCH_DISTANCE_THRESHOLD) * 100));
+    return { status: "ok", score };
+  } catch {
+    return { status: "skipped", score: null };
   } finally {
-    URL.revokeObjectURL(objectUrl);
+    if (urlA) URL.revokeObjectURL(urlA);
+    if (urlB) URL.revokeObjectURL(urlB);
   }
 }

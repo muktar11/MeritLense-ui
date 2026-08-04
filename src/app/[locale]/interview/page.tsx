@@ -14,6 +14,7 @@ import { QuestionCard } from "./components/question-card";
 import { AnswerTextForm } from "./components/answer-text-form";
 import { AnswerRecorder } from "./components/answer-recorder";
 import { IdentityVerification } from "./components/identity-verification";
+import { OrientationTour } from "./components/orientation-tour";
 import { LiveCallRoom } from "@/components/live-call/LiveCallRoom";
 import { IntegrityMonitor } from "./components/integrity-monitor";
 import { TestTimer } from "./components/test-timer";
@@ -26,6 +27,7 @@ type PageState =
   | "live-call"
   | "unavailable"
   | "precheck"
+  | "orientation"
   | "question"
   | "submitting"
   | "paused"
@@ -225,7 +227,7 @@ function InterviewSessionContent() {
   // started before fetching the first question, which the backend only
   // allows now that prechecks are done. If it's already IN_PROGRESS (the
   // pre-scheduling norm, where staff start it at creation), this is a
-  // no-op fallthrough straight to the question.
+  // no-op fallthrough straight to the orientation tour.
   const handlePrecheckContinue = useCallback(async () => {
     if (session?.status === "CREATED") {
       try {
@@ -237,8 +239,15 @@ function InterviewSessionContent() {
         return;
       }
     }
-    await loadCurrentQuestion();
-  }, [session, sessionId, token, loadCurrentQuestion]);
+    // A brief one-time orientation before the first question, rather than
+    // dropping the candidate straight into it - loadCurrentQuestion (and
+    // the question view itself) only runs once they finish or skip it.
+    setPageState("orientation");
+  }, [session, sessionId, token]);
+
+  const handleOrientationDone = useCallback(() => {
+    loadCurrentQuestion();
+  }, [loadCurrentQuestion]);
 
   const hasAutoCompletedRef = useRef(false);
   const handleTimeUp = useCallback(async () => {
@@ -388,6 +397,10 @@ function InterviewSessionContent() {
     return (
       <IdentityVerification sessionId={sessionId} token={token} onContinue={handlePrecheckContinue} />
     );
+  }
+
+  if (pageState === "orientation") {
+    return <OrientationTour onDone={handleOrientationDone} />;
   }
 
   if (pageState === "paused") {
