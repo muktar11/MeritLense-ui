@@ -2,7 +2,6 @@
 
 import { X, Calendar, User, Mail, Hash } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { SCORE_AREA_LABELS } from "@/app/api/scores/types";
 import type { Candidate } from "@/app/api/candidates/types";
 
 interface ScoreViewModalProps {
@@ -10,6 +9,10 @@ interface ScoreViewModalProps {
   onClose: () => void;
   candidate: Candidate | null;
   scores: Record<string, number>;
+  // Real competency name per code (e.g. "safety_awareness" -> "Safety
+  // Awareness"), from the actual scoring rule set - falls back to the raw
+  // code if a label isn't provided.
+  labels?: Record<string, string>;
   averageScore?: number;
 }
 
@@ -18,6 +21,7 @@ export function ScoreViewModal({
   onClose,
   candidate,
   scores,
+  labels = {},
   averageScore,
 }: ScoreViewModalProps) {
   const t = useTranslations("dashboard.business.score-management");
@@ -29,8 +33,8 @@ export function ScoreViewModal({
       ? Math.round(Object.values(scores).reduce((a, b) => a + b, 0) / Object.values(scores).length) 
       : 0);
 
-  const sortedScores = Object.entries(scores).sort(([a], [b]) => 
-    (SCORE_AREA_LABELS[a] || a).localeCompare(SCORE_AREA_LABELS[b] || b)
+  const sortedScores = Object.entries(scores).sort(([a], [b]) =>
+    (labels[a] || a).localeCompare(labels[b] || b)
   );
 
   return (
@@ -109,7 +113,7 @@ export function ScoreViewModal({
                 >
                   <div>
                     <span className="text-sm font-medium text-gray-700">
-                      {SCORE_AREA_LABELS[area] || area}
+                      {labels[area] || area}
                     </span>
                     <p className="text-xs text-gray-500 mt-1">{area}</p>
                   </div>

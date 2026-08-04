@@ -157,6 +157,26 @@ export interface SessionEvaluationSummary {
   generated_at: string;
 }
 
+export interface CandidateScoreCompetency {
+  code: string;
+  name: string;
+  percentage: number;
+}
+
+// Real, per-candidate score summary read straight from Week6ScoringService's
+// output (SessionEvaluationSummary) - replaces the old ScoreSet/CandidateScore
+// models (api/scores/) that nothing in the actual scoring pipeline populated,
+// and whose fixed area vocabulary didn't match real competency codes anyway.
+export interface CandidateScoreSummary {
+  candidate_id: string;
+  evaluation_id: string | null;
+  role_code: string;
+  overall_percentage: number;
+  status: SessionEvaluationStatus;
+  generated_at: string;
+  competencies: CandidateScoreCompetency[];
+}
+
 export interface ResponseEvaluationResult {
   id: string;
   response_id: string;

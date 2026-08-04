@@ -11,7 +11,8 @@ import {
   ResponseEvaluationResult,
   CompetencyEvaluationResult,
   ScoringRuleSet,
-  ScoringRuleSetPayload
+  ScoringRuleSetPayload,
+  CandidateScoreSummary
 } from './types';
 import { API_BASE_URL } from '@/lib/config/env';
 
@@ -174,6 +175,12 @@ class EvaluationService {
   async deleteRuleSet(id: string): Promise<void> {
     this.ensureAuthToken();
     await authClient.delete(`${this.ruleSetsURL}/${id}`);
+  }
+
+  async getCandidateScores(): Promise<CandidateScoreSummary[]> {
+    this.ensureAuthToken();
+    const response = await authClient.get(`${API_BASE_URL}/evaluations/candidate-scores`);
+    return response.data;
   }
 }
 

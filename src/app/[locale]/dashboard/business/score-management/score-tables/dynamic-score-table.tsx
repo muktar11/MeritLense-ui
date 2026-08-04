@@ -2,15 +2,35 @@
 
 import { Eye } from "lucide-react";
 import type { Candidate } from "@/app/api/candidates/types";
-import { SCORE_AREA_LABELS } from "@/app/api/scores/types";
+import type { CandidateScoreSummary } from "@/app/api/evaluations/types";
 
-interface OtherTableProps {
+interface DynamicScoreTableProps {
   candidates: Candidate[];
-  scores: Record<string, Record<string, number>>;
+  scores: Record<string, CandidateScoreSummary>;
   onViewScores: (candidate: Candidate) => void;
 }
 
-export function OtherTable({ candidates, scores, onViewScores }: OtherTableProps) {
+// Replaces the old per-job-role table components (driver-table.tsx,
+// housekeeper-table.tsx, ...), which each hardcoded a fixed set of column
+// keys (SAFE_DRIVING, CLEANING, ...) that never matched any real
+// ScoringRule.competency_code. Columns here are built from whatever
+// competencies actually exist in the real scoring data for the candidates
+// being shown, so this works for any role/rule set without a per-role
+// mapping to maintain.
+export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicScoreTableProps) {
+  const columns: { code: string; name: string }[] = [];
+  const seen = new Set<string>();
+  for (const candidate of candidates) {
+    const summary = scores[candidate.id];
+    if (!summary) continue;
+    for (const competency of summary.competencies) {
+      if (!seen.has(competency.code)) {
+        seen.add(competency.code);
+        columns.push({ code: competency.code, name: competency.name });
+      }
+    }
+  }
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
@@ -18,20 +38,19 @@ export function OtherTable({ candidates, scores, onViewScores }: OtherTableProps
           <tr>
             <th className="px-4 sm:px-6 py-2 text-left font-semibold text-gray-700">Name</th>
             <th className="px-4 sm:px-6 py-2 text-left font-semibold text-gray-700">Email</th>
-            <th className="px-4 sm:px-6 py-2 text-left font-semibold text-gray-700">{SCORE_AREA_LABELS.COMMUNICATION}</th>
-            <th className="px-4 sm:px-6 py-2 text-left font-semibold text-gray-700">{SCORE_AREA_LABELS.PUNCTUALITY}</th>
-            <th className="px-4 sm:px-6 py-2 text-left font-semibold text-gray-700">{SCORE_AREA_LABELS.PROFESSIONALISM}</th>
-            <th className="px-4 sm:px-6 py-2 text-left font-semibold text-gray-700">{SCORE_AREA_LABELS.TEAMWORK}</th>
+            {columns.map((column) => (
+              <th key={column.code} className="px-4 sm:px-6 py-2 text-left font-semibold text-gray-700">
+                {column.name}
+              </th>
+            ))}
             <th className="px-4 sm:px-6 py-2 text-left font-semibold text-gray-700">Avg</th>
             <th className="px-4 sm:px-6 py-2 text-left font-semibold text-gray-700">Actions</th>
           </tr>
         </thead>
         <tbody>
           {candidates.map((candidate) => {
-            const candidateScore = scores[candidate.id] || {};
-            const avg = Object.values(candidateScore).length > 0
-              ? Math.round(Object.values(candidateScore).reduce((a, b) => a + b, 0) / Object.values(candidateScore).length)
-              : 0;
+            const summary = scores[candidate.id];
+            const byCode = new Map(summary?.competencies.map((c) => [c.code, c.percentage]) ?? []);
 
             return (
               <tr key={candidate.id} className="border-b border-gray-100 hover:bg-gray-50">
@@ -44,11 +63,14 @@ export function OtherTable({ candidates, scores, onViewScores }: OtherTableProps
                   </div>
                 </td>
                 <td className="px-4 sm:px-6 py-3 text-gray-600">{candidate.email}</td>
-                <td className="px-4 sm:px-6 py-3 text-gray-600">{candidateScore.COMMUNICATION || '-'}</td>
-                <td className="px-4 sm:px-6 py-3 text-gray-600">{candidateScore.PUNCTUALITY || '-'}</td>
-                <td className="px-4 sm:px-6 py-3 text-gray-600">{candidateScore.PROFESSIONALISM || '-'}</td>
-                <td className="px-4 sm:px-6 py-3 text-gray-600">{candidateScore.TEAMWORK || '-'}</td>
-                <td className="px-4 sm:px-6 py-3 font-medium text-purple-600">{avg || '-'}</td>
+                {columns.map((column) => (
+                  <td key={column.code} className="px-4 sm:px-6 py-3 text-gray-600">
+                    {byCode.has(column.code) ? `${byCode.get(column.code)}%` : "-"}
+                  </td>
+                ))}
+                <td className="px-4 sm:px-6 py-3 font-medium text-purple-600">
+                  {summary ? `${summary.overall_percentage}%` : "-"}
+                </td>
                 <td className="px-4 sm:px-6 py-3">
                   <button
                     onClick={() => onViewScores(candidate)}

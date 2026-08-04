@@ -5,18 +5,12 @@ import { useLocale, useTranslations } from "next-intl";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Candidate } from "@/app/api/candidates/types";
-import { ScoreSet } from "@/app/api/scores/types";
-import { DriverTable } from "../score-management/score-tables/driver-table";
-import { HousekeeperTable } from "../score-management/score-tables/housekeeper-table";
+import { CandidateScoreSummary } from "@/app/api/evaluations/types";
+import { DynamicScoreTable } from "../score-management/score-tables/dynamic-score-table";
 import { JobRoleTabs } from "./job-role-tabs";
 import { ScoreViewModal } from "./score-view-modal";
 import candidateService from "@/app/api/candidates/endpoints";
-import scoreService from "@/app/api/scores/endpoints";
-import { OtherTable } from "../score-management/score-tables/other-table";
-import { MaintenanceWorkerTable } from "../score-management/score-tables/maintenance-worker-table";
-import { KitchenAssistantTable } from "../score-management/score-tables/kitchen-assistant-table";
-import { NursingAssistantTable } from "../score-management/score-tables/nursing-assistant-table";
-import { ElderCompanionTable } from "../score-management/score-tables/elder-companion-table";
+import evaluationService from "@/app/api/evaluations/endpoints";
 
 
 const JOB_ROLE_DISPLAY: Record<string, string> = {
@@ -35,16 +29,14 @@ export function ScoreManagement() {
 
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [candidatesByRole, setCandidatesByRole] = useState<Record<string, Candidate[]>>({});
-  const [candidateScores, setCandidateScores] = useState<Record<string, Record<string, number>>>({});
-  const [scoreSets, setScoreSets] = useState<Record<string, ScoreSet>>({});
+  const [candidateScores, setCandidateScores] = useState<Record<string, CandidateScoreSummary>>({});
   const [loading, setLoading] = useState(true);
-  
+
   const [selectedRole, setSelectedRole] = useState<string>("HK");
-  
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
-  const [selectedCandidateScoreSet, setSelectedCandidateScoreSet] = useState<ScoreSet | null>(null);
-  
+
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
@@ -72,19 +64,12 @@ export function ScoreManagement() {
         setSelectedRole(availableRoles[0]);
       }
 
-      const allScoreSets = await scoreService.getScoreSets();
-      
-      const scoresMap: Record<string, Record<string, number>> = {};
-      const setsMap: Record<string, ScoreSet> = {};
-      
-      allScoreSets.forEach(scoreSet => {
-        const candidateId = scoreSet.candidate;
-        setsMap[candidateId] = scoreSet;
-        scoresMap[candidateId] = scoreSet.scores_dict;
+      const summaries = await evaluationService.getCandidateScores();
+      const scoresMap: Record<string, CandidateScoreSummary> = {};
+      summaries.forEach(summary => {
+        scoresMap[summary.candidate_id] = summary;
       });
-      
       setCandidateScores(scoresMap);
-      setScoreSets(setsMap);
 
     } catch (error) {
       console.error('Failed to fetch data:', error);
@@ -95,7 +80,6 @@ export function ScoreManagement() {
 
   const handleViewScores = (candidate: Candidate) => {
     setSelectedCandidate(candidate);
-    setSelectedCandidateScoreSet(scoreSets[candidate.id] || null);
     setIsModalOpen(true);
   };
 
@@ -120,70 +104,21 @@ export function ScoreManagement() {
   const renderTable = () => {
     const filteredCandidates = getFilteredCandidates();
 
-    switch (selectedRole) {
-      case "HK":
-        return (
-          <HousekeeperTable
-            candidates={filteredCandidates}
-            scores={candidateScores}
-            onViewScores={handleViewScores}
-          />
-        );
-      case "DR":
-        return (
-          <DriverTable
-            candidates={filteredCandidates}
-            scores={candidateScores}
-            onViewScores={handleViewScores}
-          />
-        );
-      case "EC":
-        return (
-          <ElderCompanionTable
-            candidates={filteredCandidates}
-            scores={candidateScores}
-            onViewScores={handleViewScores}
-          />
-        );
-      case "NA":
-        return (
-          <NursingAssistantTable
-            candidates={filteredCandidates}
-            scores={candidateScores}
-            onViewScores={handleViewScores}
-          />
-        );
-      case "KA":
-        return (
-          <KitchenAssistantTable
-            candidates={filteredCandidates}
-            scores={candidateScores}
-            onViewScores={handleViewScores}
-          />
-        );
-      case "MW":
-        return (
-          <MaintenanceWorkerTable
-            candidates={filteredCandidates}
-            scores={candidateScores}
-            onViewScores={handleViewScores}
-          />
-        );
-      case "OT":
-        return (
-          <OtherTable
-            candidates={filteredCandidates}
-            scores={candidateScores}
-            onViewScores={handleViewScores}
-          />
-        );
-      default:
-        return (
-          <div className="text-center py-8 text-gray-500">
-            No candidates found for this role
-          </div>
-        );
+    if (filteredCandidates.length === 0) {
+      return (
+        <div className="text-center py-8 text-gray-500">
+          No candidates found for this role
+        </div>
+      );
     }
+
+    return (
+      <DynamicScoreTable
+        candidates={filteredCandidates}
+        scores={candidateScores}
+        onViewScores={handleViewScores}
+      />
+    );
   };
 
   if (loading) {
@@ -244,11 +179,23 @@ export function ScoreManagement() {
         onClose={() => {
           setIsModalOpen(false);
           setSelectedCandidate(null);
-          setSelectedCandidateScoreSet(null);
         }}
         candidate={selectedCandidate}
-        scores={selectedCandidate ? candidateScores[selectedCandidate.id] || {} : {}}
-        averageScore={selectedCandidateScoreSet?.average_score ? parseFloat(selectedCandidateScoreSet.average_score.toString()) : undefined}
+        scores={
+          selectedCandidate
+            ? Object.fromEntries(
+                (candidateScores[selectedCandidate.id]?.competencies ?? []).map((c) => [c.code, c.percentage])
+              )
+            : {}
+        }
+        labels={
+          selectedCandidate
+            ? Object.fromEntries(
+                (candidateScores[selectedCandidate.id]?.competencies ?? []).map((c) => [c.code, c.name])
+              )
+            : {}
+        }
+        averageScore={selectedCandidate ? candidateScores[selectedCandidate.id]?.overall_percentage : undefined}
       />
     </div>
   );
