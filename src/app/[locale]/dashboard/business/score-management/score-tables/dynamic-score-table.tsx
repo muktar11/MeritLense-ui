@@ -1,13 +1,69 @@
 "use client";
 
-import { Award, Eye } from "lucide-react";
+import { useState } from "react";
+import { Check, Download, Eye, Share2 } from "lucide-react";
 import type { Candidate } from "@/app/api/candidates/types";
-import type { CandidateScoreSummary } from "@/app/api/evaluations/types";
+import type { CandidateCertificate, CandidateScoreSummary } from "@/app/api/evaluations/types";
 
 interface DynamicScoreTableProps {
   candidates: Candidate[];
   scores: Record<string, CandidateScoreSummary>;
   onViewScores: (candidate: Candidate) => void;
+}
+
+// Download relies on the browser's own handling of a cross-origin `download`
+// attribute (the certificate PDF is served from api.meritlense.com, not
+// meritlense.com) - most browsers still open it in a new tab in that case,
+// which is fine since their built-in PDF viewer has its own save/download
+// control. Share prefers the native share sheet where available (mobile
+// Safari/Chrome) and falls back to copying the link, since the PDF is
+// already served from a public, unauthenticated URL - nothing extra to
+// generate for a "share" action.
+function CertificateActions({ certificate, candidateName }: { certificate: CandidateCertificate; candidateName: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: `${candidateName}'s MeritLense Certificate`, url: certificate.pdf_url });
+      } catch {
+        // Cancelled by the user - not an error.
+      }
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(certificate.pdf_url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Clipboard unavailable (e.g. insecure context) - nothing more to do.
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-3">
+      <a
+        href={certificate.pdf_url}
+        download
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-1 text-purple-600 hover:text-purple-700 font-medium"
+        title="Download certificate"
+      >
+        <Download className="w-4 h-4" />
+        Download
+      </a>
+      <button
+        type="button"
+        onClick={handleShare}
+        className="inline-flex items-center gap-1 text-gray-500 hover:text-purple-600"
+        title="Share certificate link"
+      >
+        {copied ? <Check className="w-4 h-4 text-green-600" /> : <Share2 className="w-4 h-4" />}
+        {copied && <span className="text-green-600 text-xs">Copied!</span>}
+      </button>
+    </div>
+  );
 }
 
 // Replaces the old per-job-role table components (driver-table.tsx,
@@ -74,15 +130,7 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
                 </td>
                 <td className="px-4 sm:px-6 py-3">
                   {summary?.certificate ? (
-                    <a
-                      href={summary.certificate.pdf_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-purple-600 hover:text-purple-700 font-medium"
-                    >
-                      <Award className="w-4 h-4" />
-                      View
-                    </a>
+                    <CertificateActions certificate={summary.certificate} candidateName={candidate.full_name} />
                   ) : (
                     <span className="text-gray-400">Not available</span>
                   )}
