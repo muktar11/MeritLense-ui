@@ -394,26 +394,50 @@ export function CandidateModal({
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-6 max-h-[70vh] overflow-y-auto px-1">
-                  <div className="flex items-center gap-6">
-                    <div className="relative">
-                      <div className="w-20 h-20 rounded-full bg-gray-200 overflow-hidden">
-                        {previewPhoto ? (
-                          <Image
-                            src={previewPhoto}
-                            alt="Profile"
-                            width={80}
-                            height={80}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-linear-to-br from-purple-400 to-blue-500 flex items-center justify-center text-white text-2xl font-bold">
-                            {formData.first_name?.[0]}{formData.last_name?.[0]}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Photo {mode === 'create' && '*'}
+                    </label>
+                    {isViewMode ? (
+                      candidate?.profile_photo && (
+                        <Image
+                          src={candidate.profile_photo}
+                          alt="Candidate photo"
+                          width={96}
+                          height={96}
+                          className="rounded-lg object-cover w-24 h-24 border border-gray-200"
+                        />
+                      )
+                    ) : (
+                      <div>
+                        <label className={`flex items-center gap-4 border-2 border-dashed rounded-lg p-4 cursor-pointer hover:border-purple-500 transition ${
+                          touchedFields.profile_photo && errors.profile_photo ? 'border-red-500' : 'border-gray-300'
+                        }`}>
+                          <div className="w-16 h-16 rounded-lg bg-gray-100 overflow-hidden shrink-0 flex items-center justify-center">
+                            {previewPhoto ? (
+                              <Image
+                                src={previewPhoto}
+                                alt="Photo preview"
+                                width={64}
+                                height={64}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <Upload size={22} className="text-gray-400" />
+                            )}
                           </div>
-                        )}
-                      </div>
-                      {!isViewMode && canEdit && (
-                        <label className="absolute bottom-0 right-0 bg-purple-500 text-white p-1 rounded-full cursor-pointer hover:bg-purple-600">
-                          <Upload size={14} />
+                          <div>
+                            {formData.profile_photo ? (
+                              <span className="text-sm text-green-600">{formData.profile_photo.name}</span>
+                            ) : candidate?.profile_photo ? (
+                              <span className="text-sm text-purple-600">Replace Photo</span>
+                            ) : (
+                              <span className="text-sm text-gray-600">Click to upload a photo of the candidate</span>
+                            )}
+                            <p className="text-xs text-gray-500 mt-0.5">
+                              JPG, JPEG or PNG (Max 5MB) — used to verify identity at interview time
+                            </p>
+                          </div>
                           <input
                             type="file"
                             accept="image/jpeg,image/png"
@@ -421,28 +445,20 @@ export function CandidateModal({
                             className="hidden"
                           />
                         </label>
-                      )}
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-700">
-                        Photo {mode === 'create' && '*'}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        JPG, JPEG or PNG (Max 5MB) — used to verify the candidate&apos;s identity at interview time
-                      </p>
-                      {photoQualityChecking.profile_photo && (
-                        <p className="mt-1 text-xs text-gray-500 flex items-center gap-1">
-                          <Loader2 size={12} className="animate-spin" />
-                          Checking photo quality...
-                        </p>
-                      )}
-                      {!photoQualityChecking.profile_photo && profilePhotoQualityIssue && (
-                        <p className="mt-1 text-xs text-red-600">{profilePhotoQualityIssue}</p>
-                      )}
-                      {touchedFields.profile_photo && errors.profile_photo && !profilePhotoQualityIssue && (
-                        <p className="mt-1 text-xs text-red-600">{errors.profile_photo}</p>
-                      )}
-                    </div>
+                        {photoQualityChecking.profile_photo && (
+                          <p className="mt-1 text-xs text-gray-500 flex items-center gap-1">
+                            <Loader2 size={12} className="animate-spin" />
+                            Checking photo quality...
+                          </p>
+                        )}
+                        {!photoQualityChecking.profile_photo && profilePhotoQualityIssue && (
+                          <p className="mt-1 text-xs text-red-600">{profilePhotoQualityIssue}</p>
+                        )}
+                        {touchedFields.profile_photo && errors.profile_photo && !profilePhotoQualityIssue && (
+                          <p className="mt-1 text-xs text-red-600">{errors.profile_photo}</p>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
