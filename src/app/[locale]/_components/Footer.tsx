@@ -15,11 +15,11 @@ export function Footer() {
           <div>
             <Link href="/" className="flex items-center space-x-3 mb-6">
               <Image
-                src="/logo.svg"
+                src="/logo.png"
                 alt={t("logo_alt")}
-                width={150}
-                height={40}
-                className="h-12 w-32"
+                width={506}
+                height={459}
+                className="h-12 w-auto"
               />
             </Link>
             <p className="text-foreground-muted leading-relaxed mb-6">
