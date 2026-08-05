@@ -167,6 +167,12 @@ export interface CandidateScoreCompetency {
 // output (SessionEvaluationSummary) - replaces the old ScoreSet/CandidateScore
 // models (api/scores/) that nothing in the actual scoring pipeline populated,
 // and whose fixed area vocabulary didn't match real competency codes anyway.
+export interface CandidateCertificate {
+  certificate_id: string;
+  pdf_url: string;
+  issued_at: string;
+}
+
 export interface CandidateScoreSummary {
   candidate_id: string;
   evaluation_id: string | null;
@@ -175,6 +181,9 @@ export interface CandidateScoreSummary {
   status: SessionEvaluationStatus;
   generated_at: string;
   competencies: CandidateScoreCompetency[];
+  // Null when this evaluation's tier doesn't issue certificates, or
+  // generation hasn't happened yet - never a guess at what it'll be.
+  certificate: CandidateCertificate | null;
 }
 
 export interface ResponseEvaluationResult {

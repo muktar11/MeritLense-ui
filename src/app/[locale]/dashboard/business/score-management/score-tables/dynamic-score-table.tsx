@@ -1,6 +1,6 @@
 "use client";
 
-import { Eye } from "lucide-react";
+import { Award, Eye } from "lucide-react";
 import type { Candidate } from "@/app/api/candidates/types";
 import type { CandidateScoreSummary } from "@/app/api/evaluations/types";
 
@@ -44,6 +44,7 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
               </th>
             ))}
             <th className="px-4 sm:px-6 py-2 text-left font-semibold text-gray-700">Avg</th>
+            <th className="px-4 sm:px-6 py-2 text-left font-semibold text-gray-700">Certificate</th>
             <th className="px-4 sm:px-6 py-2 text-left font-semibold text-gray-700">Actions</th>
           </tr>
         </thead>
@@ -70,6 +71,21 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
                 ))}
                 <td className="px-4 sm:px-6 py-3 font-medium text-purple-600">
                   {summary ? `${summary.overall_percentage}%` : "-"}
+                </td>
+                <td className="px-4 sm:px-6 py-3">
+                  {summary?.certificate ? (
+                    <a
+                      href={summary.certificate.pdf_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-purple-600 hover:text-purple-700 font-medium"
+                    >
+                      <Award className="w-4 h-4" />
+                      View
+                    </a>
+                  ) : (
+                    <span className="text-gray-400">Not available</span>
+                  )}
                 </td>
                 <td className="px-4 sm:px-6 py-3">
                   <button
