@@ -1,5 +1,5 @@
-import { authClient } from '../auth/client';
-import type { EvaluationReport, ReportPayload } from './types';
+import { apiClient, authClient } from '../auth/client';
+import type { EvaluationReport, ReportPayload, ReportVerification } from './types';
 import { API_BASE_URL } from '@/lib/config/env';
 
 class ReportService {
@@ -33,6 +33,41 @@ class ReportService {
   async exportPayload(reportId: string): Promise<ReportPayload> {
     const response = await authClient.get(`${this.reportsURL}/${reportId}/export-payload`);
     return response.data;
+  }
+
+  async verifyReport(reportNumber: string): Promise<ReportVerification> {
+    const response = await apiClient.get(`${this.reportsURL}/verify/${reportNumber}`);
+    return response.data;
+  }
+
+  async downloadPdf(reportId: string, filename?: string): Promise<void> {
+    const response = await authClient.get(`${this.reportsURL}/${reportId}/export-pdf`, {
+      responseType: 'blob',
+    });
+
+    const blob = new Blob([response.data], {
+      type: response.headers['content-type'] || 'application/pdf',
+    });
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = filename || this.filenameFromDisposition(response.headers['content-disposition']) || `${reportId}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(downloadUrl);
+  }
+
+  private filenameFromDisposition(contentDisposition?: string): string | null {
+    if (!contentDisposition) return null;
+
+    const utf8Match = contentDisposition.match(/filename\*=UTF-8''([^;]+)/i);
+    if (utf8Match?.[1]) {
+      return decodeURIComponent(utf8Match[1]);
+    }
+
+    const asciiMatch = contentDisposition.match(/filename="?([^"]+)"?/i);
+    return asciiMatch?.[1] ?? null;
   }
 }
 

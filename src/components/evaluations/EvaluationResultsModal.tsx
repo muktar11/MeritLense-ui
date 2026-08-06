@@ -101,6 +101,7 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
   const [reportError, setReportError] = useState<string | null>(null);
   const [generatingReport, setGeneratingReport] = useState(false);
   const [exportingReport, setExportingReport] = useState(false);
+  const [downloadingReport, setDownloadingReport] = useState(false);
 
   const load = async (id: string) => {
     setLoading(true);
@@ -199,6 +200,20 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
     }
   };
 
+  const handleDownloadReport = async () => {
+    if (!report) return;
+    setDownloadingReport(true);
+    setReportError(null);
+    try {
+      await reportService.downloadPdf(report.id, `${report.report_number}.pdf`);
+    } catch (err: any) {
+      const msg = err?.detail ?? err?.response?.data?.detail ?? "Failed to download report PDF. Try again.";
+      setReportError(msg);
+    } finally {
+      setDownloadingReport(false);
+    }
+  };
+
   if (!evaluationId) return null;
 
   return (
@@ -209,7 +224,7 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
         <div className="p-6">
           <div className="flex items-center justify-between mb-4 sticky top-0 bg-white z-10">
             <div>
-              <h3 className="text-lg font-bold text-gray-900">AI Interview Results</h3>
+              <h3 className="text-lg font-bold text-gray-900">Workforce Readiness Assessment Results</h3>
               <p className="text-sm text-gray-500">{candidateName}</p>
             </div>
             <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
@@ -326,15 +341,15 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
                       </div>
                       <div className="flex items-center gap-2">
                         {report.employer_pdf_url && (
-                          <a
-                            href={report.employer_pdf_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 px-2.5 py-1.5 border border-indigo-300 bg-white hover:bg-indigo-50 text-indigo-700 rounded-lg text-xs font-medium"
+                          <button
+                            type="button"
+                            onClick={handleDownloadReport}
+                            disabled={downloadingReport}
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 border border-indigo-300 bg-white hover:bg-indigo-50 disabled:opacity-50 text-indigo-700 rounded-lg text-xs font-medium"
                           >
                             <Download className="w-3.5 h-3.5" />
-                            Download PDF
-                          </a>
+                            {downloadingReport ? "Downloading..." : "Download PDF"}
+                          </button>
                         )}
                         <button
                           type="button"

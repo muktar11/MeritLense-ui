@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Check, Download, Eye, Share2 } from "lucide-react";
 import type { Candidate } from "@/app/api/candidates/types";
 import type { CandidateScoreSummary } from "@/app/api/evaluations/types";
+import reportService from "@/app/api/reports/endpoints";
 
 interface DynamicScoreTableProps {
   candidates: Candidate[];
@@ -23,12 +24,27 @@ function ArtifactActions({
   url,
   candidateName,
   artifactLabel,
+  onDownload,
 }: {
   url: string;
   candidateName: string;
   artifactLabel: string;
+  onDownload?: () => Promise<void>;
 }) {
   const [copied, setCopied] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownload = async () => {
+    if (!onDownload) {
+      return;
+    }
+    setDownloading(true);
+    try {
+      await onDownload();
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   const handleShare = async () => {
     if (navigator.share) {
@@ -50,17 +66,30 @@ function ArtifactActions({
 
   return (
     <div className="flex items-center gap-3">
-      <a
-        href={url}
-        download
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex items-center gap-1 text-purple-600 hover:text-purple-700 font-medium"
-        title={`Download ${artifactLabel}`}
-      >
-        <Download className="w-4 h-4" />
-        Download
-      </a>
+      {onDownload ? (
+        <button
+          type="button"
+          onClick={handleDownload}
+          disabled={downloading}
+          className="inline-flex items-center gap-1 text-purple-600 hover:text-purple-700 disabled:opacity-50 font-medium"
+          title={`Download ${artifactLabel}`}
+        >
+          <Download className="w-4 h-4" />
+          {downloading ? "Downloading..." : "Download"}
+        </button>
+      ) : (
+        <a
+          href={url}
+          download
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 text-purple-600 hover:text-purple-700 font-medium"
+          title={`Download ${artifactLabel}`}
+        >
+          <Download className="w-4 h-4" />
+          Download
+        </a>
+      )}
       <button
         type="button"
         onClick={handleShare}
@@ -143,6 +172,7 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
                       url={summary.report.pdf_url}
                       candidateName={candidate.full_name}
                       artifactLabel="MeritLense Transcript Report"
+                      onDownload={() => reportService.downloadPdf(summary.report!.report_id, `${summary.report!.report_number}.pdf`)}
                     />
                   ) : (
                     <span className="text-gray-400">Not available</span>

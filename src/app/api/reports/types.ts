@@ -7,8 +7,8 @@ const READINESS_INDICATOR_LABELS: Record<string, string> = {
   'جاهز': 'Ready',
   'جاهزية جزئية': 'Partially Ready',
   'متوسط': 'Partially Ready',
-  'غير جاهز': 'Not Ready',
-  'توجد فجوات جاهزية': 'Not Ready',
+  'غير جاهز': 'Readiness Gaps Identified',
+  'توجد فجوات جاهزية': 'Readiness Gaps Identified',
 };
 
 export function readinessIndicatorLabel(indicator: string): string {
@@ -108,6 +108,16 @@ export interface ReportPayload {
   legal_disclaimer: string;
   transcript_report?: Record<string, unknown>;
   technical_metadata: Record<string, unknown>;
+}
+
+export interface ReportVerification {
+  report_id: string;
+  target_role: string;
+  assessment_date: string;
+  verification_status: 'Authentic' | 'Superseded' | 'Revoked' | string;
+  rule_engine_version: string;
+  sha256_hash: string;
+  verification_timestamp: string;
 }
 
 export interface EvaluationReport {
