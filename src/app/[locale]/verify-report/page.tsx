@@ -107,8 +107,8 @@ function VerifyReportContent() {
               <Row label="Report ID" value={result.report_id} mono />
               <Row label="Target Role" value={result.target_role || "—"} />
               <Row label="Assessment Date" value={result.assessment_date || "—"} />
-              <Row label="Verification Status" value={result.verification_status} />
-              <Row label="Rule Engine Version" value={result.rule_engine_version || "—"} />
+              <Row label="Authenticity Status" value={result.verification_status} />
+              <Row label="Public Report Status" value={result.public_report_status || "—"} />
               <Row
                 label="Verified At"
                 value={result.verification_timestamp ? new Date(result.verification_timestamp).toUTCString() : "—"}

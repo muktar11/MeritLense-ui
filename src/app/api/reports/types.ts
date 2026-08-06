@@ -18,8 +18,8 @@ export function readinessIndicatorLabel(indicator: string): string {
 export interface HumanReviewFlag {
   flag_type: string;
   severity: 'low' | 'medium' | 'high' | string;
-  source: string;
-  candidate_response_id: string;
+  source?: string;
+  candidate_response_id?: string;
   message: string;
   requires_review: boolean;
 }
@@ -68,6 +68,43 @@ export interface ReportResponseEvidenceItem {
   traceability: Record<string, unknown>;
 }
 
+export interface EmployerReadinessIndicator {
+  value: string;
+  display: string;
+  code: string;
+  level: number;
+}
+
+export interface EmployerExecutiveSummary {
+  readiness_indicator?: EmployerReadinessIndicator;
+  readiness_reason?: {
+    employer_message?: string;
+  };
+  overall_score?: number;
+  suggested_action?: string;
+  suggested_action_display?: string;
+  top_strengths?: string[];
+  top_risks?: string[];
+  assessment_scope?: string;
+  evaluation_reliability?: string;
+  reliability_factors?: string[];
+}
+
+export interface EmployerAssessmentContext {
+  candidate_reference?: string;
+  candidate_name?: string;
+  target_role?: string;
+  assessment_date?: string;
+  assessment_coverage?: string;
+}
+
+export interface EmployerEvidenceSummaryItem {
+  category: string;
+  finding: string;
+  source: string;
+  severity: string;
+}
+
 export interface ReportPayload {
   report_header: {
     report_number: string;
@@ -106,6 +143,9 @@ export interface ReportPayload {
   evaluation_flow_reference: string;
   };
   legal_disclaimer: string;
+  assessment_context?: EmployerAssessmentContext;
+  executive_summary?: EmployerExecutiveSummary;
+  evidence_summary?: EmployerEvidenceSummaryItem[];
   transcript_report?: Record<string, unknown>;
   technical_metadata: Record<string, unknown>;
 }
@@ -115,7 +155,7 @@ export interface ReportVerification {
   target_role: string;
   assessment_date: string;
   verification_status: 'Authentic' | 'Superseded' | 'Revoked' | string;
-  rule_engine_version: string;
+  public_report_status: string;
   sha256_hash: string;
   verification_timestamp: string;
 }
