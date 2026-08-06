@@ -64,11 +64,11 @@ function sessionStatusColor(status: SessionEvaluationStatus) {
 
 function reportStatusColor(status: ReportStatus) {
   switch (status) {
-    case "GENERATED":
+    case "ACTIVE":
       return "bg-green-100 text-green-700";
-    case "STALE":
+    case "SUPERSEDED":
       return "bg-gray-100 text-gray-600";
-    case "ARCHIVED":
+    case "REVOKED":
       return "bg-blue-100 text-blue-700";
     case "FAILED":
       return "bg-red-100 text-red-700";
@@ -89,6 +89,25 @@ function flagSeverityColor(severity: string) {
   }
 }
 
+function formatEmployerCompetency(value?: string | null) {
+  const normalized = (value || "").toLowerCase();
+  if (!normalized) return "General Readiness Competency";
+  if (normalized.includes("patient") && normalized.includes("safety")) return "Patient Safety Awareness";
+  if (normalized.includes("hygiene") || normalized.includes("clean") || normalized.includes("sanitation")) {
+    return "Hygiene Standards";
+  }
+  if (normalized.includes("communication") || normalized.includes("language")) return "Communication Ability";
+  if (normalized.includes("integrity") || normalized.includes("reliability") || normalized.includes("behavior")) {
+    return "Integrity & Reliability";
+  }
+  if (normalized.includes("task")) return "Practical Task Execution";
+  if (normalized.includes("knowledge") || normalized.includes("logic") || normalized.includes("comprehension")) {
+    return "Knowledge & Comprehension";
+  }
+  if (normalized.includes("unmapped")) return "General Readiness Competency";
+  return String(value ?? "").replace(/_/g, " ");
+}
+
 export function EvaluationResultsModal({ evaluationId, candidateName, onClose }: EvaluationResultsModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -101,6 +120,7 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
   const [reportError, setReportError] = useState<string | null>(null);
   const [generatingReport, setGeneratingReport] = useState(false);
   const [exportingReport, setExportingReport] = useState(false);
+  const [downloadingReport, setDownloadingReport] = useState(false);
 
   const load = async (id: string) => {
     setLoading(true);
@@ -199,7 +219,29 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
     }
   };
 
+  const handleDownloadReport = async () => {
+    if (!report) return;
+    setDownloadingReport(true);
+    setReportError(null);
+    try {
+      await reportService.downloadPdf(report.id, `${report.report_number}.pdf`);
+    } catch (err: any) {
+      const msg = err?.detail ?? err?.response?.data?.detail ?? "Failed to download report PDF. Try again.";
+      setReportError(msg);
+    } finally {
+      setDownloadingReport(false);
+    }
+  };
+
   if (!evaluationId) return null;
+
+  const executiveSummary = report?.report_payload?.executive_summary;
+  const assessmentContext = report?.report_payload?.assessment_context;
+  const topStrengths = executiveSummary?.top_strengths?.filter(Boolean) ?? [];
+  const topRisks = executiveSummary?.top_risks?.filter(Boolean) ?? [];
+  const reviewNotes = Array.from(
+    new Set((report?.human_review_flags ?? []).map((flag) => flag.message).filter(Boolean))
+  );
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
@@ -209,7 +251,7 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
         <div className="p-6">
           <div className="flex items-center justify-between mb-4 sticky top-0 bg-white z-10">
             <div>
-              <h3 className="text-lg font-bold text-gray-900">AI Interview Results</h3>
+              <h3 className="text-lg font-bold text-gray-900">Workforce Readiness Assessment Results</h3>
               <p className="text-sm text-gray-500">{candidateName}</p>
             </div>
             <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
@@ -261,7 +303,6 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
                   <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${sessionStatusColor(summary.status)}`}>
                     {summary.status.replace(/_/g, " ")}
                   </span>
-                  <p className="text-xs text-gray-400 mt-1">Rule set {summary.rule_set_version}</p>
                 </div>
               </div>
 
@@ -269,10 +310,10 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
                 <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex gap-2">
                   <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
                   <div className="text-sm text-red-700 space-y-1">
-                    <p className="font-medium">Critical failures</p>
+                    <p className="font-medium">Readiness Risks</p>
                     {summary.critical_failures.map((failure) => (
                       <p key={failure.response_id} className="text-xs">
-                        <span className="font-medium">{failure.competency_code.replace(/_/g, " ")}:</span>{" "}
+                        <span className="font-medium">{formatEmployerCompetency(failure.competency_code)}:</span>{" "}
                         {failure.explanation}
                       </p>
                     ))}
@@ -285,7 +326,7 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <FileText className="w-4 h-4 text-indigo-600" />
-                    <h4 className="text-sm font-semibold text-gray-900">Evaluation Report</h4>
+                    <h4 className="text-sm font-semibold text-gray-900">Workforce Readiness Report</h4>
                   </div>
                   {report && (
                     <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${reportStatusColor(report.report_status)}`}>
@@ -325,6 +366,17 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
+                        {report.employer_pdf_url && (
+                          <button
+                            type="button"
+                            onClick={handleDownloadReport}
+                            disabled={downloadingReport}
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 border border-indigo-300 bg-white hover:bg-indigo-50 disabled:opacity-50 text-indigo-700 rounded-lg text-xs font-medium"
+                          >
+                            <Download className="w-3.5 h-3.5" />
+                            {downloadingReport ? "Downloading..." : "Download PDF"}
+                          </button>
+                        )}
                         <button
                           type="button"
                           onClick={handleExportReport}
@@ -346,15 +398,12 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
                       </div>
                     </div>
 
-                    {/* Rule engine decision */}
+                    {/* Assessment decision */}
                     <div className="bg-white border border-gray-200 rounded-lg p-3">
-                      <p className="text-xs font-semibold text-gray-700 mb-2">Rule Engine Decision</p>
+                      <p className="text-xs font-semibold text-gray-700 mb-2">Assessment Decision</p>
                       <div className="flex items-center gap-2 mb-1">
                         <span className="text-sm font-medium text-gray-900">
                           {readinessIndicatorLabel(report.readiness_indicator)}
-                        </span>
-                        <span className="text-xs text-gray-400" dir="rtl">
-                          {report.readiness_indicator}
                         </span>
                         {report.override_triggered && (
                           <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-red-100 text-red-700">
@@ -362,41 +411,80 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
                           </span>
                         )}
                       </div>
-                      {report.readiness_reason && (
-                        <p className="text-xs text-gray-600">{report.readiness_reason}</p>
+                      {(executiveSummary?.readiness_reason?.employer_message || report.readiness_reason) && (
+                        <p className="text-xs text-gray-600">
+                          {executiveSummary?.readiness_reason?.employer_message || report.readiness_reason}
+                        </p>
                       )}
-                      <p className="text-xs text-gray-400 mt-1">Rule engine {report.rule_engine_version}</p>
+                      <div className="grid gap-2 sm:grid-cols-3 mt-3 text-xs">
+                        <div className="rounded-lg bg-gray-50 border border-gray-200 px-3 py-2">
+                          <p className="text-gray-500">Suggested Action</p>
+                          <p className="font-medium text-gray-900">
+                            {executiveSummary?.suggested_action_display || "—"}
+                          </p>
+                        </div>
+                        <div className="rounded-lg bg-gray-50 border border-gray-200 px-3 py-2">
+                          <p className="text-gray-500">Assessment Coverage</p>
+                          <p className="font-medium text-gray-900">
+                            {assessmentContext?.assessment_coverage || "—"}
+                          </p>
+                        </div>
+                        <div className="rounded-lg bg-gray-50 border border-gray-200 px-3 py-2">
+                          <p className="text-gray-500">Assessment Reliability</p>
+                          <p className="font-medium text-gray-900">
+                            {executiveSummary?.evaluation_reliability || "—"}
+                          </p>
+                        </div>
+                      </div>
                     </div>
 
-                    {/* Critical failures */}
-                    {report.critical_failures.length > 0 && (
-                      <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                        <div className="flex items-center gap-2 mb-1">
-                          <ShieldAlert className="w-4 h-4 text-red-500" />
-                          <p className="text-xs font-semibold text-red-700">Critical Failures</p>
+                    {(topStrengths.length > 0 || topRisks.length > 0) && (
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                          <div className="flex items-center gap-2 mb-1.5">
+                            <CheckCircle2 className="w-4 h-4 text-green-600" />
+                            <p className="text-xs font-semibold text-green-700">Top Strengths</p>
+                          </div>
+                          <div className="space-y-1.5">
+                            {topStrengths.length > 0 ? (
+                              topStrengths.map((item) => (
+                                <p key={item} className="text-xs text-green-800">
+                                  {item}
+                                </p>
+                              ))
+                            ) : (
+                              <p className="text-xs text-green-800">No strengths summary available.</p>
+                            )}
+                          </div>
                         </div>
-                        <div className="space-y-1.5">
-                          {report.critical_failures.map((failure) => (
-                            <p key={failure.response_id} className="text-xs text-red-700">
-                              <span className="font-medium">
-                                {(failure.topic || failure.competency_code).replace(/_/g, " ")}
-                                {failure.question_code ? ` (${failure.question_code})` : ""}:
-                              </span>{" "}
-                              {failure.explanation}
-                            </p>
-                          ))}
+
+                        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                          <div className="flex items-center gap-2 mb-1.5">
+                            <ShieldAlert className="w-4 h-4 text-amber-600" />
+                            <p className="text-xs font-semibold text-amber-700">Top Risks</p>
+                          </div>
+                          <div className="space-y-1.5">
+                            {topRisks.length > 0 ? (
+                              topRisks.map((item) => (
+                                <p key={item} className="text-xs text-amber-800">
+                                  {item}
+                                </p>
+                              ))
+                            ) : (
+                              <p className="text-xs text-amber-800">No risk summary available.</p>
+                            )}
+                          </div>
                         </div>
                       </div>
                     )}
 
-                    {/* Human review flags */}
-                    {report.human_review_flags.length > 0 && (
+                    {reviewNotes.length > 0 && (
                       <div>
-                        <p className="text-xs font-semibold text-gray-700 mb-1.5">Human Review Flags</p>
+                        <p className="text-xs font-semibold text-gray-700 mb-1.5">Review Notes</p>
                         <div className="space-y-1.5">
-                          {report.human_review_flags.map((flag, i) => (
-                            <div key={i} className={`border rounded-lg px-2.5 py-1.5 text-xs ${flagSeverityColor(flag.severity)}`}>
-                              <span className="font-semibold">{flag.flag_type.replace(/_/g, " ")}</span> &middot; {flag.message}
+                          {reviewNotes.map((note, i) => (
+                            <div key={i} className={`border rounded-lg px-2.5 py-1.5 text-xs ${flagSeverityColor("medium")}`}>
+                              {note}
                             </div>
                           ))}
                         </div>

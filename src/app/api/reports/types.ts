@@ -1,12 +1,14 @@
-export type ReportStatus = 'PENDING' | 'GENERATED' | 'STALE' | 'ARCHIVED' | 'FAILED';
+export type ReportStatus = 'PENDING' | 'ACTIVE' | 'SUPERSEDED' | 'REVOKED' | 'FAILED';
 
 // The backend rule engine emits readiness_indicator in Arabic regardless of
 // UI locale (it's the legal record's own fixed vocabulary) — map to an
 // English label for display without altering the underlying value.
 const READINESS_INDICATOR_LABELS: Record<string, string> = {
   'جاهز': 'Ready',
-  'غير جاهز': 'Not Ready',
-  'متوسط': 'Medium',
+  'جاهزية جزئية': 'Partially Ready',
+  'متوسط': 'Partially Ready',
+  'غير جاهز': 'Readiness Gaps Identified',
+  'توجد فجوات جاهزية': 'Readiness Gaps Identified',
 };
 
 export function readinessIndicatorLabel(indicator: string): string {
@@ -16,8 +18,8 @@ export function readinessIndicatorLabel(indicator: string): string {
 export interface HumanReviewFlag {
   flag_type: string;
   severity: 'low' | 'medium' | 'high' | string;
-  source: string;
-  candidate_response_id: string;
+  source?: string;
+  candidate_response_id?: string;
   message: string;
   requires_review: boolean;
 }
@@ -66,6 +68,43 @@ export interface ReportResponseEvidenceItem {
   traceability: Record<string, unknown>;
 }
 
+export interface EmployerReadinessIndicator {
+  value: string;
+  display: string;
+  code: string;
+  level: number;
+}
+
+export interface EmployerExecutiveSummary {
+  readiness_indicator?: EmployerReadinessIndicator;
+  readiness_reason?: {
+    employer_message?: string;
+  };
+  overall_score?: number;
+  suggested_action?: string;
+  suggested_action_display?: string;
+  top_strengths?: string[];
+  top_risks?: string[];
+  assessment_scope?: string;
+  evaluation_reliability?: string;
+  reliability_factors?: string[];
+}
+
+export interface EmployerAssessmentContext {
+  candidate_reference?: string;
+  candidate_name?: string;
+  target_role?: string;
+  assessment_date?: string;
+  assessment_coverage?: string;
+}
+
+export interface EmployerEvidenceSummaryItem {
+  category: string;
+  finding: string;
+  source: string;
+  severity: string;
+}
+
 export interface ReportPayload {
   report_header: {
     report_number: string;
@@ -93,18 +132,32 @@ export interface ReportPayload {
   response_evidence_summary: ReportResponseEvidenceItem[];
   human_review_flags: HumanReviewFlag[];
   traceability: {
-    scoring_rule_set_name: string;
-    scoring_rule_version: string;
-    rule_engine_version: string;
-    override_triggered: boolean;
-    readiness_indicator: string;
-    readiness_reason: string;
-    readiness_legal_record_id: string | null;
-    audit_reference_type: string;
-    evaluation_flow_reference: string;
+  scoring_rule_set_name: string;
+  scoring_rule_version: string;
+  rule_engine_version: string;
+  override_triggered: boolean;
+  readiness_indicator: string;
+  readiness_reason: string;
+  readiness_legal_record_id: string | null;
+  audit_reference_type: string;
+  evaluation_flow_reference: string;
   };
   legal_disclaimer: string;
+  assessment_context?: EmployerAssessmentContext;
+  executive_summary?: EmployerExecutiveSummary;
+  evidence_summary?: EmployerEvidenceSummaryItem[];
+  transcript_report?: Record<string, unknown>;
   technical_metadata: Record<string, unknown>;
+}
+
+export interface ReportVerification {
+  report_id: string;
+  target_role: string;
+  assessment_date: string;
+  verification_status: 'Authentic' | 'Superseded' | 'Revoked' | string;
+  public_report_status: string;
+  sha256_hash: string;
+  verification_timestamp: string;
 }
 
 export interface EvaluationReport {
@@ -126,6 +179,7 @@ export interface EvaluationReport {
   requires_human_review: boolean;
   scoring_rule_set_name: string;
   scoring_rule_version: string;
+  employer_pdf_url: string;
   report_payload: ReportPayload;
   competency_breakdown: ReportCompetencyBreakdownItem[];
   response_evidence_summary: ReportResponseEvidenceItem[];
