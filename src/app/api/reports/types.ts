@@ -1,12 +1,14 @@
-export type ReportStatus = 'PENDING' | 'GENERATED' | 'STALE' | 'ARCHIVED' | 'FAILED';
+export type ReportStatus = 'PENDING' | 'ACTIVE' | 'SUPERSEDED' | 'REVOKED' | 'FAILED';
 
 // The backend rule engine emits readiness_indicator in Arabic regardless of
 // UI locale (it's the legal record's own fixed vocabulary) — map to an
 // English label for display without altering the underlying value.
 const READINESS_INDICATOR_LABELS: Record<string, string> = {
   'جاهز': 'Ready',
+  'جاهزية جزئية': 'Partially Ready',
+  'متوسط': 'Partially Ready',
   'غير جاهز': 'Not Ready',
-  'متوسط': 'Medium',
+  'توجد فجوات جاهزية': 'Not Ready',
 };
 
 export function readinessIndicatorLabel(indicator: string): string {
@@ -93,17 +95,18 @@ export interface ReportPayload {
   response_evidence_summary: ReportResponseEvidenceItem[];
   human_review_flags: HumanReviewFlag[];
   traceability: {
-    scoring_rule_set_name: string;
-    scoring_rule_version: string;
-    rule_engine_version: string;
-    override_triggered: boolean;
-    readiness_indicator: string;
-    readiness_reason: string;
-    readiness_legal_record_id: string | null;
-    audit_reference_type: string;
-    evaluation_flow_reference: string;
+  scoring_rule_set_name: string;
+  scoring_rule_version: string;
+  rule_engine_version: string;
+  override_triggered: boolean;
+  readiness_indicator: string;
+  readiness_reason: string;
+  readiness_legal_record_id: string | null;
+  audit_reference_type: string;
+  evaluation_flow_reference: string;
   };
   legal_disclaimer: string;
+  transcript_report?: Record<string, unknown>;
   technical_metadata: Record<string, unknown>;
 }
 
@@ -126,6 +129,7 @@ export interface EvaluationReport {
   requires_human_review: boolean;
   scoring_rule_set_name: string;
   scoring_rule_version: string;
+  employer_pdf_url: string;
   report_payload: ReportPayload;
   competency_breakdown: ReportCompetencyBreakdownItem[];
   response_evidence_summary: ReportResponseEvidenceItem[];

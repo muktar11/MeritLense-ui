@@ -173,6 +173,14 @@ export interface CandidateCertificate {
   issued_at: string;
 }
 
+export interface CandidateTranscriptReport {
+  report_id: string;
+  report_number: string;
+  report_status: string;
+  pdf_url: string;
+  generated_at: string;
+}
+
 export interface CandidateScoreSummary {
   candidate_id: string;
   evaluation_id: string | null;
@@ -184,6 +192,7 @@ export interface CandidateScoreSummary {
   // Null when this evaluation's tier doesn't issue certificates, or
   // generation hasn't happened yet - never a guess at what it'll be.
   certificate: CandidateCertificate | null;
+  report: CandidateTranscriptReport | null;
 }
 
 export interface ResponseEvaluationResult {

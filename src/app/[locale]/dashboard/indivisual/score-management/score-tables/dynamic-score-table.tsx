@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Check, Download, Eye, Share2 } from "lucide-react";
 import type { Candidate } from "@/app/api/candidates/types";
-import type { CandidateCertificate, CandidateScoreSummary } from "@/app/api/evaluations/types";
+import type { CandidateScoreSummary } from "@/app/api/evaluations/types";
 
 interface DynamicScoreTableProps {
   candidates: Candidate[];
@@ -19,20 +19,28 @@ interface DynamicScoreTableProps {
 // Safari/Chrome) and falls back to copying the link, since the PDF is
 // already served from a public, unauthenticated URL - nothing extra to
 // generate for a "share" action.
-function CertificateActions({ certificate, candidateName }: { certificate: CandidateCertificate; candidateName: string }) {
+function ArtifactActions({
+  url,
+  candidateName,
+  artifactLabel,
+}: {
+  url: string;
+  candidateName: string;
+  artifactLabel: string;
+}) {
   const [copied, setCopied] = useState(false);
 
   const handleShare = async () => {
     if (navigator.share) {
       try {
-        await navigator.share({ title: `${candidateName}'s MeritLense Certificate`, url: certificate.pdf_url });
+        await navigator.share({ title: `${candidateName}'s ${artifactLabel}`, url });
       } catch {
         // Cancelled by the user - not an error.
       }
       return;
     }
     try {
-      await navigator.clipboard.writeText(certificate.pdf_url);
+      await navigator.clipboard.writeText(url);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -43,12 +51,12 @@ function CertificateActions({ certificate, candidateName }: { certificate: Candi
   return (
     <div className="flex items-center gap-3">
       <a
-        href={certificate.pdf_url}
+        href={url}
         download
         target="_blank"
         rel="noopener noreferrer"
         className="inline-flex items-center gap-1 text-purple-600 hover:text-purple-700 font-medium"
-        title="Download certificate"
+        title={`Download ${artifactLabel}`}
       >
         <Download className="w-4 h-4" />
         Download
@@ -57,7 +65,7 @@ function CertificateActions({ certificate, candidateName }: { certificate: Candi
         type="button"
         onClick={handleShare}
         className="inline-flex items-center gap-1 text-gray-500 hover:text-purple-600"
-        title="Share certificate link"
+        title={`Share ${artifactLabel} link`}
       >
         {copied ? <Check className="w-4 h-4 text-green-600" /> : <Share2 className="w-4 h-4" />}
         {copied && <span className="text-green-600 text-xs">Copied!</span>}
@@ -100,6 +108,7 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
               </th>
             ))}
             <th className="px-4 sm:px-6 py-2 text-left font-semibold text-gray-700">Avg</th>
+            <th className="px-4 sm:px-6 py-2 text-left font-semibold text-gray-700">Transcript Report</th>
             <th className="px-4 sm:px-6 py-2 text-left font-semibold text-gray-700">Certificate</th>
             <th className="px-4 sm:px-6 py-2 text-left font-semibold text-gray-700">Actions</th>
           </tr>
@@ -129,8 +138,23 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
                   {summary ? `${summary.overall_percentage}%` : "-"}
                 </td>
                 <td className="px-4 sm:px-6 py-3">
+                  {summary?.report?.pdf_url ? (
+                    <ArtifactActions
+                      url={summary.report.pdf_url}
+                      candidateName={candidate.full_name}
+                      artifactLabel="MeritLense Transcript Report"
+                    />
+                  ) : (
+                    <span className="text-gray-400">Not available</span>
+                  )}
+                </td>
+                <td className="px-4 sm:px-6 py-3">
                   {summary?.certificate ? (
-                    <CertificateActions certificate={summary.certificate} candidateName={candidate.full_name} />
+                    <ArtifactActions
+                      url={summary.certificate.pdf_url}
+                      candidateName={candidate.full_name}
+                      artifactLabel="MeritLense Certificate"
+                    />
                   ) : (
                     <span className="text-gray-400">Not available</span>
                   )}

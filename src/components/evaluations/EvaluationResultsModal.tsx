@@ -64,11 +64,11 @@ function sessionStatusColor(status: SessionEvaluationStatus) {
 
 function reportStatusColor(status: ReportStatus) {
   switch (status) {
-    case "GENERATED":
+    case "ACTIVE":
       return "bg-green-100 text-green-700";
-    case "STALE":
+    case "SUPERSEDED":
       return "bg-gray-100 text-gray-600";
-    case "ARCHIVED":
+    case "REVOKED":
       return "bg-blue-100 text-blue-700";
     case "FAILED":
       return "bg-red-100 text-red-700";
@@ -325,6 +325,17 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
+                        {report.employer_pdf_url && (
+                          <a
+                            href={report.employer_pdf_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 border border-indigo-300 bg-white hover:bg-indigo-50 text-indigo-700 rounded-lg text-xs font-medium"
+                          >
+                            <Download className="w-3.5 h-3.5" />
+                            Download PDF
+                          </a>
+                        )}
                         <button
                           type="button"
                           onClick={handleExportReport}
