@@ -97,6 +97,40 @@ class InterviewSessionClientService {
     return response.data;
   }
 
+  async captureConsent(sessionId: string, token: string, signatoryName: string): Promise<PrecheckStatus> {
+    const response = await interviewSessionClient.post(`/${sessionId}/prechecks/consent/`, {
+      token,
+      signatory_name: signatoryName,
+    });
+    return response.data;
+  }
+
+  async acknowledgePrivacy(sessionId: string, token: string): Promise<PrecheckStatus> {
+    const response = await interviewSessionClient.post(`/${sessionId}/prechecks/privacy-acknowledgement/`, {
+      token,
+    });
+    return response.data;
+  }
+
+  async completeDeviceCheck(sessionId: string, token: string, passed: boolean): Promise<PrecheckStatus> {
+    const response = await interviewSessionClient.post(`/${sessionId}/prechecks/device-check/`, {
+      token,
+      passed,
+    });
+    return response.data;
+  }
+
+  async submitVerbalConfirmation(sessionId: string, token: string, recordingBlob: Blob): Promise<PrecheckStatus> {
+    const formData = new FormData();
+    formData.append('token', token);
+    formData.append('recording_file', recordingBlob, 'verbal-confirmation.webm');
+
+    const response = await interviewSessionClient.post(`/${sessionId}/prechecks/verbal-confirmation/`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data.precheck_status as PrecheckStatus;
+  }
+
   async getReferenceImage(sessionId: string, token: string): Promise<Blob> {
     const response = await interviewSessionClient.get(`/${sessionId}/prechecks/reference-image/`, {
       params: { token },

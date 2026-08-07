@@ -13,7 +13,7 @@ import {
 import { QuestionCard } from "./components/question-card";
 import { AnswerTextForm } from "./components/answer-text-form";
 import { AnswerRecorder } from "./components/answer-recorder";
-import { IdentityVerification } from "./components/identity-verification";
+import { PrecheckFlow } from "./components/precheck-flow";
 import { OrientationTour } from "./components/orientation-tour";
 import { LiveCallRoom } from "@/components/live-call/LiveCallRoom";
 import { IntegrityMonitor } from "./components/integrity-monitor";
@@ -395,7 +395,7 @@ function InterviewSessionContent() {
 
   if (pageState === "precheck") {
     return (
-      <IdentityVerification sessionId={sessionId} token={token} onContinue={handlePrecheckContinue} />
+      <PrecheckFlow sessionId={sessionId} token={token} onContinue={handlePrecheckContinue} />
     );
   }
 
