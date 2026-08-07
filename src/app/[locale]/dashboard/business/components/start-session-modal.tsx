@@ -93,19 +93,15 @@ export default function StartSessionModal({
         candidate_id: selectedCandidateId,
         config_id: selectedConfigId,
       })
-      // Staff always starts the session immediately: the candidate-facing
-      // token flow can only self-start once consent/device-check/etc.
-      // prechecks are complete, and nothing in the product sets those yet —
-      // so the candidate's link must always land on an already-started
-      // session, straight into the question flow.
-      const started = await interviewService.startSession(session.id)
-      setCreatedSession(started)
-      onSuccess?.(started)
+      // The candidate starts the assessment only after completing consent,
+      // device, verbal-confirmation, privacy, and identity prechecks.
+      setCreatedSession(session)
+      onSuccess?.(session)
     } catch (err: any) {
       const msg =
         err?.response?.data?.detail ??
         err?.detail ??
-        "Failed to start interview session. Please try again."
+        "Failed to create the assessment session. Please try again."
       setError(msg)
     } finally {
       setSubmitting(false)
@@ -135,8 +131,8 @@ export default function StartSessionModal({
         {/* Header */}
         <div className="flex items-center justify-between mb-6 sticky top-0 bg-white pb-2 border-b">
           <div>
-            <h2 className="text-lg font-bold text-gray-900">Start AI Interview Session</h2>
-            <p className="text-sm text-gray-500 mt-0.5">Select a role package to begin</p>
+            <h2 className="text-lg font-bold text-gray-900">Create Workforce Readiness Assessment</h2>
+            <p className="text-sm text-gray-500 mt-0.5">Select a role package and create the candidate link</p>
           </div>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700 transition-colors">
             <X className="w-5 h-5" />
@@ -149,7 +145,7 @@ export default function StartSessionModal({
             <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Session Created</h3>
             <p className="text-sm text-gray-600 mb-1">
-              AI interview session for{" "}
+              Workforce Readiness Assessment for{" "}
               <span className="font-medium">{activeCandidateObj?.full_name}</span> is ready.
             </p>
             <p className="text-xs text-gray-500 mb-6">
@@ -384,12 +380,12 @@ export default function StartSessionModal({
                 {submitting ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    Starting…
+                    Creating…
                   </>
                 ) : (
                   <>
                     <ArrowRight className="w-4 h-4" />
-                    Start Session
+                    Create Assessment Link
                   </>
                 )}
               </button>

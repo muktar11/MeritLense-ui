@@ -9,6 +9,7 @@ import type {
   PrecheckStatus,
   IdentityVerificationResult,
   IntegrityEventResult,
+  VerbalConfirmationResult,
 } from './types';
 
 class InterviewSessionClientService {
@@ -94,6 +95,51 @@ class InterviewSessionClientService {
 
   async getPrecheckStatus(sessionId: string, token: string): Promise<PrecheckStatus> {
     const response = await interviewSessionClient.get(`/${sessionId}/prechecks/status/`, { params: { token } });
+    return response.data;
+  }
+
+  async captureConsent(sessionId: string, token: string, signatoryName: string): Promise<PrecheckStatus> {
+    const response = await interviewSessionClient.post(`/${sessionId}/prechecks/consent/`, {
+      token,
+      signatory_name: signatoryName,
+    });
+    return response.data;
+  }
+
+  async acknowledgePrivacy(sessionId: string, token: string): Promise<PrecheckStatus> {
+    const response = await interviewSessionClient.post(`/${sessionId}/prechecks/privacy-acknowledgement/`, {
+      token,
+      metadata: { source: 'candidate-precheck' },
+    });
+    return response.data;
+  }
+
+  async completeDeviceCheck(
+    sessionId: string,
+    token: string,
+    metadata: Record<string, unknown>
+  ): Promise<PrecheckStatus> {
+    const response = await interviewSessionClient.post(`/${sessionId}/prechecks/device-check/`, {
+      token,
+      passed: true,
+      metadata,
+    });
+    return response.data;
+  }
+
+  async submitVerbalConfirmation(
+    sessionId: string,
+    token: string,
+    recording: Blob
+  ): Promise<VerbalConfirmationResult> {
+    const formData = new FormData();
+    formData.append('token', token);
+    formData.append('recording_file', recording, 'verbal-confirmation.webm');
+    const response = await interviewSessionClient.post(
+      `/${sessionId}/prechecks/verbal-confirmation/`,
+      formData,
+      { headers: { 'Content-Type': 'multipart/form-data' } }
+    );
     return response.data;
   }
 
