@@ -13,7 +13,7 @@ import {
 import { QuestionCard } from "./components/question-card";
 import { AnswerTextForm } from "./components/answer-text-form";
 import { AnswerRecorder } from "./components/answer-recorder";
-import { CandidatePrecheck } from "./components/candidate-precheck";
+import { PrecheckFlow } from "./components/precheck-flow";
 import { OrientationTour } from "./components/orientation-tour";
 import { LiveCallRoom } from "@/components/live-call/LiveCallRoom";
 import { IntegrityMonitor } from "./components/integrity-monitor";
@@ -405,14 +405,7 @@ function InterviewSessionContent() {
   }
 
   if (pageState === "precheck") {
-    return (
-      <CandidatePrecheck
-        sessionId={sessionId}
-        token={token}
-        candidateName={session?.candidate_name ?? ""}
-        onContinue={handlePrecheckContinue}
-      />
-    );
+    return <PrecheckFlow sessionId={sessionId} token={token} onContinue={handlePrecheckContinue} />;
   }
 
   if (pageState === "orientation") {

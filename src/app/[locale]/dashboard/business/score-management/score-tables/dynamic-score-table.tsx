@@ -12,14 +12,29 @@ interface DynamicScoreTableProps {
   onViewScores: (candidate: Candidate) => void;
 }
 
-// Download relies on the browser's own handling of a cross-origin `download`
-// attribute (the certificate PDF is served from api.meritlense.com, not
-// meritlense.com) - most browsers still open it in a new tab in that case,
-// which is fine since their built-in PDF viewer has its own save/download
-// control. Share prefers the native share sheet where available (mobile
-// Safari/Chrome) and falls back to copying the link, since the PDF is
-// already served from a public, unauthenticated URL - nothing extra to
-// generate for a "share" action.
+// The certificate PDF is served from a public, unauthenticated URL (no API
+// wrapper needed) - fetched as a blob and force-downloaded the same way
+// reportService.downloadPdf() already does for reports, rather than relying
+// on a plain <a download> (browsers routinely ignore that attribute for
+// cross-origin URLs like this one, since the PDF lives on api.meritlense.com
+// while the dashboard is on meritlense.com).
+async function downloadFromUrl(url: string, filename: string) {
+  const response = await fetch(url);
+  const blob = await response.blob();
+  const downloadUrl = window.URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = downloadUrl;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(downloadUrl);
+}
+
+// Share prefers the native share sheet where available (mobile Safari/
+// Chrome) and falls back to copying the link, since the PDF is already
+// served from a public, unauthenticated URL - nothing extra to generate for
+// a "share" action.
 function ArtifactActions({
   url,
   candidateName,
@@ -147,6 +162,20 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
             const summary = scores[candidate.id];
             const byCode = new Map(summary?.competencies.map((c) => [c.code, c.percentage]) ?? []);
 
+            // Clicking Download in either column downloads whatever
+            // artifacts exist for this candidate together, rather than just
+            // the one under that column.
+            const downloadAllArtifacts = async () => {
+              const tasks: Promise<void>[] = [];
+              if (summary?.report?.pdf_url) {
+                tasks.push(reportService.downloadPdf(summary.report.report_id, `${summary.report.report_number}.pdf`));
+              }
+              if (summary?.certificate) {
+                tasks.push(downloadFromUrl(summary.certificate.pdf_url, `${summary.certificate.certificate_id}.pdf`));
+              }
+              await Promise.all(tasks);
+            };
+
             return (
               <tr key={candidate.id} className="border-b border-gray-100 hover:bg-gray-50">
                 <td className="px-4 sm:px-6 py-3">
@@ -172,7 +201,7 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
                       url={summary.report.pdf_url}
                       candidateName={candidate.full_name}
                       artifactLabel="MeritLense Transcript Report"
-                      onDownload={() => reportService.downloadPdf(summary.report!.report_id, `${summary.report!.report_number}.pdf`)}
+                      onDownload={downloadAllArtifacts}
                     />
                   ) : (
                     <span className="text-gray-400">Not available</span>
@@ -184,6 +213,7 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
                       url={summary.certificate.pdf_url}
                       candidateName={candidate.full_name}
                       artifactLabel="MeritLense Certificate"
+                      onDownload={downloadAllArtifacts}
                     />
                   ) : (
                     <span className="text-gray-400">Not available</span>

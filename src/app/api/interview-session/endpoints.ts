@@ -117,12 +117,15 @@ class InterviewSessionClientService {
   async completeDeviceCheck(
     sessionId: string,
     token: string,
-    metadata: Record<string, unknown>
+    passedOrMetadata: boolean | Record<string, unknown>,
+    metadata: Record<string, unknown> = {}
   ): Promise<PrecheckStatus> {
+    const passed = typeof passedOrMetadata === 'boolean' ? passedOrMetadata : true;
+    const resolvedMetadata = typeof passedOrMetadata === 'boolean' ? metadata : passedOrMetadata;
     const response = await interviewSessionClient.post(`/${sessionId}/prechecks/device-check/`, {
       token,
-      passed: true,
-      metadata,
+      passed,
+      ...(Object.keys(resolvedMetadata).length ? { metadata: resolvedMetadata } : {}),
     });
     return response.data;
   }
@@ -130,11 +133,11 @@ class InterviewSessionClientService {
   async submitVerbalConfirmation(
     sessionId: string,
     token: string,
-    recording: Blob
+    recordingBlob: Blob
   ): Promise<VerbalConfirmationResult> {
     const formData = new FormData();
     formData.append('token', token);
-    formData.append('recording_file', recording, 'verbal-confirmation.webm');
+    formData.append('recording_file', recordingBlob, 'verbal-confirmation.webm');
     const response = await interviewSessionClient.post(
       `/${sessionId}/prechecks/verbal-confirmation/`,
       formData,
