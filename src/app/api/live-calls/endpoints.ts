@@ -39,4 +39,6 @@ class LiveCallService {
   }
 }
 
-export default new LiveCallService();
+const liveCallService = new LiveCallService();
+
+export default liveCallService;

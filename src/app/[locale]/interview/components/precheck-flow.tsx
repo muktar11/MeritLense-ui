@@ -96,7 +96,11 @@ export function PrecheckFlow({ sessionId, token, onContinue }: PrecheckFlowProps
         error={error}
         onError={setError}
         onSubmit={async () => {
-          await interviewSessionService.completeDeviceCheck(sessionId, token, true);
+          await interviewSessionService.completeDeviceCheck(sessionId, token, true, {
+            camera: "ok",
+            microphone: "ok",
+            source: "candidate-precheck",
+          });
           setError(null);
           setStep("verbal-confirmation");
         }}
