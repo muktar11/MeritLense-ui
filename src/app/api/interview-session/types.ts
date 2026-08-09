@@ -11,6 +11,7 @@ export type SessionStatus =
 
 export interface InterviewSessionPublic {
   id: string;
+  candidate_name: string;
   status: SessionStatus;
   role_name: string;
   role_code: string;
@@ -133,6 +134,11 @@ export interface IdentityVerificationResult {
     reason: string;
   };
   artifacts: Array<{ id: string; artifact_type: string; file_url: string }>;
+}
+
+export interface VerbalConfirmationResult {
+  precheck_status: PrecheckStatus;
+  artifact: { id: string; artifact_type: string; file_url: string } | null;
 }
 
 export interface IntegrityEventResult {

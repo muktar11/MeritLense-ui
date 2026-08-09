@@ -128,26 +128,26 @@ function InterviewSessionContent() {
       } else if (["EXPIRED", "CANCELLED", "FAILED"].includes(data.status)) {
         setPageState("unavailable");
       } else if (data.status === "CREATED" && data.scheduled_start_at) {
-        // Scheduled interviews are a live video call between the evaluator
-        // and candidate (see LiveCallRoom), not the async text/audio Q&A
-        // flow below - that flow is reserved for sessions that were never
-        // scheduled (the original immediate-start behavior). The call
-        // itself, gated by the same session-token/staff-auth access control
-        // as everything else, is the identity check here - no separate
-        // camera or password precheck step.
+        // Scheduled interviews enter the live room only after the same
+        // consent and verification checks used by the async assessment.
         const scheduledMs = new Date(data.scheduled_start_at).getTime();
         const earlyJoinMs = LIVE_CALL_EARLY_JOIN_MINUTES * 60_000;
-        setPageState(Date.now() < scheduledMs - earlyJoinMs ? "scheduled" : "live-call");
+        if (Date.now() < scheduledMs - earlyJoinMs) {
+          setPageState("scheduled");
+          return;
+        }
+        const prechecks = await interviewSessionService.getPrecheckStatus(sessionId, token);
+        setPageState(prechecks.candidate_prechecks_complete ? "live-call" : "precheck");
       } else if (data.status === "CREATED") {
-        // Never scheduled - the original immediate-start behavior,
-        // unchanged. The backend requires consent, identity verification,
+        // Never scheduled. The backend requires consent, identity verification,
         // device check, and privacy acknowledgement to all be complete
         // before it will let a candidate-initiated start through - none of
         // those require the session to already be IN_PROGRESS, so send an
         // unverified candidate to prechecks first rather than trying (and
         // failing) to start immediately. Starting happens once prechecks
         // finish - see handlePrecheckContinue.
-        if (!data.identity_verified) {
+        const prechecks = await interviewSessionService.getPrecheckStatus(sessionId, token);
+        if (!prechecks.candidate_prechecks_complete) {
           setPageState("precheck");
           return;
         }
@@ -164,9 +164,12 @@ function InterviewSessionContent() {
         // would reject this anyway since the session isn't IN_PROGRESS, so show
         // the same blocking screen the live callback below would show.
         setPageState("paused");
-      } else if (!data.identity_verified) {
-        setPageState("precheck");
       } else {
+        const prechecks = await interviewSessionService.getPrecheckStatus(sessionId, token);
+        if (!prechecks.candidate_prechecks_complete) {
+          setPageState("precheck");
+          return;
+        }
         await loadCurrentQuestion();
       }
     },
@@ -221,29 +224,37 @@ function InterviewSessionContent() {
     };
   }, [pageState, sessionId, token, resolveSessionState]);
 
-  // Prechecks can finish while the session is still "CREATED" (a
-  // scheduled interview the candidate is completing ahead of time, or one
-  // that just became due) - in that case the session needs to actually be
-  // started before fetching the first question, which the backend only
-  // allows now that prechecks are done. If it's already IN_PROGRESS (the
-  // pre-scheduling norm, where staff start it at creation), this is a
-  // no-op fallthrough straight to the orientation tour.
+  // Once prechecks finish, the candidate starts an unscheduled assessment.
+  // Scheduled assessments enter the live room and start at the scheduled time.
   const handlePrecheckContinue = useCallback(async () => {
-    if (session?.status === "CREATED") {
-      try {
-        const started = await interviewSessionService.startSession(sessionId, token);
-        setSession(started);
-      } catch {
-        setError("Your interview couldn't be started. Please refresh the page or contact the person who invited you.");
-        setPageState("not-ready");
+    try {
+      const latest = await interviewSessionService.getSession(sessionId, token);
+      setSession(latest);
+
+      if (latest.scheduled_start_at) {
+        const scheduledMs = new Date(latest.scheduled_start_at).getTime();
+        if (Date.now() >= scheduledMs && latest.status !== "IN_PROGRESS") {
+          const started = await interviewSessionService.startSession(sessionId, token);
+          setSession(started);
+        }
+        setPageState("live-call");
         return;
       }
+
+      if (latest.status !== "IN_PROGRESS") {
+        const started = await interviewSessionService.startSession(sessionId, token);
+        setSession(started);
+      }
+    } catch {
+      setError("Your interview couldn't be started. Please refresh the page or contact the person who invited you.");
+      setPageState("not-ready");
+      return;
     }
     // A brief one-time orientation before the first question, rather than
     // dropping the candidate straight into it - loadCurrentQuestion (and
     // the question view itself) only runs once they finish or skip it.
     setPageState("orientation");
-  }, [session, sessionId, token]);
+  }, [sessionId, token]);
 
   const handleOrientationDone = useCallback(() => {
     loadCurrentQuestion();
@@ -394,9 +405,7 @@ function InterviewSessionContent() {
   }
 
   if (pageState === "precheck") {
-    return (
-      <PrecheckFlow sessionId={sessionId} token={token} onContinue={handlePrecheckContinue} />
-    );
+    return <PrecheckFlow sessionId={sessionId} token={token} onContinue={handlePrecheckContinue} />;
   }
 
   if (pageState === "orientation") {

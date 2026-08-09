@@ -9,6 +9,7 @@ import type {
   PrecheckStatus,
   IdentityVerificationResult,
   IntegrityEventResult,
+  VerbalConfirmationResult,
 } from './types';
 
 class InterviewSessionClientService {
@@ -108,27 +109,41 @@ class InterviewSessionClientService {
   async acknowledgePrivacy(sessionId: string, token: string): Promise<PrecheckStatus> {
     const response = await interviewSessionClient.post(`/${sessionId}/prechecks/privacy-acknowledgement/`, {
       token,
+      metadata: { source: 'candidate-precheck' },
     });
     return response.data;
   }
 
-  async completeDeviceCheck(sessionId: string, token: string, passed: boolean): Promise<PrecheckStatus> {
+  async completeDeviceCheck(
+    sessionId: string,
+    token: string,
+    passedOrMetadata: boolean | Record<string, unknown>,
+    metadata: Record<string, unknown> = {}
+  ): Promise<PrecheckStatus> {
+    const passed = typeof passedOrMetadata === 'boolean' ? passedOrMetadata : true;
+    const resolvedMetadata = typeof passedOrMetadata === 'boolean' ? metadata : passedOrMetadata;
     const response = await interviewSessionClient.post(`/${sessionId}/prechecks/device-check/`, {
       token,
       passed,
+      ...(Object.keys(resolvedMetadata).length ? { metadata: resolvedMetadata } : {}),
     });
     return response.data;
   }
 
-  async submitVerbalConfirmation(sessionId: string, token: string, recordingBlob: Blob): Promise<PrecheckStatus> {
+  async submitVerbalConfirmation(
+    sessionId: string,
+    token: string,
+    recordingBlob: Blob
+  ): Promise<VerbalConfirmationResult> {
     const formData = new FormData();
     formData.append('token', token);
     formData.append('recording_file', recordingBlob, 'verbal-confirmation.webm');
-
-    const response = await interviewSessionClient.post(`/${sessionId}/prechecks/verbal-confirmation/`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
-    return response.data.precheck_status as PrecheckStatus;
+    const response = await interviewSessionClient.post(
+      `/${sessionId}/prechecks/verbal-confirmation/`,
+      formData,
+      { headers: { 'Content-Type': 'multipart/form-data' } }
+    );
+    return response.data;
   }
 
   async getReferenceImage(sessionId: string, token: string): Promise<Blob> {

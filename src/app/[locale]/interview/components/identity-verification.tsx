@@ -31,14 +31,9 @@ type Step =
 // sits within that range.
 const MATCH_DISTANCE_THRESHOLD = 0.6;
 
-// Requiring the full 100% (an almost-identical photo) is unrealistic for a
-// real candidate selfie vs. a passport photo taken years apart under
-// different lighting. Lowered from an initial 40 after real candidates with
-// genuine matches were still failing at that bar - 20 sits closer to the
-// permissive edge of the same-person range (distance <= 0.48 of the 0.6
-// same-person boundary) to prioritize not blocking real matches. Tune this
-// directly if it proves too strict or too lenient in practice.
-const PASS_SCORE_THRESHOLD = 20;
+// Keep this aligned with InterviewSession.candidate_prechecks_complete on
+// the backend so the UI never reports success for a session that cannot start.
+const PASS_SCORE_THRESHOLD = 85;
 
 // Identity verification always takes this long from the candidate's
 // perspective, regardless of how fast the actual comparison finishes -

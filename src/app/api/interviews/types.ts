@@ -192,7 +192,7 @@ export interface RolePackage {
 export const CANDIDATE_JOB_ROLES = [
   { code: 'HK', name: 'Housekeeper', icon: '🧹' },
   { code: 'EC', name: 'Elder Companion', icon: '👴' },
-  { code: 'NA', name: 'Nursing Assistant', icon: '🏥' },
+  { code: 'NA', name: 'Nanny', icon: '🧒' },
   { code: 'DR', name: 'Driver', icon: '🚗' },
   { code: 'KA', name: 'Kitchen Assistant', icon: '🍳' },
   { code: 'MW', name: 'Maintenance Worker', icon: '🔧' },
