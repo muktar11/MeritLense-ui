@@ -7,6 +7,8 @@ import type {
   InterviewSession,
   QuestionTemplate,
   QuestionTemplatePayload,
+  RolePackageCoverageEntry,
+  PackageSessionConfigEntry,
 } from './types';
 
 function setToken() {
@@ -22,10 +24,24 @@ class InterviewService {
   private configsURL = `${API_BASE_URL}/interviews/configs`;
   private questionTemplatesURL = `${API_BASE_URL}/interviews/question-templates`;
   private sessionsURL = `${API_BASE_URL}/interviews`;
+  private roleCoverageURL = `${API_BASE_URL}/interviews/role-coverage`;
+  private packageConfigsURL = `${API_BASE_URL}/interviews/package-configs`;
 
   async getConfigs(): Promise<InterviewConfig[]> {
     setToken();
     const response = await apiClient.get(`${this.configsURL}/`);
+    return response.data;
+  }
+
+  async getRoleCoverage(): Promise<RolePackageCoverageEntry[]> {
+    setToken();
+    const response = await apiClient.get(`${this.roleCoverageURL}/`);
+    return response.data;
+  }
+
+  async getPackageConfigs(): Promise<PackageSessionConfigEntry[]> {
+    setToken();
+    const response = await apiClient.get(`${this.packageConfigsURL}/`);
     return response.data;
   }
 

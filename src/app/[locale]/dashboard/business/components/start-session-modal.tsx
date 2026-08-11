@@ -1,15 +1,20 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Link from "next/link"
 import { useLocale } from "next-intl"
 import { X, Loader2, ArrowRight, AlertCircle, CheckCircle2, Copy, Check } from "lucide-react"
 import type { Candidate } from "@/app/api/candidates/types"
 import interviewService from "@/app/api/interviews/endpoints"
-import type { InterviewConfig, InterviewSession, RolePackage } from "@/app/api/interviews/types"
+import paymentService from "@/app/api/payments/endpoints"
+import type { InterviewConfig, InterviewSession, RolePackage, RolePackageCoverageEntry } from "@/app/api/interviews/types"
 import {
   getCoverageFromTier,
   getCoverageColor,
+  getCoverageLabel,
   buildRolePackages,
+  recommendPackageForFullCoverage,
+  PACKAGE_ORDER_B2B,
 } from "@/app/api/interviews/types"
 
 interface StartSessionModalProps {
@@ -29,6 +34,11 @@ export default function StartSessionModal({
 }: StartSessionModalProps) {
   const locale = useLocale()
   const [configs, setConfigs] = useState<InterviewConfig[]>([])
+  const [coverageRows, setCoverageRows] = useState<RolePackageCoverageEntry[]>([])
+  // null = the employer's package_code couldn't be resolved (e.g. no active
+  // subscription, or the subscription's price isn't tagged with a
+  // package_code yet) - coverage is shown as "Unknown" rather than guessed.
+  const [packageCode, setPackageCode] = useState<string | null>(null)
   const [loadingConfigs, setLoadingConfigs] = useState(false)
   const [selectedCandidateId, setSelectedCandidateId] = useState("")
   const [selectedRoleCode, setSelectedRoleCode] = useState("")
@@ -41,6 +51,7 @@ export default function StartSessionModal({
   useEffect(() => {
     if (isOpen) {
       fetchConfigs()
+      fetchPackageContext()
       if (preselectedCandidate) {
         setSelectedCandidateId(preselectedCandidate.id)
       }
@@ -67,11 +78,40 @@ export default function StartSessionModal({
     }
   }
 
-  const rolePackages: RolePackage[] = buildRolePackages(configs).filter(p => p.available)
+  const fetchPackageContext = async () => {
+    try {
+      const coverage = await interviewService.getRoleCoverage()
+      setCoverageRows(coverage.filter(row => row.audience === "B2B"))
+    } catch {
+      // Coverage table unavailable — role packages will just render without
+      // coverage badges rather than blocking role selection entirely.
+      setCoverageRows([])
+    }
+
+    try {
+      const subscriptions = await paymentService.getAllSubscriptions()
+      if (!subscriptions || subscriptions.length === 0) {
+        setPackageCode(null)
+        return
+      }
+      const latest = [...subscriptions].sort(
+        (a, b) => new Date(b.current_period_end).getTime() - new Date(a.current_period_end).getTime()
+      )[0]
+      const full = await paymentService.getSubscription(latest.id)
+      setPackageCode(full.price_details?.metadata?.package_code ?? null)
+    } catch {
+      setPackageCode(null)
+    }
+  }
+
+  const rolePackages: RolePackage[] = buildRolePackages(configs, coverageRows, packageCode).filter(p => p.available)
 
   const selectedRole = rolePackages.find(r => r.role_code === selectedRoleCode)
   const selectedConfig = configs.find(c => c.id === selectedConfigId)
-  const showUpgradePrompt = selectedRole && selectedRole.coverage !== 'Full'
+  const showUpgradePrompt = selectedRole && selectedRole.coverage !== null && selectedRole.coverage !== 'FULL'
+  const recommendedPackage = selectedRole
+    ? recommendPackageForFullCoverage(selectedRole.role_code, coverageRows, PACKAGE_ORDER_B2B)
+    : null
 
   const handleRoleSelect = (roleCode: string) => {
     setSelectedRoleCode(roleCode)
@@ -152,10 +192,10 @@ export default function StartSessionModal({
               Role: {selectedRole?.role_name} · Coverage:{" "}
               <span
                 className={`px-1.5 py-0.5 rounded-full text-xs font-semibold ${
-                  getCoverageColor(selectedRole?.coverage ?? 'Screening')
+                  getCoverageColor(selectedRole?.coverage ?? null)
                 }`}
               >
-                {selectedRole?.coverage}
+                {getCoverageLabel(selectedRole?.coverage ?? null)}
               </span>
             </p>
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 text-xs text-gray-600 mb-6 text-left">
@@ -262,7 +302,7 @@ export default function StartSessionModal({
                         <span
                           className={`text-xs font-semibold px-2 py-1 rounded-full ${getCoverageColor(pkg.coverage)}`}
                         >
-                          {pkg.coverage}
+                          {getCoverageLabel(pkg.coverage)}
                         </span>
                       </button>
                     )
@@ -281,7 +321,7 @@ export default function StartSessionModal({
                   <span
                     className={`text-xs font-semibold px-2 py-1 rounded-full ${getCoverageColor(selectedRole.coverage)}`}
                   >
-                    {selectedRole.coverage}
+                    {getCoverageLabel(selectedRole.coverage)}
                   </span>
                 </div>
 
@@ -338,18 +378,24 @@ export default function StartSessionModal({
                   <AlertCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
                   <div>
                     <p className="text-sm font-semibold text-amber-800">
-                      {selectedRole.coverage === 'Screening'
+                      {selectedRole.coverage === 'SCREENING'
                         ? 'Screening-Only Coverage'
                         : 'Partial Coverage'}
                     </p>
                     <p className="text-xs text-amber-700 mt-1">
-                      {selectedRole.coverage === 'Screening'
-                        ? 'This package includes screening questions only. Upgrade to Full coverage to unlock the complete role assessment, integrity checks, and certificate issuance.'
-                        : 'Your current plan gives partial access to this role. Upgrade to access the full question set and all evaluation features.'}
+                      {selectedRole.coverage === 'SCREENING'
+                        ? 'This package provides Screening-level evaluation coverage for the selected role — identity verification and basic screening only. Upgrade to Advanced/Growth for Full MeritLense Evaluation with readiness indicator and skill breakdown.'
+                        : 'Your current plan gives Full evaluation access for this role, but role-specific add-ons (Video Introduction, Behavioral Indicators Report) are unavailable at this package tier.'}
+                      {recommendedPackage && (
+                        <> Upgrade to <span className="font-semibold">{recommendedPackage.package_name}</span> for full coverage of this role.</>
+                      )}
                     </p>
-                    <button className="mt-2 text-xs font-semibold text-amber-700 underline underline-offset-2 hover:text-amber-900">
+                    <Link
+                      href={`/${locale}/dashboard/business/payment`}
+                      className="mt-2 inline-block text-xs font-semibold text-amber-700 underline underline-offset-2 hover:text-amber-900"
+                    >
                       Upgrade Plan →
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </div>

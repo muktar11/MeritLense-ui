@@ -197,12 +197,19 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
                 </td>
                 <td className="px-4 sm:px-6 py-3">
                   {summary?.report?.pdf_url ? (
-                    <ArtifactActions
-                      url={summary.report.pdf_url}
-                      candidateName={candidate.full_name}
-                      artifactLabel="MeritLense Transcript Report"
-                      onDownload={downloadAllArtifacts}
-                    />
+                    <>
+                      <ArtifactActions
+                        url={summary.report.pdf_url}
+                        candidateName={candidate.full_name}
+                        artifactLabel="MeritLense Transcript Report"
+                        onDownload={downloadAllArtifacts}
+                      />
+                      {summary.evaluation_tier === "SCREENING" && (
+                        <p className="text-[11px] text-amber-600 mt-1 max-w-[160px]">
+                          Screening Evaluation — identity verification and basic screening only, no Readiness Indicator, Overall Score, or certificate.
+                        </p>
+                      )}
+                    </>
                   ) : (
                     <span className="text-gray-400">Not available</span>
                   )}

@@ -185,6 +185,11 @@ export interface CandidateScoreSummary {
   candidate_id: string;
   evaluation_id: string | null;
   role_code: string;
+  // 'SCREENING' means this session only covered identity verification and
+  // basic Q&A - no Readiness Indicator, Overall Score, or certificate, per
+  // the Package Architecture doc's Screening tier definition. Null when
+  // there's no linked evaluation yet.
+  evaluation_tier: 'FULL' | 'SCREENING' | 'BOTH' | null;
   overall_percentage: number;
   status: SessionEvaluationStatus;
   generated_at: string;

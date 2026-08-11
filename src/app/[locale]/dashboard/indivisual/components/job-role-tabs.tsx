@@ -1,16 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import interviewService from "@/app/api/interviews/endpoints";
-import type { InterviewConfig, PackageCoverage } from "@/app/api/interviews/types";
-import { getCoverageColor } from "@/app/api/interviews/types";
-
 interface JobRoleTabsProps {
   selectedRole: string;
   onRoleChange: (role: string) => void;
   roleCounts: Record<string, number>;
 }
 
+// These are Candidate.job_role categories (a short, 7-value broad
+// classification - see api/candidates/models.py, max_length=2), a distinct,
+// coarser taxonomy from the 21-role_code system used for interview
+// configuration/scoring (api/interviews - domestic_worker, elderly_caregiver,
+// etc.). There's no defined mapping from these broad categories to that
+// granular system, so no "coverage" badge is shown here - a previous version
+// tried to look one up via InterviewConfig.role_code using these same short
+// codes, which never matched and always rendered wrong/missing coverage.
 const JOB_ROLES = [
   { id: "HK", label: "Housekeepers", icon: "🧹" },
   { id: "EC", label: "Elder Companions", icon: "👴" },
@@ -21,27 +24,11 @@ const JOB_ROLES = [
   { id: "OT", label: "Other", icon: "📋" },
 ];
 
-function deriveRoleCoverage(
-  configs: InterviewConfig[],
-  roleCode: string
-): PackageCoverage | null {
-  const roleConfigs = configs.filter(c => c.role_code === roleCode);
-  if (roleConfigs.length === 0) return null;
-  return roleConfigs.some(c => c.evaluation_tier === 'FULL') ? 'Full' : 'Screening';
-}
-
 export function JobRoleTabs({ selectedRole, onRoleChange, roleCounts }: JobRoleTabsProps) {
-  const [configs, setConfigs] = useState<InterviewConfig[]>([]);
-
-  useEffect(() => {
-    interviewService.getConfigs().then(setConfigs).catch(() => {});
-  }, []);
-
   return (
     <div className="border-b border-gray-200 mb-6 overflow-x-auto">
       <nav className="flex gap-2 min-w-max pb-1">
         {JOB_ROLES.map(role => {
-          const coverage = deriveRoleCoverage(configs, role.id);
           const isSelected = selectedRole === role.id;
           return (
             <button
@@ -58,13 +45,6 @@ export function JobRoleTabs({ selectedRole, onRoleChange, roleCounts }: JobRoleT
               {roleCounts[role.id] > 0 && (
                 <span className="px-2 py-0.5 text-xs bg-gray-100 rounded-full">
                   {roleCounts[role.id]}
-                </span>
-              )}
-              {coverage && (
-                <span
-                  className={`px-1.5 py-0.5 text-xs font-semibold rounded-full ${getCoverageColor(coverage)}`}
-                >
-                  {coverage}
                 </span>
               )}
             </button>

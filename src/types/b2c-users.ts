@@ -76,6 +76,6 @@ export const PACKAGE_CONFIGS: Record<PackageTier, PackageDetails> = {
     tier: 'premium',
     price: 250,
     candidateLimit: 20,
-    features: ['All Advanced features', 'Cultural Adaptability', 'Emotional Resilience', 'Video Introduction']
+    features: ['All Advanced features', 'Instruction Adaptation Indicators', 'Task Adaptation Indicators', 'Video Introduction']
   }
 };
