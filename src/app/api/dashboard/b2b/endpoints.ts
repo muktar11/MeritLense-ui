@@ -8,7 +8,8 @@ import {
   LanguageDistribution,
   PerformanceMetric,
   EvaluationStatusDistribution,
-  MonthlyActivity
+  MonthlyActivity,
+  CandidateComparison
 } from './types';
 import { API_BASE_URL } from '@/lib/config/env';
 
@@ -83,6 +84,14 @@ class B2BDashboardService {
     this.ensureAuthToken();
     const response = await apiClient.get(`${this.baseURL}monthly-activity`, {
       params: { months }
+    });
+    return response.data;
+  }
+
+  async getCandidateComparison(candidateIds?: string[]): Promise<CandidateComparison[]> {
+    this.ensureAuthToken();
+    const response = await apiClient.get(`${this.baseURL}candidate-comparison`, {
+      params: candidateIds?.length ? { candidate_ids: candidateIds.join(',') } : undefined,
     });
     return response.data;
   }

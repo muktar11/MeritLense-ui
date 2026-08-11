@@ -45,9 +45,11 @@ class B2CDashboardService {
     return response.data;
   }
 
-  async getCandidateComparison(): Promise<CandidateComparison[]> {
+  async getCandidateComparison(candidateIds?: string[]): Promise<CandidateComparison[]> {
     this.ensureAuthToken();
-    const response = await apiClient.get(`${this.baseURL}candidate-comparison`);
+    const response = await apiClient.get(`${this.baseURL}candidate-comparison`, {
+      params: candidateIds?.length ? { candidate_ids: candidateIds.join(',') } : undefined,
+    });
     return response.data;
   }
 

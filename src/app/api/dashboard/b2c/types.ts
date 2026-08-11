@@ -31,7 +31,7 @@ export interface RecentEvaluation {
 }
 
 export interface CandidateComparison {
-  candidate_id: number;
+  candidate_id: string;
   candidate_name: string;
   job_role: string;
   average_score: number;

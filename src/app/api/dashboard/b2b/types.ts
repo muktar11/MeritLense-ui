@@ -73,3 +73,11 @@ export interface MonthlyActivity {
   evaluations_completed: number;
   certificates_issued: number;
 }
+
+export interface CandidateComparison {
+  candidate_id: string;
+  candidate_name: string;
+  job_role: string;
+  average_score: number;
+  scores_by_area: Record<string, number>;
+}

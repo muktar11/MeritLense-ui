@@ -1783,11 +1783,10 @@
         "selectMetrics": "Select Metrics",
         "radarChartTitle": "Performance Comparison (Radar Chart)",
         "metrics": {
-          "clearing": "Clearing",
+          "clearing": "Cleaning",
           "maintenance": "Maintenance",
           "communication": "Communication",
-          "score": "Candidate Score",
-          "experience": "Experience"
+          "score": "Candidate Score"
         },
        "subjects": {
           "experience": "Experience",

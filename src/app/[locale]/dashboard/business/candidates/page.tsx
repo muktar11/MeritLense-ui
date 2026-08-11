@@ -1,7 +1,6 @@
-// app/dashboard/individual/candidates/page.tsx (or your comparison page)
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   RadarChart,
   PolarGrid,
@@ -12,7 +11,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import DashboardHeader from "../components/dashboard-header";
-import { Download, FileText, Link2 } from "lucide-react";
+import { Download, FileText, Link2, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {CandidateModal} from "../candidates/components/candidate-modal";
 import CandidatesTable from "../candidates/components/candidates-table";
@@ -20,6 +19,18 @@ import ShareModal from "../candidates/components/share-modal";
 import candidateService from "../../../../api/candidates/endpoints";
 import { Candidate } from "../../../../api/candidates/types";
 import { useAuth } from "@/app/hooks/useAuth";
+import b2bDashboardService from "@/app/api/dashboard/b2b/endpoints";
+import type { CandidateComparison } from "@/app/api/dashboard/b2b/types";
+import { exportChartAsPdf, exportChartAsPng } from "@/lib/chart-export";
+
+// Maps a selectable metric id to the real ScoreArea display name it pulls
+// from (api/core/constants.py ScoreArea.CHOICES). "score" is handled
+// separately since it reads average_score, not a per-area breakdown.
+const METRIC_AREA_MAP: Record<string, string> = {
+  clearing: "Cleaning",
+  maintenance: "Maintenance",
+  communication: "Communication",
+};
 
 export default function CandidateComparison() {
   const t = useTranslations("dashboard.indivisual.candidates");
@@ -36,10 +47,14 @@ export default function CandidateComparison() {
   // State for comparison
   const [selectedCandidates, setSelectedCandidates] = useState<string[]>([]);
   const [selectedMetrics, setSelectedMetrics] = useState<string[]>([
-    "clearing", 
-    "maintenance", 
-    "communication"
+    "clearing",
+    "maintenance",
+    "communication",
   ]);
+  const [comparisonData, setComparisonData] = useState<CandidateComparison[]>([]);
+  const [loadingComparison, setLoadingComparison] = useState(false);
+  const [exporting, setExporting] = useState<"png" | "pdf" | null>(null);
+  const chartContainerRef = useRef<HTMLDivElement>(null);
 
   // Fetch candidates on mount
   useEffect(() => {
@@ -59,6 +74,31 @@ export default function CandidateComparison() {
       setLoading(false);
     }
   };
+
+  // Fetch real per-area scores for whichever candidates are selected.
+  useEffect(() => {
+    if (selectedCandidates.length === 0) {
+      setComparisonData([]);
+      return;
+    }
+    let active = true;
+    setLoadingComparison(true);
+    b2bDashboardService
+      .getCandidateComparison(selectedCandidates)
+      .then((data) => {
+        if (active) setComparisonData(data);
+      })
+      .catch((error) => {
+        console.error('Failed to fetch candidate comparison:', error);
+        if (active) setComparisonData([]);
+      })
+      .finally(() => {
+        if (active) setLoadingComparison(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [selectedCandidates]);
 
   // Modal handlers
   const handleAddCandidate = () => {
@@ -106,7 +146,7 @@ export default function CandidateComparison() {
   };
 
   // Get selected candidate details for sidebar
-  const selectedCandidateDetails = candidates.filter(c => 
+  const selectedCandidateDetails = candidates.filter(c =>
     selectedCandidates.includes(c.id)
   ).map(c => ({
     id: c.id,
@@ -114,27 +154,53 @@ export default function CandidateComparison() {
     role: c.job_role
   }));
 
-  // Prepare radar chart data based on selected candidates
+  // Radar chart data: one row per selected metric, one value per selected
+  // candidate, read from the real scores_by_area/average_score returned by
+  // the backend - never fabricated.
   const getPerformanceData = () => {
-    const baseData = [
-      { subject: t("subjects.experience") },
-      { subject: t("subjects.hardSkill") },
-      { subject: t("subjects.softSkill") },
-    ];
+    const rows: Array<Record<string, string | number | null>> = selectedMetrics.map((metricId) => ({
+      subject: t(`metrics.${metricId}` as Parameters<typeof t>[0]),
+      __metricId: metricId,
+    }));
 
-    // Add data for each selected candidate
-    selectedCandidateDetails.forEach((candidate, index) => {
-      const colors = ['#6366F1', '#10B981', '#F59E0B', '#EF4444'];
-      baseData.forEach((item, i) => {
-        // Generate random scores for demo (replace with actual data from your backend)
-        (item as any)[candidate.name] = Math.floor(Math.random() * 30) + 70;
+    comparisonData.forEach((entry) => {
+      const candidate = selectedCandidateDetails.find((c) => c.id === entry.candidate_id);
+      if (!candidate) return;
+      rows.forEach((row) => {
+        const metricId = row.__metricId as string;
+        const value = metricId === "score" ? entry.average_score : entry.scores_by_area[METRIC_AREA_MAP[metricId]];
+        row[candidate.name] = value ?? 0;
       });
     });
 
-    return baseData;
+    return rows;
   };
 
   const performanceData = getPerformanceData();
+
+  const handleExportPng = async () => {
+    if (!chartContainerRef.current) return;
+    setExporting("png");
+    try {
+      await exportChartAsPng(chartContainerRef.current, "candidate-comparison.png");
+    } catch (error) {
+      console.error("Failed to export chart as PNG:", error);
+    } finally {
+      setExporting(null);
+    }
+  };
+
+  const handleExportPdf = async () => {
+    if (!chartContainerRef.current) return;
+    setExporting("pdf");
+    try {
+      await exportChartAsPdf(chartContainerRef.current, "candidate-comparison.pdf", t("radarChartTitle"));
+    } catch (error) {
+      console.error("Failed to export chart as PDF:", error);
+    } finally {
+      setExporting(null);
+    }
+  };
 
   if (authLoading) {
     return (
@@ -223,7 +289,6 @@ export default function CandidateComparison() {
                   { name: t("metrics.maintenance"), id: "maintenance" },
                   { name: t("metrics.communication"), id: "communication" },
                   { name: t("metrics.score"), id: "score" },
-                  { name: t("metrics.experience"), id: "experience" },
                 ].map((metric) => (
                   <label
                     key={metric.id}
@@ -245,46 +310,63 @@ export default function CandidateComparison() {
           {/* Main Content */}
           <div className="flex-1">
             <div className="bg-white rounded-lg p-4 sm:p-8 shadow-sm border border-gray-200">
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6">
-                {t("radarChartTitle")}
-              </h2>
+              <div className="flex items-center justify-between mb-4 sm:mb-6">
+                <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
+                  {t("radarChartTitle")}
+                </h2>
+                {loadingComparison && <Loader2 className="w-4 h-4 animate-spin text-gray-400" />}
+              </div>
 
               {/* Radar Chart */}
-              <div className="w-full h-64 sm:h-96 mb-6">
-                <ResponsiveContainer width="100%" height="100%">
-                  <RadarChart
-                    data={performanceData}
-                    margin={{ top: 20, right: 20, left: 20, bottom: 20 }}
-                  >
-                    <PolarGrid stroke="#E5E7EB" />
-                    <PolarAngleAxis dataKey="subject" stroke="#6B7280" />
-                    <PolarRadiusAxis stroke="#D1D5DB" />
-                    {selectedCandidateDetails.map((candidate, index) => {
-                      const colors = ['#6366F1', '#10B981', '#F59E0B', '#EF4444'];
-                      return (
-                        <Radar
-                          key={candidate.id}
-                          name={candidate.name}
-                          dataKey={candidate.name}
-                          stroke={colors[index % colors.length]}
-                          fill={colors[index % colors.length]}
-                          fillOpacity={0.25}
-                        />
-                      );
-                    })}
-                    <Legend />
-                  </RadarChart>
-                </ResponsiveContainer>
+              <div ref={chartContainerRef} className="w-full h-64 sm:h-96 mb-6 bg-white">
+                {selectedCandidateDetails.length === 0 ? (
+                  <div className="w-full h-full flex items-center justify-center text-sm text-gray-400">
+                    {t("selectCandidates")}
+                  </div>
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RadarChart
+                      data={performanceData}
+                      margin={{ top: 20, right: 20, left: 20, bottom: 20 }}
+                    >
+                      <PolarGrid stroke="#E5E7EB" />
+                      <PolarAngleAxis dataKey="subject" stroke="#6B7280" />
+                      <PolarRadiusAxis stroke="#D1D5DB" />
+                      {selectedCandidateDetails.map((candidate, index) => {
+                        const colors = ['#6366F1', '#10B981', '#F59E0B', '#EF4444'];
+                        return (
+                          <Radar
+                            key={candidate.id}
+                            name={candidate.name}
+                            dataKey={candidate.name}
+                            stroke={colors[index % colors.length]}
+                            fill={colors[index % colors.length]}
+                            fillOpacity={0.25}
+                          />
+                        );
+                      })}
+                      <Legend />
+                    </RadarChart>
+                  </ResponsiveContainer>
+                )}
               </div>
 
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row flex-wrap justify-center sm:justify-start gap-3">
-                <button className="flex items-center gap-2 px-4 py-2 sm:px-6 sm:py-3 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition font-medium text-sm sm:text-base">
-                  <Download size={16} />
+                <button
+                  onClick={handleExportPng}
+                  disabled={selectedCandidateDetails.length === 0 || exporting !== null}
+                  className="flex items-center gap-2 px-4 py-2 sm:px-6 sm:py-3 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition font-medium text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {exporting === "png" ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
                   {t("exportPNG")}
                 </button>
-                <button className="flex items-center gap-2 px-4 py-2 sm:px-6 sm:py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition font-medium text-sm sm:text-base">
-                  <FileText size={16} />
+                <button
+                  onClick={handleExportPdf}
+                  disabled={selectedCandidateDetails.length === 0 || exporting !== null}
+                  className="flex items-center gap-2 px-4 py-2 sm:px-6 sm:py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition font-medium text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {exporting === "pdf" ? <Loader2 size={16} className="animate-spin" /> : <FileText size={16} />}
                   {t("exportPDF")}
                 </button>
                 <button className="flex items-center gap-2 px-4 py-2 sm:px-6 sm:py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition font-medium text-sm sm:text-base">
