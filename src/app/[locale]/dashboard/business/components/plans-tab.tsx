@@ -191,7 +191,7 @@ export function PlansTab() {
               plans.map((plan) => (
                 <div
                   key={plan.id}
-                  className={`relative rounded-2xl border-2 transition-all p-6 sm:p-8 ${
+                  className={`relative rounded-2xl border-2 transition-all p-6 sm:p-8 overflow-hidden ${
                     selectedPlan?.id === plan.id
                       ? "border-purple-500 bg-white shadow-xl scale-105"
                       : "border-gray-200 bg-white hover:border-purple-200 hover:shadow-lg"
@@ -201,11 +201,11 @@ export function PlansTab() {
                     {plan.name}
                   </h3>
 
-                  <div className="mb-4 sm:mb-6">
+                  <div className="mb-4 sm:mb-6 flex flex-wrap items-baseline gap-x-1">
                     <span className="text-2xl sm:text-4xl font-bold text-gray-900">
                       {paymentService.formatPrice(Number(plan.unit_amount), plan.currency)}
                     </span>
-                    <span className="text-gray-500 text-xs sm:text-sm ml-1 sm:ml-2">
+                    <span className="text-gray-500 text-xs sm:text-sm">
                       /{plan.interval?.toLowerCase()}
                     </span>
                   </div>
