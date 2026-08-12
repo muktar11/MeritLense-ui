@@ -23,14 +23,15 @@ import b2bDashboardService from "@/app/api/dashboard/b2b/endpoints";
 import type { CandidateComparison } from "@/app/api/dashboard/b2b/types";
 import { exportChartAsPdf, exportChartAsPng } from "@/lib/chart-export";
 
-// Maps a selectable metric id to the real ScoreArea display name it pulls
-// from (api/core/constants.py ScoreArea.CHOICES). "score" is handled
-// separately since it reads average_score, not a per-area breakdown.
-const METRIC_AREA_MAP: Record<string, string> = {
-  clearing: "Cleaning",
-  maintenance: "Maintenance",
-  communication: "Communication",
-};
+// "score" is a fixed pseudo-metric that reads average_score. Every other
+// selectable metric is a real competency label, computed at runtime from
+// whatever scores_by_area keys the backend actually returns for the
+// selected candidates (real per-competency names like "Communication
+// Ability" or "Patient Safety Awareness" - see
+// EvaluationReportService._friendly_competency_name on the backend) -
+// there is no fixed universal metric set to hardcode, since competencies
+// are role-specific.
+const SCORE_METRIC_ID = "score";
 
 export default function CandidateComparison() {
   const t = useTranslations("dashboard.indivisual.candidates");
@@ -46,11 +47,7 @@ export default function CandidateComparison() {
 
   // State for comparison
   const [selectedCandidates, setSelectedCandidates] = useState<string[]>([]);
-  const [selectedMetrics, setSelectedMetrics] = useState<string[]>([
-    "clearing",
-    "maintenance",
-    "communication",
-  ]);
+  const [selectedMetrics, setSelectedMetrics] = useState<string[]>([SCORE_METRIC_ID]);
   const [comparisonData, setComparisonData] = useState<CandidateComparison[]>([]);
   const [loadingComparison, setLoadingComparison] = useState(false);
   const [exporting, setExporting] = useState<"png" | "pdf" | null>(null);
@@ -86,7 +83,14 @@ export default function CandidateComparison() {
     b2bDashboardService
       .getCandidateComparison(selectedCandidates)
       .then((data) => {
-        if (active) setComparisonData(data);
+        if (!active) return;
+        setComparisonData(data);
+        // Default to plotting every real competency area that came back,
+        // plus the overall score - the set of areas is only known once we
+        // have real data, since competencies are role-specific rather than
+        // a fixed universal list.
+        const areas = Array.from(new Set(data.flatMap((entry) => Object.keys(entry.scores_by_area))));
+        setSelectedMetrics([SCORE_METRIC_ID, ...areas]);
       })
       .catch((error) => {
         console.error('Failed to fetch candidate comparison:', error);
@@ -99,6 +103,12 @@ export default function CandidateComparison() {
       active = false;
     };
   }, [selectedCandidates]);
+
+  // Every area currently present across the selected candidates' real
+  // scores - the actual set of metric checkboxes to offer.
+  const availableAreas = Array.from(
+    new Set(comparisonData.flatMap((entry) => Object.keys(entry.scores_by_area)))
+  );
 
   // Modal handlers
   const handleAddCandidate = () => {
@@ -156,10 +166,13 @@ export default function CandidateComparison() {
 
   // Radar chart data: one row per selected metric, one value per selected
   // candidate, read from the real scores_by_area/average_score returned by
-  // the backend - never fabricated.
+  // the backend - never fabricated. Metric ids are either the fixed
+  // SCORE_METRIC_ID or a real competency label straight from the API
+  // (already human-readable English, not a translation key - competency
+  // names are computed server-side, not static UI chrome).
   const getPerformanceData = () => {
     const rows: Array<Record<string, string | number | null>> = selectedMetrics.map((metricId) => ({
-      subject: t(`metrics.${metricId}` as Parameters<typeof t>[0]),
+      subject: metricId === SCORE_METRIC_ID ? t("metrics.score") : metricId,
       __metricId: metricId,
     }));
 
@@ -168,7 +181,7 @@ export default function CandidateComparison() {
       if (!candidate) return;
       rows.forEach((row) => {
         const metricId = row.__metricId as string;
-        const value = metricId === "score" ? entry.average_score : entry.scores_by_area[METRIC_AREA_MAP[metricId]];
+        const value = metricId === SCORE_METRIC_ID ? entry.average_score : entry.scores_by_area[metricId];
         row[candidate.name] = value ?? 0;
       });
     });
@@ -284,12 +297,13 @@ export default function CandidateComparison() {
                 {t("selectMetrics")}
               </h2>
               <div className="flex flex-col gap-2">
-                {[
-                  { name: t("metrics.clearing"), id: "clearing" },
-                  { name: t("metrics.maintenance"), id: "maintenance" },
-                  { name: t("metrics.communication"), id: "communication" },
-                  { name: t("metrics.score"), id: "score" },
-                ].map((metric) => (
+                {selectedCandidates.length === 0 ? (
+                  <p className="text-xs text-gray-400">{t("selectCandidates")}</p>
+                ) : (
+                  [
+                    { name: t("metrics.score"), id: SCORE_METRIC_ID },
+                    ...availableAreas.map((area) => ({ name: area, id: area })),
+                  ].map((metric) => (
                   <label
                     key={metric.id}
                     className="flex items-center gap-2 sm:gap-3 cursor-pointer text-sm sm:text-base"
@@ -302,7 +316,8 @@ export default function CandidateComparison() {
                     />
                     <span className="text-gray-700">{metric.name}</span>
                   </label>
-                ))}
+                  ))
+                )}
               </div>
             </div>
           </div>
