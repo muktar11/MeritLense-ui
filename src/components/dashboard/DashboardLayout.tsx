@@ -159,11 +159,6 @@ function SidebarContent({
             align={collapsed ? "center" : "end"}
             className="w-56"
           >
-            <DropdownMenuItem>
-              <User className="mr-2 h-4 w-4" />
-              <span>{t("profile")}</span>
-            </DropdownMenuItem>
-
             <DropdownMenuItem onClick={logOutHandler}>
               <LogOut className="mr-2 h-4 w-4" />
               <span>{t("logout")}</span>
