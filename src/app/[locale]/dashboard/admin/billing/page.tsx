@@ -22,7 +22,13 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import {
   Download,
   Search,
   Loader2,
@@ -52,6 +58,11 @@ export default function BillingAndSubscriptions() {
   const [currentPage, setCurrentPage] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
   const pageSize = 10
+
+  // Subscription detail view - reuses the row's already-fetched data
+  // (list responses already include price_details/status/etc. in full),
+  // no extra API call needed just to view it.
+  const [viewingSubscription, setViewingSubscription] = useState<AdminSubscription | null>(null)
 
   useEffect(() => {
     fetchSubscriptions()
@@ -359,7 +370,11 @@ export default function BillingAndSubscriptions() {
                             </Badge>
                           </TableCell>
                           <TableCell>
-                            <Button variant="ghost" size="sm">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setViewingSubscription(sub)}
+                            >
                               <Eye className="w-4 h-4" />
                             </Button>
                           </TableCell>
@@ -403,6 +418,79 @@ export default function BillingAndSubscriptions() {
           )}
         </Card>
       </div>
+
+      <Dialog open={viewingSubscription !== null} onOpenChange={(open) => !open && setViewingSubscription(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Subscription Details</DialogTitle>
+          </DialogHeader>
+          {viewingSubscription && (
+            <div className="space-y-4 text-sm">
+              <div>
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Customer</p>
+                <p className="font-medium text-gray-900">{viewingSubscription.user_name}</p>
+                <p className="text-gray-500">{viewingSubscription.user_email}</p>
+                {viewingSubscription.company && (
+                  <p className="text-xs text-gray-400">Company ID: {viewingSubscription.company}</p>
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Plan</p>
+                  <p className="font-medium">{viewingSubscription.price_details?.name || 'Unknown'}</p>
+                  <p className="text-xs text-gray-500">
+                    {viewingSubscription.price_details?.billing_type === 'ONE_TIME'
+                      ? 'one-time'
+                      : (viewingSubscription.price_details?.interval?.toLowerCase() || 'monthly')}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Status</p>
+                  <Badge className={getStatusColor(viewingSubscription.status)}>
+                    {viewingSubscription.status}
+                  </Badge>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Amount</p>
+                  <p className="font-medium">
+                    {formatCurrency(
+                      viewingSubscription.price_details?.unit_amount || '0',
+                      viewingSubscription.price_details?.currency
+                    )}
+                    {viewingSubscription.quantity > 1 && ` x${viewingSubscription.quantity}`}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Current Period</p>
+                  <p>
+                    {viewingSubscription.current_period_start ? formatDate(viewingSubscription.current_period_start) : 'N/A'}
+                    {' - '}
+                    {viewingSubscription.current_period_end ? formatDate(viewingSubscription.current_period_end) : 'N/A'}
+                  </p>
+                </div>
+                {viewingSubscription.trial_end && (
+                  <div>
+                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Trial Ends</p>
+                    <p>{formatDate(viewingSubscription.trial_end)}</p>
+                  </div>
+                )}
+                {viewingSubscription.canceled_at && (
+                  <div>
+                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Canceled At</p>
+                    <p>{formatDate(viewingSubscription.canceled_at)}</p>
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Stripe Subscription ID</p>
+                <p className="font-mono text-xs text-gray-600 break-all">{viewingSubscription.stripe_subscription_id}</p>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
