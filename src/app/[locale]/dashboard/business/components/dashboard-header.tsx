@@ -37,7 +37,7 @@ export default function DashboardHeader() {
 
           {/* Evaluations */}
           <Link
-            href={`/${locale}/business/candidate-evaluation`}
+            href={`/${locale}/dashboard/business/candidate-evaluation`}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
           >
             <BarChart3 className="w-5 h-5 text-gray-600" />
@@ -45,7 +45,7 @@ export default function DashboardHeader() {
 
           {/* Profile / Settings */}
           <Link
-            href={`/${locale}/business/company-profile`}
+            href={`/${locale}/dashboard/business/company-profile`}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
           >
             <Settings className="w-5 h-5 text-gray-600" />
@@ -53,7 +53,7 @@ export default function DashboardHeader() {
 
           {/* Candidates */}
           <Link
-            href={`/${locale}/business/score-management`}
+            href={`/${locale}/dashboard/business/score-management`}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
           >
             <User className="w-5 h-5 text-gray-600" />
