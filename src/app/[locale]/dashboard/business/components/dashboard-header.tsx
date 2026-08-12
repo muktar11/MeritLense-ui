@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, User, Settings, BarChart3 } from "lucide-react";
+import { Bell, User, Settings } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
 import { useLocale } from "next-intl";
@@ -34,14 +34,6 @@ export default function DashboardHeader() {
           {showNotifications && (
             <NotificationsPanel onClose={() => setShowNotifications(false)} />
           )}
-
-          {/* Evaluations */}
-          <Link
-            href={`/${locale}/dashboard/business/candidate-evaluation`}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            <BarChart3 className="w-5 h-5 text-gray-600" />
-          </Link>
 
           {/* Profile / Settings */}
           <Link
