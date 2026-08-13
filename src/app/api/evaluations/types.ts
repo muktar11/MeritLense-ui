@@ -58,6 +58,7 @@ export interface Evaluation {
   meeting_link?: string;
   meeting_id?: string;
   meeting_password?: string;
+  session_id?: string;
   location?: string;
   
   created_by: string;
