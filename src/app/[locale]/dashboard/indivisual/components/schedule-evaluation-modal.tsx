@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { X, Loader2, Calendar, MapPin, Video, FileText, AlertCircle } from "lucide-react"
 import { EVALUATION_TYPES, EVALUATION_STATUS, type Evaluation, type CreateEvaluationData } from "@/app/api/evaluations/types"
 import { format } from "date-fns"
@@ -46,6 +46,10 @@ export default function EvaluationModal({
   errorMessage
 }: EvaluationModalProps) {
   const t = useTranslations("dashboard.indivisual.evaluations")
+  const locale = useLocale()
+  const evaluatorMeetingLink = evaluation?.session_id
+    ? `/${locale}/dashboard/indivisual/live-call?sessionId=${evaluation.session_id}`
+    : null
   
   const [formData, setFormData] = useState<CreateEvaluationData>({
     candidate: "",
@@ -287,14 +291,52 @@ export default function EvaluationModal({
 
             <div className="border-t pt-4">
               <h3 className="font-medium text-gray-900 mb-3">
-                Meeting Details
+                {evaluation.evaluation_type === 'INTERVIEW' ? 'Interview Access' : 'Meeting Details'}
                 {evaluation.evaluation_type === 'INTERVIEW' && (
                   <span className="ml-2 px-2 py-0.5 rounded-full text-xs bg-indigo-100 text-indigo-700 align-middle">
-                    Auto-generated AI interview link
+                    AI Interview Session
                   </span>
                 )}
               </h3>
-              {evaluation.location ? (
+              {evaluation.evaluation_type === 'INTERVIEW' ? (
+                <div className="space-y-3">
+                  {evaluatorMeetingLink && (
+                    <div className="flex items-start gap-2">
+                      <Video className="w-4 h-4 text-gray-400 mt-0.5" />
+                      <div>
+                        <p className="text-sm text-gray-900">Interviewer Access</p>
+                        <a href={evaluatorMeetingLink} className="text-sm text-purple-600 hover:text-purple-700">
+                          Join Interview
+                        </a>
+                        <p className="text-xs text-gray-500">For interviewer use only.</p>
+                      </div>
+                    </div>
+                  )}
+                  {evaluation.meeting_link && (
+                    <div className="flex items-start gap-2">
+                      <Video className="w-4 h-4 text-gray-400 mt-0.5" />
+                      <div>
+                        <p className="text-sm text-gray-900">Candidate Access Link</p>
+                        <a href={evaluation.meeting_link} target="_blank" rel="noopener noreferrer"
+                           className="text-sm text-purple-600 hover:text-purple-700">
+                          {evaluation.meeting_link}
+                        </a>
+                        <p className="text-xs text-gray-500">For candidate use only.</p>
+                      </div>
+                    </div>
+                  )}
+                  {evaluation.meeting_id && (
+                    <div>
+                      <p className="text-xs text-gray-500">Meeting ID: {evaluation.meeting_id}</p>
+                    </div>
+                  )}
+                  {evaluation.meeting_password && (
+                    <div>
+                      <p className="text-xs text-gray-500">Password: {evaluation.meeting_password}</p>
+                    </div>
+                  )}
+                </div>
+              ) : evaluation.location ? (
                 <div className="flex items-start gap-2">
                   <MapPin className="w-4 h-4 text-gray-400 mt-0.5" />
                   <div>
