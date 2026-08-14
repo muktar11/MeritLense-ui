@@ -47,6 +47,7 @@ export interface SessionQuestion {
   id: string;
   question_text: string;
   domain: string;
+  skill_tag?: string;
   skill: string;
   difficulty: string;
   question_order: number;
