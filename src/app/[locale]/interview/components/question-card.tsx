@@ -26,6 +26,7 @@ export function QuestionCard({
   onReadAloudLanguageChange,
 }: QuestionCardProps) {
   const progressPercent = totalQuestions > 0 ? Math.round((questionNumber / totalQuestions) * 100) : 0;
+  const skillTag = question.skill_tag || question.skill;
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
@@ -71,13 +72,17 @@ export function QuestionCard({
         </div>
       </div>
 
-      {(question.domain || question.skill) && (
-        <div className="flex gap-2 mt-3">
+      {(question.domain || skillTag) && (
+        <div className="flex flex-wrap gap-2 mt-3">
           {question.domain && (
-            <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">{question.domain}</span>
+            <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+              Domain: {question.domain}
+            </span>
           )}
-          {question.skill && (
-            <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">{question.skill}</span>
+          {skillTag && (
+            <span className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-full">
+              Skill Tag: {skillTag}
+            </span>
           )}
         </div>
       )}
