@@ -236,6 +236,26 @@ export interface CompetencyEvaluationResult {
   rule_set_version: string;
 }
 
+export interface EvaluatorRating {
+  id: string;
+  safety_awareness: number;
+  behavior_integrity: number;
+  psych_professional: number;
+  task_execution: number;
+  rated_by: string | null;
+  rated_by_name: string | null;
+  rated_at: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface EvaluatorRatingPayload {
+  safety_awareness: number;
+  behavior_integrity: number;
+  psych_professional: number;
+  task_execution: number;
+}
+
 export type ScoringMethod =
   | 'ALL_OR_NOTHING'
   | 'WEIGHTED_INDICATOR_MATCH'

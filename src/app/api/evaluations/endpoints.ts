@@ -12,7 +12,9 @@ import {
   CompetencyEvaluationResult,
   ScoringRuleSet,
   ScoringRuleSetPayload,
-  CandidateScoreSummary
+  CandidateScoreSummary,
+  EvaluatorRating,
+  EvaluatorRatingPayload
 } from './types';
 import { API_BASE_URL } from '@/lib/config/env';
 
@@ -137,6 +139,24 @@ class EvaluationService {
   async getCompetencyResults(evaluationId: string): Promise<CompetencyEvaluationResult[]> {
     this.ensureAuthToken();
     const response = await authClient.get(`${this.baseURL}/${evaluationId}/competency-results`);
+    return response.data;
+  }
+
+  async getEvaluatorRating(evaluationId: string): Promise<EvaluatorRating | null> {
+    this.ensureAuthToken();
+    try {
+      const response = await authClient.get(`${this.baseURL}/${evaluationId}/evaluator-rating`);
+      return response.data;
+    } catch {
+      // Same contract as getScoringSummary above - no reliable status code
+      // to branch on, and the only failure mode is "not rated yet".
+      return null;
+    }
+  }
+
+  async submitEvaluatorRating(evaluationId: string, data: EvaluatorRatingPayload): Promise<EvaluatorRating> {
+    this.ensureAuthToken();
+    const response = await authClient.post(`${this.baseURL}/${evaluationId}/evaluator-rating`, data);
     return response.data;
   }
 
