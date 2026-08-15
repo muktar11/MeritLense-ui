@@ -14,20 +14,21 @@ const staggerContainer = {
 };
 const fadeInUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } };
 
-export const Pricing = forwardRef<HTMLElement, {}>(function Pricing(_, pricingRef) {
+export const Pricing = forwardRef<HTMLElement>(function Pricing(_, pricingRef) {
   const t = useTranslations("landing-page.pricing");
 
   // Intersection observer inside the component
   const { ref: inViewRef, inView } = useInView({ triggerOnce: true, threshold: 0.1 });
 
   // Combine forwarded ref with inViewRef
-  const setRefs = (node: HTMLElement) => {
+  const setRefs = (node: HTMLElement | null) => {
     inViewRef(node);
-    if (pricingRef) (pricingRef as any).current = node;
+    if (typeof pricingRef === "function") pricingRef(node);
+    else if (pricingRef) pricingRef.current = node;
   };
 
   const pricesB2C = ["€50", "€80", "€150", "€250"];
-  const pricesB2B = ["€500", "€1,500", "€3,500", "Custom"];
+  const pricesB2B = ["Pilot pricing", "€2,000", "€3,500", "Custom"];
   const popularIndexB2C = 1;
   const popularIndexB2B = 1;
 
@@ -129,7 +130,9 @@ export const Pricing = forwardRef<HTMLElement, {}>(function Pricing(_, pricingRe
                     <h3 className="text-2xl font-bold mb-2">{t(`organizations_agencies.plans.${index}.name`)}</h3>
                     <div className="flex items-baseline gap-1">
                       <span className="text-4xl font-bold text-secondary-900">{pricesB2B[index]}</span>
-                      <span className="text-secondary-900">{t("organizations_agencies.time_unit")}</span>
+                      {index > 0 && index < 3 && (
+                        <span className="text-secondary-900">{t("organizations_agencies.time_unit")}</span>
+                      )}
                     </div>
                     <div className="text-foreground-muted mt-1">{t(`organizations_agencies.plans.${index}.candidates_count`)}</div>
                   </div>

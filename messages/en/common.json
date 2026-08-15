@@ -13,11 +13,11 @@
       }
     },
     "hero": {
-      "badge": "AI-Powered Evaluation Platform",
-      "title_part1": "AI-Powered",
-      "title_part2_ai_power": "Workforce Assessment Platform",
-      "description": "Evaluate candidates objectively. Certify readiness. Support smarter hiring decisions.",
-      "cta_start_evaluating": "Start Evaluating Smarter",
+      "badge": "Workforce Readiness Assessment Platform",
+      "title_part1": "Workforce Readiness",
+      "title_part2_ai_power": "Assessment Platform",
+      "description": "Assess workforce readiness objectively. Generate structured readiness reports and support better employer decisions.",
+      "cta_start_evaluating": "Get Started",
       "cta_explore_platform": "Explore the Platform",
       "image_alt": "MeritLense Dashboard Preview"
     },
@@ -29,13 +29,13 @@
     },
     "features": {
       "section_title": "Why Choose MeritLense?",
-      "section_subtitle": "Transform your hiring experience into a smarter, faster, data-driven process",
+      "section_subtitle": "Measure workforce readiness against defined role requirements and support informed employer decisions.",
       "smart_evaluations": {
-        "title": "Smart evaluations tailored to your needs",
-        "description": "Create professional assessments once and apply them across multiple roles with ease. Add video intros, real-world simulations, and AI-powered behavioral analysis — for a clear, comprehensive view of every candidate.",
-        "list_item1": "Reusable evaluation templates",
-        "list_item2": "AI-assisted behavioral and communication insights",
-        "list_item3": "Custom skill assessments",
+        "title": "Role-based workforce readiness assessments",
+        "description": "Assess candidates against defined role requirements. Assessment evidence is processed through deterministic scoring and Rule Engine logic to produce a consistent readiness output.",
+        "list_item1": "Defined requirements for each role",
+        "list_item2": "Rule Engine-determined readiness output",
+        "list_item3": "Structured decision support for employers",
         "image_alt": "Smart Evaluations Dashboard"
       },
       "predictive_reporting": {
@@ -57,7 +57,7 @@
       "additional_features": [
         {
           "title": "Role-Specific Assessment Framework",
-          "description": "21 role packages across 11 workforce sectors — structured competency evaluation per job title with multilingual voice assessment and AI-powered scoring."
+          "description": "21 role packages across 11 workforce sectors, with structured competency evaluation against defined requirements for each job role."
         },
         {
           "title": "Legal Neutrality",
@@ -65,19 +65,19 @@
         },
         {
           "title": "Multilingual Support",
-          "description": "Run your system globally with Arabic and English interfaces, plus ready-to-use international certificates."
+          "description": "Arabic and English interfaces support multilingual workforce readiness assessments and reports."
         },
         {
-          "title": "Lightning-Fast Reporting",
-          "description": "Generate comprehensive candidate reports in minutes — speeding up hiring without sacrificing accuracy."
+          "title": "Structured Workforce Readiness Reports",
+          "description": "Reports are generated from assessment evidence and Rule Engine logic to provide structured decision support."
         },
         {
           "title": "Enterprise-Grade Security",
-          "description": "Military-grade encryption, full GDPR compliance, and detailed audit logs for total peace of mind."
+          "description": "Enterprise-grade security, role-based access controls, encryption, and audit trails."
         },
         {
-          "title": "Trusted Certifications",
-          "description": "QR-verifiable workforce assessment certificates — issued per role, multilingual, instantly scannable."
+          "title": "Workforce Readiness Certificates",
+          "description": "QR-verifiable certificates issued according to assessment outcome and certificate eligibility. Ready and Partially Ready outcomes may be eligible, subject to completion and verification requirements; other outcomes receive an assessment report only. Certificates are assessment evidence, not a professional licence, employment authorization, or guarantee of qualification or employment."
         },
         {
           "title": "Seamless Team Collaboration",
@@ -86,8 +86,8 @@
       ]
     },
     "how_it_works": {
-      "section_title": "Start Hiring Top Talent with Ease",
-      "section_subtitle": "Just three simple steps to make the right choice",
+      "section_title": "Make Better Workforce Readiness Decisions",
+      "section_subtitle": "Three simple steps that support informed employer decisions.",
       "steps": [
         {
           "title": "Create Your Account",
@@ -98,15 +98,15 @@
           "description": "Upload their data and choose the right evaluation for each role or profile."
         },
         {
-          "title": "Get Smart Insights",
-          "description": "Instant AI-powered reports to help you make confident, data-driven hiring decisions."
+          "title": "Receive the Workforce Readiness Report",
+          "description": "Receive a structured report based on the assessment and Rule Engine output. Employers remain the final decision makers."
         }
       ],
       "image_alt": "Platform Workflow"
     },
     "pricing": {
       "section_title": "Flexible, Transparent Pricing for Every Team",
-      "section_subtitle": "Choose the plan that fits your goals and elevate your hiring process with ease upgrade anytime.",
+      "section_subtitle": "Choose the assessment capacity that fits your workforce readiness needs. Contact us to confirm current package availability.",
       "popular_badge": "Most Popular",
       "cta_get_started": "Get Started",
       "cta_contact_sales": "Contact Sales",
@@ -116,104 +116,102 @@
         "plans": [
           {
             "name": "Basic",
-            "candidates_count": "3 candidates",
+            "candidates_count": "Screening • 5–8 questions • 15 minutes",
             "features": [
-              "Identity Verification",
-              "Medical Check",
-              "Basic Q&A",
-              "PDF Report"
+              "Role-based Assessment",
+              "Basic Assessment Report",
+              "Screening-level Coverage",
+              "No Readiness Indicator or Certificate"
             ]
           },
           {
             "name": "Essential",
-            "candidates_count": "5 candidates",
+            "candidates_count": "Screening • 8–10 questions • 20 minutes",
             "features": [
-              "Everything in Basic",
-              "Education & Employment",
-              "Advanced Q&A",
-              "Behavioral Score"
+              "Role-based Assessment",
+              "Basic Assessment Report",
+              "Screening-level Coverage",
+              "No Readiness Indicator or Certificate"
             ]
           },
           {
             "name": "Advanced",
-            "candidates_count": "10 candidates",
+            "candidates_count": "Full • 10–12 questions • 30 minutes",
             "features": [
-              "Everything in Essential",
-              "Skills Assessment",
-              "Video Interview",
-              "Reference Checks"
+              "Role-based Assessment",
+              "Structured Readiness Report",
+              "Task Observation",
+              "Certificate When Eligible"
             ]
           },
           {
             "name": "Premium",
-            "candidates_count": "20 candidates",
+            "candidates_count": "Full • 12–15 questions • 30 minutes",
             "features": [
-              "Everything in Pro",
-              "Deep Background",
-              "Personality Profile",
-              "Custom Report"
+              "Behavioral Indicators",
+              "Video Introduction",
+              "Structured Readiness Report",
+              "Certificate When Eligible"
             ]
           }
         ]
       },
       "organizations_agencies": {
-        "title": "For Recruitment Entity",
+        "title": "For Recruitment Agencies & Employers",
         "time_unit": "/month",
         "plans": [
           {
             "name": "Starter",
-            "candidates_count": "50 evaluations/mo",
+            "candidates_count": "Screening • 5–8 questions • 15 minutes",
             "features": [
-              "Dashboard",
-              "Basic Analytics",
-              "Email Support",
-              "PDF Reports"
+              "Role-based Assessment",
+              "Basic Assessment Report",
+              "Screening-level Coverage",
+              "No Readiness Indicator or Certificate"
             ]
           },
           {
             "name": "Growth",
-            "candidates_count": "200 evaluations/mo",
+            "candidates_count": "Full • 10–12 questions • 25 minutes",
             "features": [
-              "Everything in Starter",
-              "Team Access",
-              "Analytics",
-              "5% Discount",
-              "Priority Support"
+              "Structured Readiness Report",
+              "Task Observation",
+              "Analytics and Video Introduction",
+              "Certificate When Eligible"
             ]
           },
           {
             "name": "Business",
-            "candidates_count": "500 evaluations/mo",
+            "candidates_count": "Full • 12–15 questions • 30 minutes",
             "features": [
-              "Everything in Growth",
-              "Benchmarking",
-              "10% Discount",
-              "Audit Mode",
-              "Custom Branding"
+              "Structured Readiness Reports",
+              "Task Observation",
+              "Behavioral Indicators and Analytics",
+              "Certificate When Eligible"
             ]
           },
           {
             "name": "Enterprise",
-            "candidates_count": "Unlimited",
+            "candidates_count": "Full • 12–15 questions • 30 minutes",
             "features": [
-              "Everything in Business",
+              "Structured Readiness Reports",
+              "Behavioral Indicators and Analytics",
               "API Access",
-              "24/7 Support",
-              "Custom AI"
+              "Certificate When Eligible"
             ]
           }
         ]
       }
     },
     "cta": {
-      "title": "Smart Hiring Starts Here",
-      "subtitle": "Ready to make smarter hiring decisions? Join thousands of business owners who rely on AI-powered insights to select top talent and build high-performing teams.",
-      "button_trial": "Start Free Trial",
+      "title": "Better Workforce Readiness Decisions Start Here",
+      "subtitle": "Measure readiness against defined role requirements, receive a structured report, and keep the final employment decision with your organization.",
+      "button_trial": "Get Started",
       "button_pricing": "View Pricing"
     },
     "footer": {
       "logo_alt": "MeritLense Logo",
-      "mission_statement": "MeritLense equips employers, agencies, and HR teams with AI-powered tools to evaluate candidates objectively — based on data, not assumptions.",
+      "mission_statement": "MeritLense is a pre-employment workforce readiness assessment and decision-support platform. The Rule Engine determines readiness outputs, while employers remain the final decision makers.",
       "links_section_title": "Quick Links",
       "link_features": "Features",
       "link_how_it_works": "How It Works",
@@ -2141,5 +2139,3 @@
     "password_requirements": "Password must contain at least one uppercase letter, one lowercase letter, and one number"
   }
 }
-
-
