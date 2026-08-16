@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Loader2, Mic, PhoneOff, AlertTriangle, Video, UserCheck, UserX } from "lucide-react";
 import { useLiveCall } from "./useLiveCall";
 import { LANGUAGES } from "@/lib/languages";
+import { EvaluatorRatingCard } from "@/components/evaluations/EvaluatorRatingCard";
 
 interface LiveCallRoomProps {
   sessionId: string;
@@ -29,6 +30,7 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded }: LiveCallRoo
     endCall,
     localVideoRef,
     remoteVideoRef,
+    evaluationId,
   } = useLiveCall({ sessionId, candidateToken });
 
   const [savingLanguage, setSavingLanguage] = useState(false);
@@ -49,12 +51,18 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded }: LiveCallRoo
   };
 
   if (status === "ended") {
+    const showRatingCard = role === "EVALUATOR" && evaluationId;
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl p-8 text-center max-w-md w-full">
+        <div className={`bg-white rounded-2xl p-8 text-center w-full ${showRatingCard ? "max-w-lg" : "max-w-md"}`}>
           <PhoneOff className="w-12 h-12 text-gray-400 mx-auto mb-4" />
           <h1 className="text-xl font-bold text-gray-900 mb-2">Call ended</h1>
           <p className="text-gray-600">This live interview call has ended.</p>
+          {showRatingCard && (
+            <div className="mt-6 text-left">
+              <EvaluatorRatingCard evaluationId={evaluationId} />
+            </div>
+          )}
         </div>
       </div>
     );

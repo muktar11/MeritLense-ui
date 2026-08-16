@@ -17,6 +17,7 @@ export interface LiveCall {
   started_at: string | null;
   ended_at: string | null;
   participants: LiveCallParticipant[];
+  evaluation_id: string | null;
 }
 
 export interface IceServer {
