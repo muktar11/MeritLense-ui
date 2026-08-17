@@ -54,6 +54,7 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
   const [isRecording, setIsRecording] = useState(false);
   // Evaluator-only: a candidate is knocking and hasn't been admitted/denied yet.
   const [joinRequest, setJoinRequest] = useState(false);
+  const [evaluationId, setEvaluationId] = useState<string | null>(null);
 
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
@@ -272,6 +273,7 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
       if (!mountedRef.current) return;
       setRole(joined.role);
       roleRef.current = joined.role;
+      setEvaluationId(joined.call.evaluation_id);
       iceServersRef.current = joined.ice_servers as RTCIceServer[];
       setLanguagePrefsState(
         joined.call.participants.find((p) => p.role === joined.role) ?? {
@@ -382,5 +384,6 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
     endCall,
     localVideoRef,
     remoteVideoRef,
+    evaluationId,
   };
 }
