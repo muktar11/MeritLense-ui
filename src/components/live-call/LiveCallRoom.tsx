@@ -24,6 +24,9 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded }: LiveCallRoo
     languagePrefs,
     setLanguagePrefs,
     translationUnavailable,
+    translationSegments,
+    isRecording,
+    recordAndSendTurn,
     joinRequest,
     admitCandidate,
     denyCandidate,
@@ -82,67 +85,113 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded }: LiveCallRoo
 
   return (
     <div className="min-h-screen bg-gray-900 flex flex-col">
-      <div className="flex-1 relative">
-        <video ref={remoteVideoRef} autoPlay playsInline className="w-full h-full object-cover bg-black" />
+      <div className="flex-1 flex flex-col xl:flex-row min-h-0">
+        <div className="relative flex-1 min-h-[420px]">
+          <video ref={remoteVideoRef} autoPlay playsInline className="w-full h-full object-cover bg-black" />
 
-        {!remoteConnected && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/60">
-            <div className="text-center text-white">
-              <Loader2 className="w-10 h-10 animate-spin mx-auto mb-3" />
-              <p className="text-sm">
-                {status === "joining" && "Joining the call…"}
-                {status === "waiting" && "Waiting for the other participant to join…"}
-                {status === "pending_admission" && "Waiting for the evaluator to let you in…"}
-                {status === "reconnecting" && "Reconnecting…"}
-                {status === "connecting" && "Connecting…"}
-              </p>
-            </div>
-          </div>
-        )}
-
-        {role === "EVALUATOR" && joinRequest && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/70 z-10">
-            <div className="bg-white rounded-2xl p-6 text-center max-w-xs w-full mx-4">
-              <UserCheck className="w-10 h-10 text-purple-600 mx-auto mb-3" />
-              <h2 className="text-base font-semibold text-gray-900 mb-1">Candidate wants to join</h2>
-              <p className="text-sm text-gray-600 mb-5">Let them into the interview?</p>
-              <div className="flex gap-3">
-                <button
-                  type="button"
-                  onClick={denyCandidate}
-                  className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium"
-                >
-                  <UserX className="w-4 h-4" /> Deny
-                </button>
-                <button
-                  type="button"
-                  onClick={admitCandidate}
-                  className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium"
-                >
-                  <UserCheck className="w-4 h-4" /> Admit
-                </button>
+          {!remoteConnected && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/60">
+              <div className="text-center text-white">
+                <Loader2 className="w-10 h-10 animate-spin mx-auto mb-3" />
+                <p className="text-sm">
+                  {status === "joining" && "Joining the call…"}
+                  {status === "waiting" && "Waiting for the other participant to join…"}
+                  {status === "pending_admission" && "Waiting for the evaluator to let you in…"}
+                  {status === "reconnecting" && "Reconnecting…"}
+                  {status === "connecting" && "Connecting…"}
+                </p>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        <div className="absolute bottom-4 right-4 w-40 aspect-video rounded-lg overflow-hidden border-2 border-white/20 shadow-lg">
-          <video ref={localVideoRef} autoPlay playsInline muted className="w-full h-full object-cover bg-black" />
+          {role === "EVALUATOR" && joinRequest && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/70 z-10">
+              <div className="bg-white rounded-2xl p-6 text-center max-w-xs w-full mx-4">
+                <UserCheck className="w-10 h-10 text-purple-600 mx-auto mb-3" />
+                <h2 className="text-base font-semibold text-gray-900 mb-1">Candidate wants to join</h2>
+                <p className="text-sm text-gray-600 mb-5">Let them into the interview?</p>
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={denyCandidate}
+                    className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium"
+                  >
+                    <UserX className="w-4 h-4" /> Deny
+                  </button>
+                  <button
+                    type="button"
+                    onClick={admitCandidate}
+                    className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium"
+                  >
+                    <UserCheck className="w-4 h-4" /> Admit
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="absolute bottom-4 right-4 w-40 aspect-video rounded-lg overflow-hidden border-2 border-white/20 shadow-lg">
+            <video ref={localVideoRef} autoPlay playsInline muted className="w-full h-full object-cover bg-black" />
+          </div>
+
+          {translationUnavailable && (
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-amber-500 text-white text-xs font-medium px-3 py-1.5 rounded-full flex items-center gap-1.5">
+              <AlertTriangle className="w-3.5 h-3.5" />
+              Manual translation mode is active
+            </div>
+          )}
+
+          {role && (
+            <div className="absolute top-4 left-4 bg-black/50 text-white text-xs px-2.5 py-1 rounded-full flex items-center gap-1.5">
+              <Video className="w-3 h-3" />
+              {role === "EVALUATOR" ? "You're the evaluator" : "You're the candidate"}
+            </div>
+          )}
         </div>
 
-        {translationUnavailable && (
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-amber-500 text-white text-xs font-medium px-3 py-1.5 rounded-full flex items-center gap-1.5">
-            <AlertTriangle className="w-3.5 h-3.5" />
-            Live translation is unavailable right now
+        <aside className="w-full xl:w-[380px] bg-slate-900 border-t xl:border-t-0 xl:border-l border-slate-700 flex flex-col min-h-[260px]">
+          <div className="p-4 border-b border-slate-700">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-xs uppercase tracking-wide text-slate-400">Manual translation</p>
+                <h2 className="text-lg font-semibold text-white">Message feed</h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => void recordAndSendTurn()}
+                className={`inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium ${
+                  isRecording
+                    ? "bg-red-600 text-white"
+                    : "bg-purple-600 hover:bg-purple-500 text-white"
+                }`}
+              >
+                <Mic className="w-4 h-4" />
+                {isRecording ? "Stop & send" : "Record & send"}
+              </button>
+            </div>
           </div>
-        )}
 
-        {role && (
-          <div className="absolute top-4 left-4 bg-black/50 text-white text-xs px-2.5 py-1 rounded-full flex items-center gap-1.5">
-            <Video className="w-3 h-3" />
-            {role === "EVALUATOR" ? "You're the evaluator" : "You're the candidate"}
+          <div className="flex-1 overflow-y-auto p-4 space-y-3">
+            {translationSegments.length === 0 ? (
+              <div className="rounded-xl border border-dashed border-slate-600 bg-slate-800/60 p-4 text-sm text-slate-300">
+                Record a speaking turn to send it to the other participant in their language.
+              </div>
+            ) : (
+              translationSegments.map((segment) => (
+                <div key={segment.id} className="rounded-xl bg-slate-800 p-3 text-sm text-slate-100">
+                  <div className="mb-2 flex items-center justify-between gap-3 text-xs text-slate-300">
+                    <span>{segment.speaker_role === role ? "You" : "Other participant"}</span>
+                    <span>{segment.target_language}</span>
+                  </div>
+                  <p className="text-xs uppercase tracking-wide text-slate-400 mb-1">Original</p>
+                  <p className="text-sm text-slate-100 mb-2">{segment.original_text}</p>
+                  <p className="text-xs uppercase tracking-wide text-purple-300 mb-1">Translated</p>
+                  <p className="text-sm text-purple-100">{segment.translated_text}</p>
+                </div>
+              ))
+            )}
           </div>
-        )}
+        </aside>
       </div>
 
       <div className="bg-gray-800 px-4 py-3 flex flex-wrap items-center justify-between gap-3">

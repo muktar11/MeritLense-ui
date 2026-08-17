@@ -1,6 +1,6 @@
 import { apiClient } from "@/app/api/auth/client";
 import { liveCallClient } from "./client";
-import type { LiveCall, LiveCallJoinResult } from "./types";
+import type { LiveCall, LiveCallJoinResult, LiveCallTranslationSegment } from "./types";
 
 // The evaluator joins as a normal authenticated staff user (apiClient,
 // carrying whatever staff Bearer token is in localStorage). The candidate
@@ -37,6 +37,21 @@ class LiveCallService {
     const response = await client.put(`${this.baseURL}/${sessionId}/languages`, {
       ...data,
       ...(candidateToken ? { token: candidateToken } : {}),
+    });
+    return response.data;
+  }
+
+  async sendSegment(
+    sessionId: string,
+    formData: FormData,
+    candidateToken?: string
+  ): Promise<{ segment: LiveCallTranslationSegment }> {
+    if (candidateToken) {
+      formData.append("token", candidateToken);
+    }
+    const client = candidateToken ? liveCallClient : apiClient;
+    const response = await client.post(`${this.baseURL}/${sessionId}/segments`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
     return response.data;
   }

@@ -52,6 +52,19 @@ export type LiveCallClientAction =
   | { action: "deny" };
 
 // Server -> client events (JSON text frames).
+export interface LiveCallTranslationSegment {
+  id: string;
+  speaker_role: LiveCallRole;
+  recipient_role: LiveCallRole;
+  source_language: string;
+  target_language: string;
+  original_text: string;
+  translated_text: string;
+  translated_audio: string;
+  mime_type: string;
+  sent_at: string;
+}
+
 export type LiveCallServerEvent =
   | { event: "ready"; role: LiveCallRole }
   | { event: "pong" }
@@ -64,6 +77,7 @@ export type LiveCallServerEvent =
   | { event: "join_request" }
   | { event: "join_request_dismissed" }
   | { event: "admitted" }
+  | { event: "translation_segment"; payload: LiveCallTranslationSegment }
   | { event: "translated_audio"; mime_type: string; audio: string }
   | { event: "translation_unavailable"; detail: string }
   | { event: "translation_error"; detail: string }
