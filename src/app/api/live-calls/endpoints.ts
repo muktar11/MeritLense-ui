@@ -37,6 +37,16 @@ class LiveCallService {
     });
     return response.data;
   }
+
+  async sendSegment(sessionId: string, formData: FormData, candidateToken?: string): Promise<{ segment: any }> {
+    if (candidateToken) {
+      formData.append("token", candidateToken);
+    }
+    const response = await apiClient.post(`${this.baseURL}/${sessionId}/segments`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return response.data;
+  }
 }
 
 const liveCallService = new LiveCallService();

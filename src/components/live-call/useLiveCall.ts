@@ -2,9 +2,12 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import liveCallService from "@/app/api/live-calls/endpoints";
-import type { LiveCallRole, LiveCallServerEvent } from "@/app/api/live-calls/types";
+import type {
+  LiveCallRole,
+  LiveCallServerEvent,
+  LiveCallTranslationSegment,
+} from "@/app/api/live-calls/types";
 import { API_BASE_URL } from "@/lib/config/env";
-import { downsampleTo16k } from "./pcm";
 import { TranslatedAudioQueue } from "./audio-queue";
 
 export type LiveCallStatus =
@@ -47,6 +50,8 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
   const [remoteConnected, setRemoteConnected] = useState(false);
   const [languagePrefs, setLanguagePrefsState] = useState<LanguagePrefs | null>(null);
   const [translationUnavailable, setTranslationUnavailable] = useState(false);
+  const [translationSegments, setTranslationSegments] = useState<LiveCallTranslationSegment[]>([]);
+  const [isRecording, setIsRecording] = useState(false);
   // Evaluator-only: a candidate is knocking and hasn't been admitted/denied yet.
   const [joinRequest, setJoinRequest] = useState(false);
 
@@ -56,7 +61,6 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
   const pcRef = useRef<RTCPeerConnection | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
-  const audioContextRef = useRef<AudioContext | null>(null);
   const audioQueueRef = useRef<TranslatedAudioQueue>(new TranslatedAudioQueue());
   const roleRef = useRef<LiveCallRole | null>(null);
   const iceServersRef = useRef<RTCIceServer[]>([]);
@@ -67,12 +71,52 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
   const cleanupMedia = useCallback(() => {
     localStreamRef.current?.getTracks().forEach((t) => t.stop());
     localStreamRef.current = null;
-    if (audioContextRef.current) {
-      audioContextRef.current.close().catch(() => {});
-      audioContextRef.current = null;
-    }
     audioQueueRef.current.clear();
   }, []);
+
+  const recordAndSendTurn = useCallback(async () => {
+    if (!localStreamRef.current) return;
+
+    if (isRecording) {
+      const recorder = (window as typeof window & { __meritlense_recorder?: MediaRecorder }).__meritlense_recorder;
+      recorder?.stop();
+      setIsRecording(false);
+      return;
+    }
+
+    const stream = localStreamRef.current;
+    const recorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+    (window as typeof window & { __meritlense_recorder?: MediaRecorder }).__meritlense_recorder = recorder;
+    const chunks: BlobPart[] = [];
+
+    recorder.ondataavailable = (event) => {
+      if (event.data.size > 0) chunks.push(event.data);
+    };
+
+    recorder.onstop = async () => {
+      const blob = new Blob(chunks, { type: recorder.mimeType || "audio/webm" });
+      const formData = new FormData();
+      formData.append("audio", blob, "turn.webm");
+      try {
+        const result = await liveCallService.sendSegment(sessionId, formData, candidateToken);
+        const segment = result.segment as LiveCallTranslationSegment;
+        setTranslationSegments((current) => [segment, ...current]);
+        if (segment.translated_audio) {
+          audioQueueRef.current.enqueue(segment.translated_audio);
+        }
+      } catch (err) {
+        const message =
+          (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail ??
+          "The recording could not be translated.";
+        setError(message);
+      } finally {
+        setIsRecording(false);
+      }
+    };
+
+    recorder.start();
+    setIsRecording(true);
+  }, [candidateToken, isRecording, sessionId]);
 
   const cleanupConnection = useCallback(() => {
     if (pcRef.current) {
@@ -140,28 +184,6 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
     await pc.setLocalDescription(offer);
     sendSignal({ action: "offer", data: { type: offer.type, sdp: offer.sdp } });
   }, [createPeerConnection, sendSignal]);
-
-  const startPcmCapture = useCallback(() => {
-    if (!localStreamRef.current) return;
-    // AudioContext's sampleRate hint is frequently ignored by the browser -
-    // downsampleTo16k handles whatever we actually get. ScriptProcessorNode
-    // is deprecated but still universally supported and far simpler to ship
-    // than an AudioWorklet module for a statically-exported app; an
-    // AudioWorklet would be the natural upgrade if main-thread audio
-    // processing ever becomes a measurable problem.
-    const audioContext = new AudioContext({ sampleRate: 16000 });
-    audioContextRef.current = audioContext;
-    const source = audioContext.createMediaStreamSource(localStreamRef.current);
-    const processor = audioContext.createScriptProcessor(4096, 1, 1);
-    source.connect(processor);
-    processor.connect(audioContext.destination);
-    processor.onaudioprocess = (event) => {
-      if (wsRef.current?.readyState !== WebSocket.OPEN) return;
-      const input = event.inputBuffer.getChannelData(0);
-      const pcm = downsampleTo16k(input, audioContext.sampleRate);
-      wsRef.current.send(pcm.buffer);
-    };
-  }, []);
 
   const handleServerEvent = useCallback(
     async (event: LiveCallServerEvent) => {
@@ -270,7 +292,6 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
       }
-      startPcmCapture();
 
       const ws = new WebSocket(wsUrlFor(joined.websocket_path, joined.websocket_ticket));
       wsRef.current = ws;
@@ -303,7 +324,7 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
       setError(detail);
       setStatus("error");
     }
-  }, [sessionId, candidateToken, handleServerEvent, startPcmCapture]);
+  }, [sessionId, candidateToken, handleServerEvent]);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -352,6 +373,9 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
     languagePrefs,
     setLanguagePrefs,
     translationUnavailable,
+    translationSegments,
+    isRecording,
+    recordAndSendTurn,
     joinRequest,
     admitCandidate,
     denyCandidate,
