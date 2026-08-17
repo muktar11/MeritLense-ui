@@ -100,11 +100,11 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
       formData.append("audio", blob, "turn.webm");
       try {
         const result = await liveCallService.sendSegment(sessionId, formData, candidateToken);
-        const segment = result.segment as LiveCallTranslationSegment;
-        setTranslationSegments((current) => [segment, ...current]);
-        if (segment.translated_audio) {
-          audioQueueRef.current.enqueue(segment.translated_audio);
-        }
+        // Log the turn on the sender's own feed too, but don't queue the
+        // translated audio here - that's a translation of the sender's own
+        // words, meant for the recipient to hear. The recipient gets their
+        // copy (with audio) via the "translation_segment" WS broadcast below.
+        setTranslationSegments((current) => [result.segment, ...current]);
       } catch (err) {
         const message =
           (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail ??
@@ -243,6 +243,12 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
           break;
         case "translated_audio":
           audioQueueRef.current.enqueue(event.audio);
+          break;
+        case "translation_segment":
+          setTranslationSegments((current) => [event.payload, ...current]);
+          if (event.payload.translated_audio) {
+            audioQueueRef.current.enqueue(event.payload.translated_audio);
+          }
           break;
         case "translation_unavailable":
         case "translation_error":
