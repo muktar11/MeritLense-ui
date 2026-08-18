@@ -76,7 +76,10 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
   }, []);
 
   const recordAndSendTurn = useCallback(async () => {
-    if (!localStreamRef.current) return;
+    if (!localStreamRef.current) {
+      setError("Camera/microphone isn't ready yet. Please wait a moment and try again.");
+      return;
+    }
 
     if (isRecording) {
       const recorder = (window as typeof window & { __meritlense_recorder?: MediaRecorder }).__meritlense_recorder;
@@ -86,7 +89,24 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
     }
 
     const stream = localStreamRef.current;
-    const recorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+
+    // Safari (macOS/iOS) supports neither "audio/webm" nor MediaRecorder's
+    // no-options default reliably - it needs "audio/mp4" explicitly.
+    // Constructing with an unsupported mimeType throws synchronously, and
+    // since this runs inside an async callback invoked as a fire-and-forget
+    // click handler (`void recordAndSendTurn()`), an uncaught throw here
+    // becomes a silent unhandled rejection: the button visibly does nothing.
+    const candidateMimeTypes = ["audio/webm", "audio/mp4", "audio/ogg"];
+    const mimeType = candidateMimeTypes.find((type) => MediaRecorder.isTypeSupported(type));
+
+    let recorder: MediaRecorder;
+    try {
+      recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
+    } catch {
+      setError("Recording isn't supported in this browser.");
+      return;
+    }
+
     (window as typeof window & { __meritlense_recorder?: MediaRecorder }).__meritlense_recorder = recorder;
     const chunks: BlobPart[] = [];
 
@@ -113,6 +133,11 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
       } finally {
         setIsRecording(false);
       }
+    };
+
+    recorder.onerror = () => {
+      setError("Recording failed. Please try again.");
+      setIsRecording(false);
     };
 
     recorder.start();
