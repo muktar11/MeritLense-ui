@@ -1,7 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2, Mic, PhoneOff, AlertTriangle, Video, UserCheck, UserX } from "lucide-react";
+import {
+  Loader2,
+  Mic,
+  PhoneOff,
+  AlertTriangle,
+  Video,
+  UserCheck,
+  UserX,
+  Square,
+  RotateCcw,
+  Send,
+} from "lucide-react";
 import { useLiveCall } from "./useLiveCall";
 import { LANGUAGES } from "@/lib/languages";
 import { EvaluatorRatingCard } from "@/components/evaluations/EvaluatorRatingCard";
@@ -25,8 +36,14 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded }: LiveCallRoo
     setLanguagePrefs,
     translationUnavailable,
     translationSegments,
-    isRecording,
-    recordAndSendTurn,
+    turnRecordingState,
+    turnRecordingError,
+    turnPreviewUrl,
+    turnElapsedSeconds,
+    startTurnRecording,
+    stopTurnRecording,
+    reRecordTurn,
+    submitTurnRecording,
     joinRequest,
     admitCandidate,
     denyCandidate,
@@ -37,6 +54,8 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded }: LiveCallRoo
   } = useLiveCall({ sessionId, candidateToken });
 
   const [savingLanguage, setSavingLanguage] = useState(false);
+
+  const formatTurnTime = (s: number) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
 
   const handleEndCall = () => {
     endCall();
@@ -150,29 +169,79 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded }: LiveCallRoo
         </div>
 
         <aside className="w-full xl:w-[380px] bg-slate-900 border-t xl:border-t-0 xl:border-l border-slate-700 flex flex-col min-h-[260px]">
-          <div className="p-4 border-b border-slate-700">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-xs uppercase tracking-wide text-slate-400">Manual translation</p>
-                <h2 className="text-lg font-semibold text-white">Message feed</h2>
-              </div>
-              <button
-                type="button"
-                onClick={() => void recordAndSendTurn()}
-                className={`inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium ${
-                  isRecording
-                    ? "bg-red-600 text-white"
-                    : "bg-purple-600 hover:bg-purple-500 text-white"
-                }`}
-              >
-                <Mic className="w-4 h-4" />
-                {isRecording ? "Stop & send" : "Record & send"}
-              </button>
+          <div className="p-4 border-b border-slate-700 space-y-3">
+            <div>
+              <p className="text-xs uppercase tracking-wide text-slate-400">Manual translation</p>
+              <h2 className="text-lg font-semibold text-white">Message feed</h2>
             </div>
+
             {error && (
-              <div className="mt-3 flex items-start gap-1.5 rounded-lg bg-red-950/60 border border-red-800 px-3 py-2 text-xs text-red-200">
+              <div className="flex items-start gap-1.5 rounded-lg bg-red-950/60 border border-red-800 px-3 py-2 text-xs text-red-200">
                 <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
                 <span>{error}</span>
+              </div>
+            )}
+
+            {turnRecordingError && (
+              <div className="flex items-start gap-1.5 rounded-lg bg-red-950/60 border border-red-800 px-3 py-2 text-xs text-red-200">
+                <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                <span>{turnRecordingError}</span>
+              </div>
+            )}
+
+            {turnRecordingState === "idle" && (
+              <button
+                type="button"
+                onClick={() => void startTurnRecording()}
+                className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-purple-400/60 rounded-lg text-purple-300 hover:bg-purple-500/10 text-sm font-medium"
+              >
+                <Mic className="w-4 h-4" />
+                Tap to record a turn
+              </button>
+            )}
+
+            {turnRecordingState === "recording" && (
+              <div className="flex flex-col items-center gap-2 py-3 border-2 border-purple-500 rounded-lg bg-purple-500/10">
+                <div className="flex items-center gap-2 text-sm font-medium text-white">
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
+                  Recording… {formatTurnTime(turnElapsedSeconds)}
+                </div>
+                <button
+                  type="button"
+                  onClick={stopTurnRecording}
+                  className="flex items-center gap-2 px-4 py-1.5 bg-white hover:bg-gray-100 text-gray-900 rounded-lg text-sm font-medium"
+                >
+                  <Square className="w-3.5 h-3.5" /> Stop
+                </button>
+              </div>
+            )}
+
+            {(turnRecordingState === "recorded" || turnRecordingState === "sending") && turnPreviewUrl && (
+              <div className="space-y-2">
+                <audio controls src={turnPreviewUrl} className="w-full h-9" />
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={reRecordTurn}
+                    disabled={turnRecordingState === "sending"}
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2 border border-slate-600 hover:bg-slate-800 disabled:opacity-50 text-slate-200 rounded-lg text-xs font-medium"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" /> Re-record
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void submitTurnRecording()}
+                    disabled={turnRecordingState === "sending"}
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white rounded-lg text-xs font-medium"
+                  >
+                    {turnRecordingState === "sending" ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Send className="w-3.5 h-3.5" />
+                    )}
+                    {turnRecordingState === "sending" ? "Sending…" : "Send"}
+                  </button>
+                </div>
               </div>
             )}
           </div>

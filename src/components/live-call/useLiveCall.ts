@@ -21,6 +21,17 @@ export type LiveCallStatus =
   | "ended"
   | "error";
 
+// Mirrors the AI interview's AnswerRecorder (interview/components/answer-recorder.tsx):
+// a fresh dedicated audio-only getUserMedia call per recording (decoupled
+// from the call's own video+audio stream), no forced MediaRecorder mimeType,
+// and an explicit reviewable "recorded" state before anything is sent -
+// rather than auto-sending the instant recording stops. That structure is
+// proven in production; the live-call turn recorder had its own bespoke
+// implementation that kept failing in ways that were hard to diagnose
+// remotely specifically because there was no visible state between "record"
+// and "sent".
+export type TurnRecordingState = "idle" | "recording" | "recorded" | "sending";
+
 interface LanguagePrefs {
   input_language: string;
   output_language: string;
@@ -51,7 +62,10 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
   const [languagePrefs, setLanguagePrefsState] = useState<LanguagePrefs | null>(null);
   const [translationUnavailable, setTranslationUnavailable] = useState(false);
   const [translationSegments, setTranslationSegments] = useState<LiveCallTranslationSegment[]>([]);
-  const [isRecording, setIsRecording] = useState(false);
+  const [turnRecordingState, setTurnRecordingState] = useState<TurnRecordingState>("idle");
+  const [turnRecordingError, setTurnRecordingError] = useState<string | null>(null);
+  const [turnPreviewUrl, setTurnPreviewUrl] = useState<string | null>(null);
+  const [turnElapsedSeconds, setTurnElapsedSeconds] = useState(0);
   // Evaluator-only: a candidate is knocking and hasn't been admitted/denied yet.
   const [joinRequest, setJoinRequest] = useState(false);
   const [evaluationId, setEvaluationId] = useState<string | null>(null);
@@ -69,82 +83,96 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
   const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const mountedRef = useRef(true);
 
+  // Turn-recording state - separate from the call's own camera/mic stream
+  // (localStreamRef above), same as AnswerRecorder keeps its own stream
+  // independent of anything else on the page.
+  const turnRecorderRef = useRef<MediaRecorder | null>(null);
+  const turnChunksRef = useRef<Blob[]>([]);
+  const turnBlobRef = useRef<Blob | null>(null);
+  const turnStreamRef = useRef<MediaStream | null>(null);
+  const turnTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
   const cleanupMedia = useCallback(() => {
     localStreamRef.current?.getTracks().forEach((t) => t.stop());
     localStreamRef.current = null;
     audioQueueRef.current.clear();
   }, []);
 
-  const recordAndSendTurn = useCallback(async () => {
-    setError(null);
-
-    if (!localStreamRef.current) {
-      setError("Camera/microphone isn't ready yet. Please wait a moment and try again.");
-      return;
+  const stopTurnTimer = useCallback(() => {
+    if (turnTimerRef.current) {
+      clearInterval(turnTimerRef.current);
+      turnTimerRef.current = null;
     }
+  }, []);
 
-    if (isRecording) {
-      const recorder = (window as typeof window & { __meritlense_recorder?: MediaRecorder }).__meritlense_recorder;
-      recorder?.stop();
-      setIsRecording(false);
-      return;
-    }
-
-    const stream = localStreamRef.current;
-
-    // Safari (macOS/iOS) supports neither "audio/webm" nor MediaRecorder's
-    // no-options default reliably - it needs "audio/mp4" explicitly.
-    // Constructing with an unsupported mimeType throws synchronously, and
-    // since this runs inside an async callback invoked as a fire-and-forget
-    // click handler (`void recordAndSendTurn()`), an uncaught throw here
-    // becomes a silent unhandled rejection: the button visibly does nothing.
-    const candidateMimeTypes = ["audio/webm", "audio/mp4", "audio/ogg"];
-    const mimeType = candidateMimeTypes.find((type) => MediaRecorder.isTypeSupported(type));
-
-    let recorder: MediaRecorder;
+  const startTurnRecording = useCallback(async () => {
+    setTurnRecordingError(null);
     try {
-      recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      turnStreamRef.current = stream;
+      turnChunksRef.current = [];
+      const recorder = new MediaRecorder(stream);
+      turnRecorderRef.current = recorder;
+
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) turnChunksRef.current.push(event.data);
+      };
+      recorder.onstop = () => {
+        const blob = new Blob(turnChunksRef.current, { type: recorder.mimeType || "audio/webm" });
+        turnBlobRef.current = blob;
+        setTurnPreviewUrl(URL.createObjectURL(blob));
+        setTurnRecordingState("recorded");
+        stopTurnTimer();
+        turnStreamRef.current?.getTracks().forEach((t) => t.stop());
+      };
+
+      recorder.start();
+      setTurnRecordingState("recording");
+      setTurnElapsedSeconds(0);
+      turnTimerRef.current = setInterval(() => setTurnElapsedSeconds((s) => s + 1), 1000);
     } catch {
-      setError("Recording isn't supported in this browser.");
-      return;
+      setTurnRecordingError("Couldn't access your microphone. Please allow microphone access and try again.");
+      setTurnRecordingState("idle");
     }
+  }, [stopTurnTimer]);
 
-    (window as typeof window & { __meritlense_recorder?: MediaRecorder }).__meritlense_recorder = recorder;
-    const chunks: BlobPart[] = [];
+  const stopTurnRecording = useCallback(() => {
+    turnRecorderRef.current?.stop();
+  }, []);
 
-    recorder.ondataavailable = (event) => {
-      if (event.data.size > 0) chunks.push(event.data);
-    };
+  const reRecordTurn = useCallback(() => {
+    if (turnPreviewUrl) URL.revokeObjectURL(turnPreviewUrl);
+    setTurnPreviewUrl(null);
+    turnBlobRef.current = null;
+    setTurnRecordingError(null);
+    setTurnRecordingState("idle");
+  }, [turnPreviewUrl]);
 
-    recorder.onstop = async () => {
-      const blob = new Blob(chunks, { type: recorder.mimeType || "audio/webm" });
-      const formData = new FormData();
-      formData.append("audio", blob, "turn.webm");
-      try {
-        const result = await liveCallService.sendSegment(sessionId, formData, candidateToken);
-        // Log the turn on the sender's own feed too, but don't queue the
-        // translated audio here - that's a translation of the sender's own
-        // words, meant for the recipient to hear. The recipient gets their
-        // copy (with audio) via the "translation_segment" WS broadcast below.
-        setTranslationSegments((current) => [result.segment, ...current]);
-      } catch (err) {
-        const message =
-          (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail ??
-          "The recording could not be translated.";
-        setError(message);
-      } finally {
-        setIsRecording(false);
-      }
-    };
-
-    recorder.onerror = () => {
-      setError("Recording failed. Please try again.");
-      setIsRecording(false);
-    };
-
-    recorder.start();
-    setIsRecording(true);
-  }, [candidateToken, isRecording, sessionId]);
+  const submitTurnRecording = useCallback(async () => {
+    if (!turnBlobRef.current) return;
+    setTurnRecordingState("sending");
+    setTurnRecordingError(null);
+    const formData = new FormData();
+    formData.append("audio", turnBlobRef.current, "turn.webm");
+    try {
+      const result = await liveCallService.sendSegment(sessionId, formData, candidateToken);
+      // Log the turn on the sender's own feed too, but don't queue the
+      // translated audio here - that's a translation of the sender's own
+      // words, meant for the recipient to hear. The recipient gets their
+      // copy (with audio) via the "translation_segment" WS broadcast below.
+      setTranslationSegments((current) => [result.segment, ...current]);
+      if (turnPreviewUrl) URL.revokeObjectURL(turnPreviewUrl);
+      setTurnPreviewUrl(null);
+      turnBlobRef.current = null;
+      setTurnRecordingState("idle");
+    } catch (err) {
+      const message =
+        (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail ??
+        "The recording could not be translated. You can try sending it again.";
+      setTurnRecordingError(message);
+      setTurnRecordingState("recorded");
+    }
+  }, [candidateToken, sessionId, turnPreviewUrl]);
 
   const cleanupConnection = useCallback(() => {
     if (pcRef.current) {
@@ -372,6 +400,15 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    return () => {
+      stopTurnTimer();
+      turnStreamRef.current?.getTracks().forEach((t) => t.stop());
+      if (turnPreviewUrl) URL.revokeObjectURL(turnPreviewUrl);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const endCall = useCallback(() => {
     endedIntentionallyRef.current = true;
     sendSignal({ action: "end_call" });
@@ -409,8 +446,14 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
     setLanguagePrefs,
     translationUnavailable,
     translationSegments,
-    isRecording,
-    recordAndSendTurn,
+    turnRecordingState,
+    turnRecordingError,
+    turnPreviewUrl,
+    turnElapsedSeconds,
+    startTurnRecording,
+    stopTurnRecording,
+    reRecordTurn,
+    submitTurnRecording,
     joinRequest,
     admitCandidate,
     denyCandidate,
