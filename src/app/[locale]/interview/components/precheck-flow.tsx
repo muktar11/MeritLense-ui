@@ -5,7 +5,6 @@ import {
   AlertCircle,
   Camera,
   CheckCircle2,
-  FileText,
   Loader2,
   Mic,
   Play,
@@ -23,7 +22,7 @@ interface PrecheckFlowProps {
   onContinue: () => void;
 }
 
-type Step = "loading" | "consent" | "privacy" | "device-check" | "verbal-confirmation" | "identity";
+type Step = "loading" | "privacy" | "device-check" | "verbal-confirmation" | "identity";
 
 const VERBAL_CONFIRMATION_PHRASE =
   "I confirm that I am the person completing this interview and that my answers are my own.";
@@ -45,7 +44,7 @@ export function PrecheckFlow({ sessionId, token, onContinue }: PrecheckFlowProps
         // Status couldn't be read - start from the beginning rather than
         // blocking the candidate entirely; each step's own submit call
         // will surface a real error if something is still wrong.
-        if (active) setStep("consent");
+        if (active) setStep("privacy");
       }
     })();
     return () => {
@@ -59,20 +58,6 @@ export function PrecheckFlow({ sessionId, token, onContinue }: PrecheckFlowProps
         <Loader2 className="w-10 h-10 animate-spin text-purple-500 mx-auto mb-4" />
         <p className="text-gray-600">Preparing your interview…</p>
       </CenteredCard>
-    );
-  }
-
-  if (step === "consent") {
-    return (
-      <ConsentStep
-        error={error}
-        onError={setError}
-        onSubmit={async (signatoryName) => {
-          await interviewSessionService.captureConsent(sessionId, token, signatoryName);
-          setError(null);
-          setStep("privacy");
-        }}
-      />
     );
   }
 
@@ -126,93 +111,10 @@ export function PrecheckFlow({ sessionId, token, onContinue }: PrecheckFlowProps
 }
 
 function nextIncompleteStep(status: PrecheckStatus): Step {
-  if (!status.candidate_consent_completed) return "consent";
   if (!status.privacy_notice_acknowledged) return "privacy";
   if (!status.device_check_completed) return "device-check";
   if (!status.verbal_confirmation_completed) return "verbal-confirmation";
   return "identity";
-}
-
-function ConsentStep({
-  error,
-  onError,
-  onSubmit,
-}: {
-  error: string | null;
-  onError: (message: string | null) => void;
-  onSubmit: (signatoryName: string) => Promise<void>;
-}) {
-  const [signatoryName, setSignatoryName] = useState("");
-  const [agreed, setAgreed] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-
-  const canSubmit = signatoryName.trim().length > 1 && agreed && !submitting;
-
-  const handleSubmit = async () => {
-    if (!canSubmit) return;
-    setSubmitting(true);
-    try {
-      await onSubmit(signatoryName.trim());
-    } catch {
-      onError("Something went wrong saving your consent. Please try again.");
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  return (
-    <CenteredCard wide>
-      <FileText className="w-12 h-12 text-purple-500 mx-auto mb-3" />
-      <h1 className="text-xl font-bold text-gray-900 mb-2">Candidate Consent</h1>
-      <p className="text-gray-600 text-sm mb-4">Please read and confirm before continuing.</p>
-
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded-lg text-sm mb-4 text-left">
-          {error}
-        </div>
-      )}
-
-      <div className="text-left bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4 max-h-56 overflow-y-auto text-sm text-gray-700 space-y-2">
-        <p>By continuing, you confirm that:</p>
-        <ul className="list-disc list-inside space-y-1">
-          <li>You are voluntarily completing this assessment as the named candidate.</li>
-          <li>Your responses (video, audio, and/or text) will be recorded and evaluated by MeritLense on behalf of the organization that invited you.</li>
-          <li>Your identity may be verified against a reference photo on file, and integrity signals (such as presence of additional people) may be monitored during the session.</li>
-          <li>Results may be shared with the inviting organization as part of their hiring or evaluation process.</li>
-          <li>You can withdraw consent by contacting the organization that invited you before completing the assessment.</li>
-        </ul>
-      </div>
-
-      <label className="block text-left text-xs font-medium text-gray-700 mb-1">Type your full name to sign</label>
-      <input
-        type="text"
-        value={signatoryName}
-        onChange={(e) => setSignatoryName(e.target.value)}
-        placeholder="Full name"
-        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
-      />
-
-      <label className="flex items-start gap-2 text-left text-sm text-gray-700 mb-4 cursor-pointer">
-        <input
-          type="checkbox"
-          checked={agreed}
-          onChange={(e) => setAgreed(e.target.checked)}
-          className="mt-0.5"
-        />
-        <span>I have read and agree to the above.</span>
-      </label>
-
-      <button
-        type="button"
-        disabled={!canSubmit}
-        onClick={handleSubmit}
-        className="w-full flex items-center justify-center gap-2 py-3 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-lg text-sm font-medium"
-      >
-        {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-        I Agree & Continue
-      </button>
-    </CenteredCard>
-  );
 }
 
 function PrivacyStep({

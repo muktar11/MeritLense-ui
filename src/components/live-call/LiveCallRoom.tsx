@@ -169,6 +169,12 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded }: LiveCallRoo
                 {isRecording ? "Stop & send" : "Record & send"}
               </button>
             </div>
+            {error && (
+              <div className="mt-3 flex items-start gap-1.5 rounded-lg bg-red-950/60 border border-red-800 px-3 py-2 text-xs text-red-200">
+                <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                <span>{error}</span>
+              </div>
+            )}
           </div>
 
           <div className="flex-1 overflow-y-auto p-4 space-y-3">

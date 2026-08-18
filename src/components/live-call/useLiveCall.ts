@@ -76,6 +76,8 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
   }, []);
 
   const recordAndSendTurn = useCallback(async () => {
+    setError(null);
+
     if (!localStreamRef.current) {
       setError("Camera/microphone isn't ready yet. Please wait a moment and try again.");
       return;
