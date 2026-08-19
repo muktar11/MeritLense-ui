@@ -58,6 +58,10 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
   const [status, setStatus] = useState<LiveCallStatus>("idle");
   const [role, setRole] = useState<LiveCallRole | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // Set only when join() is rejected specifically because it's too early
+  // (more than LIVE_CALL_EARLY_JOIN_MINUTES before scheduled_start_at) -
+  // lets the error screen say when to come back instead of a dead end.
+  const [notOpenUntil, setNotOpenUntil] = useState<string | null>(null);
   const [remoteConnected, setRemoteConnected] = useState(false);
   const [languagePrefs, setLanguagePrefsState] = useState<LanguagePrefs | null>(null);
   const [translationUnavailable, setTranslationUnavailable] = useState(false);
@@ -329,6 +333,7 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
   const connect = useCallback(async () => {
     setStatus("joining");
     setError(null);
+    setNotOpenUntil(null);
     try {
       const joined = await liveCallService.join(sessionId, candidateToken);
       if (!mountedRef.current) return;
@@ -381,10 +386,11 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
       };
     } catch (err) {
       if (!mountedRef.current) return;
-      const detail =
-        (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail ??
-        "Couldn't join the call. Please refresh and try again.";
+      const data = (err as { response?: { data?: { detail?: string; scheduled_start_at?: string } } })?.response
+        ?.data;
+      const detail = data?.detail ?? "Couldn't join the call. Please refresh and try again.";
       setError(detail);
+      setNotOpenUntil(data?.scheduled_start_at ?? null);
       setStatus("error");
     }
   }, [sessionId, candidateToken, handleServerEvent]);
@@ -441,6 +447,7 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
     status,
     role,
     error,
+    notOpenUntil,
     remoteConnected,
     languagePrefs,
     setLanguagePrefs,

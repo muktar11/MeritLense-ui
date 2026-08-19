@@ -31,6 +31,7 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded }: LiveCallRoo
     status,
     role,
     error,
+    notOpenUntil,
     remoteConnected,
     languagePrefs,
     setLanguagePrefs,
@@ -97,6 +98,21 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded }: LiveCallRoo
           <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
           <h1 className="text-xl font-bold text-gray-900 mb-2">Couldn&apos;t join the call</h1>
           <p className="text-gray-600">{error ?? "Please refresh and try again."}</p>
+          {notOpenUntil && (
+            <p className="text-gray-500 text-sm mt-3">
+              This call opens 15 minutes before its scheduled time:{" "}
+              <span className="font-medium text-gray-700">
+                {new Date(notOpenUntil).toLocaleString(undefined, {
+                  weekday: "long",
+                  month: "long",
+                  day: "numeric",
+                  hour: "numeric",
+                  minute: "2-digit",
+                })}
+              </span>{" "}
+              (your local time).
+            </p>
+          )}
         </div>
       </div>
     );
