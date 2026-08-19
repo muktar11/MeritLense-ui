@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   AlertCircle,
   Camera,
@@ -11,6 +11,7 @@ import {
   RotateCcw,
   ShieldCheck,
   Square,
+  Video,
 } from "lucide-react";
 import interviewSessionService from "@/app/api/interview-session/endpoints";
 import type { PrecheckStatus } from "@/app/api/interview-session/types";
@@ -20,6 +21,11 @@ interface PrecheckFlowProps {
   sessionId: string;
   token: string;
   onContinue: () => void;
+  // Scheduled sessions route through this same precheck gate before
+  // entering the live call room (see interview/page.tsx's
+  // resolveSessionState) - candidates otherwise have no way to tell this
+  // apart from a solo AI interview's identical-looking prechecks.
+  isLiveCall?: boolean;
 }
 
 type Step = "loading" | "privacy" | "device-check" | "verbal-confirmation" | "identity";
@@ -29,7 +35,7 @@ const VERBAL_CONFIRMATION_PHRASE =
 
 const VERBAL_CONFIRMATION_MAX_SECONDS = 15;
 
-export function PrecheckFlow({ sessionId, token, onContinue }: PrecheckFlowProps) {
+export function PrecheckFlow({ sessionId, token, onContinue, isLiveCall }: PrecheckFlowProps) {
   const [step, setStep] = useState<Step>("loading");
   const [error, setError] = useState<string | null>(null);
 
@@ -52,17 +58,17 @@ export function PrecheckFlow({ sessionId, token, onContinue }: PrecheckFlowProps
     };
   }, [sessionId, token]);
 
+  let content: ReactNode;
+
   if (step === "loading") {
-    return (
+    content = (
       <CenteredCard>
         <Loader2 className="w-10 h-10 animate-spin text-purple-500 mx-auto mb-4" />
         <p className="text-gray-600">Preparing your interview…</p>
       </CenteredCard>
     );
-  }
-
-  if (step === "privacy") {
-    return (
+  } else if (step === "privacy") {
+    content = (
       <PrivacyStep
         error={error}
         onError={setError}
@@ -73,10 +79,8 @@ export function PrecheckFlow({ sessionId, token, onContinue }: PrecheckFlowProps
         }}
       />
     );
-  }
-
-  if (step === "device-check") {
-    return (
+  } else if (step === "device-check") {
+    content = (
       <DeviceCheckStep
         error={error}
         onError={setError}
@@ -91,10 +95,8 @@ export function PrecheckFlow({ sessionId, token, onContinue }: PrecheckFlowProps
         }}
       />
     );
-  }
-
-  if (step === "verbal-confirmation") {
-    return (
+  } else if (step === "verbal-confirmation") {
+    content = (
       <VerbalConfirmationStep
         error={error}
         onError={setError}
@@ -105,9 +107,21 @@ export function PrecheckFlow({ sessionId, token, onContinue }: PrecheckFlowProps
         }}
       />
     );
+  } else {
+    content = <IdentityVerification sessionId={sessionId} token={token} onContinue={onContinue} />;
   }
 
-  return <IdentityVerification sessionId={sessionId} token={token} onContinue={onContinue} />;
+  if (!isLiveCall) return content;
+
+  return (
+    <div>
+      <div className="bg-purple-700 text-white text-sm font-medium py-2.5 px-4 flex items-center justify-center gap-2 text-center">
+        <Video className="w-4 h-4 shrink-0" />
+        Live interview — you&apos;ll join a video call with your evaluator once you&apos;re ready
+      </div>
+      {content}
+    </div>
+  );
 }
 
 function nextIncompleteStep(status: PrecheckStatus): Step {

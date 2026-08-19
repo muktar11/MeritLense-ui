@@ -405,7 +405,14 @@ function InterviewSessionContent() {
   }
 
   if (pageState === "precheck") {
-    return <PrecheckFlow sessionId={sessionId} token={token} onContinue={handlePrecheckContinue} />;
+    return (
+      <PrecheckFlow
+        sessionId={sessionId}
+        token={token}
+        onContinue={handlePrecheckContinue}
+        isLiveCall={Boolean(session?.scheduled_start_at)}
+      />
+    );
   }
 
   if (pageState === "orientation") {
