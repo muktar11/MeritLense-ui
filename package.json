@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "build:export": "node -e \"require('fs').copyFileSync('.env.export','.env.local')\" && npx cross-env NEXT_PUBLIC_STATIC_EXPORT=true next build",
-    "start": "next start"
+    "start": "next start",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.9",
@@ -50,6 +52,7 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
+    "@playwright/test": "^1.49.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
