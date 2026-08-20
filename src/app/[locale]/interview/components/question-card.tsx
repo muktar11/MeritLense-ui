@@ -61,6 +61,7 @@ export function QuestionCard({
             ))}
           </select>
           <button
+            id="tour-target-listen"
             type="button"
             onClick={onPlayAudio}
             disabled={loadingAudio}

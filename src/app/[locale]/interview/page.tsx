@@ -15,6 +15,7 @@ import { AnswerTextForm } from "./components/answer-text-form";
 import { AnswerRecorder } from "./components/answer-recorder";
 import { PrecheckFlow } from "./components/precheck-flow";
 import { OrientationTour } from "./components/orientation-tour";
+import { GestureHint } from "./components/gesture-hint";
 import { LiveCallRoom } from "@/components/live-call/LiveCallRoom";
 import { IntegrityMonitor } from "./components/integrity-monitor";
 import { TestTimer } from "./components/test-timer";
@@ -45,6 +46,21 @@ type PageState =
 const LIVE_CALL_EARLY_JOIN_MINUTES = 15;
 type AnswerMode = "audio" | "text";
 
+// A live walkthrough on question 1's real controls (per-question, not a
+// one-time "seen it" flag) - advances automatically as the candidate
+// actually performs each step. See gesture-hint.tsx for the animation.
+type TourStep = "listen" | "speak" | "submit" | null;
+const TOUR_TARGET_ID: Record<Exclude<TourStep, null>, string> = {
+  listen: "tour-target-listen",
+  speak: "tour-target-speak",
+  submit: "tour-target-submit",
+};
+const TOUR_LABEL: Record<Exclude<TourStep, null>, string> = {
+  listen: "Click here to hear the question",
+  speak: "Click here to speak",
+  submit: "Click here to submit",
+};
+
 export default function InterviewSessionPage() {
   return (
     <Suspense
@@ -73,6 +89,11 @@ function InterviewSessionContent() {
   const [error, setError] = useState<string | null>(null);
   const [readAloudLanguage, setReadAloudLanguage] = useState("en-US");
   const [answerLanguage, setAnswerLanguage] = useState("en-US");
+  const [tourStep, setTourStep] = useState<TourStep>(null);
+
+  useEffect(() => {
+    setTourStep(question?.question_order === 1 && answerMode === "audio" ? "listen" : null);
+  }, [question?.question_order, answerMode]);
 
   const loadCurrentQuestion = useCallback(async () => {
     setAudioUrl(null);
@@ -522,7 +543,10 @@ function InterviewSessionContent() {
             question={question}
             questionNumber={questionNumber}
             totalQuestions={totalQuestions}
-            onPlayAudio={handlePlayAudio}
+            onPlayAudio={() => {
+              handlePlayAudio();
+              if (tourStep === "listen") setTourStep("speak");
+            }}
             audioUrl={audioUrl}
             loadingAudio={loadingAudio}
             readAloudLanguage={readAloudLanguage}
@@ -591,11 +615,16 @@ function InterviewSessionContent() {
               onSubmit={handleAudioSubmit}
               submitting={submitting}
               submitLabel="Uploading & transcribing…"
+              onStateChange={(state) => {
+                if (state === "recorded") setTourStep("submit");
+              }}
             />
           ) : (
             <AnswerTextForm onSubmit={handleTextSubmit} submitting={submitting} />
           )}
         </div>
+
+        {tourStep && <GestureHint targetId={TOUR_TARGET_ID[tourStep]} label={TOUR_LABEL[tourStep]} />}
       </div>
     </div>
   );

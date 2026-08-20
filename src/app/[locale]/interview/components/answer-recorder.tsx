@@ -7,15 +7,21 @@ interface AnswerRecorderProps {
   onSubmit: (blob: Blob, durationSeconds: number) => Promise<void>;
   submitting: boolean;
   submitLabel: string;
+  onStateChange?: (state: RecorderState) => void;
 }
 
 type RecorderState = "idle" | "recording" | "recorded" | "error";
 
-export function AnswerRecorder({ onSubmit, submitting, submitLabel }: AnswerRecorderProps) {
+export function AnswerRecorder({ onSubmit, submitting, submitLabel, onStateChange }: AnswerRecorderProps) {
   const [state, setState] = useState<RecorderState>("idle");
   const [error, setError] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
+
+  useEffect(() => {
+    onStateChange?.(state);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state]);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -101,6 +107,7 @@ export function AnswerRecorder({ onSubmit, submitting, submitLabel }: AnswerReco
 
       {state === "idle" || state === "error" ? (
         <button
+          id="tour-target-speak"
           type="button"
           onClick={handleRecord}
           className="w-full flex flex-col items-center justify-center gap-2 py-8 border-2 border-dashed border-purple-300 rounded-lg text-purple-600 hover:bg-purple-50"
@@ -138,6 +145,7 @@ export function AnswerRecorder({ onSubmit, submitting, submitLabel }: AnswerReco
               <RotateCcw className="w-4 h-4" /> Re-record
             </button>
             <button
+              id="tour-target-submit"
               type="button"
               onClick={handleSubmit}
               disabled={submitting}
