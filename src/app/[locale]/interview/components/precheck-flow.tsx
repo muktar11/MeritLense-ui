@@ -166,12 +166,31 @@ function PrivacyStep({
         </div>
       )}
 
-      <div className="text-left bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4 text-sm text-gray-700 space-y-2">
+      <div className="text-left bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4 text-sm text-gray-700 space-y-3">
         <p>
-          Your data (recordings, transcripts, and verification images) is processed to generate an assessment report
-          for the organization that invited you, and is retained according to MeritLense&apos;s data retention policy.
-          It is not sold or shared with third parties outside of this assessment purpose.
+          MeritLense collects and processes your spoken and/or written responses (including audio recordings and
+          transcripts where you answer by voice), a photo captured for identity verification, and the scores,
+          indicators, and other outputs our AI-assisted analysis generates from your responses. If your session
+          includes a live video interview, the call itself is not recorded &mdash; only your spoken responses are
+          transcribed for evaluation.
         </p>
+        <p>
+          This data is used to verify your identity, conduct your workforce-readiness assessment, analyze your
+          responses and competency performance, and generate your assessment report and, where applicable, a
+          certificate.
+        </p>
+        <p>
+          Some parts of this assessment use AI and automated analysis to transcribe, translate, and evaluate your
+          responses. Results are decision-support information, not a final decision &mdash; the employer or
+          organization that invited you to this assessment remains solely responsible for any hiring decision.
+        </p>
+        <p>
+          MeritLense does not sell your data. Authorized service providers (for example, speech-to-text,
+          translation, and AI-analysis providers) may process your data only as necessary to deliver this assessment
+          service, under appropriate data-protection safeguards. Your results are also shared with the employer or
+          agency that requested this assessment.
+        </p>
+        <p>Your data is retained according to MeritLense&apos;s data retention policy.</p>
       </div>
 
       <label className="flex items-start gap-2 text-left text-sm text-gray-700 mb-4 cursor-pointer">
@@ -181,7 +200,11 @@ function PrivacyStep({
           onChange={(e) => setAcknowledged(e.target.checked)}
           className="mt-0.5"
         />
-        <span>I acknowledge this notice.</span>
+        <span>
+          I confirm that I have read and understood this Privacy Notice and acknowledge that my personal data,
+          including video, audio, transcripts and identity-verification information, will be processed for the
+          purposes described above.
+        </span>
       </label>
 
       <button
