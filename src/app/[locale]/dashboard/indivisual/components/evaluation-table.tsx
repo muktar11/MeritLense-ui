@@ -118,7 +118,24 @@ export default function EvaluationTable({
                 </td>
                 <td className="py-4 px-4 text-gray-600">{item.duration_minutes} min</td>
                 <td className="py-4 px-4 text-gray-600">
-                  {item.score ? `${item.score}%` : '-'}
+                  {item.assessment_mode === 'SCHEDULED_INTERVIEW' ? (
+                    item.evaluator_rating ? (
+                      <div className="grid grid-cols-5 gap-1 min-w-[245px]">
+                        {[
+                          ['Safety', item.evaluator_rating.safety_awareness],
+                          ['Behavior', item.evaluator_rating.behavior_integrity],
+                          ['Psych', item.evaluator_rating.psych_professional],
+                          ['Task', item.evaluator_rating.task_execution],
+                          ['Consistency', item.evaluator_rating.consistency],
+                        ].map(([label, value]) => (
+                          <div key={String(label)} className="text-center rounded border border-gray-200 px-1 py-1">
+                            <p className="text-[9px] leading-tight text-gray-400">{label}</p>
+                            <p className="text-xs font-semibold text-gray-700">{value}</p>
+                          </div>
+                        ))}
+                      </div>
+                    ) : '-'
+                  ) : item.score !== null && item.score !== undefined ? `${item.score}%` : '-'}
                 </td>
                 <td className="py-4 px-4">
                   <div className="flex items-center gap-2">
@@ -170,7 +187,7 @@ export default function EvaluationTable({
                       </button>
                     )}
 
-                    {onViewResults && item.status === 'COMPLETED' && (
+                    {onViewResults && item.status === 'COMPLETED' && item.assessment_mode === 'AI_INTERVIEW' && (
                       <button
                         onClick={() => onViewResults(item)}
                         className="p-1 hover:bg-gray-100 rounded transition-colors text-gray-500 hover:text-purple-600"

@@ -53,6 +53,8 @@ export interface Evaluation {
   
   last_evaluation_date?: string;
   score?: number;
+  assessment_mode: 'AI_INTERVIEW' | 'SCHEDULED_INTERVIEW';
+  evaluator_rating?: EvaluatorRating | null;
   feedback?: string;
   
   meeting_link?: string;
@@ -355,6 +357,8 @@ export interface EvaluationListItem {
   scheduled_date: string;
   duration_minutes: number;
   score?: number;
+  assessment_mode: 'AI_INTERVIEW' | 'SCHEDULED_INTERVIEW';
+  evaluator_rating?: EvaluatorRating | null;
   created_by: string;
   created_at: string;
   // meeting_link is the auto-generated candidate interview link for

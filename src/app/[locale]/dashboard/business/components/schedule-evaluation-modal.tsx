@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from "next-intl"
 import { X, Loader2, Calendar, MapPin, Video, FileText } from "lucide-react"
 import { EVALUATION_TYPES, EVALUATION_STATUS, type Evaluation, type CreateEvaluationData } from "@/app/api/evaluations/types"
 import { format } from "date-fns"
+import { EvaluatorRatingCard } from "@/components/evaluations/EvaluatorRatingCard"
 
 type ModalMode = 'view' | 'create' | 'edit' | 'reschedule';
 
@@ -371,10 +372,16 @@ export default function EvaluationModal({
             {evaluation.status === 'COMPLETED' && (
               <div className="border-t pt-4">
                 <h3 className="font-medium text-gray-900 mb-3">Results</h3>
+                {evaluation.assessment_mode === 'SCHEDULED_INTERVIEW' && (
+                  <EvaluatorRatingCard evaluationId={evaluation.id} />
+                )}
+                {evaluation.assessment_mode === 'AI_INTERVIEW' && (
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-xs text-gray-500">Score</p>
-                    <p className="text-lg font-bold text-purple-600">{evaluation.score}%</p>
+                    <p className="text-xs text-gray-500">AI Rule Engine Score</p>
+                    <p className="text-lg font-bold text-purple-600">
+                      {evaluation.score !== null && evaluation.score !== undefined ? `${evaluation.score}%` : 'Scoring pending'}
+                    </p>
                   </div>
                   {evaluation.certificate_status !== 'NOT_ISSUED' && (
                     <div>
@@ -391,6 +398,7 @@ export default function EvaluationModal({
                     </div>
                   )}
                 </div>
+                )}
                 {evaluation.feedback && (
                   <div className="mt-3">
                     <p className="text-xs text-gray-500">Feedback</p>
