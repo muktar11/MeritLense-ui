@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 import evaluationService from "@/app/api/evaluations/endpoints";
 import reportService from "@/app/api/reports/endpoints";
-import { EvaluatorRatingCard } from "./EvaluatorRatingCard";
 import type {
   SessionEvaluationSummary,
   ResponseEvaluationResult,
@@ -164,7 +163,8 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
       await evaluationService.runScoring(evaluationId);
       await load(evaluationId);
     } catch (err: any) {
-      const msg = err?.detail ?? err?.response?.data?.detail ?? "Failed to run scoring. Try again.";
+      const msg = err?.detail ?? err?.error ?? err?.response?.data?.detail ?? err?.response?.data?.error
+        ?? "Failed to run scoring. Try again.";
       setError(msg);
     } finally {
       setRunningScoring(false);
@@ -306,8 +306,6 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
                   </span>
                 </div>
               </div>
-
-              {evaluationId && <EvaluatorRatingCard evaluationId={evaluationId} />}
 
               {summary.critical_failures.length > 0 && (
                 <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex gap-2">
