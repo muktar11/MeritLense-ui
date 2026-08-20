@@ -242,6 +242,7 @@ export interface EvaluatorRating {
   behavior_integrity: number;
   psych_professional: number;
   task_execution: number;
+  consistency: number;
   rated_by: string | null;
   rated_by_name: string | null;
   rated_at: string;
