@@ -141,6 +141,17 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
               </label>
             ))}
           </div>
+          <div className="rounded-lg border border-amber-200 bg-white px-3 py-2">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-xs font-medium text-gray-700">Consistency</p>
+                <p className="mt-0.5 text-xs text-gray-500">Calculated automatically from the candidate&apos;s responses.</p>
+              </div>
+              {evaluatorRating && (
+                <p className="text-lg font-bold text-gray-900">{evaluatorRating.consistency}</p>
+              )}
+            </div>
+          </div>
           <button
             type="button"
             onClick={handleSubmitRating}
@@ -152,15 +163,19 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
           </button>
         </div>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-4">
+        <div className="grid gap-3 sm:grid-cols-5">
           {RATING_POOLS.map(({ key, label }) => (
             <div key={key} className="rounded-lg bg-white border border-amber-200 px-3 py-2 text-center">
               <p className="text-xs text-gray-500">{label}</p>
               <p className="text-lg font-bold text-gray-900">{evaluatorRating[key]}</p>
             </div>
           ))}
+          <div className="rounded-lg bg-white border border-amber-200 px-3 py-2 text-center">
+            <p className="text-xs text-gray-500">Consistency</p>
+            <p className="text-lg font-bold text-gray-900">{evaluatorRating.consistency}</p>
+          </div>
           {evaluatorRating.rated_by_name && (
-            <p className="sm:col-span-4 text-[11px] text-gray-500">
+            <p className="sm:col-span-5 text-[11px] text-gray-500">
               Rated by {evaluatorRating.rated_by_name} on{" "}
               {new Date(evaluatorRating.rated_at).toLocaleString()}
             </p>
