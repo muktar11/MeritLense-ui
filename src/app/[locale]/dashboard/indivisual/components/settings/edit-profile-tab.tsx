@@ -1,15 +1,21 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useTranslations } from "next-intl"
 import { useProfile } from "../../../../../hooks/useProfile"
 import { Loader2 } from "lucide-react"
 import { JOB_ROLES, NATIONALITIES, LANGUAGES } from "../../../../../api/auth/endpoints"
 
+const PROFILE_PICTURE_MAX_BYTES = 5 * 1024 * 1024
+const PROFILE_PICTURE_ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"]
+
 export default function EditProfileTab() {
   const t = useTranslations("dashboard.indivisual.settings.edit-profile-tab")
-  const { profile, loading, error, updateProfile, fetchProfile } = useProfile()
+  const { profile, loading, error, updateProfile, fetchProfile, uploadProfilePicture, removeProfilePicture } = useProfile()
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [pictureUploading, setPictureUploading] = useState(false)
+  const [pictureError, setPictureError] = useState<string | null>(null)
 
   const [formData, setFormData] = useState({
     first_name: "",
@@ -70,6 +76,40 @@ export default function EditProfileTab() {
     }
   }
 
+  const handlePictureChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    e.target.value = ""
+    if (!file) return
+
+    setPictureError(null)
+
+    if (!PROFILE_PICTURE_ACCEPTED_TYPES.includes(file.type)) {
+      setPictureError("Please choose a JPG, PNG, or WEBP image.")
+      return
+    }
+    if (file.size > PROFILE_PICTURE_MAX_BYTES) {
+      setPictureError("Image must be smaller than 5MB.")
+      return
+    }
+
+    setPictureUploading(true)
+    const success = await uploadProfilePicture(file)
+    setPictureUploading(false)
+    if (!success) {
+      setPictureError("Failed to upload profile picture. Please try again.")
+    }
+  }
+
+  const handleRemovePicture = async () => {
+    setPictureError(null)
+    setPictureUploading(true)
+    const success = await removeProfilePicture()
+    setPictureUploading(false)
+    if (!success) {
+      setPictureError("Failed to remove profile picture. Please try again.")
+    }
+  }
+
   if (loading && !profile) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -83,11 +123,20 @@ export default function EditProfileTab() {
       {/* Profile Avatar */}
       <div className="flex flex-col sm:flex-row items-start gap-6 sm:gap-8">
         <div className="shrink-0">
-          <div className="w-20 h-20 sm:w-24 sm:h-24 bg-linear-to-br from-teal-400 to-purple-500 rounded-full flex items-center justify-center">
-            <span className="text-white text-xl sm:text-2xl font-bold">
-              {formData.first_name?.[0]}{formData.last_name?.[0]}
-            </span>
-          </div>
+          {profile?.profile_picture ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={profile.profile_picture}
+              alt=""
+              className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover"
+            />
+          ) : (
+            <div className="w-20 h-20 sm:w-24 sm:h-24 bg-linear-to-br from-teal-400 to-purple-500 rounded-full flex items-center justify-center">
+              <span className="text-white text-xl sm:text-2xl font-bold">
+                {formData.first_name?.[0]}{formData.last_name?.[0]}
+              </span>
+            </div>
+          )}
         </div>
 
         <div className="flex-1">
@@ -97,12 +146,37 @@ export default function EditProfileTab() {
           <p className="text-sm text-gray-600 mb-4">
             {t("profilePictureSubtitle")}
           </p>
-          <button
-            type="button"
-            className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
-          >
-            {t("changeButton")}
-          </button>
+          {pictureError && (
+            <p className="text-sm text-red-600 mb-3">{pictureError}</p>
+          )}
+          <div className="flex items-center gap-3">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="hidden"
+              onChange={handlePictureChange}
+            />
+            <button
+              type="button"
+              disabled={pictureUploading}
+              onClick={() => fileInputRef.current?.click()}
+              className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            >
+              {pictureUploading && <Loader2 className="w-4 h-4 animate-spin" />}
+              {t("changeButton")}
+            </button>
+            {profile?.profile_picture && (
+              <button
+                type="button"
+                disabled={pictureUploading}
+                onClick={handleRemovePicture}
+                className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Remove
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
