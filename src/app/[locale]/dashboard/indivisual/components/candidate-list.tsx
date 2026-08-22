@@ -2,8 +2,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { useLocale } from "next-intl"
+import { Loader2 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -11,6 +10,8 @@ import { ChevronLeft, ChevronRight } from "lucide-react"
 import { useTranslations } from "next-intl"
 import type { RecentCandidate } from "@/app/api/dashboard/b2c/types"
 import { format } from "date-fns"
+import evaluationService from "@/app/api/evaluations/endpoints"
+import { EvaluationResultsModal } from "@/components/evaluations/EvaluationResultsModal"
 
 interface CandidateListProps {
   candidates: RecentCandidate[]
@@ -19,15 +20,36 @@ interface CandidateListProps {
 
 export function CandidateList({ candidates, searchTerm = "" }: CandidateListProps) {
   const t = useTranslations("dashboard.indivisual.candidateList")
-  const router = useRouter()
-  const locale = useLocale()
   const [currentPage, setCurrentPage] = useState(1)
   const [rowsPerPage] = useState(5)
+  const [loadingResultsFor, setLoadingResultsFor] = useState<string | null>(null)
+  const [noResultsFor, setNoResultsFor] = useState<string | null>(null)
+  const [resultsEvaluationId, setResultsEvaluationId] = useState<string | null>(null)
+  const [resultsCandidateName, setResultsCandidateName] = useState("")
 
-  const viewResults = (candidate: RecentCandidate) => {
-    router.push(
-      `/${locale}/dashboard/indivisual/evaluations?candidate=${encodeURIComponent(candidate.full_name)}`
-    )
+  const viewResults = async (candidate: RecentCandidate) => {
+    setNoResultsFor(null)
+    setLoadingResultsFor(candidate.id.toString())
+    try {
+      const completed = await evaluationService.getEvaluations({
+        candidate_id: candidate.id.toString(),
+        status: "COMPLETED",
+      })
+      if (completed.length === 0) {
+        setNoResultsFor(candidate.id.toString())
+        return
+      }
+      const latest = [...completed].sort(
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      )[0]
+      setResultsCandidateName(candidate.full_name)
+      setResultsEvaluationId(latest.id)
+    } catch (error) {
+      console.error("Failed to fetch candidate evaluations:", error)
+      setNoResultsFor(candidate.id.toString())
+    } finally {
+      setLoadingResultsFor(null)
+    }
   }
 
   const filteredCandidates = candidates.filter(candidate => 
@@ -91,13 +113,25 @@ export function CandidateList({ candidates, searchTerm = "" }: CandidateListProp
                       : 'No evaluations'}
                   </td>
                   <td className="py-3 px-2">
-                    <Button
-                      size="sm"
-                      className="bg-blue-600 hover:bg-blue-700 text-xs h-7"
-                      onClick={() => viewResults(candidate)}
-                    >
-                      {t("table.viewResults")}
-                    </Button>
+                    <div className="flex flex-col gap-1">
+                      <Button
+                        size="sm"
+                        className="bg-blue-600 hover:bg-blue-700 text-xs h-7"
+                        disabled={loadingResultsFor === candidate.id.toString()}
+                        onClick={() => viewResults(candidate)}
+                      >
+                        {loadingResultsFor === candidate.id.toString() ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                          t("table.viewResults")
+                        )}
+                      </Button>
+                      {noResultsFor === candidate.id.toString() && (
+                        <span className="text-[10px] text-muted-foreground">
+                          {t("table.noResultsYet")}
+                        </span>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -131,9 +165,25 @@ export function CandidateList({ candidates, searchTerm = "" }: CandidateListProp
                     ? format(new Date(candidate.last_evaluation_date), 'MMM d, yyyy')
                     : 'No evaluations'}
                 </span>
-                <Button size="sm" className="text-xs h-7" onClick={() => viewResults(candidate)}>
-                  {t("table.viewResults")}
-                </Button>
+                <div className="flex flex-col items-end gap-1">
+                  <Button
+                    size="sm"
+                    className="text-xs h-7"
+                    disabled={loadingResultsFor === candidate.id.toString()}
+                    onClick={() => viewResults(candidate)}
+                  >
+                    {loadingResultsFor === candidate.id.toString() ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      t("table.viewResults")
+                    )}
+                  </Button>
+                  {noResultsFor === candidate.id.toString() && (
+                    <span className="text-[10px] text-muted-foreground">
+                      {t("table.noResultsYet")}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           ))}
@@ -165,6 +215,12 @@ export function CandidateList({ candidates, searchTerm = "" }: CandidateListProp
           </div>
         )}
       </CardContent>
+
+      <EvaluationResultsModal
+        evaluationId={resultsEvaluationId}
+        candidateName={resultsCandidateName}
+        onClose={() => setResultsEvaluationId(null)}
+      />
     </Card>
   )
 }
