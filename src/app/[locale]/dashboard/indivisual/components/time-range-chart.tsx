@@ -3,9 +3,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useTranslations } from "next-intl"
-import { useState } from "react"
 import type { EvaluationTimeRange } from "@/app/api/dashboard/b2c/types"
 
 interface TimeRangeChartProps {
@@ -14,30 +12,13 @@ interface TimeRangeChartProps {
 
 export function TimeRangeChart({ data }: TimeRangeChartProps) {
   const t = useTranslations("dashboard.indivisual.timeRange")
-  const [period, setPeriod] = useState<"monthly" | "quarterly" | "yearly">("monthly")
 
   return (
     <Card className="w-full">
       <CardHeader className="pb-3">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <CardTitle className="text-sm sm:text-base">
-            {t("title")}
-          </CardTitle>
-
-          <Tabs value={period} onValueChange={(v) => setPeriod(v as any)}>
-            <TabsList className="h-8 grid grid-cols-3">
-              <TabsTrigger value="monthly" className="text-xs">
-                {t("tabs.monthly")}
-              </TabsTrigger>
-              <TabsTrigger value="quarterly" className="text-xs">
-                {t("tabs.quarterly")}
-              </TabsTrigger>
-              <TabsTrigger value="yearly" className="text-xs">
-                {t("tabs.yearly")}
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
+        <CardTitle className="text-sm sm:text-base">
+          {t("title")}
+        </CardTitle>
       </CardHeader>
 
       <CardContent>

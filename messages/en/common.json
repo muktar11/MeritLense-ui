@@ -2025,7 +2025,7 @@
     }
   },
   "timeRange": {
-    "title": "Time Range",
+    "title": "Evaluations by Time of Day",
     "tabs": {
       "monthly": "Monthly",
       "quarterly": "Quarterly",

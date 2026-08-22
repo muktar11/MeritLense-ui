@@ -2,6 +2,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { useLocale } from "next-intl"
 import { Search, Bell, Loader2 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -29,7 +31,9 @@ import { ScoreTrendChart } from "./score-trend-chart"
 
 export function Dashboard() {
   const t = useTranslations("dashboard.indivisual.dashboard")
-  
+  const router = useRouter()
+  const locale = useLocale()
+
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [recentCandidates, setRecentCandidates] = useState<RecentCandidate[]>([])
@@ -205,12 +209,16 @@ export function Dashboard() {
 
             <div className="bg-card rounded-lg p-4 flex flex-col justify-center items-center text-center gap-3">
               <div className="text-sm font-medium">{t("quickAction")}</div>
-              <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white text-xs">
+              <Button
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white text-xs"
+                onClick={() => router.push(`/${locale}/dashboard/indivisual/payment`)}
+              >
                 {t("buyPoints", { value: 100 })}
               </Button>
               <Button
                 variant="outline"
                 className="w-full text-xs bg-purple-100 text-purple-700 border-purple-200 hover:bg-purple-200"
+                onClick={() => router.push(`/${locale}/dashboard/indivisual/payment`)}
               >
                 {t("resumeSubscription")}
               </Button>
@@ -226,10 +234,11 @@ export function Dashboard() {
               candidates={recentCandidates}
               searchTerm={searchTerm}
             />
-            <EvaluationManagement 
+            <EvaluationManagement
               evaluations={recentEvaluations}
               activeTab={activeTab}
               onTabChange={setActiveTab}
+              onScheduled={fetchDashboardData}
             />
             <StatusDistributionChart data={statusDistribution} />
           </div>

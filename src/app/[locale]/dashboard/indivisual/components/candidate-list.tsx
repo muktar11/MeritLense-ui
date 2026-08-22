@@ -2,6 +2,8 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { useLocale } from "next-intl"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -17,8 +19,16 @@ interface CandidateListProps {
 
 export function CandidateList({ candidates, searchTerm = "" }: CandidateListProps) {
   const t = useTranslations("dashboard.indivisual.candidateList")
+  const router = useRouter()
+  const locale = useLocale()
   const [currentPage, setCurrentPage] = useState(1)
   const [rowsPerPage] = useState(5)
+
+  const viewResults = (candidate: RecentCandidate) => {
+    router.push(
+      `/${locale}/dashboard/indivisual/evaluations?candidate=${encodeURIComponent(candidate.full_name)}`
+    )
+  }
 
   const filteredCandidates = candidates.filter(candidate => 
     candidate.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -81,7 +91,11 @@ export function CandidateList({ candidates, searchTerm = "" }: CandidateListProp
                       : 'No evaluations'}
                   </td>
                   <td className="py-3 px-2">
-                    <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-xs h-7">
+                    <Button
+                      size="sm"
+                      className="bg-blue-600 hover:bg-blue-700 text-xs h-7"
+                      onClick={() => viewResults(candidate)}
+                    >
                       {t("table.viewResults")}
                     </Button>
                   </td>
@@ -117,7 +131,7 @@ export function CandidateList({ candidates, searchTerm = "" }: CandidateListProp
                     ? format(new Date(candidate.last_evaluation_date), 'MMM d, yyyy')
                     : 'No evaluations'}
                 </span>
-                <Button size="sm" className="text-xs h-7">
+                <Button size="sm" className="text-xs h-7" onClick={() => viewResults(candidate)}>
                   {t("table.viewResults")}
                 </Button>
               </div>
