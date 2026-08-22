@@ -11,7 +11,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import DashboardHeader from "../components/dashboard-header";
-import { Download, FileText, Link2, Loader2 } from "lucide-react";
+import { Download, FileText, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {CandidateModal} from "../candidates/components/candidate-modal";
 import CandidatesTable from "../candidates/components/candidates-table";
@@ -383,10 +383,6 @@ export default function CandidateComparison() {
                 >
                   {exporting === "pdf" ? <Loader2 size={16} className="animate-spin" /> : <FileText size={16} />}
                   {t("exportPDF")}
-                </button>
-                <button className="flex items-center gap-2 px-4 py-2 sm:px-6 sm:py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition font-medium text-sm sm:text-base">
-                  <Link2 size={16} />
-                  {t("linkAnalytics")}
                 </button>
               </div>
             </div>

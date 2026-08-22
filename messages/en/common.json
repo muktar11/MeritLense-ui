@@ -1797,8 +1797,7 @@
         },
         "deleteConfirm": "Are you sure you want to delete this candidate?",
         "exportPNG": "Export as PNG Image",
-        "exportPDF": "Export as PDF Report",
-        "linkAnalytics": "Link to Cohort Analytics"
+        "exportPDF": "Export as PDF Report"
       },
 
      "profile": {
