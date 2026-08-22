@@ -1563,7 +1563,8 @@
         "notes": "ملاحظات",
         "evaluation": "التقييم",
         "action": "الإجراء",
-        "viewResults": "عرض النتائج"
+        "viewResults": "عرض النتائج",
+        "noResultsYet": "لا توجد تقييمات مكتملة بعد"
       },
       "roles": {
         "houseKeeper": "مدبرة منزل",

@@ -1958,7 +1958,8 @@
         "notes": "Notes",
         "evaluation": "Evaluation",
         "action": "Action",
-        "viewResults": "View Results"
+        "viewResults": "View Results",
+        "noResultsYet": "No completed evaluations yet"
       },
       "roles": {
         "houseKeeper": "HouseKeeper",
