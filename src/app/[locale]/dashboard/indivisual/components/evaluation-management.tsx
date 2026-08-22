@@ -3,31 +3,26 @@
 
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Circle } from "lucide-react"
 import { useTranslations } from "next-intl"
 import type { RecentEvaluation } from "@/app/api/dashboard/b2c/types"
 import { format } from "date-fns"
-import { BulkScheduleModal } from "./bulk-schedule-modal"
 
 interface EvaluationManagementProps {
   evaluations: RecentEvaluation[]
   activeTab: "scheduled" | "inProgress" | "completed"
   onTabChange: (tab: "scheduled" | "inProgress" | "completed") => void
-  onScheduled?: () => void
 }
 
 export function EvaluationManagement({
   evaluations,
   activeTab,
   onTabChange,
-  onScheduled,
 }: EvaluationManagementProps) {
   const t = useTranslations("dashboard.indivisual.evaluationManagement")
   const [typeFilter, setTypeFilter] = useState<string>("")
-  const [isBulkModalOpen, setIsBulkModalOpen] = useState(false)
 
   const filteredEvaluations = typeFilter
     ? evaluations.filter((evaluation) => evaluation.evaluation_type === typeFilter)
@@ -59,18 +54,9 @@ export function EvaluationManagement({
   return (
     <Card>
       <CardHeader className="pb-3">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <CardTitle className="text-base">
-            {t("title")}
-          </CardTitle>
-          <Button
-            size="sm"
-            className="bg-purple-600 hover:bg-purple-700 text-xs h-8"
-            onClick={() => setIsBulkModalOpen(true)}
-          >
-            {t("addBulkSchedule")}
-          </Button>
-        </div>
+        <CardTitle className="text-base">
+          {t("title")}
+        </CardTitle>
       </CardHeader>
 
       <CardContent>
@@ -145,12 +131,6 @@ export function EvaluationManagement({
           </TabsContent>
         </Tabs>
       </CardContent>
-
-      <BulkScheduleModal
-        isOpen={isBulkModalOpen}
-        onClose={() => setIsBulkModalOpen(false)}
-        onSuccess={() => onScheduled?.()}
-      />
     </Card>
   )
 }

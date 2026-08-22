@@ -238,7 +238,6 @@ export function Dashboard() {
               evaluations={recentEvaluations}
               activeTab={activeTab}
               onTabChange={setActiveTab}
-              onScheduled={fetchDashboardData}
             />
             <StatusDistributionChart data={statusDistribution} />
           </div>
