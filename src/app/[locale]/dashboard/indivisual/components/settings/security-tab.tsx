@@ -252,7 +252,7 @@ export default function SecurityTab() {
               onClick={() => !deleting && setIsDeleteModalOpen(false)}
             />
 
-            <div className="inline-block w-full max-w-md my-8 overflow-hidden text-left align-middle transition-all transform bg-white rounded-lg shadow-xl">
+            <div className="relative z-10 inline-block w-full max-w-md my-8 overflow-hidden text-left align-middle transition-all transform bg-white rounded-lg shadow-xl">
               <div className="p-6">
                 <h3 className="text-lg font-bold text-gray-900 mb-2">
                   {t("deleteAccountTitle")}
