@@ -4,11 +4,13 @@ import type React from "react"
 import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { useProfile } from "../../../../../hooks/useProfile"
+import { useAuth } from "../../../../../hooks/useAuth"
 import { Loader2, CheckCircle, AlertCircle } from "lucide-react"
 
 export default function SecurityTab() {
   const t = useTranslations("dashboard.indivisual.settings.security-tab")
-  const { changePassword, loading, error } = useProfile()
+  const { changePassword, deleteAccount, loading, error } = useProfile()
+  const { logout } = useAuth()
 
   const [formData, setFormData] = useState({
     current_password: "",
@@ -17,6 +19,11 @@ export default function SecurityTab() {
   })
 
   const [success, setSuccess] = useState(false)
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [deletePassword, setDeletePassword] = useState("")
+  const [deleteError, setDeleteError] = useState<string | null>(null)
+  const [deleting, setDeleting] = useState(false)
   const [passwordValidation, setPasswordValidation] = useState({
     minLength: false,
     hasNumber: false,
@@ -50,6 +57,19 @@ export default function SecurityTab() {
       })
       setTimeout(() => setSuccess(false), 5000)
     }
+  }
+
+  const handleDeleteAccount = async () => {
+    if (!deletePassword) return
+    setDeleteError(null)
+    setDeleting(true)
+    const success = await deleteAccount(deletePassword)
+    setDeleting(false)
+    if (success) {
+      logout()
+      return
+    }
+    setDeleteError("Incorrect password. Please try again.")
   }
 
   return (
@@ -194,6 +214,11 @@ export default function SecurityTab() {
 
           <button
             type="button"
+            onClick={() => {
+              setDeletePassword("")
+              setDeleteError(null)
+              setIsDeleteModalOpen(true)
+            }}
             className="w-full sm:w-auto px-6 py-2.5 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition"
           >
             {t("deleteButton")}
@@ -218,6 +243,72 @@ export default function SecurityTab() {
           </button>
         </div>
       </form>
+
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div
+              className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75"
+              onClick={() => !deleting && setIsDeleteModalOpen(false)}
+            />
+
+            <div className="inline-block w-full max-w-md my-8 overflow-hidden text-left align-middle transition-all transform bg-white rounded-lg shadow-xl">
+              <div className="p-6">
+                <h3 className="text-lg font-bold text-gray-900 mb-2">
+                  {t("deleteAccountTitle")}
+                </h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  This permanently deactivates your account and cancels any active subscription
+                  immediately - you won&apos;t be able to log back in. This can&apos;t be undone.
+                  Enter your password to confirm.
+                </p>
+
+                {deleteError && (
+                  <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2">
+                    <AlertCircle className="w-4 h-4 text-red-600 mt-0.5 shrink-0" />
+                    <p className="text-sm text-red-600">{deleteError}</p>
+                  </div>
+                )}
+
+                <input
+                  type="password"
+                  value={deletePassword}
+                  onChange={(e) => setDeletePassword(e.target.value)}
+                  placeholder="Your password"
+                  autoFocus
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent mb-4"
+                />
+
+                <div className="flex justify-end gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setIsDeleteModalOpen(false)}
+                    disabled={deleting}
+                    className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleDeleteAccount}
+                    disabled={deleting || !deletePassword}
+                    className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  >
+                    {deleting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Deleting...
+                      </>
+                    ) : (
+                      "Permanently Delete Account"
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
