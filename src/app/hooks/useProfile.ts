@@ -9,6 +9,8 @@ interface UseProfileReturn {
   updateProfile: (data: B2CProfileData | B2BProfileData | AdminProfileData) => Promise<boolean>
   changePassword: (data: ChangePasswordData) => Promise<boolean>
   uploadDocument: (documentType: string, file: File) => Promise<boolean>
+  uploadProfilePicture: (file: File) => Promise<boolean>
+  removeProfilePicture: () => Promise<boolean>
 }
 
 export const useProfile = (): UseProfileReturn => {
@@ -94,6 +96,36 @@ export const useProfile = (): UseProfileReturn => {
     }
   }
 
+  const uploadProfilePicture = async (file: File): Promise<boolean> => {
+    setLoading(true)
+    setError(null)
+    try {
+      const response = await profileAPI.uploadProfilePicture(file)
+      setProfile((prev: any) => (prev ? { ...prev, profile_picture: response.profile_picture } : prev))
+      return true
+    } catch (err: any) {
+      setError(err.error || 'Failed to upload profile picture')
+      return false
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const removeProfilePicture = async (): Promise<boolean> => {
+    setLoading(true)
+    setError(null)
+    try {
+      await profileAPI.removeProfilePicture()
+      setProfile((prev: any) => (prev ? { ...prev, profile_picture: null } : prev))
+      return true
+    } catch (err: any) {
+      setError(err.error || 'Failed to remove profile picture')
+      return false
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return {
     profile,
     loading,
@@ -102,5 +134,7 @@ export const useProfile = (): UseProfileReturn => {
     updateProfile,
     changePassword,
     uploadDocument,
+    uploadProfilePicture,
+    removeProfilePicture,
   }
 }
