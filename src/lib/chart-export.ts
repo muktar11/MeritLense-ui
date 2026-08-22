@@ -2,8 +2,22 @@
 // data URL, by serializing the SVG and drawing it onto an offscreen canvas.
 // recharts renders plain SVG (not canvas), so there is no built-in
 // `.toDataURL()` to call - this is the standard workaround.
+// recharts renders more than one <svg class="recharts-surface"> inside the
+// container - the actual chart plus one tiny swatch icon per legend entry
+// (e.g. a 14x14 solid-color square for each selected candidate). Picking
+// the first one in DOM order can grab a legend swatch instead of the real
+// chart, exporting a single flat color rather than the chart. The real
+// chart SVG is always by far the largest, so pick by rendered area.
+function findChartSvg(container: HTMLElement): SVGSVGElement | null {
+  const candidates = Array.from(container.querySelectorAll("svg"));
+  if (candidates.length === 0) return null;
+  return candidates.reduce((largest, svg) =>
+    svg.clientWidth * svg.clientHeight > largest.clientWidth * largest.clientHeight ? svg : largest
+  );
+}
+
 async function svgToPngDataUrl(container: HTMLElement): Promise<string> {
-  const svg = container.querySelector("svg");
+  const svg = findChartSvg(container);
   if (!svg) {
     throw new Error("No chart SVG found to export");
   }
