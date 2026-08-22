@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/app/hooks/useAuth";
 import DashboardHeader from "../components/dashboard-header";
 import { Search, Filter } from "lucide-react";
@@ -18,8 +19,17 @@ import { EVALUATION_TYPES, EVALUATION_STATUS } from "@/app/api/evaluations/types
 
 type ModalMode = 'view' | 'create' | 'edit' | 'reschedule';
 
-export default function EvaluationManagement() {
+export default function EvaluationManagementPage() {
+  return (
+    <Suspense fallback={<main className="min-h-screen bg-gray-50" />}>
+      <EvaluationManagement />
+    </Suspense>
+  );
+}
+
+function EvaluationManagement() {
   const { userRole, userId } = useAuth();
+  const searchParams = useSearchParams();
 
   const [evaluations, setEvaluations] = useState<EvaluationListItem[]>([]);
   const [filteredEvaluations, setFilteredEvaluations] = useState<EvaluationListItem[]>([]);
@@ -40,7 +50,7 @@ export default function EvaluationManagement() {
 
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [typeFilter, setTypeFilter] = useState<string>("");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState(() => searchParams.get('candidate') || "");
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
