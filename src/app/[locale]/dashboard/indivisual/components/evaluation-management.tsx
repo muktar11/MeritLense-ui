@@ -10,22 +10,28 @@ import { Circle } from "lucide-react"
 import { useTranslations } from "next-intl"
 import type { RecentEvaluation } from "@/app/api/dashboard/b2c/types"
 import { format } from "date-fns"
+import { BulkScheduleModal } from "./bulk-schedule-modal"
 
 interface EvaluationManagementProps {
   evaluations: RecentEvaluation[]
   activeTab: "scheduled" | "inProgress" | "completed"
   onTabChange: (tab: "scheduled" | "inProgress" | "completed") => void
+  onScheduled?: () => void
 }
 
-export function EvaluationManagement({ 
-  evaluations, 
-  activeTab, 
-  onTabChange 
+export function EvaluationManagement({
+  evaluations,
+  activeTab,
+  onTabChange,
+  onScheduled,
 }: EvaluationManagementProps) {
   const t = useTranslations("dashboard.indivisual.evaluationManagement")
   const [typeFilter, setTypeFilter] = useState<string>("")
-  const [roleFilter, setRoleFilter] = useState<string>("")
-  const [languageFilter, setLanguageFilter] = useState<string>("")
+  const [isBulkModalOpen, setIsBulkModalOpen] = useState(false)
+
+  const filteredEvaluations = typeFilter
+    ? evaluations.filter((evaluation) => evaluation.evaluation_type === typeFilter)
+    : evaluations
 
   const getInitials = (name: string) => {
     return name
@@ -57,7 +63,11 @@ export function EvaluationManagement({
           <CardTitle className="text-base">
             {t("title")}
           </CardTitle>
-          <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-xs h-8">
+          <Button
+            size="sm"
+            className="bg-purple-600 hover:bg-purple-700 text-xs h-8"
+            onClick={() => setIsBulkModalOpen(true)}
+          >
             {t("addBulkSchedule")}
           </Button>
         </div>
@@ -79,7 +89,7 @@ export function EvaluationManagement({
 
           {/* Filters */}
           <div className="mb-4 flex flex-wrap gap-2">
-            <select 
+            <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
               className="w-full sm:w-auto px-3 py-2 text-xs border rounded-lg bg-background"
@@ -87,37 +97,18 @@ export function EvaluationManagement({
               <option value="">{t("filters.type")}</option>
               <option value="INTERVIEW">Interview</option>
               <option value="TECHNICAL_TEST">Technical Test</option>
-              <option value="LANGUAGE_TEST">Language Test</option>
-            </select>
-            <select 
-              value={roleFilter}
-              onChange={(e) => setRoleFilter(e.target.value)}
-              className="w-full sm:w-auto px-3 py-2 text-xs border rounded-lg bg-background"
-            >
-              <option value="">{t("filters.role")}</option>
-              <option value="HK">Housekeeper</option>
-              <option value="EC">Elder Companion</option>
-              <option value="NA">Nursing Assistant</option>
-            </select>
-            <select 
-              value={languageFilter}
-              onChange={(e) => setLanguageFilter(e.target.value)}
-              className="w-full sm:w-auto px-3 py-2 text-xs border rounded-lg bg-background"
-            >
-              <option value="">{t("filters.language")}</option>
-              <option value="EN">English</option>
-              <option value="ES">Spanish</option>
-              <option value="AR">Arabic</option>
+              <option value="ASSESSMENT">Assessment</option>
+              <option value="LANGUAGE_PROFICIENCY">Language Proficiency</option>
             </select>
           </div>
 
           <TabsContent value={activeTab} className="space-y-3">
-            {evaluations.length === 0 ? (
+            {filteredEvaluations.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 No evaluations found
               </div>
             ) : (
-              evaluations.map((evaluation) => (
+              filteredEvaluations.map((evaluation) => (
                 <div
                   key={evaluation.id}
                   className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 bg-muted/30 rounded-lg"
@@ -154,6 +145,12 @@ export function EvaluationManagement({
           </TabsContent>
         </Tabs>
       </CardContent>
+
+      <BulkScheduleModal
+        isOpen={isBulkModalOpen}
+        onClose={() => setIsBulkModalOpen(false)}
+        onSuccess={() => onScheduled?.()}
+      />
     </Card>
   )
 }
