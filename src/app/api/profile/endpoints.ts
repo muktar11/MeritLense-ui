@@ -47,6 +47,10 @@ export interface DocumentUploadResponse {
   profile: any
 }
 
+export interface ProfilePictureUploadResponse {
+  profile_picture: string
+}
+
 export const profileAPI = {
   getProfile: async () => {
     const response = await profileClient.get('/me')
@@ -70,5 +74,17 @@ export const profileAPI = {
 
     const response = await profileFormDataClient.post('/documents/upload', formData)
     return response.data
+  },
+
+  uploadProfilePicture: async (file: File): Promise<ProfilePictureUploadResponse> => {
+    const formData = new FormData()
+    formData.append('profile_picture', file)
+
+    const response = await profileFormDataClient.post('/me/profile-picture', formData)
+    return response.data
+  },
+
+  removeProfilePicture: async (): Promise<void> => {
+    await profileClient.delete('/me/profile-picture')
   },
 }
