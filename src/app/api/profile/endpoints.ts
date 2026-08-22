@@ -87,4 +87,8 @@ export const profileAPI = {
   removeProfilePicture: async (): Promise<void> => {
     await profileClient.delete('/me/profile-picture')
   },
+
+  deleteAccount: async (password: string): Promise<void> => {
+    await profileClient.post('/me/delete', { password })
+  },
 }

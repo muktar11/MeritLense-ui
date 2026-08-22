@@ -11,6 +11,7 @@ interface UseProfileReturn {
   uploadDocument: (documentType: string, file: File) => Promise<boolean>
   uploadProfilePicture: (file: File) => Promise<boolean>
   removeProfilePicture: () => Promise<boolean>
+  deleteAccount: (password: string) => Promise<boolean>
 }
 
 export const useProfile = (): UseProfileReturn => {
@@ -126,6 +127,20 @@ export const useProfile = (): UseProfileReturn => {
     }
   }
 
+  const deleteAccount = async (password: string): Promise<boolean> => {
+    setLoading(true)
+    setError(null)
+    try {
+      await profileAPI.deleteAccount(password)
+      return true
+    } catch (err: any) {
+      setError(err.error || 'Failed to delete account')
+      return false
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return {
     profile,
     loading,
@@ -136,5 +151,6 @@ export const useProfile = (): UseProfileReturn => {
     uploadDocument,
     uploadProfilePicture,
     removeProfilePicture,
+    deleteAccount,
   }
 }
