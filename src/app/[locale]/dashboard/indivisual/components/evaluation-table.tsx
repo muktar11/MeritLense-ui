@@ -3,8 +3,14 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useLocale } from "next-intl"
-import { Copy, Eye, Calendar, XCircle, CheckCircle, Edit, Mic, BarChart3, Video } from "lucide-react"
-import type { EvaluationListItem } from "@/app/api/evaluations/types"
+import { Copy, Eye, Calendar, XCircle, CheckCircle, Edit, Mic, BarChart3, Video, MoreHorizontal } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import type { EvaluationListItem, EvaluatorRating } from "@/app/api/evaluations/types"
 import { format } from "date-fns"
 
 interface EvaluationTableProps {
@@ -43,6 +49,15 @@ function getInitials(name: string): string {
     .join('')
     .toUpperCase()
     .slice(0, 2)
+}
+
+// The full per-pool breakdown (Safety/Behavior/Psych/Task/Consistency) is
+// already shown in the "View Details" modal via EvaluatorRatingCard - the
+// table just needs a single at-a-glance number, so it averages the 5 pools
+// instead of repeating the whole breakdown grid in every row.
+function averageEvaluatorRating(rating: EvaluatorRating): number {
+  const { safety_awareness, behavior_integrity, psych_professional, task_execution, consistency } = rating
+  return Math.round((safety_awareness + behavior_integrity + psych_professional + task_execution + consistency) / 5)
 }
 
 export default function EvaluationTable({
@@ -97,7 +112,15 @@ export default function EvaluationTable({
               </td>
             </tr>
           ) : (
-            data.map((item) => (
+            data.map((item) => {
+              const canEditRow = canEdit && (item.status === 'SCHEDULED' || item.status === 'RESCHEDULED')
+              const canRescheduleRow = canManage && item.status === 'SCHEDULED'
+              const canCompleteRow = canManage && (item.status === 'SCHEDULED' || item.status === 'RESCHEDULED')
+              const canCancelRow = canManage && (item.status === 'SCHEDULED' || item.status === 'RESCHEDULED')
+              const canStartSessionRow = !!onStartSession && item.status !== 'CANCELLED' && !item.session_id
+              const hasMoreActions = canEditRow || canRescheduleRow || canCompleteRow || canCancelRow || canStartSessionRow
+
+              return (
               <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                 <td className="py-4 px-4">
                   <div className="flex items-center gap-2">
@@ -120,25 +143,17 @@ export default function EvaluationTable({
                 <td className="py-4 px-4 text-gray-600">
                   {item.assessment_mode === 'SCHEDULED_INTERVIEW' ? (
                     item.evaluator_rating ? (
-                      <div className="grid grid-cols-5 gap-1 min-w-[245px]">
-                        {[
-                          ['Safety', item.evaluator_rating.safety_awareness],
-                          ['Behavior', item.evaluator_rating.behavior_integrity],
-                          ['Psych', item.evaluator_rating.psych_professional],
-                          ['Task', item.evaluator_rating.task_execution],
-                          ['Consistency', item.evaluator_rating.consistency],
-                        ].map(([label, value]) => (
-                          <div key={String(label)} className="text-center rounded border border-gray-200 px-1 py-1">
-                            <p className="text-[9px] leading-tight text-gray-400">{label}</p>
-                            <p className="text-xs font-semibold text-gray-700">{value}</p>
-                          </div>
-                        ))}
-                      </div>
+                      <span
+                        className="font-semibold text-gray-900"
+                        title="Average of Safety, Behavior, Psych, Task and Consistency scores - see View Details for the full breakdown"
+                      >
+                        {averageEvaluatorRating(item.evaluator_rating)}%
+                      </span>
                     ) : '-'
                   ) : item.score !== null && item.score !== undefined ? `${item.score}%` : '-'}
                 </td>
                 <td className="py-4 px-4">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
                     <button
                       onClick={() => onViewDetails?.(item)}
                       className="p-1 hover:bg-gray-100 rounded transition-colors text-gray-500 hover:text-purple-600"
@@ -146,46 +161,6 @@ export default function EvaluationTable({
                     >
                       <Eye className="w-4 h-4" />
                     </button>
-
-                    {canEdit && (item.status === 'SCHEDULED' || item.status === 'RESCHEDULED') && (
-                      <button
-                        onClick={() => onEdit?.(item)}
-                        className="p-1 hover:bg-gray-100 rounded transition-colors text-gray-500 hover:text-blue-600"
-                        title="Edit"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-                    )}
-
-                    {canManage && item.status === 'SCHEDULED' && (
-                      <button
-                        onClick={() => onReschedule?.(item)}
-                        className="p-1 hover:bg-gray-100 rounded transition-colors text-gray-500 hover:text-yellow-600"
-                        title="Reschedule"
-                      >
-                        <Calendar className="w-4 h-4" />
-                      </button>
-                    )}
-
-                    {canManage && (item.status === 'SCHEDULED' || item.status === 'RESCHEDULED') && (
-                      <button
-                        onClick={() => onComplete?.(item)}
-                        className="p-1 hover:bg-gray-100 rounded transition-colors text-gray-500 hover:text-green-600"
-                        title="Mark Complete"
-                      >
-                        <CheckCircle className="w-4 h-4" />
-                      </button>
-                    )}
-
-                    {canManage && (item.status === 'SCHEDULED' || item.status === 'RESCHEDULED') && (
-                      <button
-                        onClick={() => onCancel?.(item)}
-                        className="p-1 hover:bg-gray-100 rounded transition-colors text-gray-500 hover:text-red-600"
-                        title="Cancel"
-                      >
-                        <XCircle className="w-4 h-4" />
-                      </button>
-                    )}
 
                     {onViewResults && item.status === 'COMPLETED' && item.assessment_mode === 'AI_INTERVIEW' && (
                       <button
@@ -197,21 +172,17 @@ export default function EvaluationTable({
                       </button>
                     )}
 
-                    {onStartSession && item.status !== 'CANCELLED' && !item.session_id && (
-                      // Hidden once an AI interview session already exists for this
-                      // evaluation (item.session_id set - auto-linked when an
-                      // INTERVIEW-type evaluation is scheduled) - this button opens
-                      // the separate ad-hoc "Start AI Interview Session" flow, which
-                      // would otherwise create a second, unrelated session for the
-                      // same candidate.
-                      <button
-                        onClick={() => onStartSession(item)}
-                        className="p-1 hover:bg-gray-100 rounded transition-colors text-gray-500 hover:text-indigo-600"
-                        title="Start AI Interview"
-                      >
-                        <Mic className="w-4 h-4" />
-                      </button>
-                    )}
+                    {item.evaluation_type === 'INTERVIEW' &&
+                      item.session_id &&
+                      ['SCHEDULED', 'RESCHEDULED', 'IN_PROGRESS'].includes(item.status) && (
+                        <button
+                          onClick={() => handleJoinLiveInterview(item)}
+                          className="p-1 hover:bg-gray-100 rounded transition-colors text-gray-500 hover:text-purple-600"
+                          title="Join Interview"
+                        >
+                          <Video className="w-4 h-4" />
+                        </button>
+                      )}
 
                     {(item.status === 'SCHEDULED' || item.status === 'RESCHEDULED') && item.meeting_link && (
                       <button
@@ -227,21 +198,61 @@ export default function EvaluationTable({
                       </button>
                     )}
 
-                    {item.evaluation_type === 'INTERVIEW' &&
-                      item.session_id &&
-                      ['SCHEDULED', 'RESCHEDULED', 'IN_PROGRESS'].includes(item.status) && (
-                        <button
-                          onClick={() => handleJoinLiveInterview(item)}
-                          className="p-1 hover:bg-gray-100 rounded transition-colors text-gray-500 hover:text-purple-600"
-                          title="Join Interview"
-                        >
-                          <Video className="w-4 h-4" />
-                        </button>
-                      )}
+                    {hasMoreActions && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button
+                            className="p-1 hover:bg-gray-100 rounded transition-colors text-gray-500 hover:text-gray-700"
+                            title="More actions"
+                          >
+                            <MoreHorizontal className="w-4 h-4" />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          {canEditRow && (
+                            <DropdownMenuItem onClick={() => onEdit?.(item)}>
+                              <Edit className="w-4 h-4 mr-2" />
+                              Edit
+                            </DropdownMenuItem>
+                          )}
+                          {canRescheduleRow && (
+                            <DropdownMenuItem onClick={() => onReschedule?.(item)}>
+                              <Calendar className="w-4 h-4 mr-2" />
+                              Reschedule
+                            </DropdownMenuItem>
+                          )}
+                          {canCompleteRow && (
+                            <DropdownMenuItem onClick={() => onComplete?.(item)}>
+                              <CheckCircle className="w-4 h-4 mr-2" />
+                              Mark Complete
+                            </DropdownMenuItem>
+                          )}
+                          {canStartSessionRow && (
+                            // Hidden once an AI interview session already exists for this
+                            // evaluation (item.session_id set - auto-linked when an
+                            // INTERVIEW-type evaluation is scheduled) - this opens the
+                            // separate ad-hoc "Start AI Interview Session" flow, which
+                            // would otherwise create a second, unrelated session for the
+                            // same candidate.
+                            <DropdownMenuItem onClick={() => onStartSession?.(item)}>
+                              <Mic className="w-4 h-4 mr-2" />
+                              Start AI Interview
+                            </DropdownMenuItem>
+                          )}
+                          {canCancelRow && (
+                            <DropdownMenuItem onClick={() => onCancel?.(item)} variant="destructive">
+                              <XCircle className="w-4 h-4 mr-2" />
+                              Cancel
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
                   </div>
                 </td>
               </tr>
-            ))
+              )
+            })
           )}
         </tbody>
       </table>
