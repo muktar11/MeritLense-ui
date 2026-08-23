@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CheckCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useLocale } from "next-intl";
 
 export default function PaymentSuccessPage() {
   return (
@@ -20,6 +21,7 @@ export default function PaymentSuccessPage() {
 function PaymentSuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const locale = useLocale();
   const [loading, setLoading] = useState(true);
 
   const type = searchParams.get('type') || 'subscription';
@@ -27,11 +29,11 @@ function PaymentSuccessContent() {
   useEffect(() => {
     setLoading(false);
     const timer = setTimeout(() => {
-      router.push('/dashboard/indivisual/profile?tab=billing');
+      router.push(`/${locale}/dashboard/indivisual/profile?tab=billing`);
     }, 3000);
 
     return () => clearTimeout(timer);
-  }, [router]);
+  }, [router, locale]);
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -64,14 +66,14 @@ function PaymentSuccessContent() {
 
             <div className="space-y-3">
               <Link
-                href="/dashboard"
+                href={`/${locale}/dashboard/indivisual`}
                 className="block w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
               >
                 Go to Dashboard
               </Link>
-              
+
               <Link
-                href="/dashboard/indivisual/profile?tab=billing"
+                href={`/${locale}/dashboard/indivisual/profile?tab=billing`}
                 className="block w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
               >
                 View Billing Details
