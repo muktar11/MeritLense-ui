@@ -20,9 +20,11 @@ import teamService from "@/app/api/team/endpoints"
 import type { TeamMember, TeamInvitation } from "@/app/api/team/types"
 import agreementService from "@/app/api/agreements/endpoints"
 import type { Agreement } from "@/app/api/agreements/types"
+import TablePagination from "@/components/ui/table-pagination"
 import { format } from "date-fns"
 
 const REQUIRED_AGREEMENT_TYPES = ["B2B_AGREEMENT", "DPA"] as const
+const TEAM_MEMBERS_PAGE_SIZE = 10
 
 export function CompanyProfile() {
   const t = useTranslations("dashboard.business.company-profile")
@@ -35,6 +37,7 @@ export function CompanyProfile() {
   const [pendingInvitations, setPendingInvitations] = useState<TeamInvitation[]>([])
   const [teamLoading, setTeamLoading] = useState(false)
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
+  const [teamMembersPage, setTeamMembersPage] = useState(1)
 
   const [agreements, setAgreements] = useState<Agreement[]>([])
   const [agreementsLoading, setAgreementsLoading] = useState(false)
@@ -195,6 +198,13 @@ export function CompanyProfile() {
       </div>
     )
   }
+
+  const teamMembersTotalPages = Math.max(1, Math.ceil(teamMembers.length / TEAM_MEMBERS_PAGE_SIZE))
+  const teamMembersSafePage = Math.min(teamMembersPage, teamMembersTotalPages)
+  const paginatedTeamMembers = teamMembers.slice(
+    (teamMembersSafePage - 1) * TEAM_MEMBERS_PAGE_SIZE,
+    teamMembersSafePage * TEAM_MEMBERS_PAGE_SIZE
+  )
 
   return (
     <div className="min-h-screen bg-background p-4 sm:p-6" dir={locale === "ar" ? "rtl" : "ltr"}>
@@ -459,7 +469,7 @@ export function CompanyProfile() {
     </TableCell>
   </TableRow>
 ) : (
-  teamMembers.map((member) => (
+  paginatedTeamMembers.map((member) => (
     <TableRow key={member.id}>
       <TableCell>
         <div>
@@ -556,6 +566,15 @@ export function CompanyProfile() {
                         </TableBody>
                       </Table>
                     </div>
+                    {teamMembers.length > 0 && (
+                      <TablePagination
+                        currentPage={teamMembersSafePage}
+                        totalItems={teamMembers.length}
+                        pageSize={TEAM_MEMBERS_PAGE_SIZE}
+                        onPageChange={setTeamMembersPage}
+                        itemLabel="team members"
+                      />
+                    )}
                   </>
                 )}
               </CardContent>

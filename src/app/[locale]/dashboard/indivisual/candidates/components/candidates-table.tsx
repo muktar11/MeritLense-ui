@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Candidate } from "../../../../../api/candidates/types";
-import TablePagination from "../../components/table-pagination";
+import TablePagination from "@/components/ui/table-pagination";
 
 const PAGE_SIZE = 10;
 
