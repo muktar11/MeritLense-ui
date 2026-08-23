@@ -10,8 +10,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import TablePagination from "./table-pagination"
 import type { EvaluationListItem, EvaluatorRating } from "@/app/api/evaluations/types"
 import { format } from "date-fns"
+
+const PAGE_SIZE = 10
 
 interface EvaluationTableProps {
   data: EvaluationListItem[]
@@ -72,8 +75,22 @@ export default function EvaluationTable({
   userRole = 'B2C'
 }: EvaluationTableProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null)
+  const [currentPage, setCurrentPage] = useState(1)
   const router = useRouter()
   const locale = useLocale()
+
+  // Upstream filters/search (in the parent page) replace `data` wholesale -
+  // snap back to page 1 rather than showing a now out-of-range page. Adjusted
+  // during render (not an Effect) per https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
+  const [prevData, setPrevData] = useState(data)
+  if (data !== prevData) {
+    setPrevData(data)
+    setCurrentPage(1)
+  }
+
+  const totalPages = Math.max(1, Math.ceil(data.length / PAGE_SIZE))
+  const safePage = Math.min(currentPage, totalPages)
+  const paginatedData = data.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
 
   const handleJoinLiveInterview = (evaluation: EvaluationListItem) => {
     if (!evaluation.session_id) return
@@ -91,7 +108,8 @@ export default function EvaluationTable({
   const canEdit = userRole !== 'B2B_TEAM_MEMBER'
 
   return (
-    <div className="overflow-x-auto">
+    <div>
+      <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-gray-200">
@@ -112,7 +130,7 @@ export default function EvaluationTable({
               </td>
             </tr>
           ) : (
-            data.map((item) => {
+            paginatedData.map((item) => {
               const canEditRow = canEdit && (item.status === 'SCHEDULED' || item.status === 'RESCHEDULED')
               const canRescheduleRow = canManage && item.status === 'SCHEDULED'
               const canCompleteRow = canManage && (item.status === 'SCHEDULED' || item.status === 'RESCHEDULED')
@@ -256,6 +274,17 @@ export default function EvaluationTable({
           )}
         </tbody>
       </table>
+      </div>
+
+      {data.length > 0 && (
+        <TablePagination
+          currentPage={safePage}
+          totalItems={data.length}
+          pageSize={PAGE_SIZE}
+          onPageChange={setCurrentPage}
+          itemLabel="evaluations"
+        />
+      )}
     </div>
   )
 }

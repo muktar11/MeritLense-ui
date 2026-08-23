@@ -10,6 +10,9 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Candidate } from "../../../../../api/candidates/types";
+import TablePagination from "../../components/table-pagination";
+
+const PAGE_SIZE = 10;
 
 interface CandidatesTableProps {
   candidates: Candidate[];
@@ -35,6 +38,7 @@ export default function CandidatesTable({
   const t = useTranslations("dashboard.indivisual.candidates");
   const [searchTerm, setSearchTerm] = useState("");
   const [filterRole, setFilterRole] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const canShare = userRole === 'B2B' || userRole === 'B2B_TEAM_MEMBER';
   
@@ -56,6 +60,25 @@ export default function CandidatesTable({
     
     return matchesSearch && matchesRole;
   });
+
+  // Search/filter changes (or the candidate list itself changing, e.g.
+  // after add/delete) can make the current page run past the end of the
+  // new result set - snap back to page 1 rather than showing an empty page.
+  // Adjusted during render (not an Effect) per
+  // https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
+  const paginationResetKey = `${searchTerm}|${filterRole}|${candidates.length}`;
+  const [prevResetKey, setPrevResetKey] = useState(paginationResetKey);
+  if (paginationResetKey !== prevResetKey) {
+    setPrevResetKey(paginationResetKey);
+    setCurrentPage(1);
+  }
+
+  const totalPages = Math.max(1, Math.ceil(filteredCandidates.length / PAGE_SIZE));
+  const safePage = Math.min(currentPage, totalPages);
+  const paginatedCandidates = filteredCandidates.slice(
+    (safePage - 1) * PAGE_SIZE,
+    safePage * PAGE_SIZE
+  );
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -159,7 +182,7 @@ export default function CandidatesTable({
                 </td>
               </tr>
             ) : (
-              filteredCandidates.map((candidate) => (
+              paginatedCandidates.map((candidate) => (
                 <tr key={candidate.id} className="hover:bg-gray-50">
                   <td className="px-4 py-2 whitespace-nowrap">
                     <div className="flex items-center">
@@ -256,11 +279,13 @@ export default function CandidatesTable({
         </table>
       </div>
 
-      <div className="px-4 py-2 border-t border-gray-200 bg-gray-50">
-        <div className="text-sm text-gray-500">
-          Showing {filteredCandidates.length} of {candidates.length} candidates
-        </div>
-      </div>
+      <TablePagination
+        currentPage={safePage}
+        totalItems={filteredCandidates.length}
+        pageSize={PAGE_SIZE}
+        onPageChange={setCurrentPage}
+        itemLabel="candidates"
+      />
     </div>
   );
 }
