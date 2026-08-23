@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Check, Loader2, AlertCircle, CreditCard } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { useAuth } from "@/app/hooks/useAuth";
@@ -18,6 +18,7 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 
 export default function PaymentPage() {
   const t = useTranslations("dashboard.indivisual.payment");
+  const locale = useLocale();
   const router = useRouter();
   const { userRole, isAuthenticated } = useAuth();
 
@@ -161,11 +162,11 @@ export default function PaymentPage() {
   };
 
   const handleSubscriptionSuccess = () => {
-    router.push('/dashboard/indivisual/payment/success?type=subscription');
+    router.push(`/${locale}/dashboard/indivisual/payment/success?type=subscription`);
   };
 
   const handleOneTimePaymentSuccess = () => {
-    router.push('/dashboard/indivisual/payment/success?type=payment');
+    router.push(`/${locale}/dashboard/indivisual/payment/success?type=payment`);
   };
 
   const calculateDaysRemaining = (endDate: string | null | undefined): number => {
@@ -192,7 +193,7 @@ export default function PaymentPage() {
           <h2 className="text-xl font-bold text-gray-900 mb-2">Authentication Required</h2>
           <p className="text-gray-600 mb-4">Please log in to view and select plans.</p>
           <Link
-            href="/auth/login"
+            href={`/${locale}/auth/login`}
             className="inline-block px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
           >
             Go to Login
@@ -392,7 +393,7 @@ export default function PaymentPage() {
                   Upgrade Plan
                 </button>
                 <Link
-                  href="/dashboard/indivisual/profile?tab=billing"
+                  href={`/${locale}/dashboard/indivisual/profile?tab=billing`}
                   className="flex-1 text-center border border-gray-300 text-gray-700 font-semibold py-3 px-4 rounded-lg hover:bg-gray-50 transition"
                 >
                   Manage Billing
