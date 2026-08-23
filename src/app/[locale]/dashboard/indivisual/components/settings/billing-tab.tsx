@@ -9,13 +9,16 @@ import type { PaymentMethod, Invoice } from "@/app/api/payments/types";
 import { PaymentMethodsList } from "../payment-methods-list";
 import { AddPaymentMethodModal } from "../add-payment-method-modal";
 import { UsageMeter } from "../usage-meter";
+import TablePagination from "@/components/ui/table-pagination";
 import { format } from "date-fns";
+
+const INVOICES_PAGE_SIZE = 10;
 
 export function BillingTab() {
   const t = useTranslations("dashboard.indivisual.settings.billing-tab");
   const locale = useLocale();
   const { subscription, usage, loading: subscriptionLoading, refreshSubscription } = useSubscription();
-  
+
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
@@ -27,6 +30,7 @@ export function BillingTab() {
   const [cancelling, setCancelling] = useState(false);
   const [cancelReason, setCancelReason] = useState('');
   const [cancelAtPeriodEnd, setCancelAtPeriodEnd] = useState(true);
+  const [invoicesPage, setInvoicesPage] = useState(1);
 
   useEffect(() => {
     fetchData();
@@ -176,6 +180,13 @@ export function BillingTab() {
       setSyncing(false);
     }
   };
+
+  const invoicesTotalPages = Math.max(1, Math.ceil(invoices.length / INVOICES_PAGE_SIZE));
+  const invoicesSafePage = Math.min(invoicesPage, invoicesTotalPages);
+  const paginatedInvoices = invoices.slice(
+    (invoicesSafePage - 1) * INVOICES_PAGE_SIZE,
+    invoicesSafePage * INVOICES_PAGE_SIZE
+  );
 
   if (loading || subscriptionLoading) {
     return (
@@ -482,7 +493,7 @@ export function BillingTab() {
                   </td>
                 </tr>
               ) : (
-                invoices.map((invoice) => (
+                paginatedInvoices.map((invoice) => (
                   <tr key={invoice.id} className="odd:bg-white even:bg-gray-50 border-t">
                     <td className="px-4 py-3 text-gray-900 whitespace-nowrap">
                       {format(new Date(invoice.created_at), 'MMM d, yyyy')}
@@ -522,6 +533,15 @@ export function BillingTab() {
               )}
             </tbody>
           </table>
+          {invoices.length > 0 && (
+            <TablePagination
+              currentPage={invoicesSafePage}
+              totalItems={invoices.length}
+              pageSize={INVOICES_PAGE_SIZE}
+              onPageChange={setInvoicesPage}
+              itemLabel="invoices"
+            />
+          )}
         </div>
       </div>
 

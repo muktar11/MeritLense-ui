@@ -5,6 +5,9 @@ import { Check, Download, Eye, Share2 } from "lucide-react";
 import type { Candidate } from "@/app/api/candidates/types";
 import type { CandidateScoreSummary } from "@/app/api/evaluations/types";
 import reportService from "@/app/api/reports/endpoints";
+import TablePagination from "@/components/ui/table-pagination";
+
+const PAGE_SIZE = 10;
 
 interface DynamicScoreTableProps {
   candidates: Candidate[];
@@ -128,8 +131,20 @@ function ArtifactActions({
 // never grows past a fixed set of columns regardless of how many
 // competencies a role's scoring rules define.
 export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicScoreTableProps) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [prevCandidates, setPrevCandidates] = useState(candidates);
+  if (candidates !== prevCandidates) {
+    setPrevCandidates(candidates);
+    setCurrentPage(1);
+  }
+
+  const totalPages = Math.max(1, Math.ceil(candidates.length / PAGE_SIZE));
+  const safePage = Math.min(currentPage, totalPages);
+  const paginatedCandidates = candidates.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+
   return (
-    <div className="overflow-x-auto">
+    <div>
+      <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead className="bg-gray-50 border-b border-gray-200">
           <tr>
@@ -140,7 +155,7 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
           </tr>
         </thead>
         <tbody>
-          {candidates.map((candidate) => {
+          {paginatedCandidates.map((candidate) => {
             const summary = scores[candidate.id];
 
             // Clicking Download on either document downloads whatever
@@ -222,6 +237,17 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
           })}
         </tbody>
       </table>
+      </div>
+
+      {candidates.length > 0 && (
+        <TablePagination
+          currentPage={safePage}
+          totalItems={candidates.length}
+          pageSize={PAGE_SIZE}
+          onPageChange={setCurrentPage}
+          itemLabel="candidates"
+        />
+      )}
     </div>
   );
 }

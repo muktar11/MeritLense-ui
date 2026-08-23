@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import TablePagination from "./table-pagination"
+import TablePagination from "@/components/ui/table-pagination"
 import type { EvaluationListItem, EvaluatorRating } from "@/app/api/evaluations/types"
 import { format } from "date-fns"
 
