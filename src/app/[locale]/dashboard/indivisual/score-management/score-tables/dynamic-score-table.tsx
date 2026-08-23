@@ -118,53 +118,34 @@ function ArtifactActions({
   );
 }
 
-// Replaces the old per-job-role table components (driver-table.tsx,
-// housekeeper-table.tsx, ...), which each hardcoded a fixed set of column
-// keys (SAFE_DRIVING, CLEANING, ...) that never matched any real
-// ScoringRule.competency_code. Columns here are built from whatever
-// competencies actually exist in the real scoring data for the candidates
-// being shown, so this works for any role/rule set without a per-role
-// mapping to maintain.
+// Previously rendered one extra column per real competency code (built from
+// whatever ScoringRule.competency_code values actually appear in the score
+// data, replacing older per-job-role tables that hardcoded a fixed set of
+// keys). With enough competencies that made the table wider than any
+// reasonable viewport, forcing horizontal scroll. The per-competency
+// breakdown is already available in full (with progress bars) via "View
+// Scores" -> ScoreViewModal, so the table itself only needs the Avg - it
+// never grows past a fixed set of columns regardless of how many
+// competencies a role's scoring rules define.
 export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicScoreTableProps) {
-  const columns: { code: string; name: string }[] = [];
-  const seen = new Set<string>();
-  for (const candidate of candidates) {
-    const summary = scores[candidate.id];
-    if (!summary) continue;
-    for (const competency of summary.competencies) {
-      if (!seen.has(competency.code)) {
-        seen.add(competency.code);
-        columns.push({ code: competency.code, name: competency.name });
-      }
-    }
-  }
-
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead className="bg-gray-50 border-b border-gray-200">
           <tr>
-            <th className="px-4 sm:px-6 py-2 text-left font-semibold text-gray-700">Name</th>
-            <th className="px-4 sm:px-6 py-2 text-left font-semibold text-gray-700">Email</th>
-            {columns.map((column) => (
-              <th key={column.code} className="px-4 sm:px-6 py-2 text-left font-semibold text-gray-700">
-                {column.name}
-              </th>
-            ))}
-            <th className="px-4 sm:px-6 py-2 text-left font-semibold text-gray-700">Avg</th>
-            <th className="px-4 sm:px-6 py-2 text-left font-semibold text-gray-700">Transcript Report</th>
-            <th className="px-4 sm:px-6 py-2 text-left font-semibold text-gray-700">Certificate</th>
+            <th className="px-4 sm:px-6 py-2 text-left font-semibold text-gray-700">Candidate</th>
+            <th className="px-4 sm:px-6 py-2 text-left font-semibold text-gray-700">Avg Score</th>
+            <th className="px-4 sm:px-6 py-2 text-left font-semibold text-gray-700">Documents</th>
             <th className="px-4 sm:px-6 py-2 text-left font-semibold text-gray-700">Actions</th>
           </tr>
         </thead>
         <tbody>
           {candidates.map((candidate) => {
             const summary = scores[candidate.id];
-            const byCode = new Map(summary?.competencies.map((c) => [c.code, c.percentage]) ?? []);
 
-            // Clicking Download in either column downloads whatever
+            // Clicking Download on either document downloads whatever
             // artifacts exist for this candidate together, rather than just
-            // the one under that column.
+            // the one under that document.
             const downloadAllArtifacts = async () => {
               const tasks: Promise<void>[] = [];
               if (summary?.report?.pdf_url) {
@@ -180,51 +161,52 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
               <tr key={candidate.id} className="border-b border-gray-100 hover:bg-gray-50">
                 <td className="px-4 sm:px-6 py-3">
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-linear-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white font-semibold text-sm">
+                    <div className="w-8 h-8 rounded-full bg-linear-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white font-semibold text-sm shrink-0">
                       {candidate.first_name.charAt(0)}{candidate.last_name.charAt(0)}
                     </div>
-                    <span className="font-medium text-gray-900">{candidate.full_name}</span>
+                    <div className="min-w-0">
+                      <p className="font-medium text-gray-900 truncate">{candidate.full_name}</p>
+                      <p className="text-xs text-gray-500 truncate">{candidate.email}</p>
+                    </div>
                   </div>
                 </td>
-                <td className="px-4 sm:px-6 py-3 text-gray-600">{candidate.email}</td>
-                {columns.map((column) => (
-                  <td key={column.code} className="px-4 sm:px-6 py-3 text-gray-600">
-                    {byCode.has(column.code) ? `${byCode.get(column.code)}%` : "-"}
-                  </td>
-                ))}
                 <td className="px-4 sm:px-6 py-3 font-medium text-purple-600">
                   {summary ? `${summary.overall_percentage}%` : "-"}
                 </td>
                 <td className="px-4 sm:px-6 py-3">
-                  {summary?.report?.pdf_url ? (
-                    <>
-                      <ArtifactActions
-                        url={summary.report.pdf_url}
-                        candidateName={candidate.full_name}
-                        artifactLabel="MeritLense Transcript Report"
-                        onDownload={downloadAllArtifacts}
-                      />
-                      {summary.evaluation_tier === "SCREENING" && (
-                        <p className="text-[11px] text-amber-600 mt-1 max-w-[160px]">
+                  <div className="space-y-2">
+                    <div>
+                      <span className="text-xs text-gray-500 mr-1">Transcript:</span>
+                      {summary?.report?.pdf_url ? (
+                        <ArtifactActions
+                          url={summary.report.pdf_url}
+                          candidateName={candidate.full_name}
+                          artifactLabel="MeritLense Transcript Report"
+                          onDownload={downloadAllArtifacts}
+                        />
+                      ) : (
+                        <span className="text-gray-400">Not available</span>
+                      )}
+                      {summary?.evaluation_tier === "SCREENING" && (
+                        <p className="text-[11px] text-amber-600 mt-1 max-w-[220px]">
                           Screening Evaluation — identity verification and basic screening only, no Readiness Indicator, Overall Score, or certificate.
                         </p>
                       )}
-                    </>
-                  ) : (
-                    <span className="text-gray-400">Not available</span>
-                  )}
-                </td>
-                <td className="px-4 sm:px-6 py-3">
-                  {summary?.certificate ? (
-                    <ArtifactActions
-                      url={summary.certificate.pdf_url}
-                      candidateName={candidate.full_name}
-                      artifactLabel="MeritLense Certificate"
-                      onDownload={downloadAllArtifacts}
-                    />
-                  ) : (
-                    <span className="text-gray-400">Not available</span>
-                  )}
+                    </div>
+                    <div>
+                      <span className="text-xs text-gray-500 mr-1">Certificate:</span>
+                      {summary?.certificate ? (
+                        <ArtifactActions
+                          url={summary.certificate.pdf_url}
+                          candidateName={candidate.full_name}
+                          artifactLabel="MeritLense Certificate"
+                          onDownload={downloadAllArtifacts}
+                        />
+                      ) : (
+                        <span className="text-gray-400">Not available</span>
+                      )}
+                    </div>
+                  </div>
                 </td>
                 <td className="px-4 sm:px-6 py-3">
                   <button

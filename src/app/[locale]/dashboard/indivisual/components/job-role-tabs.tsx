@@ -1,5 +1,7 @@
 "use client";
 
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 interface JobRoleTabsProps {
   selectedRole: string;
   onRoleChange: (role: string) => void;
@@ -26,31 +28,25 @@ const JOB_ROLES = [
 
 export function JobRoleTabs({ selectedRole, onRoleChange, roleCounts }: JobRoleTabsProps) {
   return (
-    <div className="border-b border-gray-200 mb-6 overflow-x-auto">
-      <nav className="flex gap-2 min-w-max pb-1">
-        {JOB_ROLES.map(role => {
-          const isSelected = selectedRole === role.id;
-          return (
-            <button
-              key={role.id}
-              onClick={() => onRoleChange(role.id)}
-              className={`flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
-                isSelected
-                  ? "bg-purple-50 text-purple-600 border-b-2 border-purple-600"
-                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-              }`}
-            >
+    <div className="mb-6">
+      <Select value={selectedRole} onValueChange={onRoleChange}>
+        <SelectTrigger className="w-full sm:w-72 bg-white">
+          <SelectValue placeholder="Select a job role" />
+        </SelectTrigger>
+        <SelectContent>
+          {JOB_ROLES.map((role) => (
+            <SelectItem key={role.id} value={role.id}>
               <span aria-hidden="true">{role.icon}</span>
               {role.label}
               {roleCounts[role.id] > 0 && (
-                <span className="px-2 py-0.5 text-xs bg-gray-100 rounded-full">
+                <span className="ml-auto px-2 py-0.5 text-xs bg-gray-100 rounded-full text-gray-600">
                   {roleCounts[role.id]}
                 </span>
               )}
-            </button>
-          );
-        })}
-      </nav>
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   );
 }
