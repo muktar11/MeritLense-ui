@@ -16,7 +16,40 @@ function findChartSvg(container: HTMLElement): SVGSVGElement | null {
   );
 }
 
-async function svgToPngDataUrl(container: HTMLElement): Promise<string> {
+export interface ChartLegendEntry {
+  name: string;
+  color: string;
+}
+
+const LEGEND_ROW_HEIGHT = 28;
+const LEGEND_SWATCH_SIZE = 12;
+const LEGEND_FONT = "13px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+
+// recharts' <Legend> renders as a plain HTML <div>/<ul> sibling of the
+// chart's <svg>, not inside it - so it's invisible to an SVG-only export no
+// matter which <svg> gets picked. Rather than trying to rasterize that DOM
+// subtree, draw an equivalent legend strip directly onto the export canvas
+// from the same name/color data the chart itself was built from - this is
+// also more reliable, since it can't drift from what's actually plotted.
+function drawLegend(ctx: CanvasRenderingContext2D, legend: ChartLegendEntry[], width: number, y: number) {
+  ctx.font = LEGEND_FONT;
+  ctx.textBaseline = "middle";
+
+  const gaps = legend.map((entry) => LEGEND_SWATCH_SIZE + 6 + ctx.measureText(entry.name).width);
+  const totalWidth = gaps.reduce((sum, w) => sum + w, 0) + (legend.length - 1) * 20;
+  let x = Math.max(0, (width - totalWidth) / 2);
+
+  for (let i = 0; i < legend.length; i++) {
+    const entry = legend[i];
+    ctx.fillStyle = entry.color;
+    ctx.fillRect(x, y - LEGEND_SWATCH_SIZE / 2, LEGEND_SWATCH_SIZE, LEGEND_SWATCH_SIZE);
+    ctx.fillStyle = "#374151";
+    ctx.fillText(entry.name, x + LEGEND_SWATCH_SIZE + 6, y + 1);
+    x += gaps[i] + 20;
+  }
+}
+
+async function svgToPngDataUrl(container: HTMLElement, legend?: ChartLegendEntry[]): Promise<string> {
   const svg = findChartSvg(container);
   if (!svg) {
     throw new Error("No chart SVG found to export");
@@ -42,16 +75,22 @@ async function svgToPngDataUrl(container: HTMLElement): Promise<string> {
       img.src = url;
     });
 
+    const legendHeight = legend && legend.length > 0 ? LEGEND_ROW_HEIGHT : 0;
+    const totalHeight = height + legendHeight;
+
     const canvas = document.createElement("canvas");
     // 2x scale for a sharper export than the on-screen render.
     canvas.width = width * 2;
-    canvas.height = height * 2;
+    canvas.height = totalHeight * 2;
     const ctx = canvas.getContext("2d");
     if (!ctx) throw new Error("Canvas not supported");
     ctx.scale(2, 2);
     ctx.fillStyle = "#ffffff";
-    ctx.fillRect(0, 0, width, height);
+    ctx.fillRect(0, 0, width, totalHeight);
     ctx.drawImage(img, 0, 0, width, height);
+    if (legend && legend.length > 0) {
+      drawLegend(ctx, legend, width, height + legendHeight / 2);
+    }
 
     return canvas.toDataURL("image/png");
   } finally {
@@ -68,13 +107,13 @@ function downloadDataUrl(dataUrl: string, filename: string) {
   link.remove();
 }
 
-export async function exportChartAsPng(container: HTMLElement, filename: string) {
-  const dataUrl = await svgToPngDataUrl(container);
+export async function exportChartAsPng(container: HTMLElement, filename: string, legend?: ChartLegendEntry[]) {
+  const dataUrl = await svgToPngDataUrl(container, legend);
   downloadDataUrl(dataUrl, filename);
 }
 
-export async function exportChartAsPdf(container: HTMLElement, filename: string, title?: string) {
-  const dataUrl = await svgToPngDataUrl(container);
+export async function exportChartAsPdf(container: HTMLElement, filename: string, title?: string, legend?: ChartLegendEntry[]) {
+  const dataUrl = await svgToPngDataUrl(container, legend);
   const { jsPDF } = await import("jspdf");
   const doc = new jsPDF({ orientation: "landscape" });
   const pageWidth = doc.internal.pageSize.getWidth();
