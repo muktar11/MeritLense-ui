@@ -16,6 +16,13 @@ class CompanyService {
     const response = await apiFormDataClient.patch(`${this.baseURL}profile`, formData);
     return response.data;
   }
+
+  async uploadLogo(file: File): Promise<CompanyProfile> {
+    const formData = new FormData();
+    formData.append('logo', file);
+    const response = await apiFormDataClient.patch(`${this.baseURL}profile`, formData);
+    return response.data;
+  }
 }
 
 export default new CompanyService();
