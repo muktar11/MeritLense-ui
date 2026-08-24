@@ -28,6 +28,8 @@ const REQUIRED_AGREEMENT_TYPES = ["B2B_AGREEMENT", "DPA"] as const
 const TEAM_MEMBERS_PAGE_SIZE = 10
 const LOGO_ACCEPTED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"]
 const LOGO_MAX_BYTES = 5 * 1024 * 1024
+const ROLES_MAX_COUNT = 8
+const ROLE_MAX_LENGTH = 30
 
 export function CompanyProfile() {
   const t = useTranslations("dashboard.business.company-profile")
@@ -39,7 +41,13 @@ export function CompanyProfile() {
   const [companyLogo, setCompanyLogo] = useState<string | null>(null)
   const [logoUploading, setLogoUploading] = useState(false)
   const [logoError, setLogoError] = useState<string | null>(null)
-  const canEditLogo = userRole === "B2B"
+  const isCompanyOwner = userRole === "B2B"
+
+  const [companyRoles, setCompanyRoles] = useState<string[]>([])
+  const [rolesSaving, setRolesSaving] = useState(false)
+  const [rolesError, setRolesError] = useState<string | null>(null)
+  const [isAddingRole, setIsAddingRole] = useState(false)
+  const [newRoleValue, setNewRoleValue] = useState("")
 
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([])
   const [pendingInvitations, setPendingInvitations] = useState<TeamInvitation[]>([])
@@ -91,22 +99,23 @@ export function CompanyProfile() {
   useEffect(() => {
     fetchTeamData()
     fetchAgreements()
-    fetchCompanyLogo()
+    fetchCompanyExtras()
   }, [])
 
-  const fetchCompanyLogo = async () => {
+  const fetchCompanyExtras = async () => {
     try {
       const company = await companyService.getProfile()
       setCompanyLogo(company.logo)
+      setCompanyRoles(company.roles || [])
     } catch (fetchError) {
       // Team members can't load /companies/profile (owner-only endpoint) -
-      // not an error worth surfacing, the upload box just stays read-only.
-      console.error('Failed to fetch company logo:', fetchError)
+      // not an error worth surfacing, the logo/roles UI just stays read-only.
+      console.error('Failed to fetch company profile extras:', fetchError)
     }
   }
 
   const handleLogoClick = () => {
-    if (!canEditLogo || logoUploading) return
+    if (!isCompanyOwner || logoUploading) return
     document.getElementById('company-logo-input')?.click()
   }
 
@@ -135,6 +144,59 @@ export function CompanyProfile() {
     } finally {
       setLogoUploading(false)
     }
+  }
+
+  const saveRoles = async (roles: string[]) => {
+    setRolesError(null)
+    setRolesSaving(true)
+    try {
+      const company = await companyService.updateRoles(roles)
+      setCompanyRoles(company.roles || [])
+      return true
+    } catch (saveError) {
+      console.error('Failed to update company roles:', saveError)
+      setRolesError("Failed to save. Please try again.")
+      return false
+    } finally {
+      setRolesSaving(false)
+    }
+  }
+
+  const handleStartAddRole = () => {
+    if (!isCompanyOwner || rolesSaving) return
+    setRolesError(null)
+    setNewRoleValue("")
+    setIsAddingRole(true)
+  }
+
+  const handleConfirmAddRole = async () => {
+    const role = newRoleValue.trim()
+    if (!role) {
+      setIsAddingRole(false)
+      return
+    }
+    if (companyRoles.includes(role)) {
+      setRolesError("That role is already added.")
+      return
+    }
+    if (companyRoles.length >= ROLES_MAX_COUNT) {
+      setRolesError(`You can add up to ${ROLES_MAX_COUNT} roles.`)
+      return
+    }
+    if (role.length > ROLE_MAX_LENGTH) {
+      setRolesError(`Roles must be ${ROLE_MAX_LENGTH} characters or fewer.`)
+      return
+    }
+    const success = await saveRoles([...companyRoles, role])
+    if (success) {
+      setIsAddingRole(false)
+      setNewRoleValue("")
+    }
+  }
+
+  const handleRemoveRole = async (role: string) => {
+    if (!isCompanyOwner || rolesSaving) return
+    await saveRoles(companyRoles.filter((r) => r !== role))
   }
 
   const handleDownloadAgreement = async (agreementId: string) => {
@@ -333,13 +395,13 @@ export function CompanyProfile() {
                   type="file"
                   accept="image/jpeg,image/jpg,image/png,image/webp"
                   className="hidden"
-                  disabled={!canEditLogo || logoUploading}
+                  disabled={!isCompanyOwner || logoUploading}
                   onChange={handleLogoChange}
                 />
                 <div
                   onClick={handleLogoClick}
                   className={`w-28 h-28 sm:w-32 sm:h-32 bg-muted rounded-lg flex items-center justify-center border-2 border-dashed transition overflow-hidden ${
-                    canEditLogo ? "cursor-pointer hover:border-purple-500" : "cursor-default opacity-75"
+                    isCompanyOwner ? "cursor-pointer hover:border-purple-500" : "cursor-default opacity-75"
                   }`}
                 >
                   {logoUploading ? (
@@ -376,14 +438,78 @@ export function CompanyProfile() {
                   <p>{t("companyDescriptionText")}</p>
                 </div>
                 
-                <div className="flex flex-wrap gap-2">
-                  <span className="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full">{t("agency")}</span>
-                  <span className="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full">{t("sales")}</span>
-                  <span className="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full">{t("market")}</span>
-                </div>
-                <div>
-                  <span className="text-sm font-medium cursor-pointer text-purple-600 hover:underline">{t("addRole")}</span>
-                </div>
+                {companyRoles.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {companyRoles.map((role) => (
+                      <span
+                        key={role}
+                        className="inline-flex items-center gap-1 text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full"
+                      >
+                        {role}
+                        {isCompanyOwner && (
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveRole(role)}
+                            disabled={rolesSaving}
+                            className="hover:text-purple-900 disabled:opacity-50"
+                            aria-label={`Remove ${role}`}
+                          >
+                            ×
+                          </button>
+                        )}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {isCompanyOwner && (
+                  <div>
+                    {isAddingRole ? (
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          value={newRoleValue}
+                          onChange={(e) => setNewRoleValue(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") { e.preventDefault(); handleConfirmAddRole() }
+                            if (e.key === "Escape") setIsAddingRole(false)
+                          }}
+                          placeholder="e.g. Agency, Staffing"
+                          maxLength={ROLE_MAX_LENGTH}
+                          autoFocus
+                          disabled={rolesSaving}
+                          className="text-sm px-2 py-1 border rounded-lg w-40"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleConfirmAddRole}
+                          disabled={rolesSaving}
+                          className="text-sm font-medium text-purple-600 hover:underline disabled:opacity-50"
+                        >
+                          {rolesSaving ? "Saving..." : "Add"}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setIsAddingRole(false)}
+                          disabled={rolesSaving}
+                          className="text-sm text-muted-foreground hover:underline disabled:opacity-50"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    ) : (
+                      companyRoles.length < ROLES_MAX_COUNT && (
+                        <span
+                          onClick={handleStartAddRole}
+                          className="text-sm font-medium cursor-pointer text-purple-600 hover:underline"
+                        >
+                          {t("addRole")}
+                        </span>
+                      )
+                    )}
+                    {rolesError && <p className="text-xs text-red-600 mt-1">{rolesError}</p>}
+                  </div>
+                )}
               </div>
 
               <div className="space-y-3 shrink-0 min-w-50">

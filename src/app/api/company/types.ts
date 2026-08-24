@@ -17,6 +17,7 @@ export interface CompanyProfile {
   team_member_count: number;
   stamp_image: string | null;
   logo: string | null;
+  roles: string[];
   created_at: string;
   updated_at: string;
 }
