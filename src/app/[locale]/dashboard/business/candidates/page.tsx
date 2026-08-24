@@ -33,6 +33,12 @@ import { exportChartAsPdf, exportChartAsPng } from "@/lib/chart-export";
 // are role-specific.
 const SCORE_METRIC_ID = "score";
 
+// Same order/values used for both the radar chart series and the sidebar
+// selection buttons, so a candidate's swatch color always matches its
+// actual polygon color in the chart - assigned by selection order, capped
+// at 4 since that's the max candidates toggleCandidate allows.
+const CANDIDATE_COLORS = ['#6366F1', '#10B981', '#F59E0B', '#EF4444'];
+
 export default function CandidateComparison() {
   const t = useTranslations("dashboard.indivisual.candidates");
   const { userRole, userId, isAuthenticated, loading: authLoading } = useAuth();
@@ -191,11 +197,18 @@ export default function CandidateComparison() {
 
   const performanceData = getPerformanceData();
 
+  // Same name/color pairing used for the chart's own <Radar> series, so the
+  // export legend can never drift from what's actually plotted.
+  const chartLegend = selectedCandidateDetails.map((candidate, index) => ({
+    name: candidate.name,
+    color: CANDIDATE_COLORS[index % CANDIDATE_COLORS.length],
+  }));
+
   const handleExportPng = async () => {
     if (!chartContainerRef.current) return;
     setExporting("png");
     try {
-      await exportChartAsPng(chartContainerRef.current, "candidate-comparison.png");
+      await exportChartAsPng(chartContainerRef.current, "candidate-comparison.png", chartLegend);
     } catch (error) {
       console.error("Failed to export chart as PNG:", error);
     } finally {
@@ -207,7 +220,7 @@ export default function CandidateComparison() {
     if (!chartContainerRef.current) return;
     setExporting("pdf");
     try {
-      await exportChartAsPdf(chartContainerRef.current, "candidate-comparison.pdf", t("radarChartTitle"));
+      await exportChartAsPdf(chartContainerRef.current, "candidate-comparison.pdf", t("radarChartTitle"), chartLegend);
     } catch (error) {
       console.error("Failed to export chart as PDF:", error);
     } finally {
@@ -263,31 +276,37 @@ export default function CandidateComparison() {
                 {t("selectCandidates")}
               </h2>
               <div className="flex flex-col gap-2">
-                {candidates.map((candidate) => (
-                  <button
-                    key={candidate.id}
-                    onClick={() => toggleCandidate(candidate.id)}
-                    className={`w-full p-2 sm:p-3 rounded-lg text-left transition-all text-sm sm:text-base ${
-                      selectedCandidates.includes(candidate.id)
-                        ? "bg-purple-500 text-white"
-                        : "bg-white text-gray-900 border border-gray-300 hover:border-purple-400"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 sm:w-5 sm:h-5 rounded border border-current flex items-center justify-center">
-                        {selectedCandidates.includes(candidate.id) && (
-                          <div className="w-2 sm:w-3 h-2 sm:h-3 bg-current rounded-sm" />
-                        )}
+                {candidates.map((candidate) => {
+                  const selectionIndex = selectedCandidates.indexOf(candidate.id);
+                  const isSelected = selectionIndex !== -1;
+                  const color = isSelected ? CANDIDATE_COLORS[selectionIndex % CANDIDATE_COLORS.length] : undefined;
+                  return (
+                    <button
+                      key={candidate.id}
+                      onClick={() => toggleCandidate(candidate.id)}
+                      style={isSelected ? { backgroundColor: color, borderColor: color } : undefined}
+                      className={`w-full p-2 sm:p-3 rounded-lg text-left transition-all text-sm sm:text-base ${
+                        isSelected
+                          ? "text-white"
+                          : "bg-white text-gray-900 border border-gray-300 hover:border-purple-400"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 sm:w-5 sm:h-5 rounded border border-current flex items-center justify-center">
+                          {isSelected && (
+                            <div className="w-2 sm:w-3 h-2 sm:h-3 bg-current rounded-sm" />
+                          )}
+                        </div>
+                        <div className="truncate">
+                          <p className="font-medium">{candidate.full_name}</p>
+                          <p className="text-xs sm:text-sm opacity-75 truncate">
+                            {candidate.job_role}
+                          </p>
+                        </div>
                       </div>
-                      <div className="truncate">
-                        <p className="font-medium">{candidate.full_name}</p>
-                        <p className="text-xs sm:text-sm opacity-75 truncate">
-                          {candidate.job_role}
-                        </p>
-                      </div>
-                    </div>
-                  </button>
-                ))}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -347,19 +366,16 @@ export default function CandidateComparison() {
                       <PolarGrid stroke="#E5E7EB" />
                       <PolarAngleAxis dataKey="subject" stroke="#6B7280" />
                       <PolarRadiusAxis stroke="#D1D5DB" />
-                      {selectedCandidateDetails.map((candidate, index) => {
-                        const colors = ['#6366F1', '#10B981', '#F59E0B', '#EF4444'];
-                        return (
-                          <Radar
-                            key={candidate.id}
-                            name={candidate.name}
-                            dataKey={candidate.name}
-                            stroke={colors[index % colors.length]}
-                            fill={colors[index % colors.length]}
-                            fillOpacity={0.25}
-                          />
-                        );
-                      })}
+                      {selectedCandidateDetails.map((candidate, index) => (
+                        <Radar
+                          key={candidate.id}
+                          name={candidate.name}
+                          dataKey={candidate.name}
+                          stroke={CANDIDATE_COLORS[index % CANDIDATE_COLORS.length]}
+                          fill={CANDIDATE_COLORS[index % CANDIDATE_COLORS.length]}
+                          fillOpacity={0.25}
+                        />
+                      ))}
                       <Legend />
                     </RadarChart>
                   </ResponsiveContainer>
