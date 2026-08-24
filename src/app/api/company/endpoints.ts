@@ -23,6 +23,11 @@ class CompanyService {
     const response = await apiFormDataClient.patch(`${this.baseURL}profile`, formData);
     return response.data;
   }
+
+  async updateRoles(roles: string[]): Promise<CompanyProfile> {
+    const response = await apiClient.patch(`${this.baseURL}profile`, { roles });
+    return response.data;
+  }
 }
 
 export default new CompanyService();
