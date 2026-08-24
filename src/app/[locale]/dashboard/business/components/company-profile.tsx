@@ -20,18 +20,26 @@ import teamService from "@/app/api/team/endpoints"
 import type { TeamMember, TeamInvitation } from "@/app/api/team/types"
 import agreementService from "@/app/api/agreements/endpoints"
 import type { Agreement } from "@/app/api/agreements/types"
+import companyService from "@/app/api/company/endpoints"
 import TablePagination from "@/components/ui/table-pagination"
 import { format } from "date-fns"
 
 const REQUIRED_AGREEMENT_TYPES = ["B2B_AGREEMENT", "DPA"] as const
 const TEAM_MEMBERS_PAGE_SIZE = 10
+const LOGO_ACCEPTED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"]
+const LOGO_MAX_BYTES = 5 * 1024 * 1024
 
 export function CompanyProfile() {
   const t = useTranslations("dashboard.business.company-profile")
   const locale = useLocale()
   const router = useRouter()
   const { profile, loading, error, updateProfile } = useProfile()
-  const { logout } = useAuth()
+  const { logout, userRole } = useAuth()
+
+  const [companyLogo, setCompanyLogo] = useState<string | null>(null)
+  const [logoUploading, setLogoUploading] = useState(false)
+  const [logoError, setLogoError] = useState<string | null>(null)
+  const canEditLogo = userRole === "B2B"
 
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([])
   const [pendingInvitations, setPendingInvitations] = useState<TeamInvitation[]>([])
@@ -83,7 +91,51 @@ export function CompanyProfile() {
   useEffect(() => {
     fetchTeamData()
     fetchAgreements()
+    fetchCompanyLogo()
   }, [])
+
+  const fetchCompanyLogo = async () => {
+    try {
+      const company = await companyService.getProfile()
+      setCompanyLogo(company.logo)
+    } catch (fetchError) {
+      // Team members can't load /companies/profile (owner-only endpoint) -
+      // not an error worth surfacing, the upload box just stays read-only.
+      console.error('Failed to fetch company logo:', fetchError)
+    }
+  }
+
+  const handleLogoClick = () => {
+    if (!canEditLogo || logoUploading) return
+    document.getElementById('company-logo-input')?.click()
+  }
+
+  const handleLogoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    e.target.value = ""
+    if (!file) return
+
+    setLogoError(null)
+    if (!LOGO_ACCEPTED_TYPES.includes(file.type)) {
+      setLogoError("Please choose a JPG, PNG, or WEBP image.")
+      return
+    }
+    if (file.size > LOGO_MAX_BYTES) {
+      setLogoError("Logo must be smaller than 5MB.")
+      return
+    }
+
+    setLogoUploading(true)
+    try {
+      const company = await companyService.uploadLogo(file)
+      setCompanyLogo(company.logo)
+    } catch (uploadError) {
+      console.error('Failed to upload company logo:', uploadError)
+      setLogoError("Failed to upload logo. Please try again.")
+    } finally {
+      setLogoUploading(false)
+    }
+  }
 
   const handleDownloadAgreement = async (agreementId: string) => {
     try {
@@ -276,10 +328,32 @@ export function CompanyProfile() {
           <CardContent className="space-y-6">
             <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
               <div className="flex flex-col items-center gap-2 shrink-0">
-                <div className="w-28 h-28 sm:w-32 sm:h-32 bg-muted rounded-lg flex items-center justify-center border-2 border-dashed cursor-pointer hover:border-purple-500 transition">
-                  <Upload className="w-6 h-6 text-muted-foreground" />
+                <input
+                  id="company-logo-input"
+                  type="file"
+                  accept="image/jpeg,image/jpg,image/png,image/webp"
+                  className="hidden"
+                  disabled={!canEditLogo || logoUploading}
+                  onChange={handleLogoChange}
+                />
+                <div
+                  onClick={handleLogoClick}
+                  className={`w-28 h-28 sm:w-32 sm:h-32 bg-muted rounded-lg flex items-center justify-center border-2 border-dashed transition overflow-hidden ${
+                    canEditLogo ? "cursor-pointer hover:border-purple-500" : "cursor-default opacity-75"
+                  }`}
+                >
+                  {logoUploading ? (
+                    <Loader2 className="w-6 h-6 text-muted-foreground animate-spin" />
+                  ) : companyLogo ? (
+                    <img src={companyLogo} alt="Company logo" className="w-full h-full object-contain" />
+                  ) : (
+                    <Upload className="w-6 h-6 text-muted-foreground" />
+                  )}
                 </div>
                 <span className="text-xs text-muted-foreground text-center">{t("uploadLogo")}</span>
+                {logoError && (
+                  <span className="text-xs text-red-600 text-center max-w-28 sm:max-w-32">{logoError}</span>
+                )}
               </div>
 
               <div className="flex-1 space-y-4 min-w-0">

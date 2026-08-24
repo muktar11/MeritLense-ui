@@ -16,6 +16,7 @@ export interface CompanyProfile {
   verified_at: string | null;
   team_member_count: number;
   stamp_image: string | null;
+  logo: string | null;
   created_at: string;
   updated_at: string;
 }
