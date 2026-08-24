@@ -27,7 +27,7 @@ export const Pricing = forwardRef<HTMLElement, {}>(function Pricing(_, pricingRe
   };
 
   const pricesB2C = ["€50", "€80", "€150", "€250"];
-  const pricesB2B = ["€500", "€1,500", "€3,500", "Custom"];
+  const pricesB2B = ["Pilot", "€2,000", "€3,500", "Custom"];
   const popularIndexB2C = 1;
   const popularIndexB2B = 1;
 
