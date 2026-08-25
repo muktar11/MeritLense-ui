@@ -5,6 +5,9 @@ import adminUserService from '../users/endpoints';
 import employerService from '../employers/endpoints';
 import { API_BASE_URL } from '@/lib/config/env';
 
+const PAGE_SIZE = 100;
+const MAX_PAGES = 20; // safety cap (2000 records) against a runaway loop
+
 class RBACService {
   private ensureAuthToken() {
     const token = localStorage.getItem('accessToken');
@@ -14,14 +17,32 @@ class RBACService {
     return token;
   }
 
+  // Both admin-user and employer lists are paginated server-side; this page
+  // is meant to show everyone, so it needs every page, not just the first.
+  private async fetchAllPages<T>(
+    fetchPage: (page: number) => Promise<{ count: number; results: T[] }>
+  ): Promise<T[]> {
+    const all: T[] = [];
+    let page = 1;
+    while (page <= MAX_PAGES) {
+      const response = await fetchPage(page);
+      all.push(...response.results);
+      if (all.length >= response.count || response.results.length === 0) break;
+      page += 1;
+    }
+    return all;
+  }
+
   async getAllUsersWithPermissions(): Promise<UserPermission[]> {
     this.ensureAuthToken();
-    
+
     try {
-      const [adminResponse, employerResponse] = await Promise.all([
-        adminUserService.getAdminUsers({ page_size: 100 }),
-        employerService.getEmployers({ page_size: 100 })
+      const [adminResults, employerResults] = await Promise.all([
+        this.fetchAllPages(page => adminUserService.getAdminUsers({ page, page_size: PAGE_SIZE })),
+        this.fetchAllPages(page => employerService.getEmployers({ page, page_size: PAGE_SIZE }))
       ]);
+      const adminResponse = { results: adminResults };
+      const employerResponse = { results: employerResults };
 
       const allUsers: UserPermission[] = [];
 
@@ -34,7 +55,10 @@ class RBACService {
           type: 'admin',
           role: admin.role === 'SUPERADMIN' ? 'Super Admin' : 'Admin',
           permissions: admin.admin_permissions || [],
-          system: admin.role === 'SUPERADMIN' ? 'b2c-admin' : 'b2b-enterprise',
+          // Platform staff (both roles) are listed under "b2b-enterprise" in
+          // the role-filter dropdown (see rolesBySystem in page.tsx) - they
+          // aren't part of any B2C segment.
+          system: 'b2b-enterprise',
           last_active: admin.last_login || undefined
         });
       });
