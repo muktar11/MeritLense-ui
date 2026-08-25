@@ -42,6 +42,8 @@ export interface Package {
   task_observation_enabled: boolean;
   features: PackageFeatures;
   feature_limits: PackageFeatureLimits;
+  slot_grant: number | null;
+  points_grant: number | null;
   is_active: boolean;
   metadata: Record<string, unknown>;
   created_at: string;
@@ -62,6 +64,8 @@ export interface PackagePayload {
   task_observation_enabled?: boolean;
   features?: PackageFeatures;
   feature_limits?: PackageFeatureLimits;
+  slot_grant?: number | null;
+  points_grant?: number | null;
   is_active?: boolean;
   metadata?: Record<string, unknown>;
 }

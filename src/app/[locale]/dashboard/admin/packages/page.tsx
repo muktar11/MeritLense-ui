@@ -172,6 +172,7 @@ export default function PackageManagementPage() {
                       <TableHead>Price</TableHead>
                       <TableHead>Billing</TableHead>
                       <TableHead>Tier</TableHead>
+                      <TableHead>Slots</TableHead>
                       <TableHead>Points</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Actions</TableHead>
@@ -180,7 +181,7 @@ export default function PackageManagementPage() {
                   <TableBody>
                     {packages.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={8} className="text-center py-8 text-gray-500">
+                        <TableCell colSpan={9} className="text-center py-8 text-gray-500">
                           No packages found
                         </TableCell>
                       </TableRow>
@@ -213,7 +214,12 @@ export default function PackageManagementPage() {
                           </TableCell>
                           <TableCell>
                             <span className="text-sm text-gray-600">
-                              {pkg.feature_limits?.points_granted ?? '—'}
+                              {pkg.slot_grant ?? 'Unlimited'}
+                            </span>
+                          </TableCell>
+                          <TableCell>
+                            <span className="text-sm text-gray-600">
+                              {pkg.points_grant ?? 'Unlimited'}
                             </span>
                           </TableCell>
                           <TableCell>
