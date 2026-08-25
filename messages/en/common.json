@@ -489,7 +489,7 @@
          "systemLoadTrend": "System Load Trend",
           "userGrowthTrend": "User Growth Trend",
           "evaluationTypesDistribution": "Evaluation Types Distribution",
-          "packageContribution": "Package Contribution",
+          "packageContribution": "Subscription Package Contribution",
           "revenueTrend": "Revenue Trend"
         },
         "totalRevenue": "Total Revenue",
