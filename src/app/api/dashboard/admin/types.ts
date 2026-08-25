@@ -6,7 +6,6 @@ export interface AdminDashboardStats {
   active_agencies: number;
   total_evaluations: number;
   completed_evaluations: number;
-  total_revenue: number;
   monthly_recurring_revenue: number;
   active_subscriptions_count: number;
   average_success_rate: number;
