@@ -27,7 +27,7 @@ export function Footer() {
             </p>
             <div className="flex space-x-4">
               <Link
-                href="https://www.linkedin.com/in/merit-lens-56674a384/"
+                href="https://www.linkedin.com/company/meritlense/"
                 target="_blank"
                 className="text-foreground-muted hover:text-primary transition-colors"
               >
