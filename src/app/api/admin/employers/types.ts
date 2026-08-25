@@ -1,5 +1,5 @@
 export interface Employer {
-  id: number;
+  id: string;
   email: string;
   first_name: string;
   last_name: string;
@@ -44,6 +44,13 @@ export interface UpdateEmployerStatusData {
   rejection_reason?: string;
 }
 
+export interface VerifyDocumentsData {
+  user_id: string;
+  status: 'APPROVED' | 'REJECTED';
+  rejection_reason?: string;
+  verification_notes?: string;
+}
+
 export interface PaginatedResponse<T> {
   count: number;
   next: string | null;
@@ -55,7 +62,6 @@ export const VERIFICATION_STATUSES = [
   { value: 'pending', label: 'Pending' },
   { value: 'approved', label: 'Approved' },
   { value: 'rejected', label: 'Rejected' },
-  { value: 'info_needed', label: 'Info Needed' },
 ];
 
 export const USER_ROLES = [

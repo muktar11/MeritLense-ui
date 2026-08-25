@@ -28,7 +28,7 @@ export interface RecentUser {
 }
 
 export interface SystemUser {
-  id: number;
+  id: number | string;
   name: string;
   email: string;
   role: string;

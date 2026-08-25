@@ -3,7 +3,7 @@ import { Employer } from '../employers/types';
 import { AdminUser } from '../users/types';
 
 export interface UserPermission {
-  id: number;
+  id: number | string;
   name: string;
   email: string;
   type: 'admin' | 'employer' | 'team_member';
