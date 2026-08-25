@@ -3,6 +3,7 @@ import { apiClient, apiFormDataClient } from '@/app/api/auth/client';
 import {
   Employer,
   UpdateEmployerStatusData,
+  VerifyDocumentsData,
   PaginatedResponse
 } from './types';
 import type { B2CRegistrationData, B2BRegistrationData } from '@/app/api/auth/auth';
@@ -51,6 +52,13 @@ class EmployerService {
     return response.data;
   }
 
+  // Approve or reject an employer's submitted documents
+  async verifyDocuments(data: VerifyDocumentsData): Promise<{ message: string; user: Employer }> {
+    this.ensureAuthToken();
+    const response = await apiClient.post(`${this.baseURL}/verify-documents`, data);
+    return response.data;
+  }
+
   // Admin: create a new individual (B2C) employer account
   async createEmployerB2C(data: B2CRegistrationData): Promise<{ message: string; employer: Employer }> {
     this.ensureAuthToken();
@@ -59,7 +67,7 @@ class EmployerService {
     Object.entries(data).forEach(([key, value]) => {
       if (value instanceof File) {
         formData.append(key, value);
-      } else if (value !== undefined && value !== null) {
+      } else if (value !== undefined && value !== null && value !== '') {
         formData.append(key, String(value));
       }
     });

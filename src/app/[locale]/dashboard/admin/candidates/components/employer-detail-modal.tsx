@@ -1,10 +1,12 @@
 // app/dashboard/admin/candidates/components/employer-detail-modal.tsx
 "use client";
 
+import { useState } from "react";
 import { Fragment } from "react";
 import { Dialog, Transition } from '@headlessui/react';
-import { X, Mail, User, Calendar, CheckCircle, XCircle, Clock, Building2, Phone, MapPin, Briefcase, FileText, Users } from "lucide-react";
+import { X, Mail, User, Calendar, CheckCircle, XCircle, Clock, Building2, Phone, MapPin, Briefcase, FileText, Users, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import employerService from "@/app/api/admin/employers/endpoints";
 import type { Employer } from "@/app/api/admin/employers/types";
 import { format } from "date-fns";
 
@@ -12,12 +14,46 @@ interface EmployerDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   employer: Employer | null;
+  onVerified: () => void;
 }
 
-export function EmployerDetailModal({ isOpen, onClose, employer }: EmployerDetailModalProps) {
+export function EmployerDetailModal({ isOpen, onClose, employer, onVerified }: EmployerDetailModalProps) {
   const t = useTranslations("dashboard.admin.candidateManagement");
+  const [actionLoading, setActionLoading] = useState<'approve' | 'reject' | null>(null);
+  const [actionError, setActionError] = useState("");
 
   if (!employer) return null;
+
+  const handleApprove = async () => {
+    setActionError("");
+    setActionLoading('approve');
+    try {
+      await employerService.verifyDocuments({ user_id: employer.id, status: 'APPROVED' });
+      onVerified();
+      onClose();
+    } catch (error: any) {
+      setActionError(error?.response?.data?.error || 'Failed to approve documents. Please try again.');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleReject = async () => {
+    const reason = window.prompt("Reason for rejecting these documents (shown to the user):");
+    if (!reason || !reason.trim()) return;
+
+    setActionError("");
+    setActionLoading('reject');
+    try {
+      await employerService.verifyDocuments({ user_id: employer.id, status: 'REJECTED', rejection_reason: reason.trim() });
+      onVerified();
+      onClose();
+    } catch (error: any) {
+      setActionError(error?.response?.data?.error || 'Failed to reject documents. Please try again.');
+    } finally {
+      setActionLoading(null);
+    }
+  };
 
   const getStatusIcon = () => {
     if (employer.documents_verified) {
@@ -239,8 +275,35 @@ export function EmployerDetailModal({ isOpen, onClose, employer }: EmployerDetai
                     </div>
                   </div>
 
-                  {/* Close Button */}
-                  <div className="flex justify-end pt-4 border-t">
+                  {/* Document verification actions */}
+                  {actionError && (
+                    <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm">
+                      {actionError}
+                    </div>
+                  )}
+                  <div className="flex justify-between items-center pt-4 border-t">
+                    <div className="flex gap-2">
+                      {employer.documents_verification_status !== 'REJECTED' && (
+                        <button
+                          onClick={handleReject}
+                          disabled={actionLoading !== null}
+                          className="px-4 py-2 bg-red-50 text-red-700 border border-red-200 rounded-lg text-sm hover:bg-red-100 disabled:opacity-50 flex items-center gap-2"
+                        >
+                          {actionLoading === 'reject' && <Loader2 className="w-4 h-4 animate-spin" />}
+                          Reject Documents
+                        </button>
+                      )}
+                      {!employer.documents_verified && (
+                        <button
+                          onClick={handleApprove}
+                          disabled={actionLoading !== null}
+                          className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 disabled:opacity-50 flex items-center gap-2"
+                        >
+                          {actionLoading === 'approve' && <Loader2 className="w-4 h-4 animate-spin" />}
+                          Approve Documents
+                        </button>
+                      )}
+                    </div>
                     <button
                       onClick={onClose}
                       className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600"

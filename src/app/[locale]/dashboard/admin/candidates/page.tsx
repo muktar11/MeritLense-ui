@@ -317,6 +317,7 @@ export default function CandidateManagementConsole() {
           setSelectedEmployer(null);
         }}
         employer={selectedEmployer}
+        onVerified={fetchEmployers}
       />
 
       {/* Add Employer Modal */}
