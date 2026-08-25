@@ -68,7 +68,8 @@ const initialForm = {
   candidate_limit: "",
   evaluation_limit: "",
   team_member_limit: "",
-  points_granted: "",
+  slot_grant: "",
+  points_grant: "",
   question_count_min: "",
   question_count_max: "",
   session_duration_min_minutes: "",
@@ -102,7 +103,8 @@ export function PackageModal({ isOpen, onClose, onSuccess, packageToEdit }: Pack
           candidate_limit: packageToEdit.feature_limits?.candidate_limit?.toString() || "",
           evaluation_limit: packageToEdit.feature_limits?.evaluation_limit?.toString() || "",
           team_member_limit: packageToEdit.feature_limits?.team_member_limit?.toString() || "",
-          points_granted: packageToEdit.feature_limits?.points_granted?.toString() || "",
+          slot_grant: packageToEdit.slot_grant?.toString() || "",
+          points_grant: packageToEdit.points_grant?.toString() || "",
           question_count_min: packageToEdit.feature_limits?.question_count_min?.toString() || "",
           question_count_max: packageToEdit.feature_limits?.question_count_max?.toString() || "",
           session_duration_min_minutes: packageToEdit.feature_limits?.session_duration_min_minutes?.toString() || "",
@@ -135,7 +137,7 @@ export function PackageModal({ isOpen, onClose, onSuccess, packageToEdit }: Pack
   const buildPayload = (): PackagePayload => {
     const feature_limits: Record<string, number> = {};
     const numericFields: Array<keyof typeof form> = [
-      'candidate_limit', 'evaluation_limit', 'team_member_limit', 'points_granted',
+      'candidate_limit', 'evaluation_limit', 'team_member_limit',
       'question_count_min', 'question_count_max',
       'session_duration_min_minutes', 'session_duration_max_minutes',
     ];
@@ -157,6 +159,8 @@ export function PackageModal({ isOpen, onClose, onSuccess, packageToEdit }: Pack
       evaluation_tier: (form.evaluation_tier || null) as PackagePayload['evaluation_tier'],
       task_observation_enabled: form.task_observation_enabled,
       feature_limits,
+      slot_grant: form.slot_grant.trim() !== '' ? Number(form.slot_grant) : null,
+      points_grant: form.points_grant.trim() !== '' ? Number(form.points_grant) : null,
       features: form.output_report_level ? { output_report_level: form.output_report_level as any } : {},
       is_active: form.is_active,
     };
@@ -381,8 +385,31 @@ export function PackageModal({ isOpen, onClose, onSuccess, packageToEdit }: Pack
                   </div>
 
                   <div className="border-t pt-4">
-                    <h4 className="text-sm font-medium text-gray-700 mb-3">Limits &amp; Points</h4>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <h4 className="text-sm font-medium text-gray-700 mb-1">Candidate Assessment Slots &amp; Points</h4>
+                    <p className="text-xs text-gray-500 mb-3">
+                      Two independent balances: Assessment Slots are consumed once per assessment session
+                      started; Points are spent only on optional add-ons. Leave blank for no automated
+                      enforcement (per-agreement/custom packages).
+                    </p>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs text-gray-600 mb-1">Assessment Slots (per period)</label>
+                        <input type="number" name="slot_grant" value={form.slot_grant} onChange={handleChange}
+                          placeholder="Unlimited"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-gray-600 mb-1">Points Balance (per period)</label>
+                        <input type="number" name="points_grant" value={form.points_grant} onChange={handleChange}
+                          placeholder="Unlimited"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border-t pt-4">
+                    <h4 className="text-sm font-medium text-gray-700 mb-3">Other Limits</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                       <div>
                         <label className="block text-xs text-gray-600 mb-1">Candidate Limit</label>
                         <input type="number" name="candidate_limit" value={form.candidate_limit} onChange={handleChange}
@@ -396,11 +423,6 @@ export function PackageModal({ isOpen, onClose, onSuccess, packageToEdit }: Pack
                       <div>
                         <label className="block text-xs text-gray-600 mb-1">Team Member Limit</label>
                         <input type="number" name="team_member_limit" value={form.team_member_limit} onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
-                      </div>
-                      <div>
-                        <label className="block text-xs text-gray-600 mb-1">Points Granted</label>
-                        <input type="number" name="points_granted" value={form.points_granted} onChange={handleChange}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
                       </div>
                     </div>
