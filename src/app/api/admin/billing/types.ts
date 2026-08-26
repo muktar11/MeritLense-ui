@@ -6,6 +6,7 @@ export interface AdminSubscription {
   user_email: string;
   user_name: string;
   company: number | null;
+  company_name: string | null;
   customer: number;
   stripe_subscription_id: string;
   stripe_price: number;
@@ -64,4 +65,11 @@ export interface RevenueData {
   month: string;
   revenue: number;
   subscriptions: number;
+}
+
+export interface PaginatedResponse<T> {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: T[];
 }

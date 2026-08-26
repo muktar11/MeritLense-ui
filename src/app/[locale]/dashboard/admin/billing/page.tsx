@@ -75,24 +75,14 @@ export default function BillingAndSubscriptions() {
   const fetchSubscriptions = async () => {
     setLoading(true)
     try {
-      // Your API returns an array directly, not paginated
-      type SubscriptionsResponse = AdminSubscription[] | { results: AdminSubscription[]; count?: number }
       const data = await adminBillingService.getSubscriptions({
+        page: currentPage,
+        page_size: pageSize,
         status: statusFilter !== 'all' ? statusFilter : undefined,
         search: searchTerm || undefined
-      }) as SubscriptionsResponse;
-      
-      // Handle both array and paginated response
-      if (Array.isArray(data)) {
-        setSubscriptions(data)
-        setTotalCount(data.length)
-      } else if (data && typeof data === 'object' && 'results' in data) {
-        setSubscriptions(data.results)
-        setTotalCount(data.count || data.results.length)
-      } else {
-        setSubscriptions([])
-        setTotalCount(0)
-      }
+      });
+      setSubscriptions(data.results)
+      setTotalCount(data.count)
     } catch (error) {
       console.error('Failed to fetch subscriptions:', error)
       setSubscriptions([])
@@ -329,7 +319,7 @@ export default function BillingAndSubscriptions() {
                               <p className="text-sm text-gray-500">{sub.user_email}</p>
                             </div>
                             {sub.company && (
-                              <p className="text-xs text-gray-400">Company ID: {sub.company}</p>
+                              <p className="text-xs text-gray-400">{sub.company_name || `Company ID: ${sub.company}`}</p>
                             )}
                           </TableCell>
                           <TableCell>
@@ -431,7 +421,7 @@ export default function BillingAndSubscriptions() {
                 <p className="font-medium text-gray-900">{viewingSubscription.user_name}</p>
                 <p className="text-gray-500">{viewingSubscription.user_email}</p>
                 {viewingSubscription.company && (
-                  <p className="text-xs text-gray-400">Company ID: {viewingSubscription.company}</p>
+                  <p className="text-xs text-gray-400">{viewingSubscription.company_name || `Company ID: ${viewingSubscription.company}`}</p>
                 )}
               </div>
 
