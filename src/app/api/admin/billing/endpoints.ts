@@ -1,6 +1,6 @@
 // app/api/admin/billing/service.ts
 import { apiClient } from '@/app/api/auth/client';
-import { AdminSubscription, AdminSubscriptionStats } from './types';
+import { AdminSubscription, AdminSubscriptionStats, PaginatedResponse } from './types';
 import { API_BASE_URL } from '@/lib/config/env';
 
 class AdminBillingService {
@@ -14,17 +14,16 @@ class AdminBillingService {
     return token;
   }
 
-  // Get all subscriptions
+  // Get all subscriptions (paginated)
   async getSubscriptions(params?: {
     page?: number;
     page_size?: number;
     status?: string;
     search?: string;
-  }): Promise<AdminSubscription[]> {
+  }): Promise<PaginatedResponse<AdminSubscription>> {
     this.ensureAuthToken();
     const response = await apiClient.get(this.baseURL, { params });
-    console.log('Subscriptions response:', response.data); // Debug log
-    return response.data; // Returns array directly
+    return response.data;
   }
 
   // Get subscription details
@@ -38,7 +37,6 @@ class AdminBillingService {
   async getStats(): Promise<AdminSubscriptionStats> {
     this.ensureAuthToken();
     const response = await apiClient.get(`${this.baseURL}/stats`);
-    console.log('Stats response:', response.data); // Debug log
     return response.data;
   }
 }
