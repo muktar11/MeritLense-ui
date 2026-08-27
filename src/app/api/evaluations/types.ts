@@ -20,6 +20,7 @@ export const CERTIFICATE_STATUS = [
   { value: 'NOT_ISSUED', label: 'Not Issued' },
   { value: "PENDING", label: "Pending" },
   { value: 'ISSUED', label: 'Issued' },
+  { value: 'REVOKED', label: 'Revoked' },
   { value: 'EXPIRED', label: 'Expired' },
 ] as const;
 
@@ -174,6 +175,15 @@ export interface CandidateCertificate {
   certificate_id: string;
   pdf_url: string;
   issued_at: string;
+}
+
+export interface CertificateVerification {
+  certificate_id: string;
+  candidate_name: string;
+  issued_at: string | null;
+  expires_at: string | null;
+  status: 'VALID' | 'REVOKED' | 'EXPIRED';
+  pdf_hash: string;
 }
 
 export interface CandidateTranscriptReport {
