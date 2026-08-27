@@ -1,4 +1,4 @@
-import { authClient } from '../auth/client';
+import { apiClient, authClient } from '../auth/client';
 import {
   Evaluation,
   EvaluationListItem,
@@ -14,7 +14,8 @@ import {
   ScoringRuleSetPayload,
   CandidateScoreSummary,
   EvaluatorRating,
-  EvaluatorRatingPayload
+  EvaluatorRatingPayload,
+  CertificateVerification,
 } from './types';
 import { API_BASE_URL } from '@/lib/config/env';
 
@@ -77,13 +78,13 @@ class EvaluationService {
     return response.data;
   }
 
-  async rescheduleEvaluation(id: string, data: RescheduleEvaluationData): Promise<any> {
+  async rescheduleEvaluation(id: string, data: RescheduleEvaluationData): Promise<Evaluation> {
     this.ensureAuthToken();
     const response = await authClient.post(`${this.baseURL}/${id}/reschedule`, data);
     return response.data;
   }
 
-  async cancelEvaluation(id: string, data: CancelEvaluationData): Promise<any> {
+  async cancelEvaluation(id: string, data: CancelEvaluationData): Promise<Evaluation> {
     this.ensureAuthToken();
     const response = await authClient.post(`${this.baseURL}/${id}/cancel`, data);
     return response.data;
@@ -202,6 +203,13 @@ class EvaluationService {
     const response = await authClient.get(`${API_BASE_URL}/evaluations/candidate-scores`);
     return response.data;
   }
+
+  async verifyCertificate(certificateId: string): Promise<CertificateVerification> {
+    const response = await apiClient.get(`${API_BASE_URL}/evaluations/certificates/verify/${certificateId}`);
+    return response.data;
+  }
 }
 
-export default new EvaluationService();
+const evaluationService = new EvaluationService();
+
+export default evaluationService;
