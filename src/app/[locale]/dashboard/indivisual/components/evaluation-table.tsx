@@ -54,13 +54,21 @@ function getInitials(name: string): string {
     .slice(0, 2)
 }
 
-// The full per-pool breakdown (Safety/Behavior/Psych/Task/Consistency) is
-// already shown in the "View Details" modal via EvaluatorRatingCard - the
-// table just needs a single at-a-glance number, so it averages the 5 pools
-// instead of repeating the whole breakdown grid in every row.
+// The full per-pool breakdown (Safety/Hygiene/Communication/Task/Behavioral)
+// is already shown in the "View Details" modal via EvaluatorRatingCard -
+// the table just needs a single at-a-glance number, so it averages the 5
+// approved dimensions the same way the backend's headline score does (see
+// EvaluationReportService._derive_authoritative_score) - psych_professional
+// (not an approved dimension) and consistency (a reliability metric, not a
+// competency) are excluded. hygiene/communication can be null on ratings
+// submitted before those dimensions were collected; skipped rather than
+// producing NaN.
 function averageEvaluatorRating(rating: EvaluatorRating): number {
-  const { safety_awareness, behavior_integrity, psych_professional, task_execution, consistency } = rating
-  return Math.round((safety_awareness + behavior_integrity + psych_professional + task_execution + consistency) / 5)
+  const { safety_awareness, hygiene, communication, task_execution, behavior_integrity } = rating
+  const scores = [safety_awareness, hygiene, communication, task_execution, behavior_integrity].filter(
+    (value): value is number => value !== null && value !== undefined
+  )
+  return Math.round(scores.reduce((sum, value) => sum + value, 0) / scores.length)
 }
 
 export default function EvaluationTable({
@@ -163,7 +171,7 @@ export default function EvaluationTable({
                     item.evaluator_rating ? (
                       <span
                         className="font-semibold text-gray-900"
-                        title="Average of Safety, Behavior, Psych, Task and Consistency scores - see View Details for the full breakdown"
+                        title="Average of Safety, Hygiene, Communication, Task and Behavioral scores - see View Details for the full breakdown"
                       >
                         {averageEvaluatorRating(item.evaluator_rating)}%
                       </span>

@@ -5,17 +5,24 @@ import { Loader2, Pencil, Star } from "lucide-react";
 import evaluationService from "@/app/api/evaluations/endpoints";
 import type { EvaluatorRating, EvaluatorRatingPayload } from "@/app/api/evaluations/types";
 
+// The 5 approved report dimensions. behavior_integrity is still entered as
+// a raw 0-100 score here (that's the evaluator's actual input) - it's only
+// shown as a Risk Level (High/Medium/Low) on the certificate/report, per
+// Report Specification Section 4. psych_professional is no longer
+// collected - it isn't an approved dimension and is pending legal review.
 const RATING_POOLS: { key: keyof EvaluatorRatingPayload; label: string }[] = [
   { key: "safety_awareness", label: "Safety Awareness" },
-  { key: "behavior_integrity", label: "Behavior & Integrity" },
-  { key: "psych_professional", label: "Psych & Professional" },
-  { key: "task_execution", label: "Task Execution" },
+  { key: "hygiene", label: "Hygiene & Standards" },
+  { key: "communication", label: "Communication Ability" },
+  { key: "task_execution", label: "Practical Task Execution" },
+  { key: "behavior_integrity", label: "Behavioral Indicators" },
 ];
 
 const EMPTY_RATING_FORM: Record<keyof EvaluatorRatingPayload, string> = {
   safety_awareness: "",
+  hygiene: "",
+  communication: "",
   behavior_integrity: "",
-  psych_professional: "",
   task_execution: "",
 };
 
@@ -47,8 +54,9 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
         ratingData
           ? {
               safety_awareness: String(ratingData.safety_awareness),
+              hygiene: ratingData.hygiene !== null ? String(ratingData.hygiene) : "",
+              communication: ratingData.communication !== null ? String(ratingData.communication) : "",
               behavior_integrity: String(ratingData.behavior_integrity),
-              psych_professional: String(ratingData.psych_professional),
               task_execution: String(ratingData.task_execution),
             }
           : EMPTY_RATING_FORM
@@ -167,7 +175,14 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
           {RATING_POOLS.map(({ key, label }) => (
             <div key={key} className="rounded-lg bg-white border border-amber-200 px-3 py-2 text-center">
               <p className="text-xs text-gray-500">{label}</p>
-              <p className="text-lg font-bold text-gray-900">{evaluatorRating[key]}</p>
+              <p className="text-lg font-bold text-gray-900">
+                {evaluatorRating[key] ?? "N/A"}
+                {key === "behavior_integrity" && (
+                  <span className="ml-1 text-xs font-medium text-gray-500">
+                    ({evaluatorRating.behavioral_risk_level} risk)
+                  </span>
+                )}
+              </p>
             </div>
           ))}
           <div className="rounded-lg bg-white border border-amber-200 px-3 py-2 text-center">

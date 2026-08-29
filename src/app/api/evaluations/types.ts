@@ -248,11 +248,19 @@ export interface CompetencyEvaluationResult {
   rule_set_version: string;
 }
 
+// The 5 approved report dimensions (Safety, Hygiene, Communication,
+// Practical Tasks, Behavioral Indicators - see
+// EvaluationReportService.CANONICAL_COMPETENCY_DIMENSIONS on the backend).
+// psych_professional is intentionally not a field here - it's not an
+// approved dimension and is hidden from every API response pending a
+// legal/compliance review; do not add it back.
 export interface EvaluatorRating {
   id: string;
   safety_awareness: number;
+  hygiene: number | null;
+  communication: number | null;
   behavior_integrity: number;
-  psych_professional: number;
+  behavioral_risk_level: 'Low' | 'Medium' | 'High' | 'Not Assessed';
   task_execution: number;
   consistency: number;
   rated_by: string | null;
@@ -264,8 +272,9 @@ export interface EvaluatorRating {
 
 export interface EvaluatorRatingPayload {
   safety_awareness: number;
+  hygiene: number;
+  communication: number;
   behavior_integrity: number;
-  psych_professional: number;
   task_execution: number;
 }
 
