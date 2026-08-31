@@ -16,6 +16,7 @@ import {
 import { useLiveCall } from "./useLiveCall";
 import { LANGUAGES } from "@/lib/languages";
 import { EvaluatorRatingCard } from "@/components/evaluations/EvaluatorRatingCard";
+import { CallControlsIntro } from "./CallControlsIntro";
 
 interface LiveCallRoomProps {
   sessionId: string;
@@ -24,9 +25,17 @@ interface LiveCallRoomProps {
   // staff user instead.
   candidateToken?: string;
   onEnded?: () => void;
+  // True when rendered inside a dashboard shell (DashboardLayout's h-16
+  // breadcrumb bar sits above this component) rather than as its own
+  // full page - h-screen would then be 4rem taller than the space
+  // actually available in the shell's scrollable <main>, forcing a
+  // vertical scroll to see the whole call. The standalone candidate
+  // /interview page has no such chrome above it, so it keeps h-screen.
+  embedded?: boolean;
 }
 
-export function LiveCallRoom({ sessionId, candidateToken, onEnded }: LiveCallRoomProps) {
+export function LiveCallRoom({ sessionId, candidateToken, onEnded, embedded = false }: LiveCallRoomProps) {
+  const roomHeightClass = embedded ? "h-[calc(100vh-4rem)]" : "h-screen";
   const {
     status,
     role,
@@ -41,6 +50,7 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded }: LiveCallRoo
     turnRecordingError,
     turnPreviewUrl,
     turnElapsedSeconds,
+    remoteTurnActive,
     startTurnRecording,
     stopTurnRecording,
     reRecordTurn,
@@ -55,6 +65,14 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded }: LiveCallRoo
   } = useLiveCall({ sessionId, candidateToken });
 
   const [savingLanguage, setSavingLanguage] = useState(false);
+  const otherRoleLabel = role === "EVALUATOR" ? "Candidate" : "Evaluator";
+  // State, not a plain ref: CallControlsIntro needs to know as soon as
+  // these DOM nodes exist so it can measure and spotlight them, and a
+  // plain ref's .current wouldn't trigger the re-render that requires. The
+  // record target alternates between a <button> and a <div> depending on
+  // remoteTurnActive, hence the wider HTMLElement type.
+  const [recordEl, setRecordEl] = useState<HTMLElement | null>(null);
+  const [languageEl, setLanguageEl] = useState<HTMLDivElement | null>(null);
 
   const formatTurnTime = (s: number) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
 
@@ -76,7 +94,7 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded }: LiveCallRoo
   if (status === "ended") {
     const showRatingCard = role === "EVALUATOR" && evaluationId;
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
+      <div className={`${roomHeightClass} bg-gray-900 flex items-center justify-center p-4 overflow-y-auto`}>
         <div className={`bg-white rounded-2xl p-8 text-center w-full ${showRatingCard ? "max-w-lg" : "max-w-md"}`}>
           <PhoneOff className="w-12 h-12 text-gray-400 mx-auto mb-4" />
           <h1 className="text-xl font-bold text-gray-900 mb-2">Call ended</h1>
@@ -93,7 +111,7 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded }: LiveCallRoo
 
   if (status === "error") {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
+      <div className={`${roomHeightClass} bg-gray-900 flex items-center justify-center p-4 overflow-y-auto`}>
         <div className="bg-white rounded-2xl p-8 text-center max-w-md w-full">
           <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
           <h1 className="text-xl font-bold text-gray-900 mb-2">Couldn&apos;t join the call</h1>
@@ -119,9 +137,9 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded }: LiveCallRoo
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 flex flex-col">
+    <div className={`${roomHeightClass} overflow-hidden bg-gray-900 flex flex-col`}>
       <div className="flex-1 flex flex-col xl:flex-row min-h-0">
-        <div className="relative flex-1 min-h-[420px]">
+        <div className="relative flex-1 min-h-[240px] xl:min-h-[420px]">
           <video ref={remoteVideoRef} autoPlay playsInline className="w-full h-full object-cover bg-black" />
 
           {!remoteConnected && (
@@ -184,12 +202,22 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded }: LiveCallRoo
           )}
         </div>
 
-        <aside className="w-full xl:w-[380px] bg-slate-900 border-t xl:border-t-0 xl:border-l border-slate-700 flex flex-col min-h-[260px]">
+        <aside className="w-full xl:w-[380px] bg-slate-900 border-t xl:border-t-0 xl:border-l border-slate-700 flex flex-col min-h-[180px] max-h-[40vh] xl:max-h-none xl:min-h-[260px]">
           <div className="p-4 border-b border-slate-700 space-y-3">
             <div>
               <p className="text-xs uppercase tracking-wide text-slate-400">Manual translation</p>
               <h2 className="text-lg font-semibold text-white">Message feed</h2>
             </div>
+
+            {remoteTurnActive && (
+              <div className="flex items-center gap-2 rounded-lg bg-purple-500/15 border border-purple-500/40 px-3 py-2 text-xs text-purple-200">
+                <span className="relative flex h-2 w-2 shrink-0">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-purple-400" />
+                </span>
+                {otherRoleLabel} is speaking…
+              </div>
+            )}
 
             {error && (
               <div className="flex items-start gap-1.5 rounded-lg bg-red-950/60 border border-red-800 px-3 py-2 text-xs text-red-200">
@@ -206,14 +234,25 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded }: LiveCallRoo
             )}
 
             {turnRecordingState === "idle" && (
-              <button
-                type="button"
-                onClick={() => void startTurnRecording()}
-                className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-purple-400/60 rounded-lg text-purple-300 hover:bg-purple-500/10 text-sm font-medium"
-              >
-                <Mic className="w-4 h-4" />
-                Tap to record a turn
-              </button>
+              remoteTurnActive ? (
+                <div
+                  ref={setRecordEl}
+                  className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-slate-600 rounded-lg text-slate-400 text-sm font-medium cursor-not-allowed"
+                >
+                  <Mic className="w-4 h-4" />
+                  Waiting for {otherRoleLabel.toLowerCase()} to finish…
+                </div>
+              ) : (
+                <button
+                  ref={setRecordEl}
+                  type="button"
+                  onClick={() => void startTurnRecording()}
+                  className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-purple-400/60 rounded-lg text-purple-300 hover:bg-purple-500/10 text-sm font-medium"
+                >
+                  <Mic className="w-4 h-4" />
+                  Tap to record a turn
+                </button>
+              )
             )}
 
             {turnRecordingState === "recording" && (
@@ -286,7 +325,7 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded }: LiveCallRoo
       </div>
 
       <div className="bg-gray-800 px-4 py-3 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
+        <div ref={setLanguageEl} className="flex items-center gap-3">
           <div className="flex items-center gap-1.5">
             <Mic className="w-4 h-4 text-gray-400" />
             <label className="text-xs text-gray-300">I speak</label>
@@ -328,6 +367,8 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded }: LiveCallRoo
           <PhoneOff className="w-4 h-4" /> End Call
         </button>
       </div>
+
+      <CallControlsIntro recordTarget={recordEl} languageTarget={languageEl} />
     </div>
   );
 }

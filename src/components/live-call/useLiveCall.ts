@@ -68,6 +68,11 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
   const [translationSegments, setTranslationSegments] = useState<LiveCallTranslationSegment[]>([]);
   const [turnRecordingState, setTurnRecordingState] = useState<TurnRecordingState>("idle");
   const [turnRecordingError, setTurnRecordingError] = useState<string | null>(null);
+  // True while the OTHER participant is recording, reviewing, or sending a
+  // turn - gates this side's record button so only one person is "speaking"
+  // (holding the floor) at a time. Cleared defensively on their disconnect
+  // too, so a dropped connection mid-turn can't leave this side locked out.
+  const [remoteTurnActive, setRemoteTurnActive] = useState(false);
   const [turnPreviewUrl, setTurnPreviewUrl] = useState<string | null>(null);
   const [turnElapsedSeconds, setTurnElapsedSeconds] = useState(0);
   // Evaluator-only: a candidate is knocking and hasn't been admitted/denied yet.
@@ -276,7 +281,14 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
           }
           if (!event.connected) {
             setStatus((current) => (current === "active" ? "reconnecting" : current));
+            setRemoteTurnActive(false);
           }
+          break;
+        case "turn_recording_started":
+          setRemoteTurnActive(true);
+          break;
+        case "turn_recording_ended":
+          setRemoteTurnActive(false);
           break;
         case "offer": {
           const activePc = pc ?? createPeerConnection();
@@ -415,6 +427,21 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Broadcasts this side's own turn state on every transition, rather than
+  // threading a sendSignal call into each of startTurnRecording/
+  // submitTurnRecording/reRecordTurn individually - "recording", "recorded"
+  // (reviewing before send), and "sending" all count as holding the floor;
+  // only "idle" releases it, whether that's via a successful send or the
+  // user discarding an unsent take with Re-record.
+  const wasTurnActiveRef = useRef(false);
+  useEffect(() => {
+    const isActive = turnRecordingState !== "idle";
+    if (isActive !== wasTurnActiveRef.current) {
+      sendSignal({ action: isActive ? "turn_recording_started" : "turn_recording_ended" });
+      wasTurnActiveRef.current = isActive;
+    }
+  }, [turnRecordingState, sendSignal]);
+
   const endCall = useCallback(() => {
     endedIntentionallyRef.current = true;
     sendSignal({ action: "end_call" });
@@ -457,6 +484,7 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
     turnRecordingError,
     turnPreviewUrl,
     turnElapsedSeconds,
+    remoteTurnActive,
     startTurnRecording,
     stopTurnRecording,
     reRecordTurn,
