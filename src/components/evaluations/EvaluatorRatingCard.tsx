@@ -100,24 +100,24 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
 
   if (loading) {
     return (
-      <div className={`bg-amber-50 border border-amber-200 rounded-lg p-4 flex items-center justify-center ${className ?? ""}`}>
-        <Loader2 className="w-5 h-5 animate-spin text-amber-600" />
+      <div className={`bg-white border border-gray-200 rounded-2xl p-6 flex items-center justify-center ${className ?? ""}`}>
+        <Loader2 className="w-5 h-5 animate-spin text-purple-600" />
       </div>
     );
   }
 
   return (
-    <div className={`bg-amber-50 border border-amber-200 rounded-lg p-4 space-y-3 ${className ?? ""}`}>
+    <div className={`bg-white border border-gray-200 rounded-2xl p-6 space-y-5 ${className ?? ""}`}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Star className="w-4 h-4 text-amber-600" />
-          <h4 className="text-sm font-semibold text-gray-900">Evaluator Rating</h4>
+          <Star className="w-5 h-5 text-purple-600" />
+          <h4 className="text-base font-bold text-gray-900">Evaluator Rating</h4>
         </div>
         {evaluatorRating && !isEditingRating && (
           <button
             type="button"
             onClick={() => setIsEditingRating(true)}
-            className="inline-flex items-center gap-1 px-2.5 py-1.5 border border-amber-300 bg-white hover:bg-amber-50 text-amber-700 rounded-lg text-xs font-medium"
+            className="inline-flex items-center gap-1 px-2.5 py-1.5 border border-purple-200 bg-white hover:bg-purple-50 text-purple-700 rounded-lg text-xs font-medium"
           >
             <Pencil className="w-3.5 h-3.5" />
             Edit
@@ -132,27 +132,27 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
       )}
 
       {!evaluatorRating || isEditingRating ? (
-        <div className="space-y-3">
-          <div className="grid gap-3 sm:grid-cols-2">
+        <div className="space-y-5">
+          <div className="grid gap-x-6 gap-y-4 sm:grid-cols-2">
             {RATING_POOLS.map(({ key, label }) => (
-              <label key={key} className="text-xs text-gray-700">
-                {label}
+              <label key={key} className="block">
+                <span className="text-sm font-medium text-gray-700">{label}</span>
                 <input
                   type="number"
                   min={0}
                   max={100}
                   value={ratingForm[key]}
                   onChange={(e) => handleRatingFieldChange(key, e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-gray-300 px-2.5 py-1.5 text-sm text-gray-900"
+                  className="mt-1.5 w-full rounded-xl border border-gray-200 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   placeholder="0-100"
                 />
               </label>
             ))}
           </div>
-          <div className="rounded-lg border border-amber-200 bg-white px-3 py-2">
+          <div className="rounded-xl bg-purple-50/60 border border-purple-100 px-4 py-3.5">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-xs font-medium text-gray-700">Consistency</p>
+                <p className="text-sm font-bold text-purple-700">Consistency</p>
                 <p className="mt-0.5 text-xs text-gray-500">Calculated automatically from the candidate&apos;s responses.</p>
               </div>
               {evaluatorRating && (
@@ -164,7 +164,7 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
             type="button"
             onClick={handleSubmitRating}
             disabled={submittingRating}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 disabled:opacity-50 text-white rounded-lg text-sm font-medium"
+            className="w-full flex items-center justify-center gap-2 py-3.5 bg-linear-to-r from-teal-400 to-purple-500 hover:opacity-90 disabled:opacity-50 text-white rounded-xl text-sm font-semibold shadow-md shadow-purple-200"
           >
             {submittingRating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Star className="w-4 h-4" />}
             Submit Rating
@@ -173,7 +173,7 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
       ) : (
         <div className="grid gap-3 sm:grid-cols-5">
           {RATING_POOLS.map(({ key, label }) => (
-            <div key={key} className="rounded-lg bg-white border border-amber-200 px-3 py-2 text-center">
+            <div key={key} className="rounded-xl bg-purple-50/60 border border-purple-100 px-3 py-2.5 text-center">
               <p className="text-xs text-gray-500">{label}</p>
               <p className="text-lg font-bold text-gray-900">
                 {evaluatorRating[key] ?? "N/A"}
@@ -185,7 +185,7 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
               </p>
             </div>
           ))}
-          <div className="rounded-lg bg-white border border-amber-200 px-3 py-2 text-center">
+          <div className="rounded-xl bg-purple-50/60 border border-purple-100 px-3 py-2.5 text-center">
             <p className="text-xs text-gray-500">Consistency</p>
             <p className="text-lg font-bold text-gray-900">{evaluatorRating.consistency}</p>
           </div>
