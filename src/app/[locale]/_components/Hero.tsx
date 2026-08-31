@@ -7,8 +7,9 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useInView } from "react-intersection-observer";
+import { getStartedUrl } from "@/lib/getStartedUrl";
 
 // Animation variants
 const staggerContainer = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.1 } } };
@@ -16,6 +17,7 @@ const fadeInUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, t
 
 export const Hero = forwardRef<HTMLElement, {}>(function Hero(_, heroRef) {
   const t = useTranslations("landing-page.hero");
+  const locale = useLocale();
 
   // In-view hook
   const { ref: inViewRef, inView } = useInView({ triggerOnce: true, threshold: 0.1 });
@@ -53,7 +55,7 @@ export const Hero = forwardRef<HTMLElement, {}>(function Hero(_, heroRef) {
 
             <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row gap-4">
               <Button size="lg" className="bg-primary hover:bg-primary-700 text-white rounded-full px-8 h-14 text-base" asChild>
-                <Link href="/auth/register">
+                <Link href={getStartedUrl(locale)}>
                   {t("cta_start_evaluating")} <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>

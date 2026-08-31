@@ -5,8 +5,9 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useInView } from "react-intersection-observer";
+import { getStartedUrl } from "@/lib/getStartedUrl";
 
 const staggerContainer = {
   hidden: { opacity: 0 },
@@ -16,6 +17,7 @@ const fadeInUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, t
 
 export const Pricing = forwardRef<HTMLElement, {}>(function Pricing(_, pricingRef) {
   const t = useTranslations("landing-page.pricing");
+  const locale = useLocale();
 
   // Intersection observer inside the component
   const { ref: inViewRef, inView } = useInView({ triggerOnce: true, threshold: 0.1 });
@@ -95,7 +97,7 @@ export const Pricing = forwardRef<HTMLElement, {}>(function Pricing(_, pricingRe
                     className="w-full rounded-full h-12 bg-white border border-secondary-700 text-secondary-700 hover:text-white hover:[background:var(--gradient-primary)]"
                     asChild
                   >
-                    <Link href={index === 3 ? "/contact" : "/auth/register"}>
+                    <Link href={index === 3 ? "/contact" : getStartedUrl(locale)}>
                       {index === 3 ? t("cta_contact_sales") : t("cta_get_started")}
                     </Link>
                   </Button>
@@ -147,7 +149,7 @@ export const Pricing = forwardRef<HTMLElement, {}>(function Pricing(_, pricingRe
                     className="w-full rounded-full h-12 bg-white border border-secondary-700 text-secondary-700 hover:text-white hover:[background:var(--gradient-primary)]"
                     asChild
                   >
-                    <Link href={index === 3 ? "/contact" : "/auth/register"}>
+                    <Link href={index === 3 ? "/contact" : getStartedUrl(locale)}>
                       {index === 3 ? t("cta_contact_sales") : t("cta_get_started")}
                     </Link>
                   </Button>

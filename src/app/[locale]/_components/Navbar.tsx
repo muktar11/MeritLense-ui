@@ -7,6 +7,7 @@ import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { LanguageSelector } from "@/components/app/LanguageSelector";
 import { useTranslations, useLocale } from "next-intl";
+import { getStartedUrl } from "@/lib/getStartedUrl";
 
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -61,7 +62,7 @@ export function Navbar() {
           </Button>
 
           <Button className="bg-primary text-white rounded-full px-6" asChild>
-            <Link href={withLocale("/auth/register")}>
+            <Link href={getStartedUrl(locale)}>
               {t("actions.get_started")}
             </Link>
           </Button>
@@ -129,7 +130,7 @@ export function Navbar() {
           className="w-full bg-primary text-white rounded-full text-base py-6"
           asChild
         >
-          <Link href={withLocale("/auth/register")}>
+          <Link href={getStartedUrl(locale)}>
             {t("actions.get_started")}
           </Link>
         </Button>
