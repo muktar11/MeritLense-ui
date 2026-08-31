@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
+import { getStartedUrl } from "@/lib/getStartedUrl";
 
 export function CTA() {
   const t = useTranslations('landing-page.cta')
+  const locale = useLocale();
 
   return (
     <section className="py-16 lg:py-24">
@@ -29,7 +31,7 @@ export function CTA() {
                 className="bg-primary hover:bg-primary-600 text-white rounded-full px-8 h-12"
                 asChild
               >
-                <Link href="/auth/register">
+                <Link href={getStartedUrl(locale)}>
                   {t('button_trial')} <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
