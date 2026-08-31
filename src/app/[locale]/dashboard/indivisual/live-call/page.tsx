@@ -14,7 +14,7 @@ export default function IndividualLiveCallPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="h-[calc(100vh-4rem)] bg-gray-900 flex items-center justify-center">
           <Loader2 className="w-10 h-10 animate-spin text-white" />
         </div>
       }
@@ -30,7 +30,7 @@ function IndividualLiveCallContent() {
 
   if (!sessionId) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center text-white">
+      <div className="h-[calc(100vh-4rem)] bg-gray-900 flex items-center justify-center text-white">
         Missing session ID.
       </div>
     );
@@ -39,5 +39,5 @@ function IndividualLiveCallContent() {
   // No candidateToken - the evaluator authenticates as a normal logged-in
   // staff user (Bearer token via apiClient), same as everywhere else in
   // this dashboard.
-  return <LiveCallRoom sessionId={sessionId} />;
+  return <LiveCallRoom sessionId={sessionId} embedded />;
 }

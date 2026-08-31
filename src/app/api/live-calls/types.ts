@@ -49,7 +49,12 @@ export type LiveCallClientAction =
   | { action: "ping" }
   | { action: "end_call" }
   | { action: "admit" }
-  | { action: "deny" };
+  | { action: "deny" }
+  // Turn-taking: broadcast so the other participant's record button can be
+  // disabled while this side is mid-turn (recording, reviewing, or sending)
+  // - see useLiveCall's turn-recording effect.
+  | { action: "turn_recording_started" }
+  | { action: "turn_recording_ended" };
 
 // Server -> client events (JSON text frames).
 export interface LiveCallTranslationSegment {
@@ -83,4 +88,6 @@ export type LiveCallServerEvent =
   | { event: "translation_error"; detail: string }
   | { event: "translation_reconfigured" }
   | { event: "call_ended" }
-  | { event: "error"; detail: string };
+  | { event: "error"; detail: string }
+  | { event: "turn_recording_started"; data: null; from: LiveCallRole }
+  | { event: "turn_recording_ended"; data: null; from: LiveCallRole };
