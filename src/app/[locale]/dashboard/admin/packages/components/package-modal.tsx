@@ -128,7 +128,7 @@ export function PackageModal({ isOpen, onClose, onSuccess, packageToEdit }: Pack
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
     if (!form.name.trim()) newErrors.name = "Name is required";
-    if (!form.unit_amount || Number(form.unit_amount) <= 0) newErrors.unit_amount = "A positive amount is required";
+    if (form.unit_amount.trim() === '' || Number(form.unit_amount) < 0) newErrors.unit_amount = "Enter an amount of 0 or more";
     if (!form.currency.trim()) newErrors.currency = "Currency is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
