@@ -49,6 +49,13 @@ class AdminPackageService {
     const response = await apiClient.delete(`${this.baseURL}/${id}`);
     return response.data;
   }
+
+  // Only succeeds for a package with zero subscription history - the
+  // backend rejects it (400) otherwise and says to deactivate instead.
+  async deletePackagePermanently(id: string): Promise<void> {
+    this.ensureAuthToken();
+    await apiClient.delete(`${this.baseURL}/${id}?permanent=true`);
+  }
 }
 
 export default new AdminPackageService();

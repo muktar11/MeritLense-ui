@@ -14,7 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Plus, Loader2, ChevronLeft, ChevronRight, Pencil, Ban, ShieldAlert } from "lucide-react"
+import { Plus, Loader2, ChevronLeft, ChevronRight, Pencil, Ban, Trash2, ShieldAlert } from "lucide-react"
 import { PackageModal } from "./components/package-modal"
 import adminPackageService from "@/app/api/admin/packages/endpoints"
 import type { Package } from "@/app/api/admin/packages/types"
@@ -85,6 +85,17 @@ export default function PackageManagementPage() {
     } catch (error) {
       console.error('Failed to deactivate package:', error)
       alert('Failed to deactivate package. Please try again.')
+    }
+  }
+
+  const handleDelete = async (pkg: Package) => {
+    if (!confirm(`Permanently delete "${pkg.name}"? This cannot be undone. Only allowed if it has never had a subscriber.`)) return
+    try {
+      await adminPackageService.deletePackagePermanently(pkg.id)
+      fetchPackages()
+    } catch (error: any) {
+      console.error('Failed to delete package:', error)
+      alert(error?.response?.data?.error || 'Failed to delete package. Please try again.')
     }
   }
 
@@ -232,9 +243,13 @@ export default function PackageManagementPage() {
                               <Button variant="ghost" size="sm" onClick={() => handleEdit(pkg)} className="text-blue-600 hover:text-blue-700">
                                 <Pencil className="w-4 h-4" />
                               </Button>
-                              {pkg.is_active && (
+                              {pkg.is_active ? (
                                 <Button variant="ghost" size="sm" onClick={() => handleDeactivate(pkg)} className="text-red-600 hover:text-red-700">
                                   <Ban className="w-4 h-4" />
+                                </Button>
+                              ) : (
+                                <Button variant="ghost" size="sm" onClick={() => handleDelete(pkg)} className="text-red-600 hover:text-red-700">
+                                  <Trash2 className="w-4 h-4" />
                                 </Button>
                               )}
                             </div>
