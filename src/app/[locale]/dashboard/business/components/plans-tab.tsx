@@ -67,7 +67,22 @@ export function PlansTab() {
     setSelectedPlan(plan);
     setProcessing(true);
     setError(null);
-    
+
+    if (plan.unit_amount === 0) {
+      // Nothing to charge - skip the SetupIntent/card-collection flow
+      // entirely rather than forcing a credit card for a $0 plan.
+      try {
+        await paymentService.createSubscription({ price_id: plan.id, quantity: 1 });
+        handleSubscriptionSuccess();
+      } catch (error: any) {
+        console.error('Failed to activate free plan:', error);
+        setError(error?.detail || error?.response?.data?.detail || 'Failed to activate plan');
+      } finally {
+        setProcessing(false);
+      }
+      return;
+    }
+
     try {
       const setupIntent = await paymentService.createSetupIntent();
       setClientSecret(setupIntent.client_secret);
