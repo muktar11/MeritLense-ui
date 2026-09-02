@@ -97,7 +97,7 @@ export const Pricing = forwardRef<HTMLElement, {}>(function Pricing(_, pricingRe
                     className="w-full rounded-full h-12 bg-white border border-secondary-700 text-secondary-700 hover:text-white hover:[background:var(--gradient-primary)]"
                     asChild
                   >
-                    <Link href={index === 3 ? "/contact" : getStartedUrl(locale)}>
+                    <Link href={index === 3 ? `/${locale}/contact` : getStartedUrl(locale)}>
                       {index === 3 ? t("cta_contact_sales") : t("cta_get_started")}
                     </Link>
                   </Button>
@@ -149,7 +149,7 @@ export const Pricing = forwardRef<HTMLElement, {}>(function Pricing(_, pricingRe
                     className="w-full rounded-full h-12 bg-white border border-secondary-700 text-secondary-700 hover:text-white hover:[background:var(--gradient-primary)]"
                     asChild
                   >
-                    <Link href={index === 3 ? "/contact" : getStartedUrl(locale)}>
+                    <Link href={index === 3 ? `/${locale}/contact` : getStartedUrl(locale)}>
                       {index === 3 ? t("cta_contact_sales") : t("cta_get_started")}
                     </Link>
                   </Button>
