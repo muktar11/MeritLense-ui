@@ -217,6 +217,12 @@
       "newsletter_placeholder": "Enter your email",
       "newsletter_button": "Subscribe",
       "copyright": "All rights reserved."
+    },
+    "contact": {
+      "page_title": "Contact Us",
+      "page_subtitle": "Have a question or want to get in touch? Reach out to our team.",
+      "team_name": "MeritLense Team",
+      "email_label": "Email"
     }
   },
   "auth_page": {

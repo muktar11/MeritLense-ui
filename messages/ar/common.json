@@ -217,6 +217,12 @@
       "newsletter_placeholder": "أدخل بريدك الإلكتروني",
       "newsletter_button": "اشترك",
       "copyright": "جميع الحقوق محفوظة."
+    },
+    "contact": {
+      "page_title": "تواصل معنا",
+      "page_subtitle": "هل لديك سؤال أو ترغب في التواصل معنا؟ تواصل مع فريقنا.",
+      "team_name": "فريق MeritLense",
+      "email_label": "البريد الإلكتروني"
     }
   },
   "auth_page": {
