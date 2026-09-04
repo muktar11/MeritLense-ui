@@ -29,7 +29,7 @@ export const Pricing = forwardRef<HTMLElement, {}>(function Pricing(_, pricingRe
   };
 
   const pricesB2C = ["€50", "€80", "€150", "€250"];
-  const pricesB2B = ["Pilot", "€2,000", "€3,500", "Custom"];
+  const pricesB2B = ["Per Agreement", "€2,000", "€3,500", "Custom / Per Agreement"];
   const popularIndexB2C = 1;
   const popularIndexB2B = 1;
 
@@ -131,7 +131,9 @@ export const Pricing = forwardRef<HTMLElement, {}>(function Pricing(_, pricingRe
                     <h3 className="text-2xl font-bold mb-2">{t(`organizations_agencies.plans.${index}.name`)}</h3>
                     <div className="flex items-baseline gap-1">
                       <span className="text-4xl font-bold text-secondary-900">{pricesB2B[index]}</span>
-                      <span className="text-secondary-900">{t("organizations_agencies.time_unit")}</span>
+                      {index !== 0 && index !== 3 && (
+                        <span className="text-secondary-900">{t("organizations_agencies.time_unit")}</span>
+                      )}
                     </div>
                     <div className="text-foreground-muted mt-1">{t(`organizations_agencies.plans.${index}.candidates_count`)}</div>
                   </div>

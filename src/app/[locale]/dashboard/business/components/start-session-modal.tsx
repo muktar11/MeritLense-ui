@@ -385,7 +385,7 @@ export default function StartSessionModal({
                     <p className="text-xs text-amber-700 mt-1">
                       {selectedRole.coverage === 'SCREENING'
                         ? 'This package provides Screening-level evaluation coverage for the selected role — identity verification and basic screening only. Upgrade to Advanced/Growth for Full MeritLense Evaluation with readiness indicator and skill breakdown.'
-                        : 'Your current plan gives Full evaluation access for this role, but role-specific add-ons (Video Introduction, Behavioral Indicators Report) are unavailable at this package tier.'}
+                        : 'Your current plan gives Full evaluation access for this role, but role-specific add-ons (Video Introduction, Extended Assessment Insights) are unavailable at this package tier.'}
                       {recommendedPackage && (
                         <> Upgrade to <span className="font-semibold">{recommendedPackage.package_name}</span> for full coverage of this role.</>
                       )}
