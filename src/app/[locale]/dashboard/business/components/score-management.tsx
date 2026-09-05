@@ -13,15 +13,7 @@ import candidateService from "@/app/api/candidates/endpoints";
 import evaluationService from "@/app/api/evaluations/endpoints";
 
 
-const JOB_ROLE_DISPLAY: Record<string, string> = {
-  "HK": "Housekeeper",
-  "EC": "Elder Companion",
-  "NA": "Nursing Assistant",
-  "DR": "Driver",
-  "KA": "Kitchen Assistant",
-  "MW": "Maintenance Worker",
-  "OT": "Other",
-};
+const VALID_ROLE_CODES = ["HK", "EC", "NA", "DR", "KA", "MW", "OT"];
 
 export function ScoreManagement() {
   const t = useTranslations("dashboard.business.score-management");
@@ -107,7 +99,7 @@ export function ScoreManagement() {
     if (filteredCandidates.length === 0) {
       return (
         <div className="text-center py-8 text-gray-500">
-          No candidates found for this role
+          {t("noCandidatesForRole")}
         </div>
       );
     }
@@ -126,7 +118,7 @@ export function ScoreManagement() {
       <div className="min-h-screen bg-gray-50 p-8 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading candidates and scores...</p>
+          <p className="text-gray-600">{t("loadingCandidatesAndScores")}</p>
         </div>
       </div>
     );
@@ -135,8 +127,8 @@ export function ScoreManagement() {
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6 md:p-8" dir={locale === "ar" ? "rtl" : "ltr"}>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Candidate Score Management</h1>
-        <p className="text-gray-600">View candidate scores categorized by job role</p>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">{t("pageHeading")}</h1>
+        <p className="text-gray-600">{t("pageSubtitle")}</p>
       </div>
 
       <div className="bg-white rounded-lg p-4 mb-6 shadow-sm">
@@ -144,7 +136,7 @@ export function ScoreManagement() {
           <Search className="w-5 h-5 text-gray-400" />
           <Input
             type="text"
-            placeholder="Search candidates by name or email..."
+            placeholder={t("searchByNameEmail")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="flex-1"
@@ -161,7 +153,7 @@ export function ScoreManagement() {
       <div className="bg-white rounded-lg shadow-sm overflow-hidden">
         <div className="p-4 border-b border-gray-200 bg-gray-50">
           <h2 className="text-lg font-semibold text-gray-900">
-            {JOB_ROLE_DISPLAY[selectedRole] || selectedRole} Candidates
+            {t("candidatesHeading", { role: VALID_ROLE_CODES.includes(selectedRole) ? t(`roleNames.${selectedRole}`) : selectedRole })}
           </h2>
         </div>
 
@@ -169,7 +161,7 @@ export function ScoreManagement() {
 
         {getFilteredCandidates().length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-500">No candidates found for this role</p>
+            <p className="text-gray-500">{t("noCandidatesForRole")}</p>
           </div>
         )}
       </div>
