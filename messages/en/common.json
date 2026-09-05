@@ -1493,6 +1493,65 @@
         "pagination": {
           "showing": "Showing",
           "of": "of"
+        },
+        "pageHeading": "Candidate Score Management",
+        "pageSubtitle": "View candidate scores categorized by job role",
+        "searchByNameEmail": "Search candidates by name or email...",
+        "loadingCandidatesAndScores": "Loading candidates and scores...",
+        "noCandidatesForRole": "No candidates found for this role",
+        "candidatesHeading": "{role} Candidates",
+        "roleNames": {
+          "HK": "Housekeeper",
+          "EC": "Elder Companion",
+          "NA": "Nursing Assistant",
+          "DR": "Driver",
+          "KA": "Kitchen Assistant",
+          "MW": "Maintenance Worker",
+          "OT": "Other"
+        },
+        "jobRoleTabs": {
+          "selectPlaceholder": "Select a job role",
+          "roles": {
+            "HK": "Housekeepers",
+            "EC": "Elder Companions",
+            "NA": "Nursing Assistants",
+            "DR": "Drivers",
+            "KA": "Kitchen Assistants",
+            "MW": "Maintenance Workers",
+            "OT": "Other"
+          }
+        },
+        "viewModal": {
+          "title": "Score Details",
+          "email": "Email",
+          "passportId": "Passport ID",
+          "jobRole": "Job Role",
+          "preferredLanguage": "Preferred Language",
+          "overallAverageScore": "Overall Average Score",
+          "skillScoresBreakdown": "Skill Scores Breakdown",
+          "noScoresYet": "No scores available for this candidate yet.",
+          "close": "Close"
+        },
+        "table": {
+          "headers": {
+            "candidate": "Candidate",
+            "avgScore": "Avg Score",
+            "documents": "Documents",
+            "actions": "Actions"
+          },
+          "transcript": "Transcript:",
+          "certificate": "Certificate:",
+          "notAvailable": "Not available",
+          "screeningNote": "Screening Evaluation — identity verification and basic screening only, no Readiness Indicator, Overall Score, or certificate.",
+          "viewScoresTooltip": "View Scores",
+          "transcriptReportLabel": "MeritLense Transcript Report",
+          "certificateLabel": "MeritLense Certificate",
+          "downloadTooltip": "Download {label}",
+          "shareTooltip": "Share {label} link",
+          "downloading": "Downloading...",
+          "download": "Download",
+          "copied": "Copied!",
+          "itemLabelPlural": "candidates"
         }
       },
        "company-profile": {

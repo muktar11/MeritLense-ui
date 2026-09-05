@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface JobRoleTabsProps {
@@ -17,27 +18,29 @@ interface JobRoleTabsProps {
 // tried to look one up via InterviewConfig.role_code using these same short
 // codes, which never matched and always rendered wrong/missing coverage.
 const JOB_ROLES = [
-  { id: "HK", label: "Housekeepers", icon: "🧹" },
-  { id: "EC", label: "Elder Companions", icon: "👴" },
-  { id: "NA", label: "Nursing Assistants", icon: "🏥" },
-  { id: "DR", label: "Drivers", icon: "🚗" },
-  { id: "KA", label: "Kitchen Assistants", icon: "🍳" },
-  { id: "MW", label: "Maintenance Workers", icon: "🔧" },
-  { id: "OT", label: "Other", icon: "📋" },
+  { id: "HK", icon: "🧹" },
+  { id: "EC", icon: "👴" },
+  { id: "NA", icon: "🏥" },
+  { id: "DR", icon: "🚗" },
+  { id: "KA", icon: "🍳" },
+  { id: "MW", icon: "🔧" },
+  { id: "OT", icon: "📋" },
 ];
 
 export function JobRoleTabs({ selectedRole, onRoleChange, roleCounts }: JobRoleTabsProps) {
+  const t = useTranslations("dashboard.business.score-management.jobRoleTabs");
+
   return (
     <div className="mb-6">
       <Select value={selectedRole} onValueChange={onRoleChange}>
         <SelectTrigger className="w-full sm:w-72 bg-white">
-          <SelectValue placeholder="Select a job role" />
+          <SelectValue placeholder={t("selectPlaceholder")} />
         </SelectTrigger>
         <SelectContent>
           {JOB_ROLES.map((role) => (
             <SelectItem key={role.id} value={role.id}>
               <span aria-hidden="true">{role.icon}</span>
-              {role.label}
+              {t(`roles.${role.id}`)}
               {roleCounts[role.id] > 0 && (
                 <span className="ml-auto px-2 py-0.5 text-xs bg-gray-100 rounded-full text-gray-600">
                   {roleCounts[role.id]}

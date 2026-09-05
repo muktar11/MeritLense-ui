@@ -24,7 +24,7 @@ export function ScoreViewModal({
   labels = {},
   averageScore,
 }: ScoreViewModalProps) {
-  const t = useTranslations("dashboard.business.score-management");
+  const t = useTranslations("dashboard.business.score-management.viewModal");
 
   if (!isOpen || !candidate) return null;
 
@@ -44,7 +44,7 @@ export function ScoreViewModal({
       <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-3xl pointer-events-auto relative max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6 sticky top-0 bg-white pb-2 border-b">
           <h2 className="text-lg font-bold text-gray-900">
-            Score Details
+            {t("title")}
           </h2>
           <button
             onClick={onClose}
@@ -61,31 +61,31 @@ export function ScoreViewModal({
             <div className="flex items-center gap-3">
               <Mail className="w-5 h-5 text-purple-500" />
               <div>
-                <p className="text-xs text-gray-500">Email</p>
+                <p className="text-xs text-gray-500">{t("email")}</p>
                 <p className="text-sm font-medium text-gray-900">{candidate.email}</p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-3">
               <Hash className="w-5 h-5 text-purple-500" />
               <div>
-                <p className="text-xs text-gray-500">Passport ID</p>
+                <p className="text-xs text-gray-500">{t("passportId")}</p>
                 <p className="text-sm font-medium text-gray-900">{candidate.passport_id}</p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-3">
               <User className="w-5 h-5 text-purple-500" />
               <div>
-                <p className="text-xs text-gray-500">Job Role</p>
+                <p className="text-xs text-gray-500">{t("jobRole")}</p>
                 <p className="text-sm font-medium text-gray-900">{candidate.job_role}</p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-3">
               <Calendar className="w-5 h-5 text-purple-500" />
               <div>
-                <p className="text-xs text-gray-500">Preferred Language</p>
+                <p className="text-xs text-gray-500">{t("preferredLanguage")}</p>
                 <p className="text-sm font-medium text-gray-900">{candidate.preferred_language}</p>
               </div>
             </div>
@@ -93,7 +93,7 @@ export function ScoreViewModal({
 
           <div className="mt-4 pt-4 border-t border-purple-200">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-700">Overall Average Score</span>
+              <span className="text-sm font-medium text-gray-700">{t("overallAverageScore")}</span>
               <span className="text-2xl font-bold text-purple-600">{calculatedAverage}%</span>
             </div>
           </div>
@@ -103,7 +103,7 @@ export function ScoreViewModal({
           <div className="space-y-4">
             <h3 className="font-medium text-gray-700 flex items-center gap-2">
               <span className="w-1 h-6 bg-purple-500 rounded-full"></span>
-              Skill Scores Breakdown
+              {t("skillScoresBreakdown")}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {sortedScores.map(([area, score]) => (
@@ -134,7 +134,7 @@ export function ScoreViewModal({
           </div>
         ) : (
           <div className="text-center py-12 bg-gray-50 rounded-lg">
-            <p className="text-gray-500">No scores available for this candidate yet.</p>
+            <p className="text-gray-500">{t("noScoresYet")}</p>
           </div>
         )}
 
@@ -143,7 +143,7 @@ export function ScoreViewModal({
             onClick={onClose}
             className="px-6 py-2 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors"
           >
-            Close
+            {t("close")}
           </button>
         </div>
       </div>

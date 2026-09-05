@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Check, Download, Eye, Share2 } from "lucide-react";
 import type { Candidate } from "@/app/api/candidates/types";
 import type { CandidateScoreSummary } from "@/app/api/evaluations/types";
@@ -49,6 +50,7 @@ function ArtifactActions({
   artifactLabel: string;
   onDownload?: () => Promise<void>;
 }) {
+  const t = useTranslations("dashboard.business.score-management.table");
   const [copied, setCopied] = useState(false);
   const [downloading, setDownloading] = useState(false);
 
@@ -90,10 +92,10 @@ function ArtifactActions({
           onClick={handleDownload}
           disabled={downloading}
           className="inline-flex items-center gap-1 text-purple-600 hover:text-purple-700 disabled:opacity-50 font-medium"
-          title={`Download ${artifactLabel}`}
+          title={t("downloadTooltip", { label: artifactLabel })}
         >
           <Download className="w-4 h-4" />
-          {downloading ? "Downloading..." : "Download"}
+          {downloading ? t("downloading") : t("download")}
         </button>
       ) : (
         <a
@@ -102,20 +104,20 @@ function ArtifactActions({
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-1 text-purple-600 hover:text-purple-700 font-medium"
-          title={`Download ${artifactLabel}`}
+          title={t("downloadTooltip", { label: artifactLabel })}
         >
           <Download className="w-4 h-4" />
-          Download
+          {t("download")}
         </a>
       )}
       <button
         type="button"
         onClick={handleShare}
         className="inline-flex items-center gap-1 text-gray-500 hover:text-purple-600"
-        title={`Share ${artifactLabel} link`}
+        title={t("shareTooltip", { label: artifactLabel })}
       >
         {copied ? <Check className="w-4 h-4 text-green-600" /> : <Share2 className="w-4 h-4" />}
-        {copied && <span className="text-green-600 text-xs">Copied!</span>}
+        {copied && <span className="text-green-600 text-xs">{t("copied")}</span>}
       </button>
     </div>
   );
@@ -131,6 +133,7 @@ function ArtifactActions({
 // never grows past a fixed set of columns regardless of how many
 // competencies a role's scoring rules define.
 export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicScoreTableProps) {
+  const t = useTranslations("dashboard.business.score-management.table");
   const [currentPage, setCurrentPage] = useState(1);
   const [prevCandidates, setPrevCandidates] = useState(candidates);
   if (candidates !== prevCandidates) {
@@ -148,10 +151,10 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
       <table className="w-full text-sm">
         <thead className="bg-gray-50 border-b border-gray-200">
           <tr>
-            <th className="px-4 sm:px-6 py-2 text-left font-semibold text-gray-700">Candidate</th>
-            <th className="px-4 sm:px-6 py-2 text-left font-semibold text-gray-700">Avg Score</th>
-            <th className="px-4 sm:px-6 py-2 text-left font-semibold text-gray-700">Documents</th>
-            <th className="px-4 sm:px-6 py-2 text-left font-semibold text-gray-700">Actions</th>
+            <th className="px-4 sm:px-6 py-2 text-left font-semibold text-gray-700">{t("headers.candidate")}</th>
+            <th className="px-4 sm:px-6 py-2 text-left font-semibold text-gray-700">{t("headers.avgScore")}</th>
+            <th className="px-4 sm:px-6 py-2 text-left font-semibold text-gray-700">{t("headers.documents")}</th>
+            <th className="px-4 sm:px-6 py-2 text-left font-semibold text-gray-700">{t("headers.actions")}</th>
           </tr>
         </thead>
         <tbody>
@@ -191,34 +194,34 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
                 <td className="px-4 sm:px-6 py-3">
                   <div className="space-y-2">
                     <div>
-                      <span className="text-xs text-gray-500 mr-1">Transcript:</span>
+                      <span className="text-xs text-gray-500 mr-1">{t("transcript")}</span>
                       {summary?.report?.pdf_url ? (
                         <ArtifactActions
                           url={summary.report.pdf_url}
                           candidateName={candidate.full_name}
-                          artifactLabel="MeritLense Transcript Report"
+                          artifactLabel={t("transcriptReportLabel")}
                           onDownload={downloadAllArtifacts}
                         />
                       ) : (
-                        <span className="text-gray-400">Not available</span>
+                        <span className="text-gray-400">{t("notAvailable")}</span>
                       )}
                       {summary?.evaluation_tier === "SCREENING" && (
                         <p className="text-[11px] text-amber-600 mt-1 max-w-[220px]">
-                          Screening Evaluation — identity verification and basic screening only, no Readiness Indicator, Overall Score, or certificate.
+                          {t("screeningNote")}
                         </p>
                       )}
                     </div>
                     <div>
-                      <span className="text-xs text-gray-500 mr-1">Certificate:</span>
+                      <span className="text-xs text-gray-500 mr-1">{t("certificate")}</span>
                       {summary?.certificate ? (
                         <ArtifactActions
                           url={summary.certificate.pdf_url}
                           candidateName={candidate.full_name}
-                          artifactLabel="MeritLense Certificate"
+                          artifactLabel={t("certificateLabel")}
                           onDownload={downloadAllArtifacts}
                         />
                       ) : (
-                        <span className="text-gray-400">Not available</span>
+                        <span className="text-gray-400">{t("notAvailable")}</span>
                       )}
                     </div>
                   </div>
@@ -227,7 +230,7 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
                   <button
                     onClick={() => onViewScores(candidate)}
                     className="p-1 text-gray-400 hover:text-purple-600 rounded-full hover:bg-purple-50"
-                    title="View Scores"
+                    title={t("viewScoresTooltip")}
                   >
                     <Eye className="w-4 h-4" />
                   </button>
@@ -245,7 +248,7 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
           totalItems={candidates.length}
           pageSize={PAGE_SIZE}
           onPageChange={setCurrentPage}
-          itemLabel="candidates"
+          itemLabel={t("itemLabelPlural")}
         />
       )}
     </div>
