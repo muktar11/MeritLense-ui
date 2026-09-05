@@ -7,16 +7,11 @@ import { useProfile } from "../../../../../hooks/useProfile"
 import { Loader2 } from "lucide-react"
 import { LANGUAGES } from "../../../../../api/auth/endpoints"
 
-const COMPANY_SIZES = [
-  { key: '1-10', label: '1-10 employees' },
-  { key: '11-50', label: '11-50 employees' },
-  { key: '51-200', label: '51-200 employees' },
-  { key: '201-1000', label: '201-1000 employees' },
-  { key: '1000+', label: '1000+ employees' },
-]
+const COMPANY_SIZE_KEYS = ['1-10', '11-50', '51-200', '201-1000', '1000+']
 
 export default function EditProfileTab() {
   const t = useTranslations("dashboard.business.settings.edit-profile-tab")
+  const tLanguages = useTranslations("dashboard.indivisual.settings.edit-profile-tab.languages")
   const { profile, loading, error, updateProfile, fetchProfile } = useProfile()
 
   const [formData, setFormData] = useState({
@@ -104,13 +99,13 @@ export default function EditProfileTab() {
           </div>
         </div>
         <div className="flex-1">
-          <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">Profile Picture</h3>
-          <p className="text-sm text-gray-600 mb-4">Update your profile picture</p>
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">{t("profilePicture.heading")}</h3>
+          <p className="text-sm text-gray-600 mb-4">{t("profilePicture.subtitle")}</p>
           <button
             type="button"
             className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
           >
-            Change
+            {t("profilePicture.change")}
           </button>
         </div>
       </div>
@@ -123,13 +118,13 @@ export default function EditProfileTab() {
 
       {saveSuccess && (
         <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-          <p className="text-sm text-green-600">Profile updated successfully!</p>
+          <p className="text-sm text-green-600">{t("updateSuccess")}</p>
         </div>
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">First Name *</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">{t("fields.firstName")} *</label>
           <input
             type="text"
             name="first_name"
@@ -141,7 +136,7 @@ export default function EditProfileTab() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Last Name *</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">{t("fields.lastName")} *</label>
           <input
             type="text"
             name="last_name"
@@ -153,7 +148,7 @@ export default function EditProfileTab() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">{t("fields.email")}</label>
           <input
             type="email"
             value={formData.email}
@@ -163,7 +158,7 @@ export default function EditProfileTab() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Phone Number *</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">{t("fields.phoneNumber")} *</label>
           <input
             type="tel"
             name="phone_number"
@@ -175,7 +170,7 @@ export default function EditProfileTab() {
         </div>
 
         <div className="sm:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Company Name *</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">{t("fields.companyName")} *</label>
           <input
             type="text"
             name="company_name"
@@ -187,7 +182,7 @@ export default function EditProfileTab() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Registration Number</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">{t("fields.registrationNumber")}</label>
           <input
             type="text"
             value={formData.company_registration_number}
@@ -197,34 +192,34 @@ export default function EditProfileTab() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Company Size</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">{t("fields.companySize")}</label>
           <select
             name="company_size"
             value={formData.company_size}
             disabled
             className="w-full px-4 py-2.5 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
           >
-            <option value="">Select size</option>
-            {COMPANY_SIZES.map((size) => (
-              <option key={size.key} value={size.key}>{size.label}</option>
+            <option value="">{t("fields.selectSize")}</option>
+            {COMPANY_SIZE_KEYS.map((key) => (
+              <option key={key} value={key}>{t(`companySizes.${key}`)}</option>
             ))}
           </select>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Industry</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">{t("fields.industry")}</label>
           <input
             type="text"
             name="industry"
             value={formData.industry}
             onChange={handleChange}
-            placeholder="e.g., Technology, Healthcare"
+            placeholder={t("fields.industryPlaceholder")}
             className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Website</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">{t("fields.website")}</label>
           <input
             type="url"
             name="website"
@@ -236,7 +231,7 @@ export default function EditProfileTab() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Country *</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">{t("fields.country")} *</label>
           <input
             type="text"
             name="country"
@@ -248,7 +243,7 @@ export default function EditProfileTab() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">City *</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">{t("fields.city")} *</label>
           <input
             type="text"
             name="city"
@@ -260,7 +255,7 @@ export default function EditProfileTab() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Preferred Language</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">{t("fields.preferredLanguage")}</label>
           <select
             name="preferred_language"
             value={formData.preferred_language}
@@ -268,19 +263,19 @@ export default function EditProfileTab() {
             className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             {LANGUAGES.map((lang) => (
-              <option key={lang.key} value={lang.key}>{lang.label}</option>
+              <option key={lang.key} value={lang.key}>{tLanguages(lang.key)}</option>
             ))}
           </select>
         </div>
 
         <div className="sm:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Address</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">{t("fields.address")}</label>
           <input
             type="text"
             name="address"
             value={formData.address}
             onChange={handleChange}
-            placeholder="Company address"
+            placeholder={t("fields.addressPlaceholder")}
             className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
@@ -295,10 +290,10 @@ export default function EditProfileTab() {
           {loading ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
-              Saving...
+              {t("saving")}
             </>
           ) : (
-            "Save"
+            t("save")
           )}
         </button>
       </div>
