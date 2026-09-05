@@ -96,7 +96,8 @@ function SidebarContent({
       {/* Navigation */}
       <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
         {sidebarItems.map((item) => {
-          const isActive = pathname.endsWith(item.href);
+          const normalize = (path: string) => path.replace(/\/+$/, "") || "/";
+          const isActive = normalize(pathname) === normalize(item.href);
           const Icon = item.icon;
 
           return (
