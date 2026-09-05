@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { CheckCircle2, Loader2, ShieldCheck, FileText } from "lucide-react";
 import agreementService from "@/app/api/agreements/endpoints";
 import type { Agreement } from "@/app/api/agreements/types";
@@ -10,6 +10,7 @@ import type { Agreement } from "@/app/api/agreements/types";
 type Step = "loading" | "review" | "otp" | "already-signed" | "done";
 
 export default function SignAgreementPage() {
+  const t = useTranslations("dashboard.indivisual.signAgreements");
   const router = useRouter();
   const locale = useLocale();
 
@@ -52,7 +53,7 @@ export default function SignAgreementPage() {
         setStep("review");
       } catch (err) {
         console.error("Failed to load agreement:", err);
-        if (active) setError("Failed to load your agreement. Please refresh the page.");
+        if (active) setError(t("loadFailedError"));
       }
     })();
     return () => {
@@ -96,7 +97,7 @@ export default function SignAgreementPage() {
 
   const handleSendCode = async () => {
     if (!signatoryName.trim()) {
-      setError("Please enter your full legal name.");
+      setError(t("errors.nameRequired"));
       return;
     }
     setSending(true);
@@ -114,7 +115,7 @@ export default function SignAgreementPage() {
       setResendsRemaining(5);
       setStep("otp");
     } catch (err: any) {
-      setError(err?.response?.data?.error || err?.error || "Failed to send the verification code.");
+      setError(err?.response?.data?.error || err?.error || t("errors.sendCodeFailed"));
     } finally {
       setSending(false);
     }
@@ -133,7 +134,7 @@ export default function SignAgreementPage() {
       codeRefs.current[0]?.focus();
     } catch (err: any) {
       const data = err?.response?.data;
-      setError(data?.error || err?.error || "Failed to resend the code.");
+      setError(data?.error || err?.error || t("errors.resendFailed"));
       if (data?.locked) {
         setStep("review");
       }
@@ -159,7 +160,7 @@ export default function SignAgreementPage() {
   const handleConfirm = async () => {
     const fullCode = code.join("");
     if (fullCode.length !== 6) {
-      setError("Please enter the full 6-digit code.");
+      setError(t("errors.codeIncomplete"));
       return;
     }
     setConfirming(true);
@@ -170,9 +171,9 @@ export default function SignAgreementPage() {
       setStep("done");
     } catch (err: any) {
       const data = err?.response?.data;
-      const message = data?.error || err?.error || "Incorrect or expired code.";
+      const message = data?.error || err?.error || t("errors.incorrectCode");
       if (data?.locked) {
-        setError(`${message} Restarting from document review.`);
+        setError(t("errors.restartingReview", { message }));
         setStep("review");
         setCode(["", "", "", "", "", ""]);
       } else {
@@ -196,13 +197,13 @@ export default function SignAgreementPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md text-center">
           <CheckCircle2 className="w-14 h-14 text-green-600 mx-auto mb-4" />
-          <h1 className="text-xl font-bold text-gray-900 mb-2">Your agreement is signed</h1>
-          <p className="text-gray-600 mb-6">You already have a valid B2C Agreement on file.</p>
+          <h1 className="text-xl font-bold text-gray-900 mb-2">{t("alreadySigned.title")}</h1>
+          <p className="text-gray-600 mb-6">{t("alreadySigned.message")}</p>
           <button
             onClick={() => router.push(`/${locale}/dashboard/indivisual`)}
             className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2.5 rounded-lg"
           >
-            Continue to Dashboard
+            {t("alreadySigned.continueButton")}
           </button>
         </div>
       </div>
@@ -214,10 +215,9 @@ export default function SignAgreementPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md text-center">
           <CheckCircle2 className="w-14 h-14 text-green-600 mx-auto mb-4" />
-          <h1 className="text-xl font-bold text-gray-900 mb-2">Agreement signed</h1>
+          <h1 className="text-xl font-bold text-gray-900 mb-2">{t("done.title")}</h1>
           <p className="text-gray-600 mb-6">
-            Your B2C Agreement has been signed and is on file. A copy has been recorded with a
-            full audit trail.
+            {t("done.message")}
           </p>
           {signedDoc && (
             <div className="space-y-2 mb-6 text-left">
@@ -228,7 +228,7 @@ export default function SignAgreementPage() {
                 className="flex items-center gap-2 text-sm text-purple-700 hover:underline"
               >
                 <FileText className="w-4 h-4" />
-                Download {signedDoc.agreement_type_display} ({signedDoc.contract_id})
+                {t("done.downloadLink", { type: signedDoc.agreement_type_display, id: signedDoc.contract_id })}
               </a>
             </div>
           )}
@@ -236,7 +236,7 @@ export default function SignAgreementPage() {
             onClick={() => router.push(`/${locale}/dashboard/indivisual`)}
             className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2.5 rounded-lg"
           >
-            Continue to Dashboard
+            {t("done.continueButton")}
           </button>
         </div>
       </div>
@@ -248,10 +248,9 @@ export default function SignAgreementPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md w-full">
           <ShieldCheck className="w-10 h-10 text-purple-600 mb-4" />
-          <h1 className="text-xl font-bold text-gray-900 mb-2">Enter verification code</h1>
+          <h1 className="text-xl font-bold text-gray-900 mb-2">{t("otp.title")}</h1>
           <p className="text-gray-600 text-sm mb-6">
-            We sent a 6-digit code by email to {sentTo}. It confirms your signature on the B2C
-            Agreement.
+            {t("otp.sentMessage", { email: sentTo })}
           </p>
 
           {error && (
@@ -278,17 +277,17 @@ export default function SignAgreementPage() {
 
           <p className="text-center text-sm text-gray-500 mb-2">
             {secondsLeft > 0 ? (
-              <>Code expires in {formatCountdown(secondsLeft)}</>
+              <>{t("otp.codeExpiresIn", { time: formatCountdown(secondsLeft) })}</>
             ) : (
-              <span className="text-red-500">Code expired — request a new one below.</span>
+              <span className="text-red-500">{t("otp.codeExpired")}</span>
             )}
           </p>
 
           <p className="text-center text-sm mb-6">
             {resendCooldown > 0 ? (
-              <span className="text-gray-400">Resend available in {resendCooldown}s</span>
+              <span className="text-gray-400">{t("otp.resendIn", { seconds: resendCooldown })}</span>
             ) : resendsRemaining <= 0 ? (
-              <span className="text-red-500">No resends left — go back and restart.</span>
+              <span className="text-red-500">{t("otp.noResendsLeft")}</span>
             ) : (
               <button
                 type="button"
@@ -297,7 +296,7 @@ export default function SignAgreementPage() {
                 className="text-purple-600 hover:underline font-medium disabled:opacity-50 inline-flex items-center gap-1.5"
               >
                 {resending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
-                Resend code ({resendsRemaining} left)
+                {t("otp.resendCode", { count: resendsRemaining })}
               </button>
             )}
           </p>
@@ -308,13 +307,13 @@ export default function SignAgreementPage() {
             className="w-full bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white font-semibold py-2.5 rounded-lg flex items-center justify-center gap-2"
           >
             {confirming ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-            Confirm & Sign
+            {t("otp.confirmAndSign")}
           </button>
           <button
             onClick={() => setStep("review")}
             className="w-full mt-2 text-sm text-gray-500 hover:text-gray-700 py-2"
           >
-            ← Back
+            {t("otp.back")}
           </button>
         </div>
       </div>
@@ -325,9 +324,9 @@ export default function SignAgreementPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-2xl font-bold text-gray-900 mb-1">Sign Your Agreement</h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-1">{t("review.title")}</h1>
         <p className="text-gray-600 mb-6">
-          Review and sign the B2C Agreement to activate your MeritLense dashboard.
+          {t("review.subtitle")}
         </p>
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">
@@ -338,25 +337,25 @@ export default function SignAgreementPage() {
               const win = e.currentTarget.contentWindow;
               win?.addEventListener("scroll", () => handleIframeScroll(e));
             }}
-            title="B2C Agreement"
+            title={t("review.iframeTitle")}
           />
         </div>
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Your full legal name</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t("review.nameLabel")}</label>
             <input
               type="text"
               value={signatoryName}
               onChange={(e) => setSignatoryName(e.target.value)}
-              placeholder="As it should appear on the signed document"
+              placeholder={t("review.namePlaceholder")}
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
           </div>
 
           {!reviewed && (
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800">
-              Please scroll through the document above before signing.
+              {t("review.reviewPrompt")}
             </div>
           )}
 
@@ -372,7 +371,7 @@ export default function SignAgreementPage() {
             className="w-full bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-2.5 rounded-lg flex items-center justify-center gap-2"
           >
             {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-            Send Verification Code
+            {t("review.sendCodeButton")}
           </button>
         </div>
       </div>
