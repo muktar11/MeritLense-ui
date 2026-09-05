@@ -1940,6 +1940,81 @@
         "getStarted": "Get Started",
         "finish": "Finish",
         "priceCustom": "Custom",
+        "errors": {
+          "loginRequired": "Please log in to view plans",
+          "fetchPlansFailed": "Failed to fetch plans",
+          "activateFailed": "Failed to activate plan",
+          "initFailed": "Failed to initialize payment",
+          "changePlanFailed": "Failed to change plan. Please try again."
+        },
+        "planChanged": "Your plan has been changed to {name}.",
+        "backToPlans": "← Back to plans",
+        "backToCurrentPlan": "← Back to current plan",
+        "authRequired": {
+          "title": "Authentication Required",
+          "message": "Please log in to view and select plans.",
+          "loginButton": "Go to Login"
+        },
+        "errorLoadingPlans": {
+          "title": "Error Loading Plans",
+          "tryAgain": "Try Again"
+        },
+        "currentPlanSection": {
+          "currentPlanLabel": "Current Plan",
+          "unknownPlan": "Unknown",
+          "nextBillingDate": "Next Billing Date",
+          "daysRemaining": "Days Remaining",
+          "daysValue": "{value} days",
+          "notAvailable": "N/A",
+          "remainingThisPeriod": "Remaining This Period",
+          "upgradePlanButton": "Upgrade Plan",
+          "manageBillingButton": "Manage Billing"
+        },
+        "plansGrid": {
+          "noPlansForBilling": "No plans available for {period} billing",
+          "availableIntervals": "Available intervals: MONTH (for monthly), YEAR (for annual)",
+          "perInterval": "/{interval}",
+          "upToCandidates": "Up to {count} candidates",
+          "unlimitedCandidates": "Unlimited candidates",
+          "evaluationsPerMonth": "{count} evaluations/month",
+          "unlimitedEvaluations": "Unlimited evaluations",
+          "upToTeamMembers": "Up to {count} team members",
+          "unlimitedTeamMembers": "Unlimited team members",
+          "processing": "Processing...",
+          "currentPlanButton": "Current Plan",
+          "upgradeButton": "Upgrade",
+          "subscribeButton": "Subscribe"
+        },
+        "oneTimeSection": {
+          "heading": "One-Time Points Packages",
+          "subtitle": "Buy points once — no subscription, no recurring charge.",
+          "pointsLabel": "{count} points",
+          "screeningEvaluation": "Screening evaluation",
+          "fullEvaluation": "Full evaluation",
+          "oneTimeLabel": "one-time",
+          "buyNow": "Buy Now"
+        },
+        "subscriptionForm": {
+          "stripeNotInitialized": "Stripe not initialized",
+          "detailsHeading": "Subscription Details",
+          "planLabel": "Plan: {name}",
+          "priceLabel": "Price: {price}/{interval}",
+          "creatingButton": "Creating Subscription...",
+          "subscribeButton": "Subscribe Now",
+          "chargeNote": "You will be charged {price}/{interval}",
+          "createFailedError": "Failed to create subscription"
+        },
+        "oneTimeForm": {
+          "stripeNotInitialized": "Stripe not initialized",
+          "detailsHeading": "Package Details",
+          "packageLabel": "Package: {name}",
+          "priceLabel": "Price: {price} (one-time)",
+          "pointsLabel": "Points: {count}",
+          "processingButton": "Processing Payment...",
+          "payNowButton": "Pay Now",
+          "chargeNote": "You will be charged {price} once. This package does not renew automatically.",
+          "paymentFailedError": "Failed to complete payment"
+        },
         "plans": {
           "basic": {
             "name": "Basic",

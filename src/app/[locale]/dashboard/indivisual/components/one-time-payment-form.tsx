@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { Loader2, AlertCircle } from 'lucide-react';
 import type { Price } from '@/app/api/payments/types';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 interface OneTimePaymentFormProps {
   price: Price;
@@ -13,6 +13,7 @@ interface OneTimePaymentFormProps {
 }
 
 export function OneTimePaymentForm({ price, onSuccess, onError }: OneTimePaymentFormProps) {
+  const t = useTranslations('dashboard.indivisual.payment.oneTimeForm');
   const stripe = useStripe();
   const elements = useElements();
   const locale = useLocale();
@@ -23,7 +24,7 @@ export function OneTimePaymentForm({ price, onSuccess, onError }: OneTimePayment
     e.preventDefault();
 
     if (!stripe || !elements) {
-      setError('Stripe not initialized');
+      setError(t('stripeNotInitialized'));
       return;
     }
 
@@ -48,7 +49,7 @@ export function OneTimePaymentForm({ price, onSuccess, onError }: OneTimePayment
       window.location.href = `/${locale}/dashboard/indivisual/payment/success?type=payment`;
     } catch (err: any) {
       console.error('One-time payment error:', err);
-      const errorMessage = err.message || err.detail || 'Failed to complete payment';
+      const errorMessage = err.message || err.detail || t('paymentFailedError');
       setError(errorMessage);
       onError?.(errorMessage);
     } finally {
@@ -61,11 +62,11 @@ export function OneTimePaymentForm({ price, onSuccess, onError }: OneTimePayment
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-        <h4 className="font-medium text-blue-800 mb-2">Package Details</h4>
+        <h4 className="font-medium text-blue-800 mb-2">{t('detailsHeading')}</h4>
         <p className="text-sm text-blue-700">
-          Package: {price.name}<br />
-          Price: {price.currency?.toUpperCase()} {Number(price.unit_amount).toFixed(2)} (one-time)
-          {pointsGranted ? <><br />Points: {pointsGranted}</> : null}
+          {t('packageLabel', { name: price.name })}<br />
+          {t('priceLabel', { price: `${price.currency?.toUpperCase()} ${Number(price.unit_amount).toFixed(2)}` })}
+          {pointsGranted ? <><br />{t('pointsLabel', { count: pointsGranted })}</> : null}
         </p>
       </div>
 
@@ -86,15 +87,15 @@ export function OneTimePaymentForm({ price, onSuccess, onError }: OneTimePayment
         {loading ? (
           <>
             <Loader2 className="w-4 h-4 animate-spin" />
-            Processing Payment...
+            {t('processingButton')}
           </>
         ) : (
-          'Pay Now'
+          t('payNowButton')
         )}
       </button>
 
       <p className="text-xs text-gray-500 text-center">
-        You will be charged {price.currency?.toUpperCase()} {Number(price.unit_amount).toFixed(2)} once. This package does not renew automatically.
+        {t('chargeNote', { price: `${price.currency?.toUpperCase()} ${Number(price.unit_amount).toFixed(2)}` })}
       </p>
     </form>
   );

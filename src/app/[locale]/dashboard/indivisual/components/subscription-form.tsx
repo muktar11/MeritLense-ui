@@ -5,7 +5,7 @@ import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js'
 import { Loader2, AlertCircle } from 'lucide-react';
 import paymentService from '@/app/api/payments/endpoints';
 import type { Price } from '@/app/api/payments/types';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 interface SubscriptionFormProps {
   price: Price;
@@ -14,6 +14,7 @@ interface SubscriptionFormProps {
 }
 
 export function SubscriptionForm({ price, onSuccess, onError }: SubscriptionFormProps) {
+  const t = useTranslations('dashboard.indivisual.payment.subscriptionForm');
   const stripe = useStripe();
   const elements = useElements();
   const locale = useLocale();
@@ -24,7 +25,7 @@ export function SubscriptionForm({ price, onSuccess, onError }: SubscriptionForm
     e.preventDefault();
 
     if (!stripe || !elements) {
-      setError('Stripe not initialized');
+      setError(t('stripeNotInitialized'));
       return;
     }
 
@@ -60,7 +61,7 @@ export function SubscriptionForm({ price, onSuccess, onError }: SubscriptionForm
       
     } catch (err: any) {
       console.error('Subscription error:', err);
-      const errorMessage = err.message || err.detail || 'Failed to create subscription';
+      const errorMessage = err.message || err.detail || t('createFailedError');
       setError(errorMessage);
       onError?.(errorMessage);
     } finally {
@@ -71,15 +72,15 @@ export function SubscriptionForm({ price, onSuccess, onError }: SubscriptionForm
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-        <h4 className="font-medium text-blue-800 mb-2">Subscription Details</h4>
+        <h4 className="font-medium text-blue-800 mb-2">{t('detailsHeading')}</h4>
         <p className="text-sm text-blue-700">
-          Plan: {price.name}<br />
-          Price: {paymentService.formatPrice(Number(price.unit_amount), price.currency)}/{price.interval?.toLowerCase()}
+          {t('planLabel', { name: price.name })}<br />
+          {t('priceLabel', { price: paymentService.formatPrice(Number(price.unit_amount), price.currency), interval: price.interval?.toLowerCase() ?? '' })}
         </p>
       </div>
 
       <PaymentElement />
-      
+
       {error && (
         <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm flex items-start gap-2">
           <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
@@ -95,15 +96,15 @@ export function SubscriptionForm({ price, onSuccess, onError }: SubscriptionForm
         {loading ? (
           <>
             <Loader2 className="w-4 h-4 animate-spin" />
-            Creating Subscription...
+            {t('creatingButton')}
           </>
         ) : (
-          'Subscribe Now'
+          t('subscribeButton')
         )}
       </button>
 
       <p className="text-xs text-gray-500 text-center">
-        You will be charged {paymentService.formatPrice(Number(price.unit_amount), price.currency)}/{price.interval?.toLowerCase()}
+        {t('chargeNote', { price: paymentService.formatPrice(Number(price.unit_amount), price.currency), interval: price.interval?.toLowerCase() ?? '' })}
       </p>
     </form>
   );

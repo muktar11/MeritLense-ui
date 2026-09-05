@@ -18,6 +18,7 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 
 export default function PaymentPage() {
   const t = useTranslations("dashboard.indivisual.payment");
+  const tBilling = useTranslations("dashboard.indivisual.settings.billing-tab");
   const locale = useLocale();
   const router = useRouter();
   const { userRole, isAuthenticated } = useAuth();
@@ -44,7 +45,7 @@ export default function PaymentPage() {
     } else {
       setLoading(false);
       setSubLoading(false);
-      setError('Please log in to view plans');
+      setError(t('errors.loginRequired'));
     }
   }, [isAuthenticated]);
 
@@ -93,7 +94,7 @@ export default function PaymentPage() {
       setAllPlans(data);
     } catch (error: any) {
       console.error('Failed to fetch plans:', error);
-      setError(error?.detail || error?.message || 'Failed to fetch plans');
+      setError(error?.detail || error?.message || t('errors.fetchPlansFailed'));
     } finally {
       setLoading(false);
     }
@@ -123,7 +124,7 @@ export default function PaymentPage() {
         handleSubscriptionSuccess();
       } catch (error: any) {
         console.error('Failed to activate free plan:', error);
-        setError(error?.detail || error?.response?.data?.detail || 'Failed to activate plan');
+        setError(error?.detail || error?.response?.data?.detail || t('errors.activateFailed'));
       } finally {
         setProcessing(false);
       }
@@ -135,7 +136,7 @@ export default function PaymentPage() {
       setClientSecret(setupIntent.client_secret);
     } catch (error: any) {
       console.error('Failed to create setup intent:', error);
-      setError(error?.detail || 'Failed to initialize payment');
+      setError(error?.detail || t('errors.initFailed'));
       setProcessing(false);
     }
   };
@@ -150,7 +151,7 @@ export default function PaymentPage() {
       setClientSecret(intent.client_secret);
     } catch (error: any) {
       console.error('Failed to create payment intent:', error);
-      setError(error?.detail || 'Failed to initialize payment');
+      setError(error?.detail || t('errors.initFailed'));
       setProcessing(false);
     }
   };
@@ -166,10 +167,10 @@ export default function PaymentPage() {
       await paymentService.changePlan(currentSubscription.id, { price_id: plan.id, prorate: true });
       await fetchCurrentSubscription();
       setShowPlanPicker(false);
-      setUpgradeMessage(`Your plan has been changed to ${plan.name}.`);
+      setUpgradeMessage(t('planChanged', { name: plan.name }));
     } catch (error: any) {
       console.error('Failed to change plan:', error);
-      setError(error?.detail || error?.error || 'Failed to change plan. Please try again.');
+      setError(error?.detail || error?.error || t('errors.changePlanFailed'));
     } finally {
       setUpgrading(false);
       setSelectedPlan(null);
@@ -205,13 +206,13 @@ export default function PaymentPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-lg p-8 max-w-md text-center">
           <AlertCircle className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Authentication Required</h2>
-          <p className="text-gray-600 mb-4">Please log in to view and select plans.</p>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">{t('authRequired.title')}</h2>
+          <p className="text-gray-600 mb-4">{t('authRequired.message')}</p>
           <Link
             href={`/${locale}/auth/login`}
             className="inline-block px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
           >
-            Go to Login
+            {t('authRequired.loginButton')}
           </Link>
         </div>
       </div>
@@ -231,13 +232,13 @@ export default function PaymentPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-lg p-8 max-w-md text-center">
           <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Error Loading Plans</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">{t('errorLoadingPlans.title')}</h2>
           <p className="text-gray-600 mb-4">{error}</p>
           <button
             onClick={fetchPlans}
             className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
           >
-            Try Again
+            {t('errorLoadingPlans.tryAgain')}
           </button>
         </div>
       </div>
@@ -299,7 +300,7 @@ export default function PaymentPage() {
               onClick={handleBackToPlans}
               className="text-purple-600 hover:text-purple-700 mb-4 inline-flex items-center gap-1"
             >
-              ← Back to plans
+              {t('backToPlans')}
             </button>
 
             <div className="bg-white rounded-lg shadow-lg p-6">
@@ -325,9 +326,9 @@ export default function PaymentPage() {
             <div className="bg-white rounded-2xl shadow-lg border border-purple-200 p-6 sm:p-8">
               <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6">
                 <div>
-                  <p className="text-sm text-gray-500 mb-1">Current Plan</p>
+                  <p className="text-sm text-gray-500 mb-1">{t('currentPlanSection.currentPlanLabel')}</p>
                   <h2 className="text-2xl font-bold text-gray-900">
-                    {currentSubscription.price_details?.name || 'Unknown'}
+                    {currentSubscription.price_details?.name || t('currentPlanSection.unknownPlan')}
                   </h2>
                   <p className="text-gray-600 mt-1">
                     {currentSubscription.price_details
@@ -347,30 +348,30 @@ export default function PaymentPage() {
 
               <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
                 <div>
-                  <p className="text-gray-500">Next Billing Date</p>
+                  <p className="text-gray-500">{t('currentPlanSection.nextBillingDate')}</p>
                   <p className="font-medium text-gray-900">
                     {currentSubscription.current_period_end
                       ? new Date(currentSubscription.current_period_end).toLocaleDateString()
-                      : 'N/A'}
+                      : t('currentPlanSection.notAvailable')}
                   </p>
                 </div>
                 <div>
-                  <p className="text-gray-500">Days Remaining</p>
+                  <p className="text-gray-500">{t('currentPlanSection.daysRemaining')}</p>
                   <p className="font-medium text-gray-900">
-                    {calculateDaysRemaining(currentSubscription.current_period_end)} days
+                    {t('currentPlanSection.daysValue', { value: calculateDaysRemaining(currentSubscription.current_period_end) })}
                   </p>
                 </div>
               </div>
 
               {currentUsage && Object.keys(currentUsage.usage_percentages).length > 0 && (
                 <div className="space-y-4 mb-6 pt-6 border-t border-gray-100">
-                  <h3 className="text-sm font-semibold text-gray-900">Remaining This Period</h3>
+                  <h3 className="text-sm font-semibold text-gray-900">{t('currentPlanSection.remainingThisPeriod')}</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {currentUsage.usage_percentages.candidate_limit && (
                       <UsageMeter
                         used={currentUsage.usage_percentages.candidate_limit.used}
                         limit={currentUsage.usage_percentages.candidate_limit.limit}
-                        label="Candidates"
+                        label={tBilling('candidates')}
                         unit="candidates"
                       />
                     )}
@@ -378,7 +379,7 @@ export default function PaymentPage() {
                       <UsageMeter
                         used={currentUsage.usage_percentages.evaluation_limit.used}
                         limit={currentUsage.usage_percentages.evaluation_limit.limit}
-                        label="Evaluations"
+                        label={tBilling('evaluations')}
                         unit="evaluations"
                       />
                     )}
@@ -386,7 +387,7 @@ export default function PaymentPage() {
                       <UsageMeter
                         used={currentUsage.usage_percentages.team_member_limit.used}
                         limit={currentUsage.usage_percentages.team_member_limit.limit}
-                        label="Team Members"
+                        label={tBilling('teamMembers')}
                         unit="team members"
                       />
                     )}
@@ -405,13 +406,13 @@ export default function PaymentPage() {
                   onClick={() => { setShowPlanPicker(true); setError(null); setUpgradeMessage(null); }}
                   className="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-4 rounded-lg transition"
                 >
-                  Upgrade Plan
+                  {t('currentPlanSection.upgradePlanButton')}
                 </button>
                 <Link
                   href={`/${locale}/dashboard/indivisual/profile?tab=billing`}
                   className="flex-1 text-center border border-gray-300 text-gray-700 font-semibold py-3 px-4 rounded-lg hover:bg-gray-50 transition"
                 >
-                  Manage Billing
+                  {t('currentPlanSection.manageBillingButton')}
                 </Link>
               </div>
             </div>
@@ -424,7 +425,7 @@ export default function PaymentPage() {
                   onClick={() => { setShowPlanPicker(false); setError(null); }}
                   className="text-purple-600 hover:text-purple-700 inline-flex items-center gap-1"
                 >
-                  ← Back to current plan
+                  {t('backToCurrentPlan')}
                 </button>
               </div>
             )}
@@ -433,9 +434,9 @@ export default function PaymentPage() {
               {recurringPlans.length === 0 ? (
                 <div className="col-span-full text-center py-12">
                   <CreditCard className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-500">No plans available for {billingPeriod} billing</p>
+                  <p className="text-gray-500">{t('plansGrid.noPlansForBilling', { period: billingPeriod })}</p>
                   <p className="text-sm text-gray-400 mt-2">
-                    Available intervals: MONTH (for monthly), YEAR (for annual)
+                    {t('plansGrid.availableIntervals')}
                   </p>
                 </div>
               ) : (
@@ -457,7 +458,7 @@ export default function PaymentPage() {
                         {paymentService.formatPrice(Number(plan.unit_amount), plan.currency)}
                       </span>
                       <span className="text-gray-500 text-xs sm:text-sm ml-1 sm:ml-2">
-                        /{plan.interval?.toLowerCase()}
+                        {t('plansGrid.perInterval', { interval: plan.interval?.toLowerCase() ?? '' })}
                       </span>
                     </div>
 
@@ -466,46 +467,46 @@ export default function PaymentPage() {
                         <div className="flex items-start gap-2 sm:gap-3">
                           <Check className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 shrink-0 mt-1" />
                           <span className="text-gray-700 text-xs sm:text-sm">
-                            Up to {plan.feature_limits.candidate_limit} candidates
+                            {t('plansGrid.upToCandidates', { count: plan.feature_limits.candidate_limit })}
                           </span>
                         </div>
                       ) : (
                         <div className="flex items-start gap-2 sm:gap-3">
                           <Check className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 shrink-0 mt-1" />
                           <span className="text-gray-700 text-xs sm:text-sm">
-                            Unlimited candidates
+                            {t('plansGrid.unlimitedCandidates')}
                           </span>
                         </div>
                       )}
-                      
+
                       {plan.feature_limits?.evaluation_limit ? (
                         <div className="flex items-start gap-2 sm:gap-3">
                           <Check className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 shrink-0 mt-1" />
                           <span className="text-gray-700 text-xs sm:text-sm">
-                            {plan.feature_limits.evaluation_limit} evaluations/month
+                            {t('plansGrid.evaluationsPerMonth', { count: plan.feature_limits.evaluation_limit })}
                           </span>
                         </div>
                       ) : (
                         <div className="flex items-start gap-2 sm:gap-3">
                           <Check className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 shrink-0 mt-1" />
                           <span className="text-gray-700 text-xs sm:text-sm">
-                            Unlimited evaluations
+                            {t('plansGrid.unlimitedEvaluations')}
                           </span>
                         </div>
                       )}
-                      
+
                       {plan.feature_limits?.team_member_limit ? (
                         <div className="flex items-start gap-2 sm:gap-3">
                           <Check className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 shrink-0 mt-1" />
                           <span className="text-gray-700 text-xs sm:text-sm">
-                            Up to {plan.feature_limits.team_member_limit} team members
+                            {t('plansGrid.upToTeamMembers', { count: plan.feature_limits.team_member_limit })}
                           </span>
                         </div>
                       ) : (
                         <div className="flex items-start gap-2 sm:gap-3">
                           <Check className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 shrink-0 mt-1" />
                           <span className="text-gray-700 text-xs sm:text-sm">
-                            Unlimited team members
+                            {t('plansGrid.unlimitedTeamMembers')}
                           </span>
                         </div>
                       )}
@@ -517,12 +518,12 @@ export default function PaymentPage() {
                       className="w-full bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 sm:py-3 px-3 sm:px-4 rounded-lg transition text-sm sm:text-base disabled:opacity-50"
                     >
                       {(processing || upgrading) && selectedPlan?.id === plan.id
-                        ? 'Processing...'
+                        ? t('plansGrid.processing')
                         : currentSubscription?.price_details?.id === plan.id
-                        ? 'Current Plan'
+                        ? t('plansGrid.currentPlanButton')
                         : currentSubscription
-                        ? 'Upgrade'
-                        : 'Subscribe'}
+                        ? t('plansGrid.upgradeButton')
+                        : t('plansGrid.subscribeButton')}
                     </button>
                   </div>
                 ))
@@ -532,10 +533,10 @@ export default function PaymentPage() {
             {oneTimePlans.length > 0 && (
               <div className="mb-12">
                 <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 text-center">
-                  One-Time Points Packages
+                  {t('oneTimeSection.heading')}
                 </h2>
                 <p className="text-gray-600 text-center mb-6">
-                  Buy points once — no subscription, no recurring charge.
+                  {t('oneTimeSection.subtitle')}
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {oneTimePlans.map((plan) => (
@@ -555,7 +556,7 @@ export default function PaymentPage() {
                         <span className="text-2xl sm:text-4xl font-bold text-gray-900">
                           {paymentService.formatPrice(Number(plan.unit_amount), plan.currency)}
                         </span>
-                        <span className="text-gray-500 text-xs sm:text-sm ml-1 sm:ml-2">one-time</span>
+                        <span className="text-gray-500 text-xs sm:text-sm ml-1 sm:ml-2">{t('oneTimeSection.oneTimeLabel')}</span>
                       </div>
 
                       <div className="space-y-2 sm:space-y-3 mb-6 sm:mb-8">
@@ -563,7 +564,7 @@ export default function PaymentPage() {
                           <div className="flex items-start gap-2 sm:gap-3">
                             <Check className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 shrink-0 mt-1" />
                             <span className="text-gray-700 text-xs sm:text-sm">
-                              {plan.feature_limits.points_granted} points
+                              {t('oneTimeSection.pointsLabel', { count: plan.feature_limits.points_granted })}
                             </span>
                           </div>
                         ) : null}
@@ -571,7 +572,7 @@ export default function PaymentPage() {
                           <div className="flex items-start gap-2 sm:gap-3">
                             <Check className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 shrink-0 mt-1" />
                             <span className="text-gray-700 text-xs sm:text-sm">
-                              {plan.evaluation_tier === 'SCREENING' ? 'Screening evaluation' : 'Full evaluation'}
+                              {plan.evaluation_tier === 'SCREENING' ? t('oneTimeSection.screeningEvaluation') : t('oneTimeSection.fullEvaluation')}
                             </span>
                           </div>
                         )}
@@ -582,7 +583,7 @@ export default function PaymentPage() {
                         disabled={processing}
                         className="w-full bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 sm:py-3 px-3 sm:px-4 rounded-lg transition text-sm sm:text-base disabled:opacity-50"
                       >
-                        {processing && selectedPlan?.id === plan.id ? 'Processing...' : 'Buy Now'}
+                        {processing && selectedPlan?.id === plan.id ? t('plansGrid.processing') : t('oneTimeSection.buyNow')}
                       </button>
                     </div>
                   ))}
