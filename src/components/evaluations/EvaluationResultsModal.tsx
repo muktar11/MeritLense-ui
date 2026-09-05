@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   X,
   Loader2,
@@ -89,26 +90,54 @@ function flagSeverityColor(severity: string) {
   }
 }
 
-function formatEmployerCompetency(value?: string | null) {
+// Returns a translation key under evaluationResultsModal.competencies, or
+// null when the value doesn't match a known heuristic - in which case the
+// caller falls back to the raw backend value untranslated.
+function employerCompetencyKey(value?: string | null): string | null {
   const normalized = (value || "").toLowerCase();
-  if (!normalized) return "General Readiness Competency";
-  if (normalized.includes("patient") && normalized.includes("safety")) return "Patient Safety Awareness";
+  if (!normalized) return "generalReadiness";
+  if (normalized.includes("patient") && normalized.includes("safety")) return "patientSafety";
   if (normalized.includes("hygiene") || normalized.includes("clean") || normalized.includes("sanitation")) {
-    return "Hygiene Standards";
+    return "hygieneStandards";
   }
-  if (normalized.includes("communication") || normalized.includes("language")) return "Communication Ability";
+  if (normalized.includes("communication") || normalized.includes("language")) return "communicationAbility";
   if (normalized.includes("integrity") || normalized.includes("reliability") || normalized.includes("behavior")) {
-    return "Integrity & Reliability";
+    return "integrityReliability";
   }
-  if (normalized.includes("task")) return "Practical Task Execution";
+  if (normalized.includes("task")) return "taskExecution";
   if (normalized.includes("knowledge") || normalized.includes("logic") || normalized.includes("comprehension")) {
-    return "Knowledge & Comprehension";
+    return "knowledgeComprehension";
   }
-  if (normalized.includes("unmapped")) return "General Readiness Competency";
-  return String(value ?? "").replace(/_/g, " ");
+  if (normalized.includes("unmapped")) return "generalReadiness";
+  return null;
 }
 
+const SESSION_STATUS_KEYS: Record<string, string> = {
+  EVALUATED: "evaluated",
+  REQUIRES_HUMAN_REVIEW: "requiresHumanReview",
+  EVALUATION_FAILED: "evaluationFailed",
+  PARTIALLY_EVALUATED: "partiallyEvaluated",
+  PENDING: "pending",
+};
+
+const COMPETENCY_STATUS_KEYS: Record<string, string> = {
+  MEETS_THRESHOLD: "meetsThreshold",
+  BELOW_THRESHOLD: "belowThreshold",
+  EVALUATED: "evaluated",
+  NOT_STARTED: "notStarted",
+  INCOMPLETE: "incomplete",
+};
+
+const REPORT_STATUS_KEYS: Record<string, string> = {
+  ACTIVE: "active",
+  SUPERSEDED: "superseded",
+  REVOKED: "revoked",
+  FAILED: "failed",
+  PENDING: "pending",
+};
+
 export function EvaluationResultsModal({ evaluationId, candidateName, onClose }: EvaluationResultsModalProps) {
+  const t = useTranslations("shared.evaluationResultsModal");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [summary, setSummary] = useState<SessionEvaluationSummary | null>(null);
@@ -143,7 +172,7 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
         setReport(null);
       }
     } catch {
-      setError("Failed to load evaluation results.");
+      setError(t("loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -164,7 +193,7 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
       await load(evaluationId);
     } catch (err: any) {
       const msg = err?.detail ?? err?.error ?? err?.response?.data?.detail ?? err?.response?.data?.error
-        ?? "Failed to run scoring. Try again.";
+        ?? t("runScoringFailed");
       setError(msg);
     } finally {
       setRunningScoring(false);
@@ -179,7 +208,7 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
       const generated = await reportService.generateReport(evaluationId);
       setReport(generated);
     } catch (err: any) {
-      const msg = err?.detail ?? err?.response?.data?.detail ?? "Failed to generate report. Try again.";
+      const msg = err?.detail ?? err?.response?.data?.detail ?? t("generateReportFailed");
       setReportError(msg);
     } finally {
       setGeneratingReport(false);
@@ -194,7 +223,7 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
       const regenerated = await reportService.regenerateReport(report.id);
       setReport(regenerated);
     } catch (err: any) {
-      const msg = err?.detail ?? err?.response?.data?.detail ?? "Failed to regenerate report. Try again.";
+      const msg = err?.detail ?? err?.response?.data?.detail ?? t("regenerateReportFailed");
       setReportError(msg);
     } finally {
       setGeneratingReport(false);
@@ -214,7 +243,7 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
       link.click();
       URL.revokeObjectURL(url);
     } catch {
-      setReportError("Failed to export report payload.");
+      setReportError(t("exportFailed"));
     } finally {
       setExportingReport(false);
     }
@@ -227,7 +256,7 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
     try {
       await reportService.downloadPdf(report.id, `${report.report_number}.pdf`);
     } catch (err: any) {
-      const msg = err?.detail ?? err?.response?.data?.detail ?? "Failed to download report PDF. Try again.";
+      const msg = err?.detail ?? err?.response?.data?.detail ?? t("downloadFailed");
       setReportError(msg);
     } finally {
       setDownloadingReport(false);
@@ -252,7 +281,7 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
         <div className="p-6">
           <div className="flex items-center justify-between mb-4 sticky top-0 bg-white z-10">
             <div>
-              <h3 className="text-lg font-bold text-gray-900">Workforce Readiness Assessment Results</h3>
+              <h3 className="text-lg font-bold text-gray-900">{t("title")}</h3>
               <p className="text-sm text-gray-500">{candidateName}</p>
             </div>
             <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
@@ -274,7 +303,7 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
 
           {!loading && !summary && (
             <div className="text-center py-10">
-              <p className="text-sm text-gray-500 mb-4">Scoring hasn&apos;t run yet for this interview.</p>
+              <p className="text-sm text-gray-500 mb-4">{t("noScoringYet")}</p>
               <button
                 type="button"
                 onClick={handleRunScoring}
@@ -282,7 +311,7 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
                 className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white rounded-lg text-sm font-medium"
               >
                 {runningScoring ? <Loader2 className="w-4 h-4 animate-spin" /> : <PlayCircle className="w-4 h-4" />}
-                Run Scoring
+                {t("runScoring")}
               </button>
             </div>
           )}
@@ -292,7 +321,7 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
               {/* Header summary */}
               <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 flex items-center justify-between">
                 <div>
-                  <p className="text-xs text-gray-500">Overall Score</p>
+                  <p className="text-xs text-gray-500">{t("overallScore")}</p>
                   <p className="text-2xl font-bold text-gray-900">
                     {summary.overall_percentage}%{" "}
                     <span className="text-sm font-normal text-gray-400">
@@ -302,7 +331,7 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
                 </div>
                 <div className="text-right">
                   <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${sessionStatusColor(summary.status)}`}>
-                    {summary.status.replace(/_/g, " ")}
+                    {SESSION_STATUS_KEYS[summary.status] ? t(`status.${SESSION_STATUS_KEYS[summary.status]}`) : summary.status.replace(/_/g, " ")}
                   </span>
                 </div>
               </div>
@@ -311,13 +340,16 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
                 <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex gap-2">
                   <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
                   <div className="text-sm text-red-700 space-y-1">
-                    <p className="font-medium">Readiness Risks</p>
-                    {summary.critical_failures.map((failure) => (
-                      <p key={failure.response_id} className="text-xs">
-                        <span className="font-medium">{formatEmployerCompetency(failure.competency_code)}:</span>{" "}
-                        {failure.explanation}
-                      </p>
-                    ))}
+                    <p className="font-medium">{t("readinessRisks")}</p>
+                    {summary.critical_failures.map((failure) => {
+                      const key = employerCompetencyKey(failure.competency_code);
+                      return (
+                        <p key={failure.response_id} className="text-xs">
+                          <span className="font-medium">{key ? t(`competencies.${key}`) : (failure.competency_code ?? "").replace(/_/g, " ")}:</span>{" "}
+                          {failure.explanation}
+                        </p>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -327,11 +359,11 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <FileText className="w-4 h-4 text-indigo-600" />
-                    <h4 className="text-sm font-semibold text-gray-900">Workforce Readiness Report</h4>
+                    <h4 className="text-sm font-semibold text-gray-900">{t("reportHeading")}</h4>
                   </div>
                   {report && (
                     <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${reportStatusColor(report.report_status)}`}>
-                      {report.report_status}
+                      {REPORT_STATUS_KEYS[report.report_status] ? t(`reportStatus.${REPORT_STATUS_KEYS[report.report_status]}`) : report.report_status}
                     </span>
                   )}
                 </div>
@@ -344,7 +376,7 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
 
                 {!report ? (
                   <div className="text-center py-4">
-                    <p className="text-xs text-gray-500 mb-3">No evaluation report has been generated yet.</p>
+                    <p className="text-xs text-gray-500 mb-3">{t("noReportYet")}</p>
                     <button
                       type="button"
                       onClick={handleGenerateReport}
@@ -352,7 +384,7 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
                       className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-lg text-sm font-medium"
                     >
                       {generatingReport ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
-                      Generate Report
+                      {t("generateReport")}
                     </button>
                   </div>
                 ) : (
@@ -361,9 +393,8 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
                       <div>
                         <p className="font-mono text-gray-700">{report.report_number}</p>
                         <p>
-                          Version {report.report_version} &middot; Generated{" "}
-                          {new Date(report.generated_at).toLocaleString()}
-                          {report.generated_by_name ? ` by ${report.generated_by_name}` : ""}
+                          {t("versionGenerated", { version: report.report_version, date: new Date(report.generated_at).toLocaleString() })}
+                          {report.generated_by_name ? t("generatedBy", { name: report.generated_by_name }) : ""}
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
@@ -375,7 +406,7 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
                             className="inline-flex items-center gap-1 px-2.5 py-1.5 border border-indigo-300 bg-white hover:bg-indigo-50 disabled:opacity-50 text-indigo-700 rounded-lg text-xs font-medium"
                           >
                             <Download className="w-3.5 h-3.5" />
-                            {downloadingReport ? "Downloading..." : "Download PDF"}
+                            {downloadingReport ? t("downloading") : t("downloadPdf")}
                           </button>
                         )}
                         <button
@@ -385,7 +416,7 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
                           className="inline-flex items-center gap-1 px-2.5 py-1.5 border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 text-gray-700 rounded-lg text-xs font-medium"
                         >
                           {exportingReport ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
-                          Export JSON
+                          {t("exportJson")}
                         </button>
                         <button
                           type="button"
@@ -394,21 +425,21 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
                           className="inline-flex items-center gap-1 px-2.5 py-1.5 border border-indigo-300 bg-white hover:bg-indigo-50 disabled:opacity-50 text-indigo-700 rounded-lg text-xs font-medium"
                         >
                           {generatingReport ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
-                          Regenerate
+                          {t("regenerate")}
                         </button>
                       </div>
                     </div>
 
                     {/* Assessment decision */}
                     <div className="bg-white border border-gray-200 rounded-lg p-3">
-                      <p className="text-xs font-semibold text-gray-700 mb-2">Assessment Decision</p>
+                      <p className="text-xs font-semibold text-gray-700 mb-2">{t("assessmentDecision")}</p>
                       <div className="flex items-center gap-2 mb-1">
                         <span className="text-sm font-medium text-gray-900">
                           {readinessIndicatorLabel(report.readiness_indicator)}
                         </span>
                         {report.override_triggered && (
                           <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-red-100 text-red-700">
-                            Override triggered
+                            {t("overrideTriggered")}
                           </span>
                         )}
                       </div>
@@ -419,19 +450,19 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
                       )}
                       <div className="grid gap-2 sm:grid-cols-3 mt-3 text-xs">
                         <div className="rounded-lg bg-gray-50 border border-gray-200 px-3 py-2">
-                          <p className="text-gray-500">Suggested Action</p>
+                          <p className="text-gray-500">{t("suggestedAction")}</p>
                           <p className="font-medium text-gray-900">
                             {executiveSummary?.suggested_action_display || "—"}
                           </p>
                         </div>
                         <div className="rounded-lg bg-gray-50 border border-gray-200 px-3 py-2">
-                          <p className="text-gray-500">Assessment Coverage</p>
+                          <p className="text-gray-500">{t("assessmentCoverage")}</p>
                           <p className="font-medium text-gray-900">
                             {assessmentContext?.assessment_coverage || "—"}
                           </p>
                         </div>
                         <div className="rounded-lg bg-gray-50 border border-gray-200 px-3 py-2">
-                          <p className="text-gray-500">Assessment Reliability</p>
+                          <p className="text-gray-500">{t("assessmentReliability")}</p>
                           <p className="font-medium text-gray-900">
                             {executiveSummary?.evaluation_reliability || "—"}
                           </p>
@@ -444,7 +475,7 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
                         <div className="bg-green-50 border border-green-200 rounded-lg p-3">
                           <div className="flex items-center gap-2 mb-1.5">
                             <CheckCircle2 className="w-4 h-4 text-green-600" />
-                            <p className="text-xs font-semibold text-green-700">Top Strengths</p>
+                            <p className="text-xs font-semibold text-green-700">{t("topStrengths")}</p>
                           </div>
                           <div className="space-y-1.5">
                             {topStrengths.length > 0 ? (
@@ -454,7 +485,7 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
                                 </p>
                               ))
                             ) : (
-                              <p className="text-xs text-green-800">No strengths summary available.</p>
+                              <p className="text-xs text-green-800">{t("noStrengthsSummary")}</p>
                             )}
                           </div>
                         </div>
@@ -462,7 +493,7 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
                         <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
                           <div className="flex items-center gap-2 mb-1.5">
                             <ShieldAlert className="w-4 h-4 text-amber-600" />
-                            <p className="text-xs font-semibold text-amber-700">Top Risks</p>
+                            <p className="text-xs font-semibold text-amber-700">{t("topRisks")}</p>
                           </div>
                           <div className="space-y-1.5">
                             {topRisks.length > 0 ? (
@@ -472,7 +503,7 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
                                 </p>
                               ))
                             ) : (
-                              <p className="text-xs text-amber-800">No risk summary available.</p>
+                              <p className="text-xs text-amber-800">{t("noRisksSummary")}</p>
                             )}
                           </div>
                         </div>
@@ -481,7 +512,7 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
 
                     {reviewNotes.length > 0 && (
                       <div>
-                        <p className="text-xs font-semibold text-gray-700 mb-1.5">Review Notes</p>
+                        <p className="text-xs font-semibold text-gray-700 mb-1.5">{t("reviewNotes")}</p>
                         <div className="space-y-1.5">
                           {reviewNotes.map((note, i) => (
                             <div key={i} className={`border rounded-lg px-2.5 py-1.5 text-xs ${flagSeverityColor("medium")}`}>
@@ -501,14 +532,14 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
 
               {/* Competency table */}
               <div>
-                <h4 className="text-sm font-semibold text-gray-900 mb-2">Competency Breakdown</h4>
+                <h4 className="text-sm font-semibold text-gray-900 mb-2">{t("competencyBreakdown")}</h4>
                 <div className="border border-gray-200 rounded-lg overflow-hidden">
                   <table className="w-full text-sm">
                     <thead className="bg-gray-50 text-xs text-gray-500">
                       <tr>
-                        <th className="text-left px-3 py-2 font-medium">Competency</th>
-                        <th className="text-left px-3 py-2 font-medium">Score</th>
-                        <th className="text-left px-3 py-2 font-medium">Status</th>
+                        <th className="text-left px-3 py-2 font-medium">{t("competencyHeader")}</th>
+                        <th className="text-left px-3 py-2 font-medium">{t("scoreHeader")}</th>
+                        <th className="text-left px-3 py-2 font-medium">{t("statusHeader")}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
@@ -520,7 +551,7 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
                           </td>
                           <td className="px-3 py-2">
                             <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${statusColor(c.status)}`}>
-                              {c.status.replace(/_/g, " ")}
+                              {COMPETENCY_STATUS_KEYS[c.status] ? t(`status.${COMPETENCY_STATUS_KEYS[c.status]}`) : c.status.replace(/_/g, " ")}
                             </span>
                           </td>
                         </tr>
@@ -528,7 +559,7 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
                       {competencyResults.length === 0 && (
                         <tr>
                           <td colSpan={3} className="px-3 py-6 text-center text-gray-400 text-xs">
-                            No competency results available.
+                            {t("noCompetencyResults")}
                           </td>
                         </tr>
                       )}
@@ -539,7 +570,7 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
 
               {/* Response-level drill-down */}
               <div>
-                <h4 className="text-sm font-semibold text-gray-900 mb-2">Response Detail</h4>
+                <h4 className="text-sm font-semibold text-gray-900 mb-2">{t("responseDetail")}</h4>
                 <div className="space-y-2">
                   {responseResults.map((r) => {
                     const expanded = expandedResponseId === r.id;
@@ -573,16 +604,16 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
                           <div className="px-3 pb-3 pt-1 text-xs text-gray-600 space-y-2 border-t border-gray-100">
                             {r.explanation && <p>{r.explanation}</p>}
                             {r.matched_indicators.length > 0 && (
-                              <IndicatorRow label="Matched" items={r.matched_indicators} color="green" />
+                              <IndicatorRow label={t("matched")} items={r.matched_indicators} color="green" />
                             )}
                             {r.missing_indicators.length > 0 && (
-                              <IndicatorRow label="Missing" items={r.missing_indicators} color="amber" />
+                              <IndicatorRow label={t("missing")} items={r.missing_indicators} color="amber" />
                             )}
                             {r.risk_flags.length > 0 && (
-                              <IndicatorRow label="Risk flags" items={r.risk_flags} color="red" />
+                              <IndicatorRow label={t("riskFlags")} items={r.risk_flags} color="red" />
                             )}
                             {r.requires_human_review && (
-                              <p className="text-amber-600 font-medium">⚠ Requires human review</p>
+                              <p className="text-amber-600 font-medium">{t("requiresHumanReview")}</p>
                             )}
                           </div>
                         )}
@@ -590,7 +621,7 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
                     );
                   })}
                   {responseResults.length === 0 && (
-                    <p className="text-xs text-gray-400 text-center py-4">No response-level results available.</p>
+                    <p className="text-xs text-gray-400 text-center py-4">{t("noResponseResults")}</p>
                   )}
                 </div>
               </div>
