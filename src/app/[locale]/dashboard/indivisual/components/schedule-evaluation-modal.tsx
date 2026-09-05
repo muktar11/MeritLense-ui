@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from "next-intl"
 import { X, Loader2, Calendar, MapPin, Video, FileText, AlertCircle } from "lucide-react"
 import { EVALUATION_TYPES, EVALUATION_STATUS, type Evaluation, type CreateEvaluationData } from "@/app/api/evaluations/types"
 import { format } from "date-fns"
+import { ar } from "date-fns/locale"
 import { EvaluatorRatingCard } from "@/components/evaluations/EvaluatorRatingCard"
 
 type ModalMode = 'view' | 'create' | 'edit' | 'reschedule';
@@ -300,7 +301,7 @@ export default function EvaluationModal({
               </div>
               <div>
                 <p className="text-xs text-gray-500">{t("scheduledDate")}</p>
-                <p className="text-sm">{format(new Date(evaluation.scheduled_date), 'PPP p')}</p>
+                <p className="text-sm">{format(new Date(evaluation.scheduled_date), 'PPP p', locale === 'ar' ? { locale: ar } : undefined)}</p>
               </div>
               <div>
                 <p className="text-xs text-gray-500">{t("duration")}</p>
@@ -432,7 +433,7 @@ export default function EvaluationModal({
 
             <div className="border-t pt-4 text-xs text-gray-400">
               <p>{t("scheduledBy", { name: evaluation.created_by_name })}</p>
-              <p>{t("created", { date: format(new Date(evaluation.created_at), 'PPP') })}</p>
+              <p>{t("created", { date: format(new Date(evaluation.created_at), 'PPP', locale === 'ar' ? { locale: ar } : undefined) })}</p>
             </div>
           </div>
         )}
@@ -648,7 +649,7 @@ export default function EvaluationModal({
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
               <p className="text-sm text-yellow-800">
                 <Calendar className="w-4 h-4 inline mr-2" />
-                {evaluation && t("currentScheduledTime", { date: format(new Date(evaluation.scheduled_date), 'PPP p') })}
+                {evaluation && t("currentScheduledTime", { date: format(new Date(evaluation.scheduled_date), 'PPP p', locale === 'ar' ? { locale: ar } : undefined) })}
               </p>
             </div>
 

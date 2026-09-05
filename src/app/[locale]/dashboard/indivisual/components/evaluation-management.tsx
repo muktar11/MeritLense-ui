@@ -6,9 +6,26 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Circle } from "lucide-react"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import type { RecentEvaluation } from "@/app/api/dashboard/b2c/types"
 import { format } from "date-fns"
+import { ar } from "date-fns/locale"
+
+const TYPE_KEYS: Record<string, string> = {
+  INTERVIEW: 'interview',
+  TECHNICAL_TEST: 'technicalTest',
+  ASSESSMENT: 'assessment',
+  LANGUAGE_PROFICIENCY: 'languageProficiency',
+}
+
+const STATUS_KEYS: Record<string, string> = {
+  COMPLETED: 'completed',
+  SCHEDULED: 'scheduled',
+  RESCHEDULED: 'rescheduled',
+  CANCELLED: 'cancelled',
+  NO_SHOW: 'noShow',
+  IN_PROGRESS: 'inProgress',
+}
 
 interface EvaluationManagementProps {
   evaluations: RecentEvaluation[]
@@ -22,6 +39,8 @@ export function EvaluationManagement({
   onTabChange,
 }: EvaluationManagementProps) {
   const t = useTranslations("dashboard.indivisual.evaluationManagement")
+  const tStatus = useTranslations("dashboard.indivisual.evaluationManagement.status")
+  const locale = useLocale()
   const [typeFilter, setTypeFilter] = useState<string>("")
 
   const filteredEvaluations = typeFilter
@@ -108,17 +127,17 @@ export function EvaluationManagement({
 
                     <div className="text-xs space-y-1">
                       <p className="font-medium">
-                        {evaluation.evaluation_type_display}
+                        {TYPE_KEYS[evaluation.evaluation_type] ? t(`types.${TYPE_KEYS[evaluation.evaluation_type]}`) : evaluation.evaluation_type_display}
                       </p>
                       <p className="text-muted-foreground">
-                        {evaluation.candidate_name} • {evaluation.scheduled_date ? format(new Date(evaluation.scheduled_date), 'MMM d') : t("noDate")}
+                        {evaluation.candidate_name} • {evaluation.scheduled_date ? format(new Date(evaluation.scheduled_date), 'MMM d', locale === 'ar' ? { locale: ar } : undefined) : t("noDate")}
                       </p>
                     </div>
                   </div>
 
                   <div className="flex items-center justify-between sm:justify-end gap-2">
                     <span className={`text-xs px-2 py-1 rounded ${getStatusColor(evaluation.status)}`}>
-                      {evaluation.status_display}
+                      {STATUS_KEYS[evaluation.status] ? tStatus(STATUS_KEYS[evaluation.status]) : evaluation.status_display}
                     </span>
                     {evaluation.score && (
                       <span className="text-xs font-medium">{evaluation.score}%</span>
