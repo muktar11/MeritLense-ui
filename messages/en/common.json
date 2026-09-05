@@ -1825,6 +1825,60 @@
           "save": "Save"
         }
       },
+
+      "signAgreements": {
+        "loadFailedError": "Failed to load your agreements. Please refresh the page.",
+        "docLabels": {
+          "b2bAgreement": "B2B Agreement",
+          "dpa": "Data Processing Agreement (DPA)"
+        },
+        "alreadySigned": {
+          "title": "Your agreements are signed",
+          "message": "You already have a valid B2B Agreement and DPA on file.",
+          "continueButton": "Continue to Dashboard"
+        },
+        "done": {
+          "title": "Agreements signed",
+          "message": "Both the B2B Agreement and DPA have been signed and are on file. A copy has been recorded with a full audit trail.",
+          "downloadLink": "Download {type} ({id})",
+          "continueButton": "Continue to Dashboard"
+        },
+        "otp": {
+          "title": "Enter verification code",
+          "sentMessage": "We sent a 6-digit code by email to {email}. It confirms your signature on both the B2B Agreement and DPA.",
+          "codeExpiresIn": "Code expires in {time}",
+          "codeExpired": "Code expired — request a new one below.",
+          "resendIn": "Resend available in {seconds}s",
+          "noResendsLeft": "No resends left — go back and restart.",
+          "resendCode": "Resend code ({count} left)",
+          "confirmAndSign": "Confirm & Sign",
+          "back": "← Back"
+        },
+        "review": {
+          "title": "Sign Your Agreements",
+          "subtitle": "Review and sign the B2B Agreement and Data Processing Agreement (DPA) to activate your MeritLense dashboard.",
+          "companyStampLabel": "Company stamp",
+          "companyStampHint": "(optional, applied automatically to your PDFs)",
+          "uploadButton": "Upload",
+          "uploadedButton": "Uploaded",
+          "nameLabel": "Your full legal name",
+          "namePlaceholder": "As it should appear on the signed documents",
+          "reviewBothPrompt": "Review both documents to enable signing:",
+          "reviewNowButton": "Review now",
+          "authConfirmLabel": "I confirm I am authorized to legally bind this organization.",
+          "sendCodeButton": "Send Verification Code"
+        },
+        "errors": {
+          "nameRequired": "Please enter your full legal name.",
+          "authRequired": "Please confirm you are authorized to legally bind this organization.",
+          "sendCodeFailed": "Failed to send the verification code.",
+          "resendFailed": "Failed to resend the code.",
+          "codeIncomplete": "Please enter the full 6-digit code.",
+          "incorrectCode": "Incorrect or expired code.",
+          "restartingReview": "{message} Restarting from document review.",
+          "stampUploadFailed": "Failed to upload company stamp. You can add it later from Company Profile."
+        }
+      },
        "payment": {
         "title": "The Right Plan for Your Business",
         "subtitle": "Based on your selected role and coverage needs. You can upgrade or downgrade anytime.",
