@@ -108,9 +108,9 @@ export function CandidateList({ candidates, searchTerm = "" }: CandidateListProp
                   </td>
                   <td className="py-3 px-2">{candidate.job_role}</td>
                   <td className="py-3 px-2 text-xs">
-                    {candidate.last_evaluation_date 
+                    {candidate.last_evaluation_date
                       ? format(new Date(candidate.last_evaluation_date), 'MMM d, yyyy')
-                      : 'No evaluations'}
+                      : t("table.noEvaluations")}
                   </td>
                   <td className="py-3 px-2">
                     <div className="flex flex-col gap-1">
@@ -161,9 +161,9 @@ export function CandidateList({ candidates, searchTerm = "" }: CandidateListProp
 
               <div className="flex items-center justify-between">
                 <span className="text-xs">
-                  {candidate.last_evaluation_date 
+                  {candidate.last_evaluation_date
                     ? format(new Date(candidate.last_evaluation_date), 'MMM d, yyyy')
-                    : 'No evaluations'}
+                    : t("table.noEvaluations")}
                 </span>
                 <div className="flex flex-col items-end gap-1">
                   <Button

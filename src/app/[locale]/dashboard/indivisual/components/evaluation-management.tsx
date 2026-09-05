@@ -81,17 +81,17 @@ export function EvaluationManagement({
               className="w-full sm:w-auto px-3 py-2 text-xs border rounded-lg bg-background"
             >
               <option value="">{t("filters.type")}</option>
-              <option value="INTERVIEW">Interview</option>
-              <option value="TECHNICAL_TEST">Technical Test</option>
-              <option value="ASSESSMENT">Assessment</option>
-              <option value="LANGUAGE_PROFICIENCY">Language Proficiency</option>
+              <option value="INTERVIEW">{t("types.interview")}</option>
+              <option value="TECHNICAL_TEST">{t("types.technicalTest")}</option>
+              <option value="ASSESSMENT">{t("types.assessment")}</option>
+              <option value="LANGUAGE_PROFICIENCY">{t("types.languageProficiency")}</option>
             </select>
           </div>
 
           <TabsContent value={activeTab} className="space-y-3">
             {filteredEvaluations.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
-                No evaluations found
+                {t("noEvaluationsFound")}
               </div>
             ) : (
               filteredEvaluations.map((evaluation) => (
@@ -111,7 +111,7 @@ export function EvaluationManagement({
                         {evaluation.evaluation_type_display}
                       </p>
                       <p className="text-muted-foreground">
-                        {evaluation.candidate_name} • {evaluation.scheduled_date ? format(new Date(evaluation.scheduled_date), 'MMM d') : 'No date'}
+                        {evaluation.candidate_name} • {evaluation.scheduled_date ? format(new Date(evaluation.scheduled_date), 'MMM d') : t("noDate")}
                       </p>
                     </div>
                   </div>

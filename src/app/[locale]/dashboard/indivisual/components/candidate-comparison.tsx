@@ -54,7 +54,7 @@ export function CandidateComparison() {
           </CardTitle>
         </CardHeader>
         <CardContent className="py-8 text-center text-muted-foreground">
-          Loading comparison data...
+          {t("loading")}
         </CardContent>
       </Card>
     )
@@ -84,7 +84,7 @@ export function CandidateComparison() {
           </CardTitle>
         </CardHeader>
         <CardContent className="py-8 text-center text-muted-foreground">
-          No candidate comparison data available
+          {t("noData")}
         </CardContent>
       </Card>
     )
@@ -144,7 +144,7 @@ export function CandidateComparison() {
         
         {data.length > 0 && (
           <div className="mt-4 text-xs text-muted-foreground text-center">
-            Showing top {data.length} candidates by average score
+            {t("showingTop", { count: data.length })}
           </div>
         )}
       </CardContent>

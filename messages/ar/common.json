@@ -1,4 +1,14 @@
 {
+  "shared": {
+    "tablePagination": {
+      "showing": "عرض {start}-{end} من {total} {label}"
+    },
+    "auditTrailModal": {
+      "title": "سجل التدقيق — {label}",
+      "loadFailed": "فشل تحميل سجل التدقيق.",
+      "empty": "لا توجد أحداث تدقيق مسجلة بعد."
+    }
+  },
   "landing-page": {
     "navbar": {
       "logo_alt": "شعار MeritLense",
@@ -1323,6 +1333,15 @@
 },
 
 "indivisual": {
+  "scoreTrend": {
+    "title": "اتجاهات الأداء",
+    "averageScore": "متوسط النتيجة",
+    "legend": {
+      "completed": "مكتمل",
+      "scheduled": "مجدولة",
+      "cancelled": "ملغاة"
+    }
+  },
   "user_type": "فرد",
   "page_type": "فرد",
   "pages_list": {
@@ -1446,6 +1465,10 @@
         "pageTitle": "إعدادات الملف الشخصي"
       },
 
+      "dashboardHeader": {
+        "premiumBadge": "بريميوم"
+      },
+
       "settings-tabs": {
         "editProfile": "تعديل الملف الشخصي",
         "security": "الأمان",
@@ -1458,17 +1481,38 @@
           "profilePictureTitle": "صورة الملف الشخصي",
           "profilePictureSubtitle": "قم بتحديث صورة ملفك الشخصي",
           "changeButton": "تغيير",
+          "removeButton": "إزالة",
 
           "yourName": "الاسم الكامل",
           "userName": "اسم المستخدم",
+          "firstName": "الاسم الأول",
+          "lastName": "اسم العائلة",
           "email": "البريد الإلكتروني",
           "password": "كلمة المرور",
+          "phoneNumber": "رقم الهاتف",
           "dob": "تاريخ الميلاد",
+          "passportId": "رقم جواز السفر / الهوية",
+          "jobRole": "المسمى الوظيفي",
+          "nationality": "الجنسية",
+          "address": "العنوان",
           "presentAddress": "العنوان الحالي",
           "country": "الدولة",
           "city": "المدينة",
           "permanentAddress": "العنوان الدائم",
           "preferredLanguage": "اللغة المفضلة",
+          "selectJobRolePlaceholder": "اختر المسمى الوظيفي",
+          "selectNationalityPlaceholder": "اختر الجنسية",
+          "addressPlaceholder": "عنوانك",
+
+          "updateSuccess": "تم تحديث الملف الشخصي بنجاح!",
+          "savingButton": "جارٍ الحفظ...",
+
+          "errors": {
+            "invalidImageType": "يرجى اختيار صورة بصيغة JPG أو PNG أو WEBP.",
+            "imageTooLarge": "يجب أن يكون حجم الصورة أقل من 5 ميجابايت.",
+            "uploadFailed": "فشل رفع صورة الملف الشخصي. يرجى المحاولة مرة أخرى.",
+            "removeFailed": "فشلت إزالة صورة الملف الشخصي. يرجى المحاولة مرة أخرى."
+          },
 
           "saveButton": "حفظ التغييرات"
         },
@@ -1486,7 +1530,53 @@
           "Evaluation": "تقييم",
           "Subscription Renewal": "تجديد الاشتراك",
 
-          "saveButton": "حفظ التغييرات"
+          "saveButton": "حفظ التغييرات",
+          "companySubscription": "اشتراك الشركة",
+          "currentPlan": "الخطة الحالية",
+          "noActivePlan": "لا توجد خطة نشطة",
+          "active": "نشط",
+          "nextBillingDate": "تاريخ الفاتورة القادمة",
+          "daysRemaining": "الأيام المتبقية",
+          "days": "أيام",
+          "noActiveSubscription": "لا يوجد اشتراك نشط",
+          "viewPlans": "عرض الخطط",
+          "paymentMethod": "طريقة الدفع",
+          "notSet": "غير محدد",
+          "usage": "الاستخدام",
+          "candidates": "المرشحون",
+          "teamMembers": "أعضاء الفريق",
+          "actions": "الإجراءات",
+          "noInvoices": "لا توجد فواتير",
+          "evaluations": "التقييمات",
+          "paymentMethods": "طرق الدفع",
+          "addPaymentMethod": "إضافة طريقة دفع",
+          "invoices": "الفواتير",
+          "invoiceNumber": "رقم الفاتورة",
+          "status": "الحالة",
+          "action": "الإجراء",
+
+          "checkPaymentButton": "التحقق من الدفع",
+          "cancelSubscriptionButton": "إلغاء الاشتراك",
+          "reactivateButton": "إعادة التفعيل",
+          "actionRequiredTitle": "إجراء مطلوب",
+          "incompleteSubscriptionMessage": "اشتراكك غير مكتمل. يرجى إتمام الدفع لتفعيل اشتراكك.",
+          "completePaymentButton": "إتمام الدفع",
+          "goToPaymentPageButton": "الانتقال إلى صفحة الدفع",
+          "pdfLink": "PDF",
+
+          "cancelModal": {
+            "title": "إلغاء الاشتراك",
+            "confirmText": "هل أنت متأكد أنك تريد إلغاء اشتراكك؟",
+            "periodEndNote": "ستستمر في الوصول حتى نهاية فترة الفوترة الحالية.",
+            "immediateNote": "سيتم إلغاء اشتراكك على الفور.",
+            "periodEndOption": "الإلغاء في نهاية فترة الفوترة (موصى به)",
+            "reasonLabel": "سبب الإلغاء (اختياري)",
+            "reasonPlaceholder": "أخبرنا بسبب إلغائك...",
+            "keepButton": "الاحتفاظ بالاشتراك",
+            "confirmButton": "تأكيد الإلغاء",
+            "cancellingButton": "جارٍ الإلغاء...",
+            "failedAlert": "فشل إلغاء الاشتراك. يرجى المحاولة مرة أخرى."
+          }
         },
         "agreements-tab": {
           "title": "الاتفاقيات القانونية",
@@ -1510,13 +1600,57 @@
           "currentPasswordPlaceholder": "أدخل كلمة المرور الحالية",
           "newPassword": "كلمة المرور الجديدة",
           "newPasswordPlaceholder": "أدخل كلمة مرور جديدة",
+          "confirmNewPassword": "تأكيد كلمة المرور الجديدة",
+          "confirmNewPasswordPlaceholder": "قم بتأكيد كلمة المرور الجديدة",
+          "passwordMismatch": "كلمتا المرور غير متطابقتين",
+          "buttonChange": "تغيير كلمة المرور",
+          "buttonChanging": "جارٍ التغيير...",
+          "success": {
+            "title": "تم تغيير كلمة المرور بنجاح",
+            "message": "تم تحديث كلمة مرورك. يرجى استخدام كلمة المرور الجديدة في المرة القادمة التي تسجل فيها الدخول."
+          },
 
           "deleteAccountTitle": "حذف الحساب",
           "deleteAccountSubtitle": "حذف حسابك إجراء نهائي وسيؤدي إلى إزالة جميع البيانات المرتبطة به. لا يمكن التراجع عن هذا الإجراء.",
           "deleteButton": "حذف الحساب",
 
+          "strength": {
+            "minLength": "8 أحرف على الأقل",
+            "hasNumber": "يحتوي على رقم",
+            "hasSymbol": "يحتوي على رمز"
+          },
+
+          "deleteModal": {
+            "confirmText": "هذا الإجراء يعطّل حسابك نهائيًا ويلغي أي اشتراك نشط على الفور - لن تتمكن من تسجيل الدخول مرة أخرى. لا يمكن التراجع عن هذا الإجراء. أدخل كلمة المرور للتأكيد.",
+            "passwordPlaceholder": "كلمة المرور الخاصة بك",
+            "cancel": "إلغاء",
+            "confirmButton": "حذف الحساب نهائيًا",
+            "deleting": "جارٍ الحذف...",
+            "incorrectPassword": "كلمة مرور غير صحيحة. يرجى المحاولة مرة أخرى."
+          },
+
           "saveButton": "حفظ التغييرات"
         }
+      },
+      "paymentMethodsList": {
+        "empty": "لم تتم إضافة أي طرق دفع بعد",
+        "expires": "تنتهي الصلاحية {month}/{year}",
+        "defaultBadge": "افتراضي",
+        "setDefaultTooltip": "تعيين كافتراضي",
+        "removeTooltip": "إزالة",
+        "confirmRemove": "هل أنت متأكد أنك تريد إزالة طريقة الدفع هذه؟"
+      },
+      "addPaymentMethodModal": {
+        "title": "إضافة طريقة دفع",
+        "initializing": "جارٍ تهيئة نموذج الدفع...",
+        "tryAgain": "إعادة المحاولة",
+        "initFailed": "فشل تهيئة إعداد الدفع"
+      },
+      "usageMeter": {
+        "remaining": "{count} متبقٍ",
+        "usedOf": "({used} / {limit} {unit} مستخدَم)",
+        "approachingLimit": "الاقتراب من الحد ({percent}% مستخدَم)",
+        "limitReached": "تم بلوغ الحد. قم بترقية خطتك لإضافة المزيد."
       },
        "evaluationManagement": {
         "title": "إدارة التقييمات",
@@ -1558,7 +1692,9 @@
           "inProgress": "قيد التنفيذ",
           "scheduled": "مجدولة",
           "completed": "مكتملة"
-        }
+        },
+        "noEvaluationsFound": "لم يتم العثور على تقييمات",
+        "noDate": "لا يوجد تاريخ"
       },
        "candidateList": {
       "title": "قائمة المرشحين",
@@ -1569,7 +1705,8 @@
         "evaluation": "التقييم",
         "action": "الإجراء",
         "viewResults": "عرض النتائج",
-        "noResultsYet": "لا توجد تقييمات مكتملة بعد"
+        "noResultsYet": "لا توجد تقييمات مكتملة بعد",
+        "noEvaluations": "لا توجد تقييمات"
       },
       "roles": {
         "houseKeeper": "مدبرة منزل",
@@ -1588,8 +1725,12 @@
      
      "candidateComparison": {
       "title": "مقارنة المرشحين",
+      "averageScore": "متوسط النتيجة",
       "accepted": "مقبول",
       "rejected": "مرفوض",
+      "loading": "جارٍ تحميل بيانات المقارنة...",
+      "noData": "لا تتوفر بيانات لمقارنة المرشحين",
+      "showingTop": "عرض أفضل {count} مرشحين حسب متوسط النتيجة",
       "roles": {
         "agent": "وكيل",
         "housekeeper": "مدبرة منزل",
@@ -1625,6 +1766,7 @@
       },
   "pointConsumption": {
     "title": "استهلاك النقاط حسب الخدمة",
+    "noData": "لا تتوفر بيانات للمسميات الوظيفية",
     "services": {
       "cleaner": "عامل تنظيف",
       "cook": "طباخ",
