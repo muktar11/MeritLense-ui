@@ -69,7 +69,7 @@ export default function SecurityTab() {
       logout()
       return
     }
-    setDeleteError("Incorrect password. Please try again.")
+    setDeleteError(t("deleteModal.incorrectPassword"))
   }
 
   return (
@@ -81,8 +81,8 @@ export default function SecurityTab() {
           <div className="p-4 bg-green-50 border border-green-200 rounded-lg flex items-start gap-3">
             <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 shrink-0" />
             <div>
-              <p className="text-sm font-medium text-green-800">Password changed successfully!</p>
-              <p className="text-sm text-green-600">Please use your new password next time you log in.</p>
+              <p className="text-sm font-medium text-green-800">{t("success.title")}</p>
+              <p className="text-sm text-green-600">{t("success.message")}</p>
             </div>
           </div>
         )}
@@ -155,7 +155,7 @@ export default function SecurityTab() {
                   ) : (
                     <span className="text-red-600 font-bold text-xs">✕</span>
                   )}
-                  <span className="text-xs text-gray-600">8 characters minimum</span>
+                  <span className="text-xs text-gray-600">{t("strength.minLength")}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   {passwordValidation.hasNumber ? (
@@ -163,7 +163,7 @@ export default function SecurityTab() {
                   ) : (
                     <span className="text-red-600 font-bold text-xs">✕</span>
                   )}
-                  <span className="text-xs text-gray-600">Contains a number</span>
+                  <span className="text-xs text-gray-600">{t("strength.hasNumber")}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   {passwordValidation.hasSymbol ? (
@@ -171,7 +171,7 @@ export default function SecurityTab() {
                   ) : (
                     <span className="text-red-600 font-bold text-xs">✕</span>
                   )}
-                  <span className="text-xs text-gray-600">Contains a symbol</span>
+                  <span className="text-xs text-gray-600">{t("strength.hasSymbol")}</span>
                 </div>
               </div>
             </div>
@@ -189,15 +189,15 @@ export default function SecurityTab() {
                 placeholder={t("confirmNewPasswordPlaceholder")}
                 required
                 className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  formData.new_password && formData.confirm_new_password && 
+                  formData.new_password && formData.confirm_new_password &&
                   formData.new_password !== formData.confirm_new_password
                     ? 'border-red-500'
                     : 'border-gray-300'
                 }`}
               />
-              {formData.new_password && formData.confirm_new_password && 
+              {formData.new_password && formData.confirm_new_password &&
                formData.new_password !== formData.confirm_new_password && (
-                <p className="mt-1 text-xs text-red-600">Passwords do not match</p>
+                <p className="mt-1 text-xs text-red-600">{t("passwordMismatch")}</p>
               )}
             </div>
           </div>
@@ -235,7 +235,7 @@ export default function SecurityTab() {
             {loading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Changing...
+                {t("buttonChanging")}
               </>
             ) : (
               t("saveButton")
@@ -258,9 +258,7 @@ export default function SecurityTab() {
                   {t("deleteAccountTitle")}
                 </h3>
                 <p className="text-sm text-gray-600 mb-4">
-                  This permanently deactivates your account and cancels any active subscription
-                  immediately - you won&apos;t be able to log back in. This can&apos;t be undone.
-                  Enter your password to confirm.
+                  {t("deleteModal.confirmText")}
                 </p>
 
                 {deleteError && (
@@ -274,7 +272,7 @@ export default function SecurityTab() {
                   type="password"
                   value={deletePassword}
                   onChange={(e) => setDeletePassword(e.target.value)}
-                  placeholder="Your password"
+                  placeholder={t("deleteModal.passwordPlaceholder")}
                   autoFocus
                   className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent mb-4"
                 />
@@ -286,7 +284,7 @@ export default function SecurityTab() {
                     disabled={deleting}
                     className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-50"
                   >
-                    Cancel
+                    {t("deleteModal.cancel")}
                   </button>
                   <button
                     type="button"
@@ -297,10 +295,10 @@ export default function SecurityTab() {
                     {deleting ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin" />
-                        Deleting...
+                        {t("deleteModal.deleting")}
                       </>
                     ) : (
-                      "Permanently Delete Account"
+                      t("deleteModal.confirmButton")
                     )}
                   </button>
                 </div>

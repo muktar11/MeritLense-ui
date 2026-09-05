@@ -3,12 +3,13 @@
 import { Bell, User, Settings, BarChart3 } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import NotificationsPanel from "./notifications";
 
 export default function DashboardHeader() {
   const [showNotifications, setShowNotifications] = useState(false);
   const locale = useLocale();
+  const t = useTranslations("dashboard.indivisual.dashboardHeader");
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
@@ -19,7 +20,7 @@ export default function DashboardHeader() {
         
         <div className="flex items-center gap-4 relative">
           <span className="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-medium">
-            Premium
+            {t("premiumBadge")}
           </span>
 
           {/* Notifications */}

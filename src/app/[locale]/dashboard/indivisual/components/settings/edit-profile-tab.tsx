@@ -84,11 +84,11 @@ export default function EditProfileTab() {
     setPictureError(null)
 
     if (!PROFILE_PICTURE_ACCEPTED_TYPES.includes(file.type)) {
-      setPictureError("Please choose a JPG, PNG, or WEBP image.")
+      setPictureError(t("errors.invalidImageType"))
       return
     }
     if (file.size > PROFILE_PICTURE_MAX_BYTES) {
-      setPictureError("Image must be smaller than 5MB.")
+      setPictureError(t("errors.imageTooLarge"))
       return
     }
 
@@ -96,7 +96,7 @@ export default function EditProfileTab() {
     const success = await uploadProfilePicture(file)
     setPictureUploading(false)
     if (!success) {
-      setPictureError("Failed to upload profile picture. Please try again.")
+      setPictureError(t("errors.uploadFailed"))
     }
   }
 
@@ -106,7 +106,7 @@ export default function EditProfileTab() {
     const success = await removeProfilePicture()
     setPictureUploading(false)
     if (!success) {
-      setPictureError("Failed to remove profile picture. Please try again.")
+      setPictureError(t("errors.removeFailed"))
     }
   }
 
@@ -173,7 +173,7 @@ export default function EditProfileTab() {
                 onClick={handleRemovePicture}
                 className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Remove
+                {t("removeButton")}
               </button>
             )}
           </div>
@@ -190,7 +190,7 @@ export default function EditProfileTab() {
       {/* Success Message */}
       {saveSuccess && (
         <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-          <p className="text-sm text-green-600">Profile updated successfully!</p>
+          <p className="text-sm text-green-600">{t("updateSuccess")}</p>
         </div>
       )}
 
@@ -199,7 +199,7 @@ export default function EditProfileTab() {
         {/* First Name */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            First Name *
+            {t("firstName")} *
           </label>
           <input
             type="text"
@@ -214,7 +214,7 @@ export default function EditProfileTab() {
         {/* Last Name */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            Last Name *
+            {t("lastName")} *
           </label>
           <input
             type="text"
@@ -229,7 +229,7 @@ export default function EditProfileTab() {
         {/* Email (read-only) */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            Email
+            {t("email")}
           </label>
           <input
             type="email"
@@ -242,7 +242,7 @@ export default function EditProfileTab() {
         {/* Phone Number */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            Phone Number *
+            {t("phoneNumber")} *
           </label>
           <input
             type="tel"
@@ -257,7 +257,7 @@ export default function EditProfileTab() {
         {/* Date of Birth */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            Date of Birth
+            {t("dob")}
           </label>
           <input
             type="date"
@@ -271,7 +271,7 @@ export default function EditProfileTab() {
         {/* Passport ID (read-only) */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            Passport ID
+            {t("passportId")}
           </label>
           <input
             type="text"
@@ -284,7 +284,7 @@ export default function EditProfileTab() {
         {/* Job Role */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            Job Role *
+            {t("jobRole")} *
           </label>
           <select
             name="job_role"
@@ -293,7 +293,7 @@ export default function EditProfileTab() {
             required
             className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
-            <option value="">Select job role</option>
+            <option value="">{t("selectJobRolePlaceholder")}</option>
             {JOB_ROLES.map((role) => (
               <option key={role.key} value={role.key}>
                 {role.label}
@@ -305,7 +305,7 @@ export default function EditProfileTab() {
         {/* Nationality */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            Nationality *
+            {t("nationality")} *
           </label>
           <select
             name="nationality"
@@ -314,7 +314,7 @@ export default function EditProfileTab() {
             required
             className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
-            <option value="">Select nationality</option>
+            <option value="">{t("selectNationalityPlaceholder")}</option>
             {NATIONALITIES.map((nation) => (
               <option key={nation.key} value={nation.key}>
                 {nation.label}
@@ -326,7 +326,7 @@ export default function EditProfileTab() {
         {/* Preferred Language */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            Preferred Language *
+            {t("preferredLanguage")} *
           </label>
           <select
             name="preferred_language"
@@ -346,14 +346,14 @@ export default function EditProfileTab() {
         {/* Address */}
         <div className="sm:col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            Address
+            {t("address")}
           </label>
           <input
             type="text"
             name="address"
             value={formData.address}
             onChange={handleChange}
-            placeholder="Your address"
+            placeholder={t("addressPlaceholder")}
             className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
@@ -369,7 +369,7 @@ export default function EditProfileTab() {
           {loading ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
-              Saving...
+              {t("savingButton")}
             </>
           ) : (
             t("saveButton")

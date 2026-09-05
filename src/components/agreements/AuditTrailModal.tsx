@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { X, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import agreementService from "@/app/api/agreements/endpoints";
 import type { AuditLogEntry } from "@/app/api/agreements/types";
 
@@ -12,6 +13,7 @@ interface AuditTrailModalProps {
 }
 
 export function AuditTrailModal({ agreementId, agreementLabel, onClose }: AuditTrailModalProps) {
+  const t = useTranslations("shared.auditTrailModal");
   const [entries, setEntries] = useState<AuditLogEntry[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,7 +25,7 @@ export function AuditTrailModal({ agreementId, agreementLabel, onClose }: AuditT
     agreementService
       .getAuditTrail(agreementId)
       .then(setEntries)
-      .catch(() => setError("Failed to load the audit trail."))
+      .catch(() => setError(t("loadFailed")))
       .finally(() => setLoading(false));
   }, [agreementId]);
 
@@ -36,7 +38,7 @@ export function AuditTrailModal({ agreementId, agreementLabel, onClose }: AuditT
       <div className="bg-white rounded-lg shadow-lg w-full max-w-lg pointer-events-auto relative max-h-[80vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex items-center justify-between mb-4 sticky top-0 bg-white z-10">
-            <h3 className="text-lg font-bold text-gray-900">Audit Trail — {agreementLabel}</h3>
+            <h3 className="text-lg font-bold text-gray-900">{t("title", { label: agreementLabel })}</h3>
             <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
               <X className="w-5 h-5" />
             </button>
@@ -51,7 +53,7 @@ export function AuditTrailModal({ agreementId, agreementLabel, onClose }: AuditT
           {!loading && error && <p className="text-sm text-red-600">{error}</p>}
 
           {!loading && !error && entries.length === 0 && (
-            <p className="text-sm text-gray-500">No audit events recorded yet.</p>
+            <p className="text-sm text-gray-500">{t("empty")}</p>
           )}
 
           {!loading && !error && entries.length > 0 && (

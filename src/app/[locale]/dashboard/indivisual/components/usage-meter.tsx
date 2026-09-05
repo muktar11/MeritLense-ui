@@ -1,6 +1,7 @@
 "use client";
 
 import { AlertCircle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface UsageMeterProps {
   used: number;
@@ -10,6 +11,7 @@ interface UsageMeterProps {
 }
 
 export function UsageMeter({ used, limit, label, unit = 'items' }: UsageMeterProps) {
+  const t = useTranslations('dashboard.indivisual.usageMeter');
   const percentage = (used / limit) * 100;
   const remaining = Math.max(0, limit - used);
   const isNearLimit = percentage >= 80;
@@ -26,8 +28,8 @@ export function UsageMeter({ used, limit, label, unit = 'items' }: UsageMeterPro
       <div className="flex justify-between text-sm items-baseline">
         <span className="text-gray-600">{label}</span>
         <span className="text-right">
-          <span className="font-semibold text-gray-900">{remaining} remaining</span>
-          <span className="text-gray-400"> ({used} / {limit} {unit} used)</span>
+          <span className="font-semibold text-gray-900">{t('remaining', { count: remaining })}</span>
+          <span className="text-gray-400"> {t('usedOf', { used, limit, unit })}</span>
         </span>
       </div>
 
@@ -41,14 +43,14 @@ export function UsageMeter({ used, limit, label, unit = 'items' }: UsageMeterPro
       {isNearLimit && !isAtLimit && (
         <div className="flex items-center gap-1 text-xs text-yellow-600">
           <AlertCircle className="w-3 h-3" />
-          <span>Approaching limit ({Math.round(percentage)}% used)</span>
+          <span>{t('approachingLimit', { percent: Math.round(percentage) })}</span>
         </div>
       )}
 
       {isAtLimit && (
         <div className="flex items-center gap-1 text-xs text-red-600">
           <AlertCircle className="w-3 h-3" />
-          <span>Limit reached. Upgrade your plan to add more.</span>
+          <span>{t('limitReached')}</span>
         </div>
       )}
     </div>

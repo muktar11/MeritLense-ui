@@ -34,7 +34,7 @@ export function PointConsumptionChart({ data }: PointConsumptionChartProps) {
           </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col items-center justify-center py-8">
-          <p className="text-muted-foreground text-sm">No job role data available</p>
+          <p className="text-muted-foreground text-sm">{t("noData")}</p>
         </CardContent>
       </Card>
     )

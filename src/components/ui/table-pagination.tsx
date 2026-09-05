@@ -1,6 +1,7 @@
 "use client"
 
 import { ChevronLeft, ChevronRight } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 interface TablePaginationProps {
   currentPage: number
@@ -17,6 +18,7 @@ export default function TablePagination({
   onPageChange,
   itemLabel,
 }: TablePaginationProps) {
+  const t = useTranslations("shared.tablePagination")
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize))
   const rangeStart = totalItems === 0 ? 0 : (currentPage - 1) * pageSize + 1
   const rangeEnd = Math.min(currentPage * pageSize, totalItems)
@@ -28,7 +30,7 @@ export default function TablePagination({
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 border-t border-gray-200 bg-gray-50">
       <div className="text-sm text-gray-500">
-        Showing {rangeStart}-{rangeEnd} of {totalItems} {itemLabel}
+        {t("showing", { start: rangeStart, end: rangeEnd, total: totalItems, label: itemLabel })}
       </div>
 
       {totalPages > 1 && (

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { X, Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { PaymentMethodForm } from './payment-method-form';
 import paymentService from '@/app/api/payments/endpoints';
 
@@ -20,6 +21,7 @@ export function AddPaymentMethodModal({
   onClose,
   onSuccess
 }: AddPaymentMethodModalProps) {
+  const t = useTranslations('dashboard.indivisual.addPaymentMethodModal');
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -43,7 +45,7 @@ export function AddPaymentMethodModal({
       setClientSecret(response.client_secret);
     } catch (err: any) {
       console.error('Failed to create setup intent:', err);
-      setError(err?.message || 'Failed to initialize payment setup');
+      setError(err?.message || t('initFailed'));
     } finally {
       setLoading(false);
     }
@@ -82,7 +84,7 @@ export function AddPaymentMethodModal({
       <div className="bg-white rounded-lg shadow-lg w-full max-w-md pointer-events-auto relative max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex items-center justify-between mb-4 sticky top-0 bg-white z-10">
-            <h3 className="text-lg font-bold text-gray-900">Add Payment Method</h3>
+            <h3 className="text-lg font-bold text-gray-900">{t('title')}</h3>
             <button onClick={handleClose} className="text-gray-500 hover:text-gray-700">
               <X className="w-5 h-5" />
             </button>
@@ -91,18 +93,18 @@ export function AddPaymentMethodModal({
           {loading && !clientSecret && (
             <div className="text-center py-8">
               <Loader2 className="w-8 h-8 animate-spin text-purple-500 mx-auto mb-3" />
-              <p className="text-gray-600">Initializing payment form...</p>
+              <p className="text-gray-600">{t('initializing')}</p>
             </div>
           )}
 
           {error && (
             <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm mb-4">
               {error}
-              <button 
+              <button
                 onClick={createSetupIntent}
                 className="block mt-2 text-purple-600 hover:text-purple-700"
               >
-                Try Again
+                {t('tryAgain')}
               </button>
             </div>
           )}

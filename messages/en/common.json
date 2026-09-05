@@ -1,4 +1,14 @@
 {
+  "shared": {
+    "tablePagination": {
+      "showing": "Showing {start}-{end} of {total} {label}"
+    },
+    "auditTrailModal": {
+      "title": "Audit Trail — {label}",
+      "loadFailed": "Failed to load the audit trail.",
+      "empty": "No audit events recorded yet."
+    }
+  },
   "landing-page": {
     "navbar": {
       "logo_alt": "MeritLense Logo",
@@ -1810,6 +1820,10 @@
         "pageTitle": "Profile Settings"
       },
 
+      "dashboardHeader": {
+        "premiumBadge": "Premium"
+      },
+
       "settings-tabs": {
         "editProfile": "Edit Profile",
         "security": "Security",
@@ -1822,17 +1836,38 @@
           "profilePictureTitle": "Profile Picture",
           "profilePictureSubtitle": "Update your profile picture",
           "changeButton": "Change",
+          "removeButton": "Remove",
 
           "yourName": "Your Name",
           "userName": "User Name",
+          "firstName": "First Name",
+          "lastName": "Last Name",
           "email": "Email",
           "password": "Password",
+          "phoneNumber": "Phone Number",
           "dob": "Date of Birth",
+          "passportId": "Passport ID",
+          "jobRole": "Job Role",
+          "nationality": "Nationality",
+          "address": "Address",
           "presentAddress": "Present Address",
           "country": "Country",
           "city": "City",
           "permanentAddress": "Permanent Address",
           "preferredLanguage": "Preferred Language",
+          "selectJobRolePlaceholder": "Select job role",
+          "selectNationalityPlaceholder": "Select nationality",
+          "addressPlaceholder": "Your address",
+
+          "updateSuccess": "Profile updated successfully!",
+          "savingButton": "Saving...",
+
+          "errors": {
+            "invalidImageType": "Please choose a JPG, PNG, or WEBP image.",
+            "imageTooLarge": "Image must be smaller than 5MB.",
+            "uploadFailed": "Failed to upload profile picture. Please try again.",
+            "removeFailed": "Failed to remove profile picture. Please try again."
+          },
 
           "saveButton": "Save Changes"
         },
@@ -1873,7 +1908,30 @@
           "invoices": "Invoices",
           "invoiceNumber": "Invoice Number",
           "status": "Status",
-          "action": "Action"
+          "action": "Action",
+
+          "checkPaymentButton": "Check Payment",
+          "cancelSubscriptionButton": "Cancel Subscription",
+          "reactivateButton": "Reactivate",
+          "actionRequiredTitle": "Action Required",
+          "incompleteSubscriptionMessage": "Your subscription is incomplete. Please complete the payment to activate your subscription.",
+          "completePaymentButton": "Complete Payment",
+          "goToPaymentPageButton": "Go to Payment Page",
+          "pdfLink": "PDF",
+
+          "cancelModal": {
+            "title": "Cancel Subscription",
+            "confirmText": "Are you sure you want to cancel your subscription?",
+            "periodEndNote": "You will continue to have access until the end of your billing period.",
+            "immediateNote": "Your subscription will be cancelled immediately.",
+            "periodEndOption": "Cancel at end of billing period (recommended)",
+            "reasonLabel": "Reason for cancelling (optional)",
+            "reasonPlaceholder": "Tell us why you're cancelling...",
+            "keepButton": "Keep Subscription",
+            "confirmButton": "Confirm Cancellation",
+            "cancellingButton": "Cancelling...",
+            "failedAlert": "Failed to cancel subscription. Please try again."
+          }
         },
         "agreements-tab": {
           "title": "Legal Agreements",
@@ -1910,8 +1968,43 @@
           "deleteAccountSubtitle": "Deleting your account is permanent and will remove all associated data. This action cannot be undone.",
           "deleteButton": "Delete Account",
 
+          "strength": {
+            "minLength": "8 characters minimum",
+            "hasNumber": "Contains a number",
+            "hasSymbol": "Contains a symbol"
+          },
+
+          "deleteModal": {
+            "confirmText": "This permanently deactivates your account and cancels any active subscription immediately - you won't be able to log back in. This can't be undone. Enter your password to confirm.",
+            "passwordPlaceholder": "Your password",
+            "cancel": "Cancel",
+            "confirmButton": "Permanently Delete Account",
+            "deleting": "Deleting...",
+            "incorrectPassword": "Incorrect password. Please try again."
+          },
+
           "saveButton": "Save Changes"
         }
+      },
+      "paymentMethodsList": {
+        "empty": "No payment methods added yet",
+        "expires": "Expires {month}/{year}",
+        "defaultBadge": "Default",
+        "setDefaultTooltip": "Set as default",
+        "removeTooltip": "Remove",
+        "confirmRemove": "Are you sure you want to remove this payment method?"
+      },
+      "addPaymentMethodModal": {
+        "title": "Add Payment Method",
+        "initializing": "Initializing payment form...",
+        "tryAgain": "Try Again",
+        "initFailed": "Failed to initialize payment setup"
+      },
+      "usageMeter": {
+        "remaining": "{count} remaining",
+        "usedOf": "({used} / {limit} {unit} used)",
+        "approachingLimit": "Approaching limit ({percent}% used)",
+        "limitReached": "Limit reached. Upgrade your plan to add more."
       },
        "evaluationManagement": {
         "title": "Evaluation Management",
@@ -1953,7 +2046,9 @@
           "inProgress": "In Progress",
           "scheduled": "Scheduled",
           "completed": "Completed"
-        }
+        },
+        "noEvaluationsFound": "No evaluations found",
+        "noDate": "No date"
       },
        "candidateList": {
       "title": "Candidate List",
@@ -1964,7 +2059,8 @@
         "evaluation": "Evaluation",
         "action": "Action",
         "viewResults": "View Results",
-        "noResultsYet": "No completed evaluations yet"
+        "noResultsYet": "No completed evaluations yet",
+        "noEvaluations": "No evaluations"
       },
       "roles": {
         "houseKeeper": "HouseKeeper",
@@ -1986,6 +2082,9 @@
       "averageScore": "Average Score",
       "accepted": "Accepted",
       "rejected": "Rejected",
+      "loading": "Loading comparison data...",
+      "noData": "No candidate comparison data available",
+      "showingTop": "Showing top {count} candidates by average score",
       "roles": {
         "agent": "Agent",
         "housekeeper": "Housekeeper",
@@ -2022,6 +2121,7 @@
   
   "pointConsumption": {
     "title": "Point Consumption by Service",
+    "noData": "No job role data available",
     "services": {
       "cleaner": "Cleaner",
       "cook": "Cook",
