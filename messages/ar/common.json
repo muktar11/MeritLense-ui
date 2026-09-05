@@ -1217,6 +1217,7 @@
         "activeCandidates": "المرشحون النشطون",
         "certificatesIssued": "الشهادات الصادرة",
         "pointsBalance": "رصيد النقاط",
+        "teamMembers": "أعضاء الفريق",
         "successRate": "معدل النجاح",
         "changes": {
           "growth": "نمو بنسبة {value}٪",
@@ -1237,6 +1238,57 @@
         "critical": "تنبيه عاجل",
         "contractRejection": "رفض العقد",
         "lowSuccessRate": "معدل النجاح أقل من 50%. راجع التقييمات الأخيرة."
+      },
+      "candidateEvaluation": {
+        "title": "التقييمات الأخيرة",
+        "columns": {
+          "candidate": "المرشح",
+          "evaluationType": "نوع التقييم",
+          "status": "الحالة",
+          "score": "الدرجة",
+          "scheduledDate": "تاريخ الجدولة",
+          "actions": "الإجراءات"
+        },
+        "pagination": {
+          "rowsPerPage": "الصفوف لكل صفحة"
+        }
+      },
+      "evaluationTrend": {
+        "title": "اتجاهات التقييم",
+        "legend": {
+          "completed": "مكتمل",
+          "scheduled": "مجدول",
+          "cancelled": "ملغى"
+        }
+      },
+      "statusDistribution": {
+        "title": "حالة التقييم"
+      },
+      "recentActivity": {
+        "title": "النشاط الشهري",
+        "columns": {
+          "month": "الشهر",
+          "candidatesAdded": "المرشحون المضافون",
+          "evaluationsCompleted": "التقييمات المكتملة",
+          "certificatesIssued": "الشهادات الصادرة"
+        }
+      },
+      "performanceChart": {
+        "title": "مؤشرات الأداء",
+        "tabs": {
+          "users": "المستخدمون",
+          "projects": "المشاريع",
+          "operatingStatus": "الحالة"
+        },
+        "tooltip": {
+          "score": "متوسط الدرجة"
+        }
+      },
+      "languageDistributionChart": {
+        "title": "توزيع اللغات",
+        "tooltip": {
+          "usage": "نسبة الاستخدام٪"
+        }
       }
     },
    "candidateEvaluation": {
@@ -1466,6 +1518,8 @@
         "address": "العنوان",
         "phone": "الهاتف",
         "website": "الموقع الإلكتروني",
+        "country": "الدولة",
+        "city": "المدينة",
 
         "manageUsers": "إدارة المستخدمين",
         "addUser": "إضافة مستخدم",
@@ -1521,6 +1575,9 @@
         "language": "اللغة",
         "english": "الإنجليزية",
         "spanish": "الإسبانية",
+        "preferredLanguage": "اللغة المفضلة",
+        "arabic": "العربية",
+        "french": "الفرنسية",
         "push": "إشعارات فورية",
         "save": "حفظ",
 
@@ -1531,7 +1588,25 @@
         "nextBilling": "الفاتورة القادمة",
         "update": "تحديث",
 
-        "saveChanges": "حفظ التغييرات"
+        "saveChanges": "حفظ التغييرات",
+
+        "team": {
+          "pendingInvitations": "الدعوات المعلقة",
+          "expires": "تنتهي في",
+          "inviteModal": {
+            "title": "دعوة عضو فريق",
+            "email": "البريد الإلكتروني",
+            "firstName": "الاسم الأول",
+            "lastName": "اسم العائلة",
+            "jobTitle": "المسمى الوظيفي",
+            "phoneNumber": "رقم الهاتف",
+            "permissions": "الصلاحيات",
+            "inviteInfo": "سيتلقى عضو الفريق المدعو بريدًا إلكترونيًا يحتوي على تعليمات لإعداد حسابه. ستنتهي صلاحية الدعوة خلال 7 أيام.",
+            "cancel": "إلغاء",
+            "sendInvite": "إرسال الدعوة",
+            "sending": "جارٍ الإرسال..."
+          }
+        }
       },
        "payment": {
         "title": "الخطة المناسبة لنشاطك التجاري",
@@ -1804,6 +1879,10 @@
   "payment": {
     "title": "الخطة المناسبة لأعمالك",
     "subtitle": "استنادًا إلى الأدوار الوظيفية المختارة ومجالات التركيز الرئيسية وقياسات التقييم، اختر خطة الاشتراك المناسبة.",
+    "tabs": {
+      "plans": "خطط الاشتراك",
+      "billing": "الفوترة والاستخدام"
+    },
     "billingMonthly": "فوترة شهرية",
     "billingAnnual": "فوترة سنوية",
     "getStarted": "ابدأ الآن",
