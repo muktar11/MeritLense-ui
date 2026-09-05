@@ -113,6 +113,52 @@
         "taskExecution": "تنفيذ المهام العملية",
         "knowledgeComprehension": "المعرفة والاستيعاب"
       }
+    },
+    "liveCallRoom": {
+      "missingSessionId": "معرّف الجلسة مفقود.",
+      "callEnded": "انتهت المكالمة",
+      "callEndedMessage": "انتهت مكالمة المقابلة المباشرة هذه.",
+      "couldntJoin": "تعذر الانضمام إلى المكالمة",
+      "refreshAndTryAgain": "يرجى تحديث الصفحة والمحاولة مرة أخرى.",
+      "opensAt": "تُفتح هذه المكالمة قبل 15 دقيقة من موعدها المحدد:",
+      "yourLocalTime": "(بتوقيتك المحلي).",
+      "statusJoining": "جارٍ الانضمام إلى المكالمة…",
+      "statusWaiting": "في انتظار انضمام المشارك الآخر…",
+      "statusPendingAdmission": "في انتظار سماح المُقيِّم لك بالدخول…",
+      "statusReconnecting": "جارٍ إعادة الاتصال…",
+      "statusConnecting": "جارٍ الاتصال…",
+      "candidateWantsToJoin": "يريد المرشح الانضمام",
+      "letThemIn": "هل تسمح له بالدخول إلى المقابلة؟",
+      "deny": "رفض",
+      "admit": "قبول",
+      "manualTranslationActive": "وضع الترجمة اليدوية مفعّل",
+      "youreEvaluator": "أنت المُقيِّم",
+      "youreCandidate": "أنت المرشح",
+      "manualTranslationLabel": "الترجمة اليدوية",
+      "messageFeed": "سجل الرسائل",
+      "isSpeaking": "{role} يتحدث الآن…",
+      "waitingToFinish": "في انتظار انتهاء {role}…",
+      "tapToRecord": "اضغط لتسجيل دورك",
+      "recording": "جارٍ التسجيل… {time}",
+      "stop": "إيقاف",
+      "reRecord": "إعادة التسجيل",
+      "sending": "جارٍ الإرسال…",
+      "send": "إرسال",
+      "noSegmentsYet": "سجّل دورك في الحديث لإرساله إلى المشارك الآخر بلغته.",
+      "you": "أنت",
+      "otherParticipant": "المشارك الآخر",
+      "original": "النص الأصلي",
+      "translated": "الترجمة",
+      "iSpeak": "أتحدث",
+      "iWantToHear": "أريد أن أسمع",
+      "endCall": "إنهاء المكالمة",
+      "candidateLabel": "المرشح",
+      "evaluatorLabel": "المُقيِّم"
+    },
+    "callControlsIntro": {
+      "recordBeat": "اضغط هنا لتسجيل دورك عندما يحين وقت حديثك.",
+      "languageBeat": "حدد هنا اللغة التي تتحدثها واللغة التي تريد سماعها.",
+      "gotIt": "فهمت"
     }
   },
   "landing-page": {
@@ -1759,6 +1805,18 @@
       "payNowButton": "ادفع الآن",
       "chargeNote": "سيتم خصم {price} مرة واحدة. لا تتجدد هذه الباقة تلقائيًا.",
       "paymentFailedError": "فشل إتمام الدفع"
+    },
+    "success": {
+      "processingTitle": "جارٍ المعالجة...",
+      "confirmingSubscription": "يرجى الانتظار بينما نؤكد اشتراكك.",
+      "confirmingPayment": "يرجى الانتظار بينما نؤكد دفعتك.",
+      "subscriptionActivatedTitle": "تم تفعيل الاشتراك!",
+      "paymentSuccessfulTitle": "تم الدفع بنجاح!",
+      "subscriptionActivatedMessage": "تم تفعيل اشتراكك بنجاح. يمكنك الآن الوصول إلى جميع ميزات خطتك.",
+      "paymentSuccessfulMessage": "شكرًا لك على الدفع. تمت عملية الشراء بنجاح.",
+      "goToDashboard": "الذهاب إلى لوحة التحكم",
+      "viewBillingDetails": "عرض تفاصيل الفوترة",
+      "redirecting": "جارٍ التوجيه إلى الفوترة خلال 3 ثوانٍ..."
     },
     "plans": {
       "basic": {
