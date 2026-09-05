@@ -11,8 +11,19 @@ import { AddPaymentMethodModal } from "../add-payment-method-modal";
 import { UsageMeter } from "../usage-meter";
 import TablePagination from "@/components/ui/table-pagination";
 import { format } from "date-fns";
+import { ar } from "date-fns/locale";
 
 const INVOICES_PAGE_SIZE = 10;
+
+const SUBSCRIPTION_STATUS_KEYS: Record<string, string> = {
+  ACTIVE: 'active',
+  PAST_DUE: 'pastDue',
+  CANCELED: 'canceled',
+  INCOMPLETE: 'incomplete',
+  INCOMPLETE_EXPIRED: 'incompleteExpired',
+  TRIALING: 'trialing',
+  UNPAID: 'unpaid',
+}
 
 export function BillingTab() {
   const t = useTranslations("dashboard.indivisual.settings.billing-tab");
@@ -231,7 +242,7 @@ export function BillingTab() {
             <div>
               <h3 className="text-lg font-semibold text-gray-900">{t('currentPlan')}</h3>
               <p className="text-sm text-gray-600">
-                {subscription.price_details?.name || subscription.stripe_price?.name || t('noActivePlan')} - {subscription.status_display}
+                {subscription.price_details?.name || subscription.stripe_price?.name || t('noActivePlan')} - {SUBSCRIPTION_STATUS_KEYS[subscription.status] ? t(`subscriptionStatus.${SUBSCRIPTION_STATUS_KEYS[subscription.status]}`) : subscription.status_display}
               </p>
             </div>
             <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm">
@@ -243,9 +254,9 @@ export function BillingTab() {
             <div>
               <p className="text-xs text-gray-500">{t('nextBillingDate')}</p>
               <p className="font-medium">
-                {subscription.current_period_end 
-                  ? format(new Date(subscription.current_period_end), 'MMM d, yyyy')
-                  : 'N/A'}
+                {subscription.current_period_end
+                  ? format(new Date(subscription.current_period_end), 'MMM d, yyyy', locale === 'ar' ? { locale: ar } : undefined)
+                  : t('notAvailable')}
               </p>
             </div>
             <div>
@@ -261,7 +272,7 @@ export function BillingTab() {
                       Number(subscription.stripe_price.unit_amount),
                       subscription.stripe_price.currency
                     )
-                  : 'N/A'}
+                  : t('notAvailable')}
                 {subscription.price_details?.interval && `/${subscription.price_details.interval.toLowerCase()}`}
                 {!subscription.price_details && subscription.stripe_price?.interval && `/${subscription.stripe_price.interval.toLowerCase()}`}
               </p>
@@ -496,7 +507,7 @@ export function BillingTab() {
                 paginatedInvoices.map((invoice) => (
                   <tr key={invoice.id} className="odd:bg-white even:bg-gray-50 border-t">
                     <td className="px-4 py-3 text-gray-900 whitespace-nowrap">
-                      {format(new Date(invoice.created_at), 'MMM d, yyyy')}
+                      {format(new Date(invoice.created_at), 'MMM d, yyyy', locale === 'ar' ? { locale: ar } : undefined)}
                     </td>
                     <td className="px-4 py-3 text-gray-900">{invoice.number}</td>
                     <td className="px-4 py-3 font-medium">

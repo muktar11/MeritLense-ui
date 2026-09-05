@@ -2,6 +2,7 @@
 
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Loader2 } from "lucide-react";
 import { LiveCallRoom } from "@/components/live-call/LiveCallRoom";
 
@@ -25,13 +26,14 @@ export default function BusinessLiveCallPage() {
 }
 
 function BusinessLiveCallContent() {
+  const t = useTranslations("shared.liveCallRoom");
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("sessionId") ?? "";
 
   if (!sessionId) {
     return (
       <div className="h-[calc(100vh-4rem)] bg-gray-900 flex items-center justify-center text-white">
-        Missing session ID.
+        {t("missingSessionId")}
       </div>
     );
   }

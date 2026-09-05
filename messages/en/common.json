@@ -2522,6 +2522,18 @@
           "currentPlan": "Current Plan",
           "noActivePlan": "No Active Plan",
           "active": "Active",
+          "cancelsAtPeriodEnd": "Cancels at period end",
+          "notAvailable": "N/A",
+          "companyLabel": "Company: {name}",
+          "subscriptionStatus": {
+            "active": "Active",
+            "pastDue": "Past Due",
+            "canceled": "Canceled",
+            "incomplete": "Incomplete",
+            "incompleteExpired": "Incomplete Expired",
+            "trialing": "Trialing",
+            "unpaid": "Unpaid"
+          },
           "nextBillingDate": "Next Billing Date",
           "daysRemaining": "Days Remaining",
           "days": "Days",

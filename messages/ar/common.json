@@ -2346,6 +2346,18 @@
           "currentPlan": "الخطة الحالية",
           "noActivePlan": "لا توجد خطة نشطة",
           "active": "نشط",
+          "cancelsAtPeriodEnd": "يُلغى في نهاية الفترة",
+          "notAvailable": "غير متوفر",
+          "companyLabel": "الشركة: {name}",
+          "subscriptionStatus": {
+            "active": "نشط",
+            "pastDue": "متأخر السداد",
+            "canceled": "ملغى",
+            "incomplete": "غير مكتمل",
+            "incompleteExpired": "منتهي وغير مكتمل",
+            "trialing": "فترة تجريبية",
+            "unpaid": "غير مدفوع"
+          },
           "nextBillingDate": "تاريخ الفاتورة القادمة",
           "daysRemaining": "الأيام المتبقية",
           "days": "أيام",

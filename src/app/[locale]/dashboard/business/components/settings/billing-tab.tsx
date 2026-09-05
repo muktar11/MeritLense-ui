@@ -11,8 +11,19 @@ import { AddPaymentMethodModal } from "../add-payment-method-modal";
 import { UsageMeter } from "../usage-meter";
 import TablePagination from "@/components/ui/table-pagination";
 import { format } from "date-fns";
+import { ar } from "date-fns/locale";
 
 const INVOICES_PAGE_SIZE = 10;
+
+const SUBSCRIPTION_STATUS_KEYS: Record<string, string> = {
+  ACTIVE: 'active',
+  PAST_DUE: 'pastDue',
+  CANCELED: 'canceled',
+  INCOMPLETE: 'incomplete',
+  INCOMPLETE_EXPIRED: 'incompleteExpired',
+  TRIALING: 'trialing',
+  UNPAID: 'unpaid',
+}
 
 export function BillingTab() {
   const t = useTranslations("dashboard.indivisual.settings.billing-tab");
@@ -240,11 +251,11 @@ export function BillingTab() {
             <div>
               <h3 className="text-lg font-semibold text-gray-900">{t('currentPlan')}</h3>
               <p className="text-sm text-gray-600">
-                {subscription.price_details?.name || subscription.stripe_price?.name || t('noActivePlan')} - {subscription.status_display}
+                {subscription.price_details?.name || subscription.stripe_price?.name || t('noActivePlan')} - {SUBSCRIPTION_STATUS_KEYS[subscription.status] ? t(`subscriptionStatus.${SUBSCRIPTION_STATUS_KEYS[subscription.status]}`) : subscription.status_display}
               </p>
               {subscription.company_name && (
                 <p className="text-xs text-gray-500 mt-1">
-                  Company: {subscription.company_name}
+                  {t('companyLabel', { name: subscription.company_name })}
                 </p>
               )}
             </div>
@@ -257,7 +268,7 @@ export function BillingTab() {
                 onClick={() => setShowCancelModal(true)}
                 className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm hover:bg-red-200 transition-colors"
               >
-                Cancel Subscription
+                {t('cancelSubscriptionButton')}
               </button>
             )}
             {subscription.cancel_at_period_end && (
@@ -272,7 +283,7 @@ export function BillingTab() {
                 }}
                 className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm hover:bg-green-200 transition-colors"
               >
-                Reactivate
+                {t('reactivateButton')}
               </button>
             )}
             </div>
@@ -282,25 +293,25 @@ export function BillingTab() {
             <div>
               <p className="text-xs text-gray-500">{t('nextBillingDate')}</p>
               <p className="font-medium">
-                {subscription.current_period_end 
-                  ? format(new Date(subscription.current_period_end), 'MMM d, yyyy')
-                  : 'N/A'}
+                {subscription.current_period_end
+                  ? format(new Date(subscription.current_period_end), 'MMM d, yyyy', locale === 'ar' ? { locale: ar } : undefined)
+                  : t('notAvailable')}
               </p>
             </div>
             <div>
               <p className="text-xs text-gray-500">{t('amount')}</p>
               <p className="font-medium">
-                {subscription.price_details 
+                {subscription.price_details
                   ? paymentService.formatPrice(
                       Number(subscription.price_details.unit_amount),
                       subscription.price_details.currency
                     )
-                  : subscription.stripe_price 
+                  : subscription.stripe_price
                   ? paymentService.formatPrice(
                       Number(subscription.stripe_price.unit_amount),
                       subscription.stripe_price.currency
                     )
-                  : 'N/A'}
+                  : t('notAvailable')}
                 {subscription.price_details?.interval && `/${subscription.price_details.interval.toLowerCase()}`}
                 {!subscription.price_details && subscription.stripe_price?.interval && `/${subscription.stripe_price.interval.toLowerCase()}`}
               </p>
@@ -499,7 +510,7 @@ export function BillingTab() {
                 paginatedInvoices.map((invoice) => (
                   <tr key={invoice.id} className="odd:bg-white even:bg-gray-50 border-t">
                     <td className="px-4 py-3 text-gray-900 whitespace-nowrap">
-                      {format(new Date(invoice.created_at), 'MMM d, yyyy')}
+                      {format(new Date(invoice.created_at), 'MMM d, yyyy', locale === 'ar' ? { locale: ar } : undefined)}
                     </td>
                     <td className="px-4 py-3 text-gray-900">{invoice.number}</td>
                     <td className="px-4 py-3 font-medium">

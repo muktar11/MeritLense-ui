@@ -231,7 +231,7 @@ export default function CandidateComparison() {
   if (authLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">Loading...</div>
+        <div className="text-center">{t("loading")}</div>
       </div>
     );
   }
