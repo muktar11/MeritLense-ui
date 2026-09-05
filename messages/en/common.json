@@ -1869,6 +1869,66 @@
             "removeFailed": "Failed to remove profile picture. Please try again."
           },
 
+          "jobRoles": {
+            "SE": "Software Engineer",
+            "DS": "Data Scientist",
+            "PM": "Product Manager",
+            "MK": "Marketing",
+            "SL": "Sales",
+            "HR": "Human Resources",
+            "FN": "Finance",
+            "OT": "Other"
+          },
+
+          "nationalities": {
+            "US": "United States",
+            "GB": "United Kingdom",
+            "CA": "Canada",
+            "AU": "Australia",
+            "DE": "Germany",
+            "FR": "France",
+            "ES": "Spain",
+            "IT": "Italy",
+            "AE": "UAE",
+            "SA": "Saudi Arabia",
+            "EG": "Egypt",
+            "IN": "India",
+            "CN": "China",
+            "JP": "Japan",
+            "BR": "Brazil",
+            "MX": "Mexico",
+            "OT": "Other"
+          },
+
+          "languages": {
+            "EN": "English",
+            "AR": "Arabic",
+            "AM": "Amharic",
+            "OM": "Afaan Oromo",
+            "FIL": "Filipino",
+            "ZH": "Chinese",
+            "HI": "Hindi",
+            "UR": "Urdu",
+            "BN": "Bengali",
+            "TA": "Tamil",
+            "TE": "Telugu",
+            "ML": "Malayalam",
+            "PA": "Punjabi",
+            "SI": "Sinhala",
+            "ID": "Indonesian",
+            "NE": "Nepali",
+            "SW": "Swahili",
+            "VI": "Vietnamese",
+            "KM": "Khmer",
+            "MY": "Burmese",
+            "TI": "Tigrinya",
+            "SO": "Somali",
+            "AA": "Afar",
+            "AK": "Twi (Akan)",
+            "LG": "Luganda",
+            "MG": "Malagasy"
+          },
+
           "saveButton": "Save Changes"
         },
 

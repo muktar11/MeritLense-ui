@@ -296,7 +296,7 @@ export default function EditProfileTab() {
             <option value="">{t("selectJobRolePlaceholder")}</option>
             {JOB_ROLES.map((role) => (
               <option key={role.key} value={role.key}>
-                {role.label}
+                {t(`jobRoles.${role.key}`)}
               </option>
             ))}
           </select>
@@ -317,7 +317,7 @@ export default function EditProfileTab() {
             <option value="">{t("selectNationalityPlaceholder")}</option>
             {NATIONALITIES.map((nation) => (
               <option key={nation.key} value={nation.key}>
-                {nation.label}
+                {t(`nationalities.${nation.key}`)}
               </option>
             ))}
           </select>
@@ -337,7 +337,7 @@ export default function EditProfileTab() {
           >
             {LANGUAGES.map((lang) => (
               <option key={lang.key} value={lang.key}>
-                {lang.label}
+                {t(`languages.${lang.key}`)}
               </option>
             ))}
           </select>
