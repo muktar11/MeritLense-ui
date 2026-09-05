@@ -35,7 +35,7 @@ export default function CandidatesTable({
   userRole = 'B2C',
   currentUserId
 }: CandidatesTableProps) {
-  const t = useTranslations("dashboard.indivisual.candidates");
+  const t = useTranslations("dashboard.candidates.table");
   const [searchTerm, setSearchTerm] = useState("");
   const [filterRole, setFilterRole] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -94,16 +94,8 @@ export default function CandidatesTable({
   };
 
   const getJobRoleLabel = (role: string) => {
-    const roles: Record<string, string> = {
-      'HK': 'Housekeeper',
-      'EC': 'Elder Companion',
-      'NA': 'Nanny',
-      'MW': 'Maintenance Worker',
-      'DR': 'Driver',
-      'KA': 'Kitchen Assistant',
-      'OT': 'Other',
-    };
-    return roles[role] || role;
+    const validRoles = ['HK', 'EC', 'NA', 'MW', 'DR', 'KA', 'OT'];
+    return validRoles.includes(role) ? t(`candidateRoles.${role}`) : role;
   };
 
   const uniqueRoles = [...new Set(candidates.map(c => c.job_role))];
@@ -117,7 +109,7 @@ export default function CandidatesTable({
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
               <input
                 type="text"
-                placeholder="Search candidates..."
+                placeholder={t("searchPlaceholder")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
@@ -128,7 +120,7 @@ export default function CandidatesTable({
               onChange={(e) => setFilterRole(e.target.value)}
               className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             >
-              <option value="">All Roles</option>
+              <option value="">{t("filters.allRoles")}</option>
               {uniqueRoles.map(role => (
                 <option key={role} value={role}>{getJobRoleLabel(role)}</option>
               ))}
@@ -139,7 +131,7 @@ export default function CandidatesTable({
             className="w-full sm:w-auto px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 flex items-center justify-center gap-2"
           >
             <Plus size={18} />
-            Add Candidate
+            {t("addCandidate")}
           </button>
         </div>
       </div>
@@ -149,19 +141,19 @@ export default function CandidatesTable({
           <thead className="bg-gray-50">
             <tr>
               <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Candidate
+                {t("headers.candidate")}
               </th>
               <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Role
+                {t("headers.jobRole")}
               </th>
               <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
+                {t("headers.status")}
               </th>
               <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Skills
+                {t("headers.skills")}
               </th>
               <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
+                {t("headers.actions")}
               </th>
             </tr>
           </thead>
@@ -169,13 +161,13 @@ export default function CandidatesTable({
             {loading ? (
               <tr>
                 <td colSpan={5} className="px-4 py-6 text-center text-gray-500">
-                  Loading candidates...
+                  {t("loading")}
                 </td>
               </tr>
             ) : filteredCandidates.length === 0 ? (
               <tr>
                 <td colSpan={5} className="px-4 py-6 text-center text-gray-500">
-                  No candidates found
+                  {t("noCandidates")}
                 </td>
               </tr>
             ) : (
@@ -202,8 +194,8 @@ export default function CandidatesTable({
                         <p className="text-sm font-medium text-gray-900 truncate">
                           {candidate.full_name}
                         </p>
-                        <p className="text-xs text-gray-500 truncate" title={`${candidate.email} - ID: ${candidate.passport_id}`}>
-                          {candidate.email} · ID: {candidate.passport_id}
+                        <p className="text-xs text-gray-500 truncate" title={`${candidate.email} - ${t("idLabel", { id: candidate.passport_id })}`}>
+                          {candidate.email} · {t("idLabel", { id: candidate.passport_id })}
                         </p>
                       </div>
                     </div>
@@ -215,7 +207,7 @@ export default function CandidatesTable({
                   </td>
                   <td className="px-4 py-2 whitespace-nowrap">
                     <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${getStatusColor(candidate.status)}`}>
-                      {candidate.status}
+                      {t(`status.${candidate.status.toLowerCase()}`)}
                     </span>
                   </td>
                   <td className="px-4 py-2">
@@ -240,7 +232,7 @@ export default function CandidatesTable({
                       <button
                         onClick={() => onView(candidate)}
                         className="p-1 text-gray-400 hover:text-purple-500 rounded-full hover:bg-purple-50"
-                        title="View"
+                        title={t("actions.view")}
                       >
                         <Eye size={16} />
                       </button>
@@ -249,7 +241,7 @@ export default function CandidatesTable({
                         <button
                           onClick={() => onEdit(candidate)}
                           className="p-1 text-gray-400 hover:text-blue-500 rounded-full hover:bg-blue-50"
-                          title="Edit"
+                          title={t("actions.edit")}
                         >
                           <Edit size={16} />
                         </button>
@@ -259,7 +251,7 @@ export default function CandidatesTable({
                         <button
                           onClick={() => onShare(candidate)}
                           className="p-1 text-gray-400 hover:text-green-500 rounded-full hover:bg-green-50"
-                          title="Share"
+                          title={t("actions.share")}
                         >
                           <Share2 size={16} />
                         </button>
@@ -278,7 +270,7 @@ export default function CandidatesTable({
         totalItems={filteredCandidates.length}
         pageSize={PAGE_SIZE}
         onPageChange={setCurrentPage}
-        itemLabel="candidates"
+        itemLabel={t("itemLabelPlural")}
       />
     </div>
   );
