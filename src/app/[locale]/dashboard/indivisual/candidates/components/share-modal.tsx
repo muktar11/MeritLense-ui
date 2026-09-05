@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { X, Users, Check, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { authClient } from "../../../../../api/auth/client";
 import candidateService from "../../../../../api/candidates/endpoints";
 import { Candidate } from "../../../../../api/candidates/types";
@@ -26,8 +27,9 @@ export default function ShareModal({
   onClose, 
   candidate, 
   onSuccess,
-  userRole 
+  userRole
 }: ShareModalProps) {
+  const t = useTranslations("dashboard.candidates.shareModal");
   const [loading, setLoading] = useState(false);
   const [fetchingMembers, setFetchingMembers] = useState(false);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
@@ -50,7 +52,7 @@ export default function ShareModal({
       setTeamMembers(response.data);
     } catch (err: any) {
       console.error('Failed to fetch team members:', err);
-      setError(err.response?.data?.message || 'Failed to fetch team members');
+      setError(err.response?.data?.message || t('fetchFailed'));
     } finally {
       setFetchingMembers(false);
     }
@@ -65,7 +67,7 @@ export default function ShareModal({
       onSuccess?.();
       onClose();
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to share candidate');
+      setError(err.response?.data?.message || t('shareFailed'));
     } finally {
       setLoading(false);
     }
@@ -78,7 +80,7 @@ export default function ShareModal({
       setSelectedUsers(prev => prev.filter(id => id !== userId));
       onSuccess?.();
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to remove sharing');
+      setError(err.response?.data?.message || t('unshareFailed'));
     } finally {
       setLoading(false);
     }
@@ -102,12 +104,12 @@ export default function ShareModal({
           <div className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" onClick={onClose} />
           <div className="inline-block w-full max-w-md my-8 overflow-hidden text-left align-middle transition-all transform bg-white rounded-lg shadow-xl">
             <div className="p-6 text-center">
-              <p className="text-red-600">You don't have permission to share candidates.</p>
+              <p className="text-red-600">{t('noPermission')}</p>
               <button
                 onClick={onClose}
                 className="mt-4 px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600"
               >
-                Close
+                {t('close')}
               </button>
             </div>
           </div>
@@ -126,7 +128,7 @@ export default function ShareModal({
           <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
               <Users size={20} />
-              Share Candidate
+              {t('title')}
             </h3>
             <button
               onClick={onClose}
@@ -139,7 +141,7 @@ export default function ShareModal({
           {/* Content */}
           <div className="px-6 py-4">
             <p className="text-sm text-gray-600 mb-4">
-              Share <span className="font-medium">{candidate.full_name}</span> with team members
+              {t('shareWithPrefix')} <span className="font-medium">{candidate.full_name}</span> {t('shareWithSuffix')}
             </p>
 
             {error && (
@@ -156,7 +158,7 @@ export default function ShareModal({
                 </div>
               ) : teamMembers.length === 0 ? (
                 <p className="text-center text-gray-500 py-4">
-                  No team members available
+                  {t('noTeamMembers')}
                 </p>
               ) : (
                 teamMembers.map(member => (
@@ -176,7 +178,7 @@ export default function ShareModal({
                             disabled={loading}
                             className="px-3 py-1 text-xs text-red-600 hover:text-red-700 font-medium disabled:opacity-50"
                           >
-                            Remove
+                            {t('remove')}
                           </button>
                           <Check size={18} className="text-green-500" />
                         </>
@@ -186,7 +188,7 @@ export default function ShareModal({
                           disabled={loading}
                           className="px-3 py-1 text-xs text-purple-600 hover:text-purple-700 font-medium border border-purple-200 rounded disabled:opacity-50"
                         >
-                          Add
+                          {t('add')}
                         </button>
                       )}
                     </div>
@@ -199,7 +201,7 @@ export default function ShareModal({
             {selectedUsers.length > 0 && (
               <div className="mt-4 pt-4 border-t border-gray-200">
                 <p className="text-sm font-medium text-gray-700 mb-2">
-                  Currently shared with:
+                  {t('currentlySharedWith')}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {selectedUsers.map(userId => {
@@ -231,7 +233,7 @@ export default function ShareModal({
               onClick={onClose}
               className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
             >
-              Cancel
+              {t('cancel')}
             </button>
             <button
               onClick={handleShare}
@@ -241,10 +243,10 @@ export default function ShareModal({
               {loading ? (
                 <>
                   <Loader2 size={16} className="animate-spin" />
-                  Saving...
+                  {t('saving')}
                 </>
               ) : (
-                'Save Changes'
+                t('saveChanges')
               )}
             </button>
           </div>

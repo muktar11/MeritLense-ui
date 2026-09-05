@@ -44,6 +44,8 @@ export function CandidateModal({
   userRole = 'B2C',
   currentUserId}: CandidateModalProps) {
   const t = useTranslations("dashboard.candidates.modal")
+  const tRoles = useTranslations("dashboard.candidates.table.candidateRoles")
+  const tLanguages = useTranslations("dashboard.indivisual.settings.edit-profile-tab.languages")
   
   const [formData, setFormData] = useState<CandidateFormData>({
     first_name: "",
@@ -156,7 +158,7 @@ export function CandidateModal({
             setPreviewDocument(null)
             setErrors(prev => ({
               ...prev,
-              passport_document: `This passport doesn't appear to match the uploaded photo (${result.score!.toFixed(0)}% match). Please upload a different passport document.`,
+              passport_document: t("errors.passportMismatch", { score: result.score!.toFixed(0) }),
             }))
             setTouchedFields(prev => ({ ...prev, passport_document: true }))
           } else {
@@ -218,49 +220,49 @@ export function CandidateModal({
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {}
 
-    if (!formData.first_name?.trim()) newErrors.first_name = "First name is required"
-    if (!formData.last_name?.trim()) newErrors.last_name = "Last name is required"
-    
+    if (!formData.first_name?.trim()) newErrors.first_name = t("errors.firstNameRequired")
+    if (!formData.last_name?.trim()) newErrors.last_name = t("errors.lastNameRequired")
+
     if (!formData.email?.trim()) {
-      newErrors.email = "Email is required"
+      newErrors.email = t("errors.emailRequired")
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Invalid email format"
+      newErrors.email = t("errors.emailInvalid")
     }
 
-    if (!formData.passport_id?.trim()) newErrors.passport_id = "Passport ID is required"
-    if (!formData.job_role) newErrors.job_role = "Job role is required"
-    
+    if (!formData.passport_id?.trim()) newErrors.passport_id = t("errors.passportRequired")
+    if (!formData.job_role) newErrors.job_role = t("errors.jobRoleRequired")
+
     if (!formData.core_skills?.trim()) {
-      newErrors.core_skills = "Skills are required"
+      newErrors.core_skills = t("errors.skillsRequired")
     } else {
       const skills = formData.core_skills.split(',').map(s => s.trim()).filter(s => s)
       if (skills.length === 0) {
-        newErrors.core_skills = "At least one skill is required"
+        newErrors.core_skills = t("errors.skillsMin")
       } else if (skills.length > 20) {
-        newErrors.core_skills = "Maximum 20 skills allowed"
+        newErrors.core_skills = t("errors.skillsMax")
       }
     }
 
-    if (!formData.preferred_language) newErrors.preferred_language = "Preferred language is required"
+    if (!formData.preferred_language) newErrors.preferred_language = t("errors.languageRequired")
 
     if (mode === 'create' && !formData.passport_document && !candidate?.passport_document) {
-      newErrors.passport_document = "Passport document is required"
+      newErrors.passport_document = t("errors.documentRequired")
     } else if (formData.passport_document && photoQualityChecking.passport_document) {
-      newErrors.passport_document = "Still checking photo quality — please wait a moment and try again."
+      newErrors.passport_document = t("errors.photoQualityChecking")
     } else if (formData.passport_document && photoQuality.passport_document && passportQualityMessage(photoQuality.passport_document.status, 'document')) {
       newErrors.passport_document = passportQualityMessage(photoQuality.passport_document.status, 'document')!
     }
 
     if (mode === 'create' && !formData.profile_photo && !candidate?.profile_photo) {
-      newErrors.profile_photo = "A photo of the candidate is required for identity verification"
+      newErrors.profile_photo = t("errors.photoRequired")
     } else if (formData.profile_photo && photoQualityChecking.profile_photo) {
-      newErrors.profile_photo = "Still checking photo quality — please wait a moment and try again."
+      newErrors.profile_photo = t("errors.photoQualityChecking")
     } else if (formData.profile_photo && photoQuality.profile_photo && passportQualityMessage(photoQuality.profile_photo.status, 'photo')) {
       newErrors.profile_photo = passportQualityMessage(photoQuality.profile_photo.status, 'photo')!
     }
 
     if (formData.passport_document && formData.profile_photo && passportMatchChecking) {
-      newErrors.passport_document = "Still checking this passport against your uploaded photo — please wait a moment and try again."
+      newErrors.passport_document = t("errors.passportMatchChecking")
     }
 
     setErrors(newErrors)
@@ -302,7 +304,7 @@ export function CandidateModal({
         })
         setErrors(backendErrors)
       } else {
-        setErrors({ form: 'Failed to save candidate. Please try again.' })
+        setErrors({ form: t("errors.saveFailed") })
       }
     } finally {
       setIsLoading(false)
@@ -310,7 +312,7 @@ export function CandidateModal({
   }
 
   const handleDelete = async () => {
-    if (!candidate || !confirm('Are you sure you want to delete this candidate?')) return
+    if (!candidate || !confirm(t("errors.confirmDelete"))) return
 
     setDeleteLoading(true)
     try {
@@ -321,7 +323,7 @@ export function CandidateModal({
       onClose()
     } catch (error) {
       console.error('Failed to delete candidate:', error)
-      setErrors({ form: 'Failed to delete candidate. Please try again.' })
+      setErrors({ form: t("errors.deleteFailed") })
     } finally {
       setDeleteLoading(false)
     }
@@ -376,9 +378,9 @@ export function CandidateModal({
               <Dialog.Panel className="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                 <div className="flex justify-between items-center mb-4">
                   <Dialog.Title as="h3" className="text-lg font-semibold text-gray-900">
-                    {mode === 'create' && "Add New Candidate"}
-                    {mode === 'edit' && "Edit Candidate"}
-                    {mode === 'view' && "Candidate Details"}
+                    {mode === 'create' && t("title.add")}
+                    {mode === 'edit' && t("title.edit")}
+                    {mode === 'view' && t("title.view")}
                   </Dialog.Title>
                   <button
                     onClick={onClose}
@@ -397,7 +399,7 @@ export function CandidateModal({
                 <form onSubmit={handleSubmit} className="space-y-6 max-h-[70vh] overflow-y-auto px-1">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Photo {mode === 'create' && '*'}
+                      {t("photo.label")} {mode === 'create' && '*'}
                     </label>
                     {isViewMode ? (
                       candidate?.profile_photo && (
@@ -431,12 +433,12 @@ export function CandidateModal({
                             {formData.profile_photo ? (
                               <span className="text-sm text-green-600">{formData.profile_photo.name}</span>
                             ) : candidate?.profile_photo ? (
-                              <span className="text-sm text-purple-600">Replace Photo</span>
+                              <span className="text-sm text-purple-600">{t("photo.replace")}</span>
                             ) : (
-                              <span className="text-sm text-gray-600">Click to upload a photo of the candidate</span>
+                              <span className="text-sm text-gray-600">{t("photo.uploadHint")}</span>
                             )}
                             <p className="text-xs text-gray-500 mt-0.5">
-                              JPG, JPEG or PNG (Max 5MB) — used to verify identity at interview time
+                              {t("photo.fileHint")}
                             </p>
                           </div>
                           <input
@@ -449,7 +451,7 @@ export function CandidateModal({
                         {photoQualityChecking.profile_photo && (
                           <p className="mt-1 text-xs text-gray-500 flex items-center gap-1">
                             <Loader2 size={12} className="animate-spin" />
-                            Checking photo quality...
+                            {t("photo.checkingQuality")}
                           </p>
                         )}
                         {!photoQualityChecking.profile_photo && profilePhotoQualityIssue && (
@@ -465,7 +467,7 @@ export function CandidateModal({
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        First Name *
+                        {t("fields.firstName")} *
                       </label>
                       {isViewMode ? (
                         <p className="text-gray-900 p-2 border rounded-lg bg-gray-50">
@@ -491,7 +493,7 @@ export function CandidateModal({
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Last Name *
+                        {t("fields.lastName")} *
                       </label>
                       {isViewMode ? (
                         <p className="text-gray-900 p-2 border rounded-lg bg-gray-50">
@@ -517,7 +519,7 @@ export function CandidateModal({
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Email *
+                        {t("fields.email")} *
                       </label>
                       {isViewMode ? (
                         <p className="text-gray-900 p-2 border rounded-lg bg-gray-50">
@@ -543,7 +545,7 @@ export function CandidateModal({
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Passport ID *
+                        {t("fields.passportId")} *
                       </label>
                       {isViewMode ? (
                         <p className="text-gray-900 p-2 border rounded-lg bg-gray-50">
@@ -569,11 +571,11 @@ export function CandidateModal({
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Job Role *
+                        {t("fields.jobRole")} *
                       </label>
                       {isViewMode ? (
                         <p className="text-gray-900 p-2 border rounded-lg bg-gray-50">
-                          {JOB_ROLES.find(r => r.key === formData.job_role)?.label || formData.job_role}
+                          {formData.job_role ? tRoles(formData.job_role) : formData.job_role}
                         </p>
                       ) : (
                         <select
@@ -586,10 +588,10 @@ export function CandidateModal({
                             touchedFields.job_role && errors.job_role ? 'border-red-500' : 'border-gray-300'
                           }`}
                         >
-                          <option value="">Select Role</option>
+                          <option value="">{t("fields.selectRole")}</option>
                           {JOB_ROLES.map(role => (
                             <option key={role.key} value={role.key}>
-                              {role.label}
+                              {tRoles(role.key)}
                             </option>
                           ))}
                         </select>
@@ -601,11 +603,11 @@ export function CandidateModal({
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Preferred Language *
+                        {t("fields.preferredLanguage")} *
                       </label>
                       {isViewMode ? (
                         <p className="text-gray-900 p-2 border rounded-lg bg-gray-50">
-                          {LANGUAGES.find(l => l.key === formData.preferred_language)?.label || formData.preferred_language}
+                          {formData.preferred_language ? tLanguages(formData.preferred_language) : formData.preferred_language}
                         </p>
                       ) : (
                         <select
@@ -620,7 +622,7 @@ export function CandidateModal({
                         >
                           {LANGUAGES.map(lang => (
                             <option key={lang.key} value={lang.key}>
-                              {lang.label}
+                              {tLanguages(lang.key)}
                             </option>
                           ))}
                         </select>
@@ -633,7 +635,7 @@ export function CandidateModal({
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Core Skills *
+                      {t("fields.coreSkills")} *
                     </label>
                     {isViewMode ? (
                       <div className="flex flex-wrap gap-2 p-2 border rounded-lg bg-gray-50">
@@ -655,13 +657,13 @@ export function CandidateModal({
                           onBlur={() => handleBlur('core_skills')}
                           disabled={!canEdit}
                           rows={3}
-                          placeholder="e.g., Cleaning, Cooking, First Aid"
+                          placeholder={t("fields.skillsPlaceholder")}
                           className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${
                             touchedFields.core_skills && errors.core_skills ? 'border-red-500' : 'border-gray-300'
                           }`}
                         />
                         <p className="mt-1 text-xs text-gray-500">
-                          Enter skills separated by commas (max 20 skills)
+                          {t("fields.skillsHint")}
                         </p>
                       </>
                     )}
@@ -672,7 +674,7 @@ export function CandidateModal({
 
                   {!isViewMode && skillsList.length > 0 && (
                     <div>
-                      <p className="text-sm font-medium text-gray-700 mb-2">Skills Preview</p>
+                      <p className="text-sm font-medium text-gray-700 mb-2">{t("skillsPreviewLabel")}</p>
                       <div className="flex flex-wrap gap-2">
                         {skillsList.map((skill, idx) => (
                           <span
@@ -689,7 +691,7 @@ export function CandidateModal({
                   <div className="grid grid-cols-1 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Passport Document {mode === 'create' && '*'}
+                        {t("fields.passportDocument")} {mode === 'create' && '*'}
                       </label>
                       {isViewMode ? (
                         candidate?.passport_document && (
@@ -700,7 +702,7 @@ export function CandidateModal({
                             className="flex items-center gap-2 p-2 border rounded-lg bg-gray-50 text-purple-600 hover:text-purple-700"
                           >
                             <FileText size={16} />
-                            <span className="text-sm">View Document</span>
+                            <span className="text-sm">{t("viewDocument")}</span>
                           </a>
                         )
                       ) : (
@@ -712,9 +714,9 @@ export function CandidateModal({
                             {formData.passport_document ? (
                               <span className="text-sm text-green-600">{formData.passport_document.name}</span>
                             ) : candidate?.passport_document ? (
-                              <span className="text-sm text-purple-600">Replace Document</span>
+                              <span className="text-sm text-purple-600">{t("replaceDocument")}</span>
                             ) : (
-                              <span className="text-sm text-gray-600">Click to upload passport document</span>
+                              <span className="text-sm text-gray-600">{t("uploadDocument")}</span>
                             )}
                             <input
                               type="file"
@@ -723,28 +725,28 @@ export function CandidateModal({
                               className="hidden"
                             />
                           </label>
-                          <p className="mt-1 text-xs text-gray-500">PDF, JPG, JPEG, or PNG (Max 10MB)</p>
+                          <p className="mt-1 text-xs text-gray-500">{t("photo.documentFileHint")}</p>
                           {touchedFields.passport_document && errors.passport_document && !passportQualityIssue && (
                             <p className="mt-1 text-xs text-red-600">{errors.passport_document}</p>
                           )}
                           {photoQualityChecking.passport_document && (
                             <p className="mt-1 text-xs text-gray-500 flex items-center gap-1">
                               <Loader2 size={12} className="animate-spin" />
-                              Checking photo quality...
+                              {t("photo.checkingQuality")}
                             </p>
                           )}
                           {!photoQualityChecking.passport_document && passportQualityIssue && (
                             <p className="mt-1 text-xs text-red-600">{passportQualityIssue}</p>
                           )}
                           <div className="mt-2 rounded-lg bg-blue-50 border border-blue-100 p-2">
-                            <p className="text-xs font-medium text-blue-800 mb-1">For a photo that verifies successfully:</p>
+                            <p className="text-xs font-medium text-blue-800 mb-1">{t("photo.guidelinesTitle")}</p>
                             <ul className="text-xs text-blue-700 list-disc list-inside space-y-0.5">
                               {PASSPORT_PHOTO_GUIDELINES.map((tip) => (
                                 <li key={tip}>{tip}</li>
                               ))}
                             </ul>
                             <p className="text-xs text-blue-700 mt-1">
-                              Tip: upload a JPG or PNG (not a PDF) so we can check this automatically before you submit.
+                              {t("photo.matchTip")}
                             </p>
                           </div>
                           {formData.passport_document && formData.profile_photo && (
@@ -752,24 +754,24 @@ export function CandidateModal({
                               {passportMatchChecking ? (
                                 <p className="text-xs text-gray-500 flex items-center gap-1">
                                   <Loader2 size={12} className="animate-spin" />
-                                  Checking that this passport matches the uploaded photo...
+                                  {t("errors.passportMatchChecking")}
                                 </p>
                               ) : passportMatch?.status === 'ok' && passportMatch.score !== null ? (
                                 <p className="text-xs text-green-600 flex items-center gap-1">
                                   <CheckCircle2 size={12} />
-                                  Matches uploaded photo ({passportMatch.score.toFixed(0)}%)
+                                  {t("photo.matchSuccess", { score: passportMatch.score.toFixed(0) })}
                                 </p>
                               ) : passportMatch?.status === 'no-face-a' ? (
                                 <p className="text-xs text-amber-600">
-                                  We couldn&apos;t detect a face in the passport document to compare against the photo.
+                                  {t("photo.matchNoFaceA")}
                                 </p>
                               ) : passportMatch?.status === 'no-face-b' ? (
                                 <p className="text-xs text-amber-600">
-                                  We couldn&apos;t detect a face in the uploaded photo to compare against the passport.
+                                  {t("photo.matchNoFaceB")}
                                 </p>
                               ) : passportMatch?.status === 'skipped' ? (
                                 <p className="text-xs text-gray-500">
-                                  Automatic match check isn&apos;t available for PDF passports — this will be reviewed manually.
+                                  {t("photo.matchSkipped")}
                                 </p>
                               ) : null}
                             </div>
@@ -781,7 +783,7 @@ export function CandidateModal({
 
                   {previewDocument && (
                     <div className="mt-2">
-                      <p className="text-sm text-gray-600 mb-1">Document Preview:</p>
+                      <p className="text-sm text-gray-600 mb-1">{t("documentPreview")}:</p>
                       {previewDocument.endsWith('.pdf') ? (
                         <iframe
                           src={previewDocument}
@@ -802,10 +804,10 @@ export function CandidateModal({
 
                   {isViewMode && candidate && (
                     <div className="text-xs text-gray-500 space-y-1 pt-2 border-t">
-                      <p>Created by: {candidate.created_by_name}</p>
-                      <p>Created at: {new Date(candidate.created_at).toLocaleString()}</p>
-                      <p>Last updated: {new Date(candidate.updated_at).toLocaleString()}</p>
-                      {candidate.company_name && <p>Company: {candidate.company_name}</p>}
+                      <p>{t("createdBy", { name: candidate.created_by_name })}</p>
+                      <p>{t("createdAt", { date: new Date(candidate.created_at).toLocaleString() })}</p>
+                      <p>{t("updatedAt", { date: new Date(candidate.updated_at).toLocaleString() })}</p>
+                      {candidate.company_name && <p>{t("company", { name: candidate.company_name })}</p>}
                     </div>
                   )}
 
@@ -820,25 +822,25 @@ export function CandidateModal({
                         {deleteLoading ? (
                           <>
                             <Loader2 size={16} className="animate-spin" />
-                            Deleting...
+                            {t("buttons.deleting")}
                           </>
                         ) : (
                           <>
                             <Trash2 size={16} />
-                            Delete
+                            {t("buttons.delete")}
                           </>
                         )}
                       </button>
                     )}
-                    
+
                     <button
                       type="button"
                       onClick={onClose}
                       className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
                     >
-                      {isViewMode ? 'Close' : 'Cancel'}
+                      {isViewMode ? t("buttons.close") : t("buttons.cancel")}
                     </button>
-                    
+
                     {!isViewMode && canEdit && (
                       <button
                         type="submit"
@@ -848,10 +850,10 @@ export function CandidateModal({
                         {isLoading ? (
                           <>
                             <Loader2 size={16} className="animate-spin" />
-                            Saving...
+                            {t("buttons.saving")}
                           </>
                         ) : (
-                          mode === 'create' ? 'Add Candidate' : 'Save Changes'
+                          mode === 'create' ? t("buttons.add") : t("buttons.save")
                         )}
                       </button>
                     )}
