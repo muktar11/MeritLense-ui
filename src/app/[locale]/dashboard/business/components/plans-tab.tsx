@@ -32,7 +32,7 @@ export function PlansTab() {
       fetchPlans();
     } else {
       setLoading(false);
-      setError('Please log in to view plans');
+      setError(t('errors.loginRequired'));
     }
   }, [billingPeriod, isAuthenticated]);
 
@@ -57,7 +57,7 @@ export function PlansTab() {
       setPlans(filteredPlans);
     } catch (error: any) {
       console.error('Failed to fetch plans:', error);
-      setError(error?.detail || error?.message || 'Failed to fetch plans');
+      setError(error?.detail || error?.message || t('errors.fetchPlansFailed'));
     } finally {
       setLoading(false);
     }
@@ -76,7 +76,7 @@ export function PlansTab() {
         handleSubscriptionSuccess();
       } catch (error: any) {
         console.error('Failed to activate free plan:', error);
-        setError(error?.detail || error?.response?.data?.detail || 'Failed to activate plan');
+        setError(error?.detail || error?.response?.data?.detail || t('errors.activateFailed'));
       } finally {
         setProcessing(false);
       }
@@ -88,7 +88,7 @@ export function PlansTab() {
       setClientSecret(setupIntent.client_secret);
     } catch (error: any) {
       console.error('Failed to create setup intent:', error);
-      setError(error?.detail || 'Failed to initialize payment');
+      setError(error?.detail || t('errors.initFailed'));
       setProcessing(false);
     }
   };
@@ -108,8 +108,8 @@ export function PlansTab() {
       <div className="min-h-100 flex items-center justify-center">
         <div className="bg-white rounded-lg p-8 max-w-md text-center">
           <AlertCircle className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Authentication Required</h2>
-          <p className="text-gray-600 mb-4">Please log in to view and select plans.</p>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">{t('authRequired.title')}</h2>
+          <p className="text-gray-600 mb-4">{t('authRequired.message')}</p>
         </div>
       </div>
     );
@@ -128,13 +128,13 @@ export function PlansTab() {
       <div className="min-h-100 flex items-center justify-center">
         <div className="bg-white rounded-lg p-8 max-w-md text-center">
           <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Error Loading Plans</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">{t('errorLoadingPlans.title')}</h2>
           <p className="text-gray-600 mb-4">{error}</p>
           <button
             onClick={fetchPlans}
             className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
           >
-            Try Again
+            {t('errorLoadingPlans.tryAgain')}
           </button>
         </div>
       </div>
@@ -179,7 +179,7 @@ export function PlansTab() {
               onClick={handleBackToPlans}
               className="text-purple-600 hover:text-purple-700 mb-4 inline-flex items-center gap-1"
             >
-              ← Back to plans
+              {t('backToPlans')}
             </button>
             
             <div className="bg-white rounded-lg shadow-lg p-6">
@@ -197,9 +197,9 @@ export function PlansTab() {
             {plans.length === 0 ? (
               <div className="col-span-full text-center py-12">
                 <CreditCard className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500">No plans available for {billingPeriod} billing</p>
+                <p className="text-gray-500">{t('plansGrid.noPlansForBilling', { period: billingPeriod })}</p>
                 <p className="text-sm text-gray-400 mt-2">
-                  Available intervals: MONTH (for monthly), YEAR (for annual)
+                  {t('plansGrid.availableIntervals')}
                 </p>
               </div>
             ) : (
@@ -221,7 +221,7 @@ export function PlansTab() {
                       {paymentService.formatPrice(Number(plan.unit_amount), plan.currency)}
                     </span>
                     <span className="text-gray-500 text-xs sm:text-sm">
-                      /{plan.interval?.toLowerCase()}
+                      {t('plansGrid.perInterval', { interval: plan.interval?.toLowerCase() ?? '' })}
                     </span>
                   </div>
 
@@ -230,46 +230,46 @@ export function PlansTab() {
                       <div className="flex items-start gap-2 sm:gap-3">
                         <Check className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 shrink-0 mt-1" />
                         <span className="text-gray-700 text-xs sm:text-sm">
-                          Up to {plan.feature_limits.candidate_limit} candidates
+                          {t('plansGrid.upToCandidates', { count: plan.feature_limits.candidate_limit })}
                         </span>
                       </div>
                     ) : (
                       <div className="flex items-start gap-2 sm:gap-3">
                         <Check className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 shrink-0 mt-1" />
                         <span className="text-gray-700 text-xs sm:text-sm">
-                          Unlimited candidates
+                          {t('plansGrid.unlimitedCandidates')}
                         </span>
                       </div>
                     )}
-                    
+
                     {plan.feature_limits?.evaluation_limit ? (
                       <div className="flex items-start gap-2 sm:gap-3">
                         <Check className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 shrink-0 mt-1" />
                         <span className="text-gray-700 text-xs sm:text-sm">
-                          {plan.feature_limits.evaluation_limit} evaluations/month
+                          {t('plansGrid.evaluationsPerMonth', { count: plan.feature_limits.evaluation_limit })}
                         </span>
                       </div>
                     ) : (
                       <div className="flex items-start gap-2 sm:gap-3">
                         <Check className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 shrink-0 mt-1" />
                         <span className="text-gray-700 text-xs sm:text-sm">
-                          Unlimited evaluations
+                          {t('plansGrid.unlimitedEvaluations')}
                         </span>
                       </div>
                     )}
-                    
+
                     {plan.feature_limits?.team_member_limit ? (
                       <div className="flex items-start gap-2 sm:gap-3">
                         <Check className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 shrink-0 mt-1" />
                         <span className="text-gray-700 text-xs sm:text-sm">
-                          Up to {plan.feature_limits.team_member_limit} team members
+                          {t('plansGrid.upToTeamMembers', { count: plan.feature_limits.team_member_limit })}
                         </span>
                       </div>
                     ) : (
                       <div className="flex items-start gap-2 sm:gap-3">
                         <Check className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 shrink-0 mt-1" />
                         <span className="text-gray-700 text-xs sm:text-sm">
-                          Unlimited team members
+                          {t('plansGrid.unlimitedTeamMembers')}
                         </span>
                       </div>
                     )}
@@ -280,7 +280,7 @@ export function PlansTab() {
                     disabled={processing}
                     className="w-full bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 sm:py-3 px-3 sm:px-4 rounded-lg transition text-sm sm:text-base disabled:opacity-50"
                   >
-                    {processing && selectedPlan?.id === plan.id ? 'Processing...' : 'Subscribe'}
+                    {processing && selectedPlan?.id === plan.id ? t('plansGrid.processing') : t('plansGrid.subscribeButton')}
                   </button>
                 </div>
               ))
