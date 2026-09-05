@@ -1685,6 +1685,81 @@
     "getStarted": "ابدأ الآن",
     "finish": "إنهاء",
     "priceCustom": "مخصص",
+    "errors": {
+      "loginRequired": "يرجى تسجيل الدخول لعرض الخطط",
+      "fetchPlansFailed": "فشل جلب الخطط",
+      "activateFailed": "فشل تفعيل الخطة",
+      "initFailed": "فشل تهيئة الدفع",
+      "changePlanFailed": "فشل تغيير الخطة. يرجى المحاولة مرة أخرى."
+    },
+    "planChanged": "تم تغيير خطتك إلى {name}.",
+    "backToPlans": "← العودة إلى الخطط",
+    "backToCurrentPlan": "← العودة إلى الخطة الحالية",
+    "authRequired": {
+      "title": "التسجيل مطلوب",
+      "message": "يرجى تسجيل الدخول لعرض الخطط واختيار واحدة.",
+      "loginButton": "الذهاب لتسجيل الدخول"
+    },
+    "errorLoadingPlans": {
+      "title": "خطأ في تحميل الخطط",
+      "tryAgain": "إعادة المحاولة"
+    },
+    "currentPlanSection": {
+      "currentPlanLabel": "الخطة الحالية",
+      "unknownPlan": "غير معروف",
+      "nextBillingDate": "تاريخ الفاتورة القادمة",
+      "daysRemaining": "الأيام المتبقية",
+      "daysValue": "{value} يوم",
+      "notAvailable": "غير متاح",
+      "remainingThisPeriod": "المتبقي لهذه الفترة",
+      "upgradePlanButton": "ترقية الخطة",
+      "manageBillingButton": "إدارة الفوترة"
+    },
+    "plansGrid": {
+      "noPlansForBilling": "لا توجد خطط متاحة للفوترة {period}",
+      "availableIntervals": "الفترات المتاحة: شهري (للفوترة الشهرية)، سنوي (للفوترة السنوية)",
+      "perInterval": "/{interval}",
+      "upToCandidates": "حتى {count} مرشح",
+      "unlimitedCandidates": "مرشحون غير محدودين",
+      "evaluationsPerMonth": "{count} تقييم/شهريًا",
+      "unlimitedEvaluations": "تقييمات غير محدودة",
+      "upToTeamMembers": "حتى {count} أعضاء فريق",
+      "unlimitedTeamMembers": "أعضاء فريق غير محدودين",
+      "processing": "جارٍ المعالجة...",
+      "currentPlanButton": "الخطة الحالية",
+      "upgradeButton": "ترقية",
+      "subscribeButton": "اشتراك"
+    },
+    "oneTimeSection": {
+      "heading": "باقات النقاط لمرة واحدة",
+      "subtitle": "اشترِ نقاطًا لمرة واحدة — بدون اشتراك أو رسوم متكررة.",
+      "pointsLabel": "{count} نقطة",
+      "screeningEvaluation": "تقييم فحص أولي",
+      "fullEvaluation": "تقييم كامل",
+      "oneTimeLabel": "لمرة واحدة",
+      "buyNow": "اشترِ الآن"
+    },
+    "subscriptionForm": {
+      "stripeNotInitialized": "لم يتم تهيئة Stripe",
+      "detailsHeading": "تفاصيل الاشتراك",
+      "planLabel": "الخطة: {name}",
+      "priceLabel": "السعر: {price}/{interval}",
+      "creatingButton": "جارٍ إنشاء الاشتراك...",
+      "subscribeButton": "اشترك الآن",
+      "chargeNote": "سيتم خصم {price}/{interval}",
+      "createFailedError": "فشل إنشاء الاشتراك"
+    },
+    "oneTimeForm": {
+      "stripeNotInitialized": "لم يتم تهيئة Stripe",
+      "detailsHeading": "تفاصيل الباقة",
+      "packageLabel": "الباقة: {name}",
+      "priceLabel": "السعر: {price} (لمرة واحدة)",
+      "pointsLabel": "النقاط: {count}",
+      "processingButton": "جارٍ معالجة الدفع...",
+      "payNowButton": "ادفع الآن",
+      "chargeNote": "سيتم خصم {price} مرة واحدة. لا تتجدد هذه الباقة تلقائيًا.",
+      "paymentFailedError": "فشل إتمام الدفع"
+    },
     "plans": {
       "basic": {
         "name": "أساسي",
