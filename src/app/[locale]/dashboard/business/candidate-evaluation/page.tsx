@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { useAuth } from "@/app/hooks/useAuth";
 import DashboardHeader from "../components/dashboard-header";
 import { Search, Filter } from "lucide-react";
@@ -18,7 +19,25 @@ import { EVALUATION_TYPES, EVALUATION_STATUS } from "@/app/api/evaluations/types
 
 type ModalMode = 'view' | 'create' | 'edit' | 'reschedule';
 
+const TYPE_KEYS: Record<string, string> = {
+  INTERVIEW: 'interview',
+  TECHNICAL_TEST: 'technicalTest',
+  ASSESSMENT: 'assessment',
+  LANGUAGE_PROFICIENCY: 'languageProficiency',
+};
+
+const STATUS_KEYS: Record<string, string> = {
+  SCHEDULED: 'scheduled',
+  RESCHEDULED: 'rescheduled',
+  IN_PROGRESS: 'inProgress',
+  COMPLETED: 'completed',
+  CANCELLED: 'cancelled',
+};
+
 export default function EvaluationManagement() {
+  const t = useTranslations("dashboard.indivisual.evaluations.page");
+  const tTypes = useTranslations("dashboard.indivisual.evaluationManagement.types");
+  const tStatus = useTranslations("dashboard.indivisual.evaluationManagement.status");
   const { userRole, userId } = useAuth();
 
   const [evaluations, setEvaluations] = useState<EvaluationListItem[]>([]);
@@ -191,7 +210,7 @@ export default function EvaluationManagement() {
   };
 
   const handleCancelEvaluation = async (item: EvaluationListItem) => {
-    if (!confirm('Are you sure you want to cancel this evaluation?')) return;
+    if (!confirm(t('cancelConfirm'))) return;
     try {
       await evaluationService.cancelEvaluation(item.id, { reason: 'Cancelled by user' });
       await fetchData();
@@ -209,7 +228,7 @@ export default function EvaluationManagement() {
           <div className="flex items-center gap-4 flex-wrap">
             <div className="flex items-center gap-2">
               <Filter className="w-4 h-4 text-gray-400" />
-              <span className="text-sm font-medium text-gray-700">Filters:</span>
+              <span className="text-sm font-medium text-gray-700">{t("filtersLabel")}</span>
             </div>
 
             <select
@@ -217,9 +236,9 @@ export default function EvaluationManagement() {
               onChange={(e) => setTypeFilter(e.target.value)}
               className="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
             >
-              <option value="">All Types</option>
+              <option value="">{t("allTypes")}</option>
               {EVALUATION_TYPES.map(type => (
-                <option key={type.value} value={type.value}>{type.label}</option>
+                <option key={type.value} value={type.value}>{tTypes(TYPE_KEYS[type.value])}</option>
               ))}
             </select>
 
@@ -228,9 +247,9 @@ export default function EvaluationManagement() {
               onChange={(e) => setStatusFilter(e.target.value)}
               className="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
             >
-              <option value="">All Status</option>
+              <option value="">{t("allStatus")}</option>
               {EVALUATION_STATUS.map(status => (
-                <option key={status.value} value={status.value}>{status.label}</option>
+                <option key={status.value} value={status.value}>{tStatus(STATUS_KEYS[status.value])}</option>
               ))}
             </select>
 
@@ -238,7 +257,7 @@ export default function EvaluationManagement() {
               <Search className="w-4 h-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search candidates..."
+                placeholder={t("searchPlaceholder")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="bg-gray-100 text-sm text-gray-900 placeholder-gray-500 focus:outline-none"
@@ -249,19 +268,19 @@ export default function EvaluationManagement() {
 
         <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-900">Evaluation Management</h2>
+            <h2 className="text-xl font-bold text-gray-900">{t("heading")}</h2>
             <div className="flex items-center gap-3">
               <button
                 onClick={() => { setSessionCandidate(null); setIsSessionModalOpen(true); }}
                 className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-2"
               >
-                + Start AI Interview
+                {t("startAiInterview")}
               </button>
               <button
                 onClick={handleOpenCreateModal}
                 className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-2"
               >
-                + Schedule Evaluation
+                {t("scheduleEvaluation")}
               </button>
             </div>
           </div>
