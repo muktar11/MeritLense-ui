@@ -1,7 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { useLocale } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
 import { User, Building2, ArrowRight } from "lucide-react"
 
@@ -11,6 +11,7 @@ import ProgressStepper from "./components/auth/progress-stepper"
 export default function RegisterPage() {
   const router = useRouter()
   const locale = useLocale()
+  const t = useTranslations("auth_page.register_selection")
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -19,8 +20,8 @@ export default function RegisterPage() {
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-foreground">Create Account</h1>
-            <p className="text-muted-foreground mt-2">Select your account type to get started</p>
+            <h1 className="text-3xl font-bold text-foreground">{t("header.title")}</h1>
+            <p className="text-muted-foreground mt-2">{t("header.subtitle")}</p>
           </div>
 
           <div className="space-y-4">
@@ -34,11 +35,11 @@ export default function RegisterPage() {
                 </div>
                 <div className="flex-1">
                   <div className="text-lg font-semibold text-foreground flex items-center justify-between">
-                    Individual Employer
+                    {t("card_b2c.title")}
                     <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Register as an individual employer to evaluate candidates
+                    {t("card_b2c.description")}
                   </p>
                 </div>
               </div>
@@ -54,11 +55,11 @@ export default function RegisterPage() {
                 </div>
                 <div className="flex-1">
                   <div className="text-lg font-semibold text-foreground flex items-center justify-between">
-                    Company Employer
+                    {t("card_b2b.title")}
                     <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-secondary transition-colors" />
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Register as a company to manage teams and evaluations
+                    {t("card_b2b.description")}
                   </p>
                 </div>
               </div>
@@ -66,12 +67,12 @@ export default function RegisterPage() {
           </div>
 
           <p className="text-center mt-8 text-sm text-muted-foreground">
-            Already have an account?{" "}
+            {t("link_login.prefix")}{" "}
             <Link
               href={`/${locale}/auth/login`}
               className="text-primary hover:text-primary/80 font-medium"
             >
-              Sign in
+              {t("link_login.link_text")}
             </Link>
           </p>
         </div>

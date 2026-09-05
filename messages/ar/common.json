@@ -276,7 +276,13 @@
       "messages": {
         "no_account_prefix": "ليس لديك حساب بعد؟",
         "sign_up_link": "سجّل الآن",
-        "error_invalid_credentials": "بريد إلكتروني أو كلمة مرور غير صالحة. جرّب حسابات العرض التوضيحي أدناه."
+        "error_invalid_credentials": "بريد إلكتروني أو كلمة مرور غير صالحة. جرّب حسابات العرض التوضيحي أدناه.",
+        "error_fill_all_fields": "يرجى تعبئة جميع الحقول",
+        "social_divider": "أو تابع باستخدام",
+        "terms_prefix": "بتسجيل الدخول، فإنك توافق على",
+        "terms_link": "الشروط",
+        "and_connector": "و",
+        "privacy_link": "سياسة الخصوصية"
       }
     },
     "register_selection": {
