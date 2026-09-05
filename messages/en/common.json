@@ -2768,15 +2768,57 @@
           "hoursMinutesAgo": "{hours}h {minutes}m ago",
           "yesterday": "Yesterday {time}"
         }
+      },
+      "signAgreements": {
+        "loadFailedError": "Failed to load your agreement. Please refresh the page.",
+        "alreadySigned": {
+          "title": "Your agreement is signed",
+          "message": "You already have a valid B2C Agreement on file.",
+          "continueButton": "Continue to Dashboard"
+        },
+        "done": {
+          "title": "Agreement signed",
+          "message": "Your B2C Agreement has been signed and is on file. A copy has been recorded with a full audit trail.",
+          "downloadLink": "Download {type} ({id})",
+          "continueButton": "Continue to Dashboard"
+        },
+        "otp": {
+          "title": "Enter verification code",
+          "sentMessage": "We sent a 6-digit code by email to {email}. It confirms your signature on the B2C Agreement.",
+          "codeExpiresIn": "Code expires in {time}",
+          "codeExpired": "Code expired — request a new one below.",
+          "resendIn": "Resend available in {seconds}s",
+          "noResendsLeft": "No resends left — go back and restart.",
+          "resendCode": "Resend code ({count} left)",
+          "confirmAndSign": "Confirm & Sign",
+          "back": "← Back"
+        },
+        "review": {
+          "title": "Sign Your Agreement",
+          "subtitle": "Review and sign the B2C Agreement to activate your MeritLense dashboard.",
+          "iframeTitle": "B2C Agreement",
+          "nameLabel": "Your full legal name",
+          "namePlaceholder": "As it should appear on the signed document",
+          "reviewPrompt": "Please scroll through the document above before signing.",
+          "sendCodeButton": "Send Verification Code"
+        },
+        "errors": {
+          "nameRequired": "Please enter your full legal name.",
+          "sendCodeFailed": "Failed to send the verification code.",
+          "resendFailed": "Failed to resend the code.",
+          "codeIncomplete": "Please enter the full 6-digit code.",
+          "incorrectCode": "Incorrect or expired code.",
+          "restartingReview": "{message} Restarting from document review."
+        }
       }
 
-  
-        
-      
 
-      
-    
-    
+
+
+
+
+
+
 }
 
 
