@@ -13,6 +13,7 @@ import {
 import TablePagination from "@/components/ui/table-pagination"
 import type { EvaluationListItem, EvaluatorRating } from "@/app/api/evaluations/types"
 import { format } from "date-fns"
+import { ar } from "date-fns/locale"
 
 const PAGE_SIZE = 10
 
@@ -54,6 +55,13 @@ const STATUS_KEYS: Record<string, string> = {
   IN_PROGRESS: 'inProgress',
 }
 
+const TYPE_KEYS: Record<string, string> = {
+  INTERVIEW: 'interview',
+  TECHNICAL_TEST: 'technicalTest',
+  ASSESSMENT: 'assessment',
+  LANGUAGE_PROFICIENCY: 'languageProficiency',
+}
+
 function getInitials(name: string): string {
   return name
     .split(' ')
@@ -93,6 +101,7 @@ export default function EvaluationTable({
 }: EvaluationTableProps) {
   const t = useTranslations("dashboard.indivisual.evaluations.table")
   const tStatus = useTranslations("dashboard.indivisual.evaluationManagement.status")
+  const tType = useTranslations("dashboard.indivisual.evaluationManagement.types")
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const router = useRouter()
@@ -167,14 +176,16 @@ export default function EvaluationTable({
                     <span className="font-medium text-gray-900">{item.candidate_name}</span>
                   </div>
                 </td>
-                <td className="py-4 px-4 text-gray-600">{item.evaluation_type_display}</td>
+                <td className="py-4 px-4 text-gray-600">
+                  {TYPE_KEYS[item.evaluation_type] ? tType(TYPE_KEYS[item.evaluation_type]) : item.evaluation_type_display}
+                </td>
                 <td className="py-4 px-4">
                   <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(item.status)}`}>
                     {STATUS_KEYS[item.status] ? tStatus(STATUS_KEYS[item.status]) : item.status_display}
                   </span>
                 </td>
                 <td className="py-4 px-4 text-gray-600">
-                  {format(new Date(item.scheduled_date), 'MMM d, yyyy h:mm a')}
+                  {format(new Date(item.scheduled_date), 'MMM d, yyyy h:mm a', locale === 'ar' ? { locale: ar } : undefined)}
                 </td>
                 <td className="py-4 px-4 text-gray-600">{t("durationMinutes", { value: item.duration_minutes })}</td>
                 <td className="py-4 px-4 text-gray-600">
