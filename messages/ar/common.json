@@ -1328,9 +1328,166 @@
           "spanish": "الإسبانية"
         }
       }
-     
-  
+
+
 },
+
+"candidates": {
+      "table": {
+        "searchPlaceholder": "البحث عن المرشحين...",
+        "showing": "عرض {start}-{end} من {total}",
+        "filters": {
+          "allStatuses": "جميع الحالات",
+          "allRoles": "جميع الأدوار",
+          "active": "نشط",
+          "hired": "تم التوظيف",
+          "rejected": "مرفوض",
+          "archived": "مؤرشف"
+        },
+        "headers": {
+          "candidate": "المرشح",
+          "contact": "التواصل",
+          "jobRole": "المسمى الوظيفي",
+          "skills": "المهارات",
+          "status": "الحالة",
+          "createdBy": "أنشئ بواسطة",
+          "actions": "الإجراءات"
+        },
+        "roles": {
+          "softwareEngineer": "مهندس برمجيات",
+          "dataScientist": "عالم بيانات",
+          "productManager": "مدير منتج",
+          "marketing": "التسويق",
+          "sales": "المبيعات",
+          "hr": "الموارد البشرية",
+          "finance": "المالية",
+          "other": "أخرى"
+        },
+        "candidateRoles": {
+          "NA": "مربية أطفال",
+          "DR": "سائق",
+          "HK": "مدبرة منزل",
+          "EC": "مرافق كبار السن",
+          "KA": "مساعد مطبخ",
+          "MW": "عامل صيانة",
+          "OT": "أخرى"
+        },
+        "status": {
+          "active": "نشط",
+          "hired": "تم التوظيف",
+          "rejected": "مرفوض",
+          "archived": "مؤرشف"
+        },
+        "actions": {
+          "view": "عرض",
+          "edit": "تعديل",
+          "delete": "حذف",
+          "share": "مشاركة"
+        },
+        "pagination": {
+          "previous": "السابق",
+          "next": "التالي",
+          "page": "صفحة {current} من {total}"
+        },
+        "addCandidate": "إضافة مرشح",
+        "itemLabelPlural": "مرشحين",
+        "idLabel": "المعرف: {id}",
+        "loading": "جارٍ تحميل المرشحين...",
+        "noCandidates": "لم يتم العثور على مرشحين"
+      },
+      "modal": {
+        "title": {
+          "add": "إضافة مرشح جديد",
+          "edit": "تعديل المرشح",
+          "view": "تفاصيل المرشح"
+        },
+        "fields": {
+          "firstName": "الاسم الأول",
+          "lastName": "اسم العائلة",
+          "email": "البريد الإلكتروني",
+          "passportId": "رقم جواز السفر / الهوية",
+          "jobRole": "المسمى الوظيفي",
+          "selectRole": "اختر دورًا",
+          "coreSkills": "المهارات الأساسية",
+          "skillsPlaceholder": "مثال: التنظيف، الطهي، الإسعافات الأولية",
+          "skillsHint": "أدخل المهارات مفصولة بفواصل",
+          "preferredLanguage": "اللغة المفضلة",
+          "passportDocument": "مستند جواز السفر / الهوية",
+          "profilePhoto": "الصورة الشخصية"
+        },
+        "profilePhotoHint": "اختياري. JPG أو PNG حتى 2 ميجابايت",
+        "skillsPreview": "معاينة المهارات",
+        "uploadDocument": "انقر للرفع أو اسحب وأفلت",
+        "replaceDocument": "انقر لاستبدال المستند",
+        "viewDocument": "عرض المستند الحالي",
+        "documentPreview": "معاينة المستند",
+        "buttons": {
+          "cancel": "إلغاء",
+          "close": "إغلاق",
+          "add": "إضافة مرشح",
+          "save": "حفظ التغييرات",
+          "saving": "جارٍ الحفظ...",
+          "delete": "حذف",
+          "deleting": "جارٍ الحذف..."
+        },
+        "errors": {
+          "firstNameRequired": "الاسم الأول مطلوب",
+          "lastNameRequired": "اسم العائلة مطلوب",
+          "emailRequired": "البريد الإلكتروني مطلوب",
+          "emailInvalid": "يرجى إدخال بريد إلكتروني صحيح",
+          "passportRequired": "رقم جواز السفر / الهوية مطلوب",
+          "jobRoleRequired": "يرجى اختيار مسمى وظيفي",
+          "skillsRequired": "المهارات الأساسية مطلوبة",
+          "skillsMin": "مطلوب مهارة واحدة على الأقل",
+          "skillsMax": "الحد الأقصى 20 مهارة",
+          "languageRequired": "يرجى اختيار اللغة المفضلة",
+          "documentRequired": "مستند جواز السفر / الهوية مطلوب",
+          "photoRequired": "صورة للمرشح مطلوبة للتحقق من الهوية",
+          "photoQualityChecking": "جارٍ التحقق من جودة الصورة — يرجى الانتظار والمحاولة مرة أخرى.",
+          "passportMatchChecking": "جارٍ التحقق من تطابق جواز السفر مع الصورة المرفوعة — يرجى الانتظار والمحاولة مرة أخرى.",
+          "passportMismatch": "لا يبدو أن جواز السفر هذا يطابق الصورة المرفوعة ({score}% تطابق). يرجى رفع مستند جواز سفر مختلف.",
+          "saveFailed": "فشل حفظ بيانات المرشح. يرجى المحاولة مرة أخرى.",
+          "deleteFailed": "فشل حذف المرشح. يرجى المحاولة مرة أخرى.",
+          "confirmDelete": "هل أنت متأكد أنك تريد حذف هذا المرشح؟"
+        },
+        "photo": {
+          "label": "الصورة",
+          "replace": "استبدال الصورة",
+          "uploadHint": "انقر لرفع صورة للمرشح",
+          "fileHint": "JPG أو JPEG أو PNG (بحد أقصى 5 ميجابايت) — تُستخدم للتحقق من الهوية عند المقابلة",
+          "checkingQuality": "جارٍ التحقق من جودة الصورة...",
+          "documentFileHint": "PDF أو JPG أو JPEG أو PNG (بحد أقصى 10 ميجابايت)",
+          "guidelinesTitle": "للحصول على صورة يتم التحقق منها بنجاح:",
+          "matchTip": "نصيحة: ارفع صورة بصيغة JPG أو PNG (وليس PDF) حتى نتمكن من التحقق تلقائيًا قبل الإرسال.",
+          "matchSuccess": "تطابق مع الصورة المرفوعة ({score}%)",
+          "matchNoFaceA": "تعذر رصد وجه في مستند جواز السفر للمقارنة مع الصورة.",
+          "matchNoFaceB": "تعذر رصد وجه في الصورة المرفوعة للمقارنة مع جواز السفر.",
+          "matchSkipped": "التحقق التلقائي من التطابق غير متاح لملفات PDF — سيتم مراجعته يدويًا."
+        },
+        "skillsPreviewLabel": "معاينة المهارات",
+        "createdBy": "أنشئ بواسطة: {name}",
+        "createdAt": "تاريخ الإنشاء: {date}",
+        "updatedAt": "آخر تحديث: {date}",
+        "company": "الشركة: {name}"
+      },
+      "shareModal": {
+        "noPermission": "ليس لديك صلاحية لمشاركة المرشحين.",
+        "close": "إغلاق",
+        "title": "مشاركة المرشح",
+        "shareWithPrefix": "مشاركة",
+        "shareWithSuffix": "مع أعضاء الفريق",
+        "noTeamMembers": "لا يوجد أعضاء فريق متاحون",
+        "remove": "إزالة",
+        "add": "إضافة",
+        "currentlySharedWith": "مُشارك حاليًا مع:",
+        "cancel": "إلغاء",
+        "saveChanges": "حفظ التغييرات",
+        "saving": "جارٍ الحفظ...",
+        "fetchFailed": "فشل جلب أعضاء الفريق",
+        "shareFailed": "فشلت مشاركة المرشح",
+        "unshareFailed": "فشلت إزالة المشاركة"
+      }
+    },
 
 "indivisual": {
   "scoreTrend": {
@@ -1443,6 +1600,7 @@
        "candidates": {
         "title": "أداة مقارنة المرشحين",
         "subtitle": "قارن ما يصل إلى 4 مرشحين عبر مؤشرات الأداء الرئيسية في الوقت الفعلي.",
+        "addCandidate": "إضافة مرشح جديد",
         "selectCandidates": "اختر المرشحين (الحد الأقصى 4)",
         "selectMetrics": "اختر المؤشرات",
         "radarChartTitle": "مقارنة الأداء (مخطط الرادار)",
@@ -1455,10 +1613,14 @@
         "subjects": {
           "experience": "الخبرة",
           "hardSkill": "المهارة الصعبة",
-          "softSkill": "المهارة الناعمة"
+          "softSkill": "المهارة الناعمة",
+          "communication": "التواصل",
+          "problemSolving": "حل المشكلات"
         },
+        "deleteConfirm": "هل أنت متأكد أنك تريد حذف هذا المرشح؟",
         "exportPNG": "تصدير كصورة PNG",
-        "exportPDF": "تصدير كتقرير PDF"
+        "exportPDF": "تصدير كتقرير PDF",
+        "loading": "جارٍ التحميل..."
       },
 
 "profile": {
