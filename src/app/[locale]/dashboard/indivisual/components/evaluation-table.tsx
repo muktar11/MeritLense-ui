@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { useLocale } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { Copy, Eye, Calendar, XCircle, CheckCircle, Edit, Mic, BarChart3, Video, MoreHorizontal } from "lucide-react"
 import {
   DropdownMenu,
@@ -45,6 +45,15 @@ function getStatusBadgeColor(status: string) {
   }
 }
 
+const STATUS_KEYS: Record<string, string> = {
+  COMPLETED: 'completed',
+  SCHEDULED: 'scheduled',
+  RESCHEDULED: 'rescheduled',
+  CANCELLED: 'cancelled',
+  NO_SHOW: 'noShow',
+  IN_PROGRESS: 'inProgress',
+}
+
 function getInitials(name: string): string {
   return name
     .split(' ')
@@ -82,6 +91,8 @@ export default function EvaluationTable({
   onViewResults,
   userRole = 'B2C'
 }: EvaluationTableProps) {
+  const t = useTranslations("dashboard.indivisual.evaluations.table")
+  const tStatus = useTranslations("dashboard.indivisual.evaluationManagement.status")
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const router = useRouter()
@@ -121,20 +132,20 @@ export default function EvaluationTable({
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-gray-200">
-            <th className="text-left py-3 px-4 font-semibold text-gray-700">Candidate</th>
-            <th className="text-left py-3 px-4 font-semibold text-gray-700">Evaluation Type</th>
-            <th className="text-left py-3 px-4 font-semibold text-gray-700">Status</th>
-            <th className="text-left py-3 px-4 font-semibold text-gray-700">Scheduled Date</th>
-            <th className="text-left py-3 px-4 font-semibold text-gray-700">Duration</th>
-            <th className="text-left py-3 px-4 font-semibold text-gray-700">Score</th>
-            <th className="text-left py-3 px-4 font-semibold text-gray-700">Actions</th>
+            <th className="text-left py-3 px-4 font-semibold text-gray-700">{t("headers.candidate")}</th>
+            <th className="text-left py-3 px-4 font-semibold text-gray-700">{t("headers.evaluationType")}</th>
+            <th className="text-left py-3 px-4 font-semibold text-gray-700">{t("headers.status")}</th>
+            <th className="text-left py-3 px-4 font-semibold text-gray-700">{t("headers.scheduledDate")}</th>
+            <th className="text-left py-3 px-4 font-semibold text-gray-700">{t("headers.duration")}</th>
+            <th className="text-left py-3 px-4 font-semibold text-gray-700">{t("headers.score")}</th>
+            <th className="text-left py-3 px-4 font-semibold text-gray-700">{t("headers.actions")}</th>
           </tr>
         </thead>
         <tbody>
           {data.length === 0 ? (
             <tr>
               <td colSpan={7} className="py-8 text-center text-gray-500">
-                No evaluations found
+                {t("noEvaluations")}
               </td>
             </tr>
           ) : (
@@ -159,19 +170,19 @@ export default function EvaluationTable({
                 <td className="py-4 px-4 text-gray-600">{item.evaluation_type_display}</td>
                 <td className="py-4 px-4">
                   <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(item.status)}`}>
-                    {item.status_display}
+                    {STATUS_KEYS[item.status] ? tStatus(STATUS_KEYS[item.status]) : item.status_display}
                   </span>
                 </td>
                 <td className="py-4 px-4 text-gray-600">
                   {format(new Date(item.scheduled_date), 'MMM d, yyyy h:mm a')}
                 </td>
-                <td className="py-4 px-4 text-gray-600">{item.duration_minutes} min</td>
+                <td className="py-4 px-4 text-gray-600">{t("durationMinutes", { value: item.duration_minutes })}</td>
                 <td className="py-4 px-4 text-gray-600">
                   {item.assessment_mode === 'SCHEDULED_INTERVIEW' ? (
                     item.evaluator_rating ? (
                       <span
                         className="font-semibold text-gray-900"
-                        title="Average of Safety, Hygiene, Communication, Task and Behavioral scores - see View Details for the full breakdown"
+                        title={t("scoreTooltip")}
                       >
                         {averageEvaluatorRating(item.evaluator_rating)}%
                       </span>
@@ -183,7 +194,7 @@ export default function EvaluationTable({
                     <button
                       onClick={() => onViewDetails?.(item)}
                       className="p-1 hover:bg-gray-100 rounded transition-colors text-gray-500 hover:text-purple-600"
-                      title="View Details"
+                      title={t("actions.viewDetails")}
                     >
                       <Eye className="w-4 h-4" />
                     </button>
@@ -192,7 +203,7 @@ export default function EvaluationTable({
                       <button
                         onClick={() => onViewResults(item)}
                         className="p-1 hover:bg-gray-100 rounded transition-colors text-gray-500 hover:text-purple-600"
-                        title="View AI Results"
+                        title={t("actions.viewAiResults")}
                       >
                         <BarChart3 className="w-4 h-4" />
                       </button>
@@ -204,7 +215,7 @@ export default function EvaluationTable({
                         <button
                           onClick={() => handleJoinLiveInterview(item)}
                           className="p-1 hover:bg-gray-100 rounded transition-colors text-gray-500 hover:text-purple-600"
-                          title="Join Interview"
+                          title={t("actions.joinInterview")}
                         >
                           <Video className="w-4 h-4" />
                         </button>
@@ -214,10 +225,10 @@ export default function EvaluationTable({
                       <button
                         onClick={() => handleCopyMeetingLink(item)}
                         className="p-1 hover:bg-gray-100 rounded transition-colors text-gray-500 hover:text-gray-700"
-                        title={item.evaluation_type === 'INTERVIEW' ? "Copy Candidate Access Link" : "Copy Meeting Link"}
+                        title={item.evaluation_type === 'INTERVIEW' ? t("actions.copyAccessLink") : t("actions.copyMeetingLink")}
                       >
                         {copiedId === item.id ? (
-                          <span className="text-xs text-green-600">Copied!</span>
+                          <span className="text-xs text-green-600">{t("actions.copied")}</span>
                         ) : (
                           <Copy className="w-4 h-4" />
                         )}
@@ -229,7 +240,7 @@ export default function EvaluationTable({
                         <DropdownMenuTrigger asChild>
                           <button
                             className="p-1 hover:bg-gray-100 rounded transition-colors text-gray-500 hover:text-gray-700"
-                            title="More actions"
+                            title={t("actions.moreActions")}
                           >
                             <MoreHorizontal className="w-4 h-4" />
                           </button>
@@ -238,19 +249,19 @@ export default function EvaluationTable({
                           {canEditRow && (
                             <DropdownMenuItem onClick={() => onEdit?.(item)}>
                               <Edit className="w-4 h-4 mr-2" />
-                              Edit
+                              {t("actions.edit")}
                             </DropdownMenuItem>
                           )}
                           {canRescheduleRow && (
                             <DropdownMenuItem onClick={() => onReschedule?.(item)}>
                               <Calendar className="w-4 h-4 mr-2" />
-                              Reschedule
+                              {t("actions.reschedule")}
                             </DropdownMenuItem>
                           )}
                           {canCompleteRow && (
                             <DropdownMenuItem onClick={() => onComplete?.(item)}>
                               <CheckCircle className="w-4 h-4 mr-2" />
-                              Mark Complete
+                              {t("actions.markComplete")}
                             </DropdownMenuItem>
                           )}
                           {canStartSessionRow && (
@@ -262,13 +273,13 @@ export default function EvaluationTable({
                             // same candidate.
                             <DropdownMenuItem onClick={() => onStartSession?.(item)}>
                               <Mic className="w-4 h-4 mr-2" />
-                              Start AI Interview
+                              {t("actions.startAiInterview")}
                             </DropdownMenuItem>
                           )}
                           {canCancelRow && (
                             <DropdownMenuItem onClick={() => onCancel?.(item)} variant="destructive">
                               <XCircle className="w-4 h-4 mr-2" />
-                              Cancel
+                              {t("actions.cancel")}
                             </DropdownMenuItem>
                           )}
                         </DropdownMenuContent>
@@ -290,7 +301,7 @@ export default function EvaluationTable({
           totalItems={data.length}
           pageSize={PAGE_SIZE}
           onPageChange={setCurrentPage}
-          itemLabel="evaluations"
+          itemLabel={t("itemLabelPlural")}
         />
       )}
     </div>
