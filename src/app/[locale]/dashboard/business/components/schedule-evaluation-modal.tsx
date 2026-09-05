@@ -3,12 +3,29 @@
 import type React from "react"
 import { useState, useEffect } from "react"
 import { useLocale, useTranslations } from "next-intl"
-import { X, Loader2, Calendar, MapPin, Video, FileText } from "lucide-react"
+import { X, Loader2, Calendar, MapPin, Video, FileText, AlertCircle } from "lucide-react"
 import { EVALUATION_TYPES, EVALUATION_STATUS, type Evaluation, type CreateEvaluationData } from "@/app/api/evaluations/types"
 import { format } from "date-fns"
+import { ar } from "date-fns/locale"
 import { EvaluatorRatingCard } from "@/components/evaluations/EvaluatorRatingCard"
 
 type ModalMode = 'view' | 'create' | 'edit' | 'reschedule';
+
+const TYPE_KEYS: Record<string, string> = {
+  INTERVIEW: 'interview',
+  TECHNICAL_TEST: 'technicalTest',
+  ASSESSMENT: 'assessment',
+  LANGUAGE_PROFICIENCY: 'languageProficiency',
+};
+
+const STATUS_KEYS: Record<string, string> = {
+  SCHEDULED: 'scheduled',
+  RESCHEDULED: 'rescheduled',
+  IN_PROGRESS: 'inProgress',
+  COMPLETED: 'completed',
+  CANCELLED: 'cancelled',
+  NO_SHOW: 'noShow',
+};
 
 // <input type="datetime-local">'s value is wall-clock digits with no
 // timezone - toISOString() converts to UTC first, so for anyone not in
@@ -30,6 +47,8 @@ interface EvaluationModalProps {
   evaluation?: Evaluation | null
   candidates?: Array<{ id: string; full_name: string; email: string; job_role: string }>
   userRole?: string
+  currentUserId?: string
+  errorMessage?: string | null
 }
 
 export default function EvaluationModal({
@@ -40,14 +59,18 @@ export default function EvaluationModal({
   mode,
   evaluation,
   candidates = [],
-  userRole = 'B2C'
+  userRole = 'B2C',
+  currentUserId,
+  errorMessage
 }: EvaluationModalProps) {
-  const t = useTranslations("dashboard.indivisual.evaluations")
+  const t = useTranslations("dashboard.indivisual.evaluations.scheduleModal")
+  const tTypes = useTranslations("dashboard.indivisual.evaluationManagement.types")
+  const tStatus = useTranslations("dashboard.indivisual.evaluationManagement.status")
   const locale = useLocale()
   const evaluatorMeetingLink = evaluation?.session_id
     ? `/${locale}/dashboard/business/live-call?sessionId=${evaluation.session_id}`
     : null
-  
+
   const [formData, setFormData] = useState<CreateEvaluationData>({
     candidate: "",
     evaluation_type: "INTERVIEW",
@@ -105,7 +128,7 @@ export default function EvaluationModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (mode === 'reschedule') {
       await handleReschedule()
     } else {
@@ -116,18 +139,18 @@ export default function EvaluationModal({
   const handleCreateOrEdit = async () => {
     const newErrors: Record<string, string> = {}
     if (!formData.candidate) {
-      newErrors.candidate = "Please select a candidate"
+      newErrors.candidate = t("errors.candidateRequired")
     }
     if (!formData.scheduled_date) {
-      newErrors.scheduled_date = "Please select a date and time"
+      newErrors.scheduled_date = t("errors.dateRequired")
     } else {
       const selectedDate = new Date(formData.scheduled_date)
       if (selectedDate <= new Date() && mode === 'create') {
-        newErrors.scheduled_date = "Scheduled date must be in the future"
+        newErrors.scheduled_date = t("errors.dateMustBeFuture")
       }
     }
     if (!formData.duration_minutes || formData.duration_minutes < 15) {
-      newErrors.duration_minutes = "Duration must be at least 15 minutes"
+      newErrors.duration_minutes = t("errors.durationMin")
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -158,11 +181,11 @@ export default function EvaluationModal({
   const handleReschedule = async () => {
     const newErrors: Record<string, string> = {}
     if (!rescheduleData.new_date) {
-      newErrors.new_date = "Please select a new date and time"
+      newErrors.new_date = t("errors.newDateRequired")
     } else {
       const selectedDate = new Date(rescheduleData.new_date)
       if (selectedDate <= new Date()) {
-        newErrors.new_date = "New date must be in the future"
+        newErrors.new_date = t("errors.newDateMustBeFuture")
       }
     }
 
@@ -206,9 +229,9 @@ export default function EvaluationModal({
   const isEditMode = mode === 'edit'
   const isCreateMode = mode === 'create'
   const isRescheduleMode = mode === 'reschedule'
-  
-  const canEdit = (isCreateMode || isEditMode || isRescheduleMode) && 
-    (userRole !== 'B2B_TEAM_MEMBER' || evaluation?.created_by === evaluation?.id)
+
+  const canEdit = (isCreateMode || isEditMode || isRescheduleMode) &&
+    (userRole !== 'B2B_TEAM_MEMBER' || evaluation?.created_by === currentUserId)
 
   if (!isOpen) return null
 
@@ -217,14 +240,14 @@ export default function EvaluationModal({
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
       <div className="fixed inset-0 bg-black/50 pointer-events-auto" onClick={handleClose} />
-      
+
       <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-2xl pointer-events-auto relative max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6 sticky top-0 bg-white pb-2 border-b">
           <h2 className="text-lg font-bold text-gray-900">
-            {mode === 'create' && 'Schedule New Evaluation'}
-            {mode === 'edit' && 'Edit Evaluation'}
-            {mode === 'view' && 'Evaluation Details'}
-            {mode === 'reschedule' && 'Reschedule Evaluation'}
+            {mode === 'create' && t("titles.create")}
+            {mode === 'edit' && t("titles.edit")}
+            {mode === 'view' && t("titles.view")}
+            {mode === 'reschedule' && t("titles.reschedule")}
           </h2>
           <button
             onClick={handleClose}
@@ -237,22 +260,22 @@ export default function EvaluationModal({
         {isViewMode && evaluation && (
           <div className="space-y-6">
             <div className="bg-gray-50 p-4 rounded-lg">
-              <h3 className="font-medium text-gray-900 mb-3">Candidate Information</h3>
+              <h3 className="font-medium text-gray-900 mb-3">{t("candidateInfo.heading")}</h3>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-xs text-gray-500">Name</p>
+                  <p className="text-xs text-gray-500">{t("candidateInfo.name")}</p>
                   <p className="text-sm font-medium">{evaluation.candidate_first_name} {evaluation.candidate_last_name}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500">Email</p>
+                  <p className="text-xs text-gray-500">{t("candidateInfo.email")}</p>
                   <p className="text-sm">{evaluation.candidate_email}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500">Job Role</p>
+                  <p className="text-xs text-gray-500">{t("candidateInfo.jobRole")}</p>
                   <p className="text-sm">{evaluation.candidate_job_role}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500">Preferred Language</p>
+                  <p className="text-xs text-gray-500">{t("candidateInfo.preferredLanguage")}</p>
                   <p className="text-sm">{evaluation.candidate_preferred_language}</p>
                 </div>
               </div>
@@ -260,11 +283,11 @@ export default function EvaluationModal({
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-xs text-gray-500">Evaluation Type</p>
-                <p className="text-sm font-medium">{evaluation.evaluation_type_display}</p>
+                <p className="text-xs text-gray-500">{t("evaluationType")}</p>
+                <p className="text-sm font-medium">{TYPE_KEYS[evaluation.evaluation_type] ? tTypes(TYPE_KEYS[evaluation.evaluation_type]) : evaluation.evaluation_type_display}</p>
               </div>
               <div>
-                <p className="text-xs text-gray-500">Status</p>
+                <p className="text-xs text-gray-500">{t("status")}</p>
                 <p className="text-sm">
                   <span className={`px-2 py-1 rounded-full text-xs ${
                     evaluation.status === 'COMPLETED' ? 'bg-green-100 text-green-700' :
@@ -272,26 +295,26 @@ export default function EvaluationModal({
                     evaluation.status === 'CANCELLED' ? 'bg-red-100 text-red-700' :
                     'bg-yellow-100 text-yellow-700'
                   }`}>
-                    {evaluation.status_display}
+                    {STATUS_KEYS[evaluation.status] ? tStatus(STATUS_KEYS[evaluation.status]) : evaluation.status_display}
                   </span>
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray-500">Scheduled Date</p>
-                <p className="text-sm">{format(new Date(evaluation.scheduled_date), 'PPP p')}</p>
+                <p className="text-xs text-gray-500">{t("scheduledDate")}</p>
+                <p className="text-sm">{format(new Date(evaluation.scheduled_date), 'PPP p', locale === 'ar' ? { locale: ar } : undefined)}</p>
               </div>
               <div>
-                <p className="text-xs text-gray-500">Duration</p>
-                <p className="text-sm">{evaluation.duration_minutes} minutes</p>
+                <p className="text-xs text-gray-500">{t("duration")}</p>
+                <p className="text-sm">{t("durationMinutesValue", { value: evaluation.duration_minutes })}</p>
               </div>
             </div>
 
             <div className="border-t pt-4">
               <h3 className="font-medium text-gray-900 mb-3">
-                {evaluation.evaluation_type === 'INTERVIEW' ? 'Interview Access' : 'Meeting Details'}
+                {evaluation.evaluation_type === 'INTERVIEW' ? t("interviewAccessHeading") : t("meetingDetailsHeading")}
                 {evaluation.evaluation_type === 'INTERVIEW' && (
                   <span className="ml-2 px-2 py-0.5 rounded-full text-xs bg-indigo-100 text-indigo-700 align-middle">
-                    AI Interview Session
+                    {t("aiInterviewBadge")}
                   </span>
                 )}
               </h3>
@@ -301,11 +324,11 @@ export default function EvaluationModal({
                     <div className="flex items-start gap-2">
                       <Video className="w-4 h-4 text-gray-400 mt-0.5" />
                       <div>
-                        <p className="text-sm text-gray-900">Interviewer Access</p>
+                        <p className="text-sm text-gray-900">{t("interviewerAccess")}</p>
                         <a href={evaluatorMeetingLink} className="text-sm text-purple-600 hover:text-purple-700">
-                          Join Interview
+                          {t("joinInterview")}
                         </a>
-                        <p className="text-xs text-gray-500">For interviewer use only.</p>
+                        <p className="text-xs text-gray-500">{t("interviewerOnlyNote")}</p>
                       </div>
                     </div>
                   )}
@@ -313,23 +336,23 @@ export default function EvaluationModal({
                     <div className="flex items-start gap-2">
                       <Video className="w-4 h-4 text-gray-400 mt-0.5" />
                       <div>
-                        <p className="text-sm text-gray-900">Candidate Access Link</p>
+                        <p className="text-sm text-gray-900">{t("candidateAccessLink")}</p>
                         <a href={evaluation.meeting_link} target="_blank" rel="noopener noreferrer"
                            className="text-sm text-purple-600 hover:text-purple-700">
                           {evaluation.meeting_link}
                         </a>
-                        <p className="text-xs text-gray-500">For candidate use only.</p>
+                        <p className="text-xs text-gray-500">{t("candidateOnlyNote")}</p>
                       </div>
                     </div>
                   )}
                   {evaluation.meeting_id && (
                     <div>
-                      <p className="text-xs text-gray-500">Meeting ID: {evaluation.meeting_id}</p>
+                      <p className="text-xs text-gray-500">{t("meetingId", { value: evaluation.meeting_id })}</p>
                     </div>
                   )}
                   {evaluation.meeting_password && (
                     <div>
-                      <p className="text-xs text-gray-500">Password: {evaluation.meeting_password}</p>
+                      <p className="text-xs text-gray-500">{t("password", { value: evaluation.meeting_password })}</p>
                     </div>
                   )}
                 </div>
@@ -337,7 +360,7 @@ export default function EvaluationModal({
                 <div className="flex items-start gap-2">
                   <MapPin className="w-4 h-4 text-gray-400 mt-0.5" />
                   <div>
-                    <p className="text-sm text-gray-900">In-Person</p>
+                    <p className="text-sm text-gray-900">{t("inPerson")}</p>
                     <p className="text-sm text-gray-600">{evaluation.location}</p>
                   </div>
                 </div>
@@ -347,8 +370,8 @@ export default function EvaluationModal({
                     <div className="flex items-start gap-2">
                       <Video className="w-4 h-4 text-gray-400 mt-0.5" />
                       <div>
-                        <p className="text-sm text-gray-900">Meeting Link</p>
-                        <a href={evaluation.meeting_link} target="_blank" rel="noopener noreferrer" 
+                        <p className="text-sm text-gray-900">{t("meetingLink")}</p>
+                        <a href={evaluation.meeting_link} target="_blank" rel="noopener noreferrer"
                            className="text-sm text-purple-600 hover:text-purple-700">
                           {evaluation.meeting_link}
                         </a>
@@ -357,12 +380,12 @@ export default function EvaluationModal({
                   )}
                   {evaluation.meeting_id && (
                     <div>
-                      <p className="text-xs text-gray-500">Meeting ID: {evaluation.meeting_id}</p>
+                      <p className="text-xs text-gray-500">{t("meetingId", { value: evaluation.meeting_id })}</p>
                     </div>
                   )}
                   {evaluation.meeting_password && (
                     <div>
-                      <p className="text-xs text-gray-500">Password: {evaluation.meeting_password}</p>
+                      <p className="text-xs text-gray-500">{t("password", { value: evaluation.meeting_password })}</p>
                     </div>
                   )}
                 </div>
@@ -371,26 +394,26 @@ export default function EvaluationModal({
 
             {evaluation.status === 'COMPLETED' && (
               <div className="border-t pt-4">
-                <h3 className="font-medium text-gray-900 mb-3">Results</h3>
+                <h3 className="font-medium text-gray-900 mb-3">{t("resultsHeading")}</h3>
                 {evaluation.assessment_mode === 'SCHEDULED_INTERVIEW' && (
                   <EvaluatorRatingCard evaluationId={evaluation.id} />
                 )}
                 {evaluation.assessment_mode === 'AI_INTERVIEW' && (
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-xs text-gray-500">AI Rule Engine Score</p>
+                    <p className="text-xs text-gray-500">{t("aiScoreLabel")}</p>
                     <p className="text-lg font-bold text-purple-600">
-                      {evaluation.score !== null && evaluation.score !== undefined ? `${evaluation.score}%` : 'Scoring pending'}
+                      {evaluation.score !== null && evaluation.score !== undefined ? `${evaluation.score}%` : t("scoringPending")}
                     </p>
                   </div>
                   {evaluation.certificate_status !== 'NOT_ISSUED' && (
                     <div>
-                      <p className="text-xs text-gray-500">Certificate</p>
+                      <p className="text-xs text-gray-500">{t("certificate")}</p>
                       {evaluation.certificate_url ? (
                         <a href={evaluation.certificate_url} target="_blank" rel="noopener noreferrer"
                            className="text-sm text-purple-600 hover:text-purple-700 flex items-center gap-1">
                           <FileText className="w-4 h-4" />
-                          View Certificate
+                          {t("viewCertificate")}
                         </a>
                       ) : (
                         <p className="text-sm">{evaluation.certificate_status_display}</p>
@@ -401,7 +424,7 @@ export default function EvaluationModal({
                 )}
                 {evaluation.feedback && (
                   <div className="mt-3">
-                    <p className="text-xs text-gray-500">Feedback</p>
+                    <p className="text-xs text-gray-500">{t("feedback")}</p>
                     <p className="text-sm bg-gray-50 p-3 rounded-lg">{evaluation.feedback}</p>
                   </div>
                 )}
@@ -409,18 +432,24 @@ export default function EvaluationModal({
             )}
 
             <div className="border-t pt-4 text-xs text-gray-400">
-              <p>Scheduled by: {evaluation.created_by_name}</p>
-              <p>Created: {format(new Date(evaluation.created_at), 'PPP')}</p>
+              <p>{t("scheduledBy", { name: evaluation.created_by_name })}</p>
+              <p>{t("created", { date: format(new Date(evaluation.created_at), 'PPP', locale === 'ar' ? { locale: ar } : undefined) })}</p>
             </div>
           </div>
         )}
 
         {(isCreateMode || isEditMode) && (
           <form onSubmit={handleSubmit} className="space-y-4">
+            {errorMessage && (
+              <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+                <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+                <span>{errorMessage}</span>
+              </div>
+            )}
             {isCreateMode && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Select Candidate *
+                  {t("selectCandidateLabel")} *
                 </label>
                 <select
                   value={formData.candidate}
@@ -429,7 +458,7 @@ export default function EvaluationModal({
                     errors.candidate ? 'border-red-500' : 'border-gray-300'
                   }`}
                 >
-                  <option value="">Select a candidate</option>
+                  <option value="">{t("selectCandidatePlaceholder")}</option>
                   {candidates.map((candidate) => (
                     <option key={candidate.id} value={candidate.id}>
                       {candidate.full_name} - {candidate.email}
@@ -444,7 +473,7 @@ export default function EvaluationModal({
 
             {isEditMode && selectedCandidate && (
               <div className="bg-gray-50 p-3 rounded-lg">
-                <p className="text-xs text-gray-500 mb-1">Candidate:</p>
+                <p className="text-xs text-gray-500 mb-1">{t("candidateLabel")}</p>
                 <p className="text-sm font-medium">{selectedCandidate.full_name}</p>
               </div>
             )}
@@ -452,7 +481,7 @@ export default function EvaluationModal({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Evaluation Type *
+                  {t("evaluationType")} *
                 </label>
                 <select
                   value={formData.evaluation_type}
@@ -461,7 +490,7 @@ export default function EvaluationModal({
                 >
                   {EVALUATION_TYPES.map((type) => (
                     <option key={type.value} value={type.value}>
-                      {type.label}
+                      {tTypes(TYPE_KEYS[type.value])}
                     </option>
                   ))}
                 </select>
@@ -469,7 +498,7 @@ export default function EvaluationModal({
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Duration (minutes) *
+                  {t("durationLabel")} *
                 </label>
                 <input
                   type="number"
@@ -489,7 +518,7 @@ export default function EvaluationModal({
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Scheduled Date & Time *
+                {t("scheduledDateTimeLabel")} *
               </label>
               <input
                 type="datetime-local"
@@ -505,7 +534,7 @@ export default function EvaluationModal({
             </div>
 
             <div className="border-t pt-4">
-              <h3 className="text-sm font-medium text-gray-700 mb-3">Meeting Details</h3>
+              <h3 className="text-sm font-medium text-gray-700 mb-3">{t("meetingDetailsHeading")}</h3>
 
               {formData.evaluation_type === 'INTERVIEW' ? (
                 // AI interviews get their meeting link auto-generated by the
@@ -514,8 +543,7 @@ export default function EvaluationModal({
                 // would be silently overwritten, so don't offer them.
                 <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3">
                   <p className="text-sm text-indigo-800">
-                    An AI interview link will be generated automatically once this is scheduled, and emailed to the
-                    candidate along with the date and time.
+                    {t("aiLinkNote")}
                   </p>
                 </div>
               ) : (
@@ -535,7 +563,7 @@ export default function EvaluationModal({
                           });
                         }}
                       />
-                      <span className="text-sm">Online</span>
+                      <span className="text-sm">{t("online")}</span>
 
                       <input
                         type="radio"
@@ -553,7 +581,7 @@ export default function EvaluationModal({
                           });
                         }}
                       />
-                      <span className="text-sm">In-Person</span>
+                      <span className="text-sm">{t("inPersonOption")}</span>
                     </label>
                   </div>
 
@@ -561,20 +589,20 @@ export default function EvaluationModal({
                     <>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Meeting Link
+                          {t("meetingLink")}
                         </label>
                         <input
                           type="url"
                           value={formData.meeting_link || ""}
                           onChange={(e) => setFormData({ ...formData, meeting_link: e.target.value })}
-                          placeholder="https://meet.google.com/..."
+                          placeholder={t("meetingLinkPlaceholder")}
                           className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
                       </div>
                       <div className="grid grid-cols-2 gap-3">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Meeting ID
+                            {t("meetingIdLabel")}
                           </label>
                           <input
                             type="text"
@@ -585,7 +613,7 @@ export default function EvaluationModal({
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Password
+                            {t("passwordLabel")}
                           </label>
                           <input
                             type="text"
@@ -599,13 +627,13 @@ export default function EvaluationModal({
                   ) : (
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Location
+                        {t("locationLabel")}
                       </label>
                       <input
                         type="text"
                         value={formData.location}
                         onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                        placeholder="Office address, room number, etc."
+                        placeholder={t("locationPlaceholder")}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
                       />
                     </div>
@@ -621,13 +649,13 @@ export default function EvaluationModal({
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
               <p className="text-sm text-yellow-800">
                 <Calendar className="w-4 h-4 inline mr-2" />
-                Current scheduled time: {evaluation && format(new Date(evaluation.scheduled_date), 'PPP p')}
+                {evaluation && t("currentScheduledTime", { date: format(new Date(evaluation.scheduled_date), 'PPP p', locale === 'ar' ? { locale: ar } : undefined) })}
               </p>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                New Date & Time *
+                {t("newDateTimeLabel")} *
               </label>
               <input
                 type="datetime-local"
@@ -644,14 +672,14 @@ export default function EvaluationModal({
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Reason for Rescheduling (Optional)
+                {t("rescheduleReasonLabel")}
               </label>
               <textarea
                 value={rescheduleData.reason}
                 onChange={(e) => setRescheduleData({ ...rescheduleData, reason: e.target.value })}
                 rows={3}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-                placeholder="Enter reason..."
+                placeholder={t("reasonPlaceholder")}
               />
             </div>
           </form>
@@ -665,7 +693,7 @@ export default function EvaluationModal({
               className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
               disabled={loading}
             >
-              Cancel
+              {t("buttons.cancel")}
             </button>
             <button
               type="submit"
@@ -676,10 +704,10 @@ export default function EvaluationModal({
               {loading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  {isRescheduleMode ? 'Rescheduling...' : 'Saving...'}
+                  {isRescheduleMode ? t("buttons.rescheduling") : t("buttons.saving")}
                 </>
               ) : (
-                isRescheduleMode ? 'Confirm Reschedule' : 'Save Changes'
+                isRescheduleMode ? t("buttons.confirmReschedule") : t("buttons.saveChanges")
               )}
             </button>
           </div>
@@ -692,7 +720,7 @@ export default function EvaluationModal({
               onClick={handleClose}
               className="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700"
             >
-              Close
+              {t("buttons.close")}
             </button>
           </div>
         )}

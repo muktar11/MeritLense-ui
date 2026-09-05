@@ -284,7 +284,7 @@ export default function EvaluationModal({
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-xs text-gray-500">{t("evaluationType")}</p>
-                <p className="text-sm font-medium">{evaluation.evaluation_type_display}</p>
+                <p className="text-sm font-medium">{TYPE_KEYS[evaluation.evaluation_type] ? tTypes(TYPE_KEYS[evaluation.evaluation_type]) : evaluation.evaluation_type_display}</p>
               </div>
               <div>
                 <p className="text-xs text-gray-500">{t("status")}</p>

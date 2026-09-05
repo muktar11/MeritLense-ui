@@ -19,7 +19,7 @@ import { EVALUATION_TYPES, EVALUATION_STATUS } from "@/app/api/evaluations/types
 type ModalMode = 'view' | 'create' | 'edit' | 'reschedule';
 
 export default function EvaluationManagement() {
-  const { userRole } = useAuth();
+  const { userRole, userId } = useAuth();
 
   const [evaluations, setEvaluations] = useState<EvaluationListItem[]>([]);
   const [filteredEvaluations, setFilteredEvaluations] = useState<EvaluationListItem[]>([]);
@@ -289,6 +289,7 @@ export default function EvaluationManagement() {
         evaluation={selectedEvaluation || undefined}
         candidates={candidates}
         userRole={userRole || undefined}
+        currentUserId={userId || undefined}
       />
 
       {selectedEvaluation && (
