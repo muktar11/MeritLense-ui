@@ -275,7 +275,13 @@
       "messages": {
         "no_account_prefix": "Don't have an account yet?",
         "sign_up_link": "Sign up",
-        "error_invalid_credentials": "Invalid email or password. Try the demo accounts below."
+        "error_invalid_credentials": "Invalid email or password. Try the demo accounts below.",
+        "error_fill_all_fields": "Please fill in all fields",
+        "social_divider": "Or continue with",
+        "terms_prefix": "By signing in, you agree to our",
+        "terms_link": "Terms",
+        "and_connector": "and",
+        "privacy_link": "Privacy Policy"
       }
     },
     "register_selection": {

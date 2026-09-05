@@ -4,6 +4,7 @@ import type React from "react"
 import { useState } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
+import { useTranslations } from "next-intl"
 import { Eye, EyeOff, Loader2, Mail, Lock } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -27,6 +28,8 @@ export default function SignInPage() {
   const pathname = usePathname()
   const locale = pathname.split("/")[1]
   const { login, loading, error } = useAuth()
+  const t = useTranslations("auth_page.login")
+  const tZod = useTranslations("zodErrors")
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -39,12 +42,12 @@ export default function SignInPage() {
     setLocalError("")
 
     if (!email || !password) {
-      setLocalError("Please fill in all fields")
+      setLocalError(t("messages.error_fill_all_fields"))
       return
     }
 
     if (!email.includes("@")) {
-      setLocalError("Please enter a valid email address")
+      setLocalError(tZod("email_invalid"))
       return
     }
 
@@ -64,8 +67,8 @@ export default function SignInPage() {
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-primary mb-2">Welcome Back</h1>
-            <p className="text-muted-foreground">Sign in to your MeritLense account</p>
+            <h1 className="text-3xl font-bold text-primary mb-2">{t("header.title")}</h1>
+            <p className="text-muted-foreground">{t("header.subtitle")}</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-8">
@@ -77,7 +80,7 @@ export default function SignInPage() {
 
             <form onSubmit={handleSignIn} className="space-y-5">
               <div className="space-y-2">
-                <Label htmlFor="email">Email Address</Label>
+                <Label htmlFor="email">{t("form.label_email")}</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -96,7 +99,7 @@ export default function SignInPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">{t("form.label_password")}</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -131,14 +134,14 @@ export default function SignInPage() {
                     disabled={loading}
                   />
                   <Label htmlFor="remember" className="text-sm font-normal text-muted-foreground cursor-pointer">
-                    Remember me
+                    {t("form.remember_me")}
                   </Label>
                 </div>
                 <Link
                   href={`/${locale}/auth/forgot-password`}
                   className="text-sm text-primary hover:text-primary/80 font-medium"
                 >
-                  Forgot Password?
+                  {t("form.forgot_password")}
                 </Link>
               </div>
 
@@ -151,10 +154,10 @@ export default function SignInPage() {
                 {loading ? (
                   <>
                     <Loader2 size={18} className="animate-spin" />
-                    Signing in...
+                    {t("form.button_loading")}
                   </>
                 ) : (
-                  "Sign In"
+                  t("form.button_text")
                 )}
               </Button>
             </form>
@@ -164,7 +167,7 @@ export default function SignInPage() {
                 <div className="w-full border-t border-border" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white px-2 text-muted-foreground">Or continue with</span>
+                <span className="bg-white px-2 text-muted-foreground">{t("messages.social_divider")}</span>
               </div>
             </div>
 
@@ -201,22 +204,22 @@ export default function SignInPage() {
 
           <div className="mt-6 space-y-2">
             <p className="text-center text-sm text-muted-foreground">
-              Don&apos;t have an account?{" "}
+              {t("messages.no_account_prefix")}{" "}
               <Link
                 href={`/${locale}/auth/register`}
                 className="text-primary hover:text-primary/80 font-medium"
               >
-                Sign up
+                {t("messages.sign_up_link")}
               </Link>
             </p>
             <p className="text-center text-xs text-muted-foreground">
-              By signing in, you agree to our{" "}
+              {t("messages.terms_prefix")}{" "}
               <Link href={`/${locale}/terms`} className="text-primary hover:text-primary/80">
-                Terms
+                {t("messages.terms_link")}
               </Link>{" "}
-              and{" "}
+              {t("messages.and_connector")}{" "}
               <Link href={`/${locale}/privacy`} className="text-primary hover:text-primary/80">
-                Privacy Policy
+                {t("messages.privacy_link")}
               </Link>
             </p>
           </div>
