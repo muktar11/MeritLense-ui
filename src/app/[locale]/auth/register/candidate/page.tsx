@@ -3,6 +3,7 @@
 import type React from "react"
 import { useState } from "react"
 import { useRouter, usePathname } from "next/navigation"
+import { useTranslations } from "next-intl"
 import { Upload, Loader2, FileText, CheckCircle } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -14,6 +15,11 @@ import { JOB_ROLES, NATIONALITIES, LANGUAGES } from "../../../../api/auth/endpoi
 import type { B2CRegistrationData } from "@/app/api/auth/auth"
 
 export default function CandidateRegistrationPage() {
+  const t = useTranslations("auth_page.register_candidate")
+  const tZod = useTranslations("zodErrors")
+  const tRoles = useTranslations("dashboard.indivisual.settings.edit-profile-tab.jobRoles")
+  const tNationalities = useTranslations("dashboard.indivisual.settings.edit-profile-tab.nationalities")
+  const tLanguages = useTranslations("dashboard.indivisual.settings.edit-profile-tab.languages")
   const router = useRouter()
   const pathname = usePathname()
   const locale = pathname.split("/")[1]
@@ -67,25 +73,25 @@ export default function CandidateRegistrationPage() {
   const validateForm = (): boolean => {
     const errors: Record<string, string> = {}
 
-    if (!formData.email) errors.email = "Email is required"
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) errors.email = "Email is invalid"
+    if (!formData.email) errors.email = tZod("email_required")
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) errors.email = tZod("email_invalid")
 
-    if (!formData.first_name) errors.first_name = "First name is required"
-    if (!formData.last_name) errors.last_name = "Last name is required"
+    if (!formData.first_name) errors.first_name = t("errors.firstNameRequired")
+    if (!formData.last_name) errors.last_name = t("errors.lastNameRequired")
 
-    if (!formData.password) errors.password = "Password is required"
-    else if (formData.password.length < 8) errors.password = "Password must be at least 8 characters"
+    if (!formData.password) errors.password = t("errors.passwordRequired")
+    else if (formData.password.length < 8) errors.password = tZod("password_min_8")
 
     if (formData.password !== formData.confirm_password) {
-      errors.confirm_password = "Passwords do not match"
+      errors.confirm_password = tZod("passwords_not_match")
     }
 
-    if (!formData.passport_id) errors.passport_id = "Passport ID is required"
-    if (!formData.job_role) errors.job_role = "Job role is required"
-    if (!formData.nationality) errors.nationality = "Nationality is required"
-    if (!formData.phone_number) errors.phone_number = "Phone number is required"
-    if (!formData.id_document) errors.id_document = "ID document is required"
-    if (!formData.resume_document) errors.resume_document = "Resume is required"
+    if (!formData.passport_id) errors.passport_id = t("errors.passportRequired")
+    if (!formData.job_role) errors.job_role = t("errors.jobRoleRequired")
+    if (!formData.nationality) errors.nationality = t("errors.nationalityRequired")
+    if (!formData.phone_number) errors.phone_number = t("errors.phoneRequired")
+    if (!formData.id_document) errors.id_document = t("errors.idDocumentRequired")
+    if (!formData.resume_document) errors.resume_document = t("errors.resumeRequired")
 
     setFormErrors(errors)
     return Object.keys(errors).length === 0
@@ -128,8 +134,8 @@ export default function CandidateRegistrationPage() {
 
       <div className="flex-1 flex items-center justify-center px-4 py-8">
         <div className="w-full max-w-2xl bg-white rounded-xl shadow-lg p-8">
-          <h1 className="text-2xl font-bold mb-1">Individual Employer Registration</h1>
-          <p className="text-muted-foreground mb-8">Fill in your details to create your account</p>
+          <h1 className="text-2xl font-bold mb-1">{t("pageTitle")}</h1>
+          <p className="text-muted-foreground mb-8">{t("pageSubtitle")}</p>
 
           {error && (
             <div className="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
@@ -140,17 +146,17 @@ export default function CandidateRegistrationPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Account Information */}
             <div className="space-y-4 border-b pb-6">
-              <h2 className="text-lg font-semibold">Account Information</h2>
+              <h2 className="text-lg font-semibold">{t("sections.account")}</h2>
 
               <div className="space-y-2">
-                <Label htmlFor="email">Email Address *</Label>
+                <Label htmlFor="email">{t("fields.email")} *</Label>
                 <Input
                   id="email"
                   name="email"
                   type="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  placeholder="you@example.com"
+                  placeholder={t("placeholders.email")}
                   className={`h-11 ${formErrors.email ? "border-destructive" : ""}`}
                 />
                 <FieldError field="email" />
@@ -158,25 +164,25 @@ export default function CandidateRegistrationPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="first_name">First Name *</Label>
+                  <Label htmlFor="first_name">{t("fields.firstName")} *</Label>
                   <Input
                     id="first_name"
                     name="first_name"
                     value={formData.first_name}
                     onChange={handleInputChange}
-                    placeholder="First name"
+                    placeholder={t("placeholders.firstName")}
                     className={`h-11 ${formErrors.first_name ? "border-destructive" : ""}`}
                   />
                   <FieldError field="first_name" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="last_name">Last Name *</Label>
+                  <Label htmlFor="last_name">{t("fields.lastName")} *</Label>
                   <Input
                     id="last_name"
                     name="last_name"
                     value={formData.last_name}
                     onChange={handleInputChange}
-                    placeholder="Last name"
+                    placeholder={t("placeholders.lastName")}
                     className={`h-11 ${formErrors.last_name ? "border-destructive" : ""}`}
                   />
                   <FieldError field="last_name" />
@@ -185,27 +191,27 @@ export default function CandidateRegistrationPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="password">Password *</Label>
+                  <Label htmlFor="password">{t("fields.password")} *</Label>
                   <Input
                     id="password"
                     name="password"
                     type="password"
                     value={formData.password}
                     onChange={handleInputChange}
-                    placeholder="Min. 8 characters"
+                    placeholder={t("placeholders.password")}
                     className={`h-11 ${formErrors.password ? "border-destructive" : ""}`}
                   />
                   <FieldError field="password" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="confirm_password">Confirm Password *</Label>
+                  <Label htmlFor="confirm_password">{t("fields.confirmPassword")} *</Label>
                   <Input
                     id="confirm_password"
                     name="confirm_password"
                     type="password"
                     value={formData.confirm_password}
                     onChange={handleInputChange}
-                    placeholder="Confirm password"
+                    placeholder={t("placeholders.confirmPassword")}
                     className={`h-11 ${formErrors.confirm_password ? "border-destructive" : ""}`}
                   />
                   <FieldError field="confirm_password" />
@@ -215,30 +221,30 @@ export default function CandidateRegistrationPage() {
 
             {/* Personal Information */}
             <div className="space-y-4 border-b pb-6">
-              <h2 className="text-lg font-semibold">Personal Information</h2>
+              <h2 className="text-lg font-semibold">{t("sections.personal")}</h2>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="passport_id">Passport / ID No *</Label>
+                  <Label htmlFor="passport_id">{t("fields.passportId")} *</Label>
                   <Input
                     id="passport_id"
                     name="passport_id"
                     value={formData.passport_id}
                     onChange={handleInputChange}
-                    placeholder="AB1234567"
+                    placeholder={t("placeholders.passportId")}
                     className={`h-11 ${formErrors.passport_id ? "border-destructive" : ""}`}
                   />
                   <FieldError field="passport_id" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="phone_number">Phone Number *</Label>
+                  <Label htmlFor="phone_number">{t("fields.phoneNumber")} *</Label>
                   <Input
                     id="phone_number"
                     name="phone_number"
                     type="tel"
                     value={formData.phone_number}
                     onChange={handleInputChange}
-                    placeholder="+1234567890"
+                    placeholder={t("placeholders.phoneNumber")}
                     className={`h-11 ${formErrors.phone_number ? "border-destructive" : ""}`}
                   />
                   <FieldError field="phone_number" />
@@ -247,7 +253,7 @@ export default function CandidateRegistrationPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="date_of_birth">Date of Birth</Label>
+                  <Label htmlFor="date_of_birth">{t("fields.dateOfBirth")}</Label>
                   <Input
                     id="date_of_birth"
                     name="date_of_birth"
@@ -258,13 +264,13 @@ export default function CandidateRegistrationPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="address">Address</Label>
+                  <Label htmlFor="address">{t("fields.address")}</Label>
                   <Input
                     id="address"
                     name="address"
                     value={formData.address}
                     onChange={handleInputChange}
-                    placeholder="Your address"
+                    placeholder={t("placeholders.address")}
                     className="h-11"
                   />
                 </div>
@@ -272,7 +278,7 @@ export default function CandidateRegistrationPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="job_role">Job Role *</Label>
+                  <Label htmlFor="job_role">{t("fields.jobRole")} *</Label>
                   <select
                     id="job_role"
                     name="job_role"
@@ -282,15 +288,15 @@ export default function CandidateRegistrationPage() {
                       formErrors.job_role ? "border-destructive" : "border-input"
                     }`}
                   >
-                    <option value="">Select job role</option>
+                    <option value="">{t("placeholders.selectJobRole")}</option>
                     {JOB_ROLES.map((role) => (
-                      <option key={role.key} value={role.key}>{role.label}</option>
+                      <option key={role.key} value={role.key}>{tRoles(role.key)}</option>
                     ))}
                   </select>
                   <FieldError field="job_role" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="nationality">Nationality *</Label>
+                  <Label htmlFor="nationality">{t("fields.nationality")} *</Label>
                   <select
                     id="nationality"
                     name="nationality"
@@ -300,9 +306,9 @@ export default function CandidateRegistrationPage() {
                       formErrors.nationality ? "border-destructive" : "border-input"
                     }`}
                   >
-                    <option value="">Select nationality</option>
+                    <option value="">{t("placeholders.selectNationality")}</option>
                     {NATIONALITIES.map((nation) => (
-                      <option key={nation.key} value={nation.key}>{nation.label}</option>
+                      <option key={nation.key} value={nation.key}>{tNationalities(nation.key)}</option>
                     ))}
                   </select>
                   <FieldError field="nationality" />
@@ -310,7 +316,7 @@ export default function CandidateRegistrationPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="preferred_language">Preferred Language *</Label>
+                <Label htmlFor="preferred_language">{t("fields.preferredLanguage")} *</Label>
                 <select
                   id="preferred_language"
                   name="preferred_language"
@@ -319,7 +325,7 @@ export default function CandidateRegistrationPage() {
                   className="flex h-11 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-1 focus-visible:ring-primary/50"
                 >
                   {LANGUAGES.map((lang) => (
-                    <option key={lang.key} value={lang.key}>{lang.label}</option>
+                    <option key={lang.key} value={lang.key}>{tLanguages(lang.key)}</option>
                   ))}
                 </select>
               </div>
@@ -327,11 +333,11 @@ export default function CandidateRegistrationPage() {
 
             {/* Document Uploads */}
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold">Document Uploads</h2>
+              <h2 className="text-lg font-semibold">{t("sections.documents")}</h2>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>ID Document *</Label>
+                  <Label>{t("documents.idDocumentLabel")} *</Label>
                   <label
                     className={`flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-6 cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition ${
                       formErrors.id_document ? "border-destructive" : "border-border"
@@ -347,7 +353,7 @@ export default function CandidateRegistrationPage() {
                     ) : (
                       <>
                         <Upload className="w-6 h-6 text-muted-foreground mb-2" />
-                        <span className="text-sm text-muted-foreground">Upload passport/ID</span>
+                        <span className="text-sm text-muted-foreground">{t("documents.idDocumentUpload")}</span>
                       </>
                     )}
                     <input
@@ -360,7 +366,7 @@ export default function CandidateRegistrationPage() {
                   <FieldError field="id_document" />
                 </div>
                 <div className="space-y-2">
-                  <Label>Resume / CV *</Label>
+                  <Label>{t("documents.resumeLabel")} *</Label>
                   <label
                     className={`flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-6 cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition ${
                       formErrors.resume_document ? "border-destructive" : "border-border"
@@ -376,7 +382,7 @@ export default function CandidateRegistrationPage() {
                     ) : (
                       <>
                         <FileText className="w-6 h-6 text-muted-foreground mb-2" />
-                        <span className="text-sm text-muted-foreground">Upload resume</span>
+                        <span className="text-sm text-muted-foreground">{t("documents.resumeUpload")}</span>
                       </>
                     )}
                     <input
@@ -400,10 +406,10 @@ export default function CandidateRegistrationPage() {
               {loading ? (
                 <>
                   <Loader2 size={18} className="animate-spin" />
-                  Registering...
+                  {t("buttons.registering")}
                 </>
               ) : (
-                "Create Account"
+                t("buttons.createAccount")
               )}
             </Button>
           </form>

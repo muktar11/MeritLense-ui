@@ -1,14 +1,16 @@
 "use client"
 
 import { Check } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 interface ProgressStepperProps {
   currentStep: number
 }
 
-const steps = ["Account Type", "Registration", "Verification", "Complete"]
-
 export default function ProgressStepper({ currentStep }: ProgressStepperProps) {
+  const t = useTranslations("auth_page.register_shared.progressStepper")
+  const steps = [t("accountType"), t("registration"), t("verification"), t("complete")]
+
   return (
     <div className="bg-white border-b px-6 py-5">
       <div className="flex items-center justify-between max-w-2xl mx-auto">

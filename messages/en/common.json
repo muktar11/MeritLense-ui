@@ -607,6 +607,84 @@
         "prefix": "Remember your password?",
         "link_text": "Back to Login"
       }
+    },
+    "register_candidate": {
+      "pageTitle": "Individual Employer Registration",
+      "pageSubtitle": "Fill in your details to create your account",
+      "sections": {
+        "account": "Account Information",
+        "personal": "Personal Information",
+        "documents": "Document Uploads"
+      },
+      "fields": {
+        "email": "Email Address",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "password": "Password",
+        "confirmPassword": "Confirm Password",
+        "passportId": "Passport / ID No",
+        "phoneNumber": "Phone Number",
+        "dateOfBirth": "Date of Birth",
+        "address": "Address",
+        "jobRole": "Job Role",
+        "nationality": "Nationality",
+        "preferredLanguage": "Preferred Language"
+      },
+      "placeholders": {
+        "email": "you@example.com",
+        "firstName": "First name",
+        "lastName": "Last name",
+        "password": "Min. 8 characters",
+        "confirmPassword": "Confirm password",
+        "passportId": "AB1234567",
+        "phoneNumber": "+1234567890",
+        "address": "Your address",
+        "selectJobRole": "Select job role",
+        "selectNationality": "Select nationality"
+      },
+      "documents": {
+        "idDocumentLabel": "ID Document",
+        "idDocumentUpload": "Upload passport/ID",
+        "resumeLabel": "Resume / CV",
+        "resumeUpload": "Upload resume"
+      },
+      "buttons": {
+        "registering": "Registering...",
+        "createAccount": "Create Account"
+      },
+      "errors": {
+        "firstNameRequired": "First name is required",
+        "lastNameRequired": "Last name is required",
+        "passwordRequired": "Password is required",
+        "passportRequired": "Passport ID is required",
+        "jobRoleRequired": "Job role is required",
+        "nationalityRequired": "Nationality is required",
+        "phoneRequired": "Phone number is required",
+        "idDocumentRequired": "ID document is required",
+        "resumeRequired": "Resume is required"
+      }
+    },
+    "register_shared": {
+      "progressStepper": {
+        "accountType": "Account Type",
+        "registration": "Registration",
+        "verification": "Verification",
+        "complete": "Complete"
+      },
+      "emailVerify": {
+        "title": "Verify your email",
+        "sentCodeTo": "We sent a 5-digit code to:",
+        "resendSuccess": "Verification code resent!",
+        "verifying": "Verifying...",
+        "verifyButton": "Verify Email",
+        "resendPrompt": "Didn't receive a code? Resend",
+        "wrongEmail": "Wrong email? Go back"
+      },
+      "success": {
+        "title": "You are successfully registered!",
+        "message": "Welcome to our platform. Your account has been created and is ready to use.",
+        "getStarted": "Let's Start"
+      }
     }
   },
   "dashboard": {

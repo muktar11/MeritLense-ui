@@ -1,10 +1,10 @@
 "use client"
-import { useLocale } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
 import ProgressStepper from "../components/auth/progress-stepper"
 
 export default function SuccessPage() {
-  
+  const t = useTranslations("auth_page.register_shared.success")
  const router = useRouter()
   const locale = useLocale() // ✅ current locale
   const handleGetStarted = () => {
@@ -38,9 +38,9 @@ export default function SuccessPage() {
             </div>
           </div>
 
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">You are successfully registered!</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">{t("title")}</h1>
           <p className="text-gray-600 mb-8">
-            Welcome to our platform. Your account has been created and is ready to use.
+            {t("message")}
           </p>
 
           {/* Get Started Button */}
@@ -48,7 +48,7 @@ export default function SuccessPage() {
             onClick={handleGetStarted}
             className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-8 py-3 rounded-lg inline-flex items-center gap-2 transition"
           >
-            Let's Start
+            {t("getStarted")}
             <span>→</span>
           </button>
         </div>

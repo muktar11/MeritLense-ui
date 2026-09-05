@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter, usePathname } from "next/navigation"
+import { useTranslations } from "next-intl"
 import { Loader2, Mail, CheckCircle2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -9,6 +10,7 @@ import ProgressStepper from "../components/auth/progress-stepper"
 import { useAuth } from "../../../../hooks/useAuth"
 
 export default function EmailVerifyPage() {
+  const t = useTranslations("auth_page.register_shared.emailVerify")
   const router = useRouter()
   const pathname = usePathname()
   const locale = pathname.split("/")[1]
@@ -91,8 +93,8 @@ export default function EmailVerifyPage() {
             <Mail className="w-8 h-8 text-primary" />
           </div>
 
-          <h1 className="text-2xl font-bold mb-2">Verify your email</h1>
-          <p className="text-muted-foreground mb-1">We sent a 5-digit code to:</p>
+          <h1 className="text-2xl font-bold mb-2">{t("title")}</h1>
+          <p className="text-muted-foreground mb-1">{t("sentCodeTo")}</p>
           <p className="font-semibold text-foreground mb-6">{email}</p>
 
           <div className="flex gap-3 justify-center mb-6" onPaste={handlePaste}>
@@ -121,7 +123,7 @@ export default function EmailVerifyPage() {
           {resendSuccess && (
             <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center justify-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-green-600" />
-              <p className="text-sm text-green-600">Verification code resent!</p>
+              <p className="text-sm text-green-600">{t("resendSuccess")}</p>
             </div>
           )}
 
@@ -134,10 +136,10 @@ export default function EmailVerifyPage() {
             {loading ? (
               <>
                 <Loader2 size={18} className="animate-spin" />
-                Verifying...
+                {t("verifying")}
               </>
             ) : (
-              "Verify Email"
+              t("verifyButton")
             )}
           </Button>
 
@@ -147,7 +149,7 @@ export default function EmailVerifyPage() {
               disabled={loading}
               className="text-sm text-primary hover:text-primary/80 font-medium disabled:opacity-50"
             >
-              Didn&apos;t receive a code? Resend
+              {t("resendPrompt")}
             </button>
 
             <button
@@ -155,7 +157,7 @@ export default function EmailVerifyPage() {
               disabled={loading}
               className="text-sm text-muted-foreground hover:text-foreground disabled:opacity-50 block mx-auto"
             >
-              Wrong email? Go back
+              {t("wrongEmail")}
             </button>
           </div>
         </div>

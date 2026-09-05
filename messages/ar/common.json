@@ -608,6 +608,84 @@
         "prefix": "هل تذكر كلمة المرور الخاصة بك؟",
         "link_text": "العودة إلى تسجيل الدخول"
       }
+    },
+    "register_candidate": {
+      "pageTitle": "تسجيل صاحب عمل فردي",
+      "pageSubtitle": "املأ بياناتك لإنشاء حسابك",
+      "sections": {
+        "account": "معلومات الحساب",
+        "personal": "المعلومات الشخصية",
+        "documents": "رفع المستندات"
+      },
+      "fields": {
+        "email": "البريد الإلكتروني",
+        "firstName": "الاسم الأول",
+        "lastName": "اسم العائلة",
+        "password": "كلمة المرور",
+        "confirmPassword": "تأكيد كلمة المرور",
+        "passportId": "رقم جواز السفر / الهوية",
+        "phoneNumber": "رقم الهاتف",
+        "dateOfBirth": "تاريخ الميلاد",
+        "address": "العنوان",
+        "jobRole": "المسمى الوظيفي",
+        "nationality": "الجنسية",
+        "preferredLanguage": "اللغة المفضلة"
+      },
+      "placeholders": {
+        "email": "you@example.com",
+        "firstName": "الاسم الأول",
+        "lastName": "اسم العائلة",
+        "password": "8 أحرف على الأقل",
+        "confirmPassword": "تأكيد كلمة المرور",
+        "passportId": "AB1234567",
+        "phoneNumber": "+1234567890",
+        "address": "عنوانك",
+        "selectJobRole": "اختر المسمى الوظيفي",
+        "selectNationality": "اختر الجنسية"
+      },
+      "documents": {
+        "idDocumentLabel": "مستند الهوية",
+        "idDocumentUpload": "ارفع جواز السفر / الهوية",
+        "resumeLabel": "السيرة الذاتية",
+        "resumeUpload": "ارفع السيرة الذاتية"
+      },
+      "buttons": {
+        "registering": "جارٍ التسجيل...",
+        "createAccount": "إنشاء حساب"
+      },
+      "errors": {
+        "firstNameRequired": "الاسم الأول مطلوب",
+        "lastNameRequired": "اسم العائلة مطلوب",
+        "passwordRequired": "كلمة المرور مطلوبة",
+        "passportRequired": "رقم جواز السفر / الهوية مطلوب",
+        "jobRoleRequired": "المسمى الوظيفي مطلوب",
+        "nationalityRequired": "الجنسية مطلوبة",
+        "phoneRequired": "رقم الهاتف مطلوب",
+        "idDocumentRequired": "مستند الهوية مطلوب",
+        "resumeRequired": "السيرة الذاتية مطلوبة"
+      }
+    },
+    "register_shared": {
+      "progressStepper": {
+        "accountType": "نوع الحساب",
+        "registration": "التسجيل",
+        "verification": "التحقق",
+        "complete": "الاكتمال"
+      },
+      "emailVerify": {
+        "title": "تحقق من بريدك الإلكتروني",
+        "sentCodeTo": "أرسلنا رمزًا مكونًا من 5 أرقام إلى:",
+        "resendSuccess": "تمت إعادة إرسال رمز التحقق!",
+        "verifying": "جارٍ التحقق...",
+        "verifyButton": "تحقق من البريد الإلكتروني",
+        "resendPrompt": "لم يصلك الرمز؟ إعادة الإرسال",
+        "wrongEmail": "بريد إلكتروني خاطئ؟ العودة"
+      },
+      "success": {
+        "title": "تم تسجيلك بنجاح!",
+        "message": "مرحبًا بك في منصتنا. تم إنشاء حسابك وهو جاهز للاستخدام.",
+        "getStarted": "لنبدأ"
+      }
     }
   },
   "dashboard": {
