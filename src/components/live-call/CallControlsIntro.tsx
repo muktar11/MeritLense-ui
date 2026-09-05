@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
 
 interface Beat {
@@ -25,6 +26,7 @@ const BEAT_MS = 3200;
 // time this runs, so a real getBoundingClientRect() spotlight is possible
 // and reads as more trustworthy than a mock of the same thing.
 export function CallControlsIntro({ recordTarget, languageTarget }: CallControlsIntroProps) {
+  const t = useTranslations("shared.callControlsIntro");
   const [dismissed, setDismissed] = useState(true);
   const [beatIndex, setBeatIndex] = useState(0);
   const [rect, setRect] = useState<DOMRect | null>(null);
@@ -38,8 +40,8 @@ export function CallControlsIntro({ recordTarget, languageTarget }: CallControls
   }, [!!recordTarget, !!languageTarget]);
 
   const beats: Beat[] = [
-    { target: recordTarget, text: "Tap here to record your turn when it's your turn to speak." },
-    { target: languageTarget, text: "Set the language you speak and the one you want to hear here." },
+    { target: recordTarget, text: t("recordBeat") },
+    { target: languageTarget, text: t("languageBeat") },
   ];
   const beat = beats[beatIndex];
 
@@ -136,7 +138,7 @@ export function CallControlsIntro({ recordTarget, languageTarget }: CallControls
               onClick={dismiss}
               className="text-xs text-gray-400 hover:text-gray-600 font-medium"
             >
-              Got it
+              {t("gotIt")}
             </button>
           </div>
           <p>{beat.text}</p>

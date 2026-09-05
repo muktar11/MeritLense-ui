@@ -113,6 +113,52 @@
         "taskExecution": "Practical Task Execution",
         "knowledgeComprehension": "Knowledge & Comprehension"
       }
+    },
+    "liveCallRoom": {
+      "missingSessionId": "Missing session ID.",
+      "callEnded": "Call ended",
+      "callEndedMessage": "This live interview call has ended.",
+      "couldntJoin": "Couldn't join the call",
+      "refreshAndTryAgain": "Please refresh and try again.",
+      "opensAt": "This call opens 15 minutes before its scheduled time:",
+      "yourLocalTime": "(your local time).",
+      "statusJoining": "Joining the call…",
+      "statusWaiting": "Waiting for the other participant to join…",
+      "statusPendingAdmission": "Waiting for the evaluator to let you in…",
+      "statusReconnecting": "Reconnecting…",
+      "statusConnecting": "Connecting…",
+      "candidateWantsToJoin": "Candidate wants to join",
+      "letThemIn": "Let them into the interview?",
+      "deny": "Deny",
+      "admit": "Admit",
+      "manualTranslationActive": "Manual translation mode is active",
+      "youreEvaluator": "You're the evaluator",
+      "youreCandidate": "You're the candidate",
+      "manualTranslationLabel": "Manual translation",
+      "messageFeed": "Message feed",
+      "isSpeaking": "{role} is speaking…",
+      "waitingToFinish": "Waiting for {role} to finish…",
+      "tapToRecord": "Tap to record a turn",
+      "recording": "Recording… {time}",
+      "stop": "Stop",
+      "reRecord": "Re-record",
+      "sending": "Sending…",
+      "send": "Send",
+      "noSegmentsYet": "Record a speaking turn to send it to the other participant in their language.",
+      "you": "You",
+      "otherParticipant": "Other participant",
+      "original": "Original",
+      "translated": "Translated",
+      "iSpeak": "I speak",
+      "iWantToHear": "I want to hear",
+      "endCall": "End Call",
+      "candidateLabel": "Candidate",
+      "evaluatorLabel": "Evaluator"
+    },
+    "callControlsIntro": {
+      "recordBeat": "Tap here to record your turn when it's your turn to speak.",
+      "languageBeat": "Set the language you speak and the one you want to hear here.",
+      "gotIt": "Got it"
     }
   },
   "landing-page": {
@@ -2014,6 +2060,18 @@
           "payNowButton": "Pay Now",
           "chargeNote": "You will be charged {price} once. This package does not renew automatically.",
           "paymentFailedError": "Failed to complete payment"
+        },
+        "success": {
+          "processingTitle": "Processing...",
+          "confirmingSubscription": "Please wait while we confirm your subscription.",
+          "confirmingPayment": "Please wait while we confirm your payment.",
+          "subscriptionActivatedTitle": "Subscription Activated!",
+          "paymentSuccessfulTitle": "Payment Successful!",
+          "subscriptionActivatedMessage": "Your subscription has been activated successfully. You can now access all features of your plan.",
+          "paymentSuccessfulMessage": "Thank you for your payment. Your transaction has been completed successfully.",
+          "goToDashboard": "Go to Dashboard",
+          "viewBillingDetails": "View Billing Details",
+          "redirecting": "Redirecting to billing in 3 seconds..."
         },
         "plans": {
           "basic": {
