@@ -1788,6 +1788,140 @@
           "english": "English",
           "spanish": "Spanish",
           "arabic": "Arabic"
+        },
+        "page": {
+          "filtersLabel": "Filters:",
+          "allTypes": "All Types",
+          "allStatus": "All Status",
+          "searchPlaceholder": "Search candidates...",
+          "heading": "Evaluation Management",
+          "startAiInterview": "+ Start AI Interview",
+          "scheduleEvaluation": "+ Schedule Evaluation",
+          "cancelConfirm": "Are you sure you want to cancel this evaluation?",
+          "scheduleFailed": "Failed to schedule evaluation. Please try again.",
+          "updateFailed": "Failed to update evaluation. Please try again."
+        },
+        "table": {
+          "headers": {
+            "candidate": "Candidate",
+            "evaluationType": "Evaluation Type",
+            "status": "Status",
+            "scheduledDate": "Scheduled Date",
+            "duration": "Duration",
+            "score": "Score",
+            "actions": "Actions"
+          },
+          "noEvaluations": "No evaluations found",
+          "durationMinutes": "{value} min",
+          "scoreTooltip": "Average of Safety, Hygiene, Communication, Task and Behavioral scores - see View Details for the full breakdown",
+          "itemLabelPlural": "evaluations",
+          "actions": {
+            "viewDetails": "View Details",
+            "viewAiResults": "View AI Results",
+            "joinInterview": "Join Interview",
+            "copyAccessLink": "Copy Candidate Access Link",
+            "copyMeetingLink": "Copy Meeting Link",
+            "copied": "Copied!",
+            "moreActions": "More actions",
+            "edit": "Edit",
+            "reschedule": "Reschedule",
+            "markComplete": "Mark Complete",
+            "startAiInterview": "Start AI Interview",
+            "cancel": "Cancel"
+          }
+        },
+        "scheduleModal": {
+          "titles": {
+            "create": "Schedule New Evaluation",
+            "edit": "Edit Evaluation",
+            "view": "Evaluation Details",
+            "reschedule": "Reschedule Evaluation"
+          },
+          "candidateInfo": {
+            "heading": "Candidate Information",
+            "name": "Name",
+            "email": "Email",
+            "jobRole": "Job Role",
+            "preferredLanguage": "Preferred Language"
+          },
+          "evaluationType": "Evaluation Type",
+          "status": "Status",
+          "scheduledDate": "Scheduled Date",
+          "duration": "Duration",
+          "durationMinutesValue": "{value} minutes",
+          "meetingDetailsHeading": "Meeting Details",
+          "interviewAccessHeading": "Interview Access",
+          "aiInterviewBadge": "AI Interview Session",
+          "interviewerAccess": "Interviewer Access",
+          "joinInterview": "Join Interview",
+          "interviewerOnlyNote": "For interviewer use only.",
+          "candidateAccessLink": "Candidate Access Link",
+          "candidateOnlyNote": "For candidate use only.",
+          "meetingId": "Meeting ID: {value}",
+          "password": "Password: {value}",
+          "inPerson": "In-Person",
+          "meetingLink": "Meeting Link",
+          "resultsHeading": "Results",
+          "aiScoreLabel": "AI Rule Engine Score",
+          "scoringPending": "Scoring pending",
+          "certificate": "Certificate",
+          "viewCertificate": "View Certificate",
+          "feedback": "Feedback",
+          "scheduledBy": "Scheduled by: {name}",
+          "created": "Created: {date}",
+          "selectCandidateLabel": "Select Candidate",
+          "selectCandidatePlaceholder": "Select a candidate",
+          "candidateLabel": "Candidate:",
+          "durationLabel": "Duration (minutes)",
+          "scheduledDateTimeLabel": "Scheduled Date & Time",
+          "aiLinkNote": "An AI interview link will be generated automatically once this is scheduled, and emailed to the candidate along with the date and time.",
+          "online": "Online",
+          "inPersonOption": "In-Person",
+          "meetingLinkPlaceholder": "https://meet.google.com/...",
+          "meetingIdLabel": "Meeting ID",
+          "passwordLabel": "Password",
+          "locationLabel": "Location",
+          "locationPlaceholder": "Office address, room number, etc.",
+          "currentScheduledTime": "Current scheduled time: {date}",
+          "newDateTimeLabel": "New Date & Time",
+          "rescheduleReasonLabel": "Reason for Rescheduling (Optional)",
+          "reasonPlaceholder": "Enter reason...",
+          "buttons": {
+            "cancel": "Cancel",
+            "saving": "Saving...",
+            "rescheduling": "Rescheduling...",
+            "saveChanges": "Save Changes",
+            "confirmReschedule": "Confirm Reschedule",
+            "close": "Close"
+          },
+          "errors": {
+            "candidateRequired": "Please select a candidate",
+            "dateRequired": "Please select a date and time",
+            "dateMustBeFuture": "Scheduled date must be in the future",
+            "durationMin": "Duration must be at least 15 minutes",
+            "newDateRequired": "Please select a new date and time",
+            "newDateMustBeFuture": "New date must be in the future"
+          }
+        },
+        "completeModal": {
+          "title": "Complete Evaluation",
+          "completingFor": "Completing evaluation for",
+          "scoreLabel": "Score (0-100)",
+          "scoreError": "Score must be between 0 and 100",
+          "feedbackLabel": "Feedback",
+          "feedbackPlaceholder": "Enter feedback...",
+          "certificateStatusLabel": "Certificate Status",
+          "certificateUrlLabel": "Certificate URL",
+          "cancel": "Cancel",
+          "saving": "Saving...",
+          "submit": "Complete Evaluation",
+          "certificateStatus": {
+            "notIssued": "Not Issued",
+            "pending": "Pending",
+            "issued": "Issued",
+            "revoked": "Revoked",
+            "expired": "Expired"
+          }
         }
       },
 
@@ -2105,7 +2239,10 @@
         "status": {
           "inProgress": "In Progress",
           "scheduled": "Scheduled",
-          "completed": "Completed"
+          "rescheduled": "Rescheduled",
+          "completed": "Completed",
+          "cancelled": "Cancelled",
+          "noShow": "No Show"
         },
         "noEvaluationsFound": "No evaluations found",
         "noDate": "No date"

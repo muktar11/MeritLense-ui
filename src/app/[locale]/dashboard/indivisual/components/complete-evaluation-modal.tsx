@@ -2,7 +2,16 @@
 
 import { useState } from "react"
 import { X, Loader2 } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { CERTIFICATE_STATUS } from "../../../../api/evaluations/types"
+
+const CERTIFICATE_STATUS_KEYS: Record<string, string> = {
+  NOT_ISSUED: 'notIssued',
+  PENDING: 'pending',
+  ISSUED: 'issued',
+  REVOKED: 'revoked',
+  EXPIRED: 'expired',
+}
 
 interface CompleteEvaluationModalProps {
   isOpen: boolean
@@ -19,6 +28,7 @@ export default function CompleteEvaluationModal({
   candidateName,
   certificateEnabled = true,
 }: CompleteEvaluationModalProps) {
+  const t = useTranslations("dashboard.indivisual.evaluations.completeModal")
   const [formData, setFormData] = useState({
     score: "",
     feedback: "",
@@ -33,7 +43,7 @@ export default function CompleteEvaluationModal({
 
     const newErrors: Record<string, string> = {}
     if (formData.score && (Number(formData.score) < 0 || Number(formData.score) > 100)) {
-      newErrors.score = "Score must be between 0 and 100"
+      newErrors.score = t("scoreError")
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -67,20 +77,20 @@ export default function CompleteEvaluationModal({
 
       <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md pointer-events-auto relative">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-bold text-gray-900">Complete Evaluation</h3>
+          <h3 className="text-lg font-bold text-gray-900">{t("title")}</h3>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         <p className="text-sm text-gray-600 mb-4">
-          Completing evaluation for <span className="font-medium">{candidateName}</span>
+          {t("completingFor")} <span className="font-medium">{candidateName}</span>
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Score (0-100)
+              {t("scoreLabel")}
             </label>
             <input
               type="number"
@@ -98,14 +108,14 @@ export default function CompleteEvaluationModal({
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Feedback
+              {t("feedbackLabel")}
             </label>
             <textarea
               value={formData.feedback}
               onChange={(e) => setFormData({ ...formData, feedback: e.target.value })}
               rows={3}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-              placeholder="Enter feedback..."
+              placeholder={t("feedbackPlaceholder")}
             />
           </div>
 
@@ -113,7 +123,7 @@ export default function CompleteEvaluationModal({
             <>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Certificate Status
+                  {t("certificateStatusLabel")}
                 </label>
                 <select
                   value={formData.certificate_status}
@@ -122,7 +132,7 @@ export default function CompleteEvaluationModal({
                 >
                   {CERTIFICATE_STATUS.map(status => (
                     <option key={status.value} value={status.value}>
-                      {status.label}
+                      {t(`certificateStatus.${CERTIFICATE_STATUS_KEYS[status.value]}`)}
                     </option>
                   ))}
                 </select>
@@ -131,7 +141,7 @@ export default function CompleteEvaluationModal({
               {formData.certificate_status === 'ISSUED' && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Certificate URL
+                    {t("certificateUrlLabel")}
                   </label>
                   <input
                     type="url"
@@ -152,7 +162,7 @@ export default function CompleteEvaluationModal({
               className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg text-sm hover:bg-gray-50"
               disabled={submitting}
             >
-              Cancel
+              {t("cancel")}
             </button>
             <button
               type="submit"
@@ -162,10 +172,10 @@ export default function CompleteEvaluationModal({
               {submitting ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Saving...
+                  {t("saving")}
                 </>
               ) : (
-                'Complete Evaluation'
+                t("submit")
               )}
             </button>
           </div>

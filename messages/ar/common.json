@@ -1437,6 +1437,140 @@
           "english": "الإنجليزية",
           "spanish": "الإسبانية",
           "arabic": "العربية"
+        },
+        "page": {
+          "filtersLabel": "عوامل التصفية:",
+          "allTypes": "جميع الأنواع",
+          "allStatus": "جميع الحالات",
+          "searchPlaceholder": "البحث عن المرشحين...",
+          "heading": "إدارة التقييمات",
+          "startAiInterview": "+ بدء مقابلة بالذكاء الاصطناعي",
+          "scheduleEvaluation": "+ جدولة تقييم",
+          "cancelConfirm": "هل أنت متأكد أنك تريد إلغاء هذا التقييم؟",
+          "scheduleFailed": "فشلت جدولة التقييم. يرجى المحاولة مرة أخرى.",
+          "updateFailed": "فشل تحديث التقييم. يرجى المحاولة مرة أخرى."
+        },
+        "table": {
+          "headers": {
+            "candidate": "المرشح",
+            "evaluationType": "نوع التقييم",
+            "status": "الحالة",
+            "scheduledDate": "تاريخ الجدولة",
+            "duration": "المدة",
+            "score": "النتيجة",
+            "actions": "الإجراءات"
+          },
+          "noEvaluations": "لم يتم العثور على تقييمات",
+          "durationMinutes": "{value} دقيقة",
+          "scoreTooltip": "متوسط درجات السلامة والنظافة والتواصل والمهمة والسلوك — راجع عرض التفاصيل للتفصيل الكامل",
+          "itemLabelPlural": "تقييمات",
+          "actions": {
+            "viewDetails": "عرض التفاصيل",
+            "viewAiResults": "عرض نتائج الذكاء الاصطناعي",
+            "joinInterview": "الانضمام إلى المقابلة",
+            "copyAccessLink": "نسخ رابط دخول المرشح",
+            "copyMeetingLink": "نسخ رابط الاجتماع",
+            "copied": "تم النسخ!",
+            "moreActions": "المزيد من الإجراءات",
+            "edit": "تعديل",
+            "reschedule": "إعادة الجدولة",
+            "markComplete": "وضع علامة كمكتمل",
+            "startAiInterview": "بدء مقابلة بالذكاء الاصطناعي",
+            "cancel": "إلغاء"
+          }
+        },
+        "scheduleModal": {
+          "titles": {
+            "create": "جدولة تقييم جديد",
+            "edit": "تعديل التقييم",
+            "view": "تفاصيل التقييم",
+            "reschedule": "إعادة جدولة التقييم"
+          },
+          "candidateInfo": {
+            "heading": "معلومات المرشح",
+            "name": "الاسم",
+            "email": "البريد الإلكتروني",
+            "jobRole": "المسمى الوظيفي",
+            "preferredLanguage": "اللغة المفضلة"
+          },
+          "evaluationType": "نوع التقييم",
+          "status": "الحالة",
+          "scheduledDate": "تاريخ الجدولة",
+          "duration": "المدة",
+          "durationMinutesValue": "{value} دقيقة",
+          "meetingDetailsHeading": "تفاصيل الاجتماع",
+          "interviewAccessHeading": "الوصول إلى المقابلة",
+          "aiInterviewBadge": "جلسة مقابلة بالذكاء الاصطناعي",
+          "interviewerAccess": "وصول المُقابِل",
+          "joinInterview": "الانضمام إلى المقابلة",
+          "interviewerOnlyNote": "للاستخدام من قبل المُقابِل فقط.",
+          "candidateAccessLink": "رابط دخول المرشح",
+          "candidateOnlyNote": "للاستخدام من قبل المرشح فقط.",
+          "meetingId": "معرّف الاجتماع: {value}",
+          "password": "كلمة المرور: {value}",
+          "inPerson": "حضوري",
+          "meetingLink": "رابط الاجتماع",
+          "resultsHeading": "النتائج",
+          "aiScoreLabel": "نتيجة محرك القواعد الذكي",
+          "scoringPending": "التقييم قيد الانتظار",
+          "certificate": "الشهادة",
+          "viewCertificate": "عرض الشهادة",
+          "feedback": "الملاحظات",
+          "scheduledBy": "تمت الجدولة بواسطة: {name}",
+          "created": "تاريخ الإنشاء: {date}",
+          "selectCandidateLabel": "اختر المرشح",
+          "selectCandidatePlaceholder": "اختر مرشحًا",
+          "candidateLabel": "المرشح:",
+          "durationLabel": "المدة (بالدقائق)",
+          "scheduledDateTimeLabel": "تاريخ ووقت الجدولة",
+          "aiLinkNote": "سيتم إنشاء رابط مقابلة بالذكاء الاصطناعي تلقائيًا بمجرد جدولة هذا التقييم، وإرساله بالبريد الإلكتروني إلى المرشح مع التاريخ والوقت.",
+          "online": "عبر الإنترنت",
+          "inPersonOption": "حضوري",
+          "meetingLinkPlaceholder": "https://meet.google.com/...",
+          "meetingIdLabel": "معرّف الاجتماع",
+          "passwordLabel": "كلمة المرور",
+          "locationLabel": "الموقع",
+          "locationPlaceholder": "عنوان المكتب، رقم الغرفة، إلخ.",
+          "currentScheduledTime": "الوقت المجدول حاليًا: {date}",
+          "newDateTimeLabel": "التاريخ والوقت الجديد",
+          "rescheduleReasonLabel": "سبب إعادة الجدولة (اختياري)",
+          "reasonPlaceholder": "أدخل السبب...",
+          "buttons": {
+            "cancel": "إلغاء",
+            "saving": "جارٍ الحفظ...",
+            "rescheduling": "جارٍ إعادة الجدولة...",
+            "saveChanges": "حفظ التغييرات",
+            "confirmReschedule": "تأكيد إعادة الجدولة",
+            "close": "إغلاق"
+          },
+          "errors": {
+            "candidateRequired": "يرجى اختيار مرشح",
+            "dateRequired": "يرجى اختيار تاريخ ووقت",
+            "dateMustBeFuture": "يجب أن يكون تاريخ الجدولة في المستقبل",
+            "durationMin": "يجب ألا تقل المدة عن 15 دقيقة",
+            "newDateRequired": "يرجى اختيار تاريخ ووقت جديدين",
+            "newDateMustBeFuture": "يجب أن يكون التاريخ الجديد في المستقبل"
+          }
+        },
+        "completeModal": {
+          "title": "إكمال التقييم",
+          "completingFor": "إكمال التقييم الخاص بـ",
+          "scoreLabel": "النتيجة (0-100)",
+          "scoreError": "يجب أن تكون النتيجة بين 0 و100",
+          "feedbackLabel": "الملاحظات",
+          "feedbackPlaceholder": "أدخل الملاحظات...",
+          "certificateStatusLabel": "حالة الشهادة",
+          "certificateUrlLabel": "رابط الشهادة",
+          "cancel": "إلغاء",
+          "saving": "جارٍ الحفظ...",
+          "submit": "إكمال التقييم",
+          "certificateStatus": {
+            "notIssued": "لم تصدر",
+            "pending": "قيد الانتظار",
+            "issued": "صادرة",
+            "revoked": "ملغاة",
+            "expired": "منتهية الصلاحية"
+          }
         }
       },
 
@@ -1751,7 +1885,10 @@
         "status": {
           "inProgress": "قيد التنفيذ",
           "scheduled": "مجدولة",
-          "completed": "مكتملة"
+          "rescheduled": "أعيدت جدولتها",
+          "completed": "مكتملة",
+          "cancelled": "ملغاة",
+          "noShow": "لم يحضر"
         },
         "noEvaluationsFound": "لم يتم العثور على تقييمات",
         "noDate": "لا يوجد تاريخ"
