@@ -1787,6 +1787,44 @@
           }
         }
       },
+
+      "settings": {
+        "edit-profile-tab": {
+          "profilePicture": {
+            "heading": "Profile Picture",
+            "subtitle": "Update your profile picture",
+            "change": "Change"
+          },
+          "updateSuccess": "Profile updated successfully!",
+          "fields": {
+            "firstName": "First Name",
+            "lastName": "Last Name",
+            "email": "Email",
+            "phoneNumber": "Phone Number",
+            "companyName": "Company Name",
+            "registrationNumber": "Registration Number",
+            "companySize": "Company Size",
+            "selectSize": "Select size",
+            "industry": "Industry",
+            "industryPlaceholder": "e.g., Technology, Healthcare",
+            "website": "Website",
+            "country": "Country",
+            "city": "City",
+            "preferredLanguage": "Preferred Language",
+            "address": "Address",
+            "addressPlaceholder": "Company address"
+          },
+          "companySizes": {
+            "1-10": "1-10 employees",
+            "11-50": "11-50 employees",
+            "51-200": "51-200 employees",
+            "201-1000": "201-1000 employees",
+            "1000+": "1000+ employees"
+          },
+          "saving": "Saving...",
+          "save": "Save"
+        }
+      },
        "payment": {
         "title": "The Right Plan for Your Business",
         "subtitle": "Based on your selected role and coverage needs. You can upgrade or downgrade anytime.",

@@ -2,10 +2,12 @@
 
 import type React from "react"
 import { useState } from "react"
+import { useTranslations } from "next-intl"
 import { useProfile } from "../../../../../hooks/useProfile"
 import { Loader2, CheckCircle, AlertCircle } from "lucide-react"
 
 export default function SecurityTab() {
+  const t = useTranslations("dashboard.indivisual.settings.security-tab")
   const { changePassword, loading, error } = useProfile()
 
   const [formData, setFormData] = useState({
@@ -57,8 +59,8 @@ export default function SecurityTab() {
           <div className="p-4 bg-green-50 border border-green-200 rounded-lg flex items-start gap-3">
             <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 shrink-0" />
             <div>
-              <p className="text-sm font-medium text-green-800">Password changed successfully!</p>
-              <p className="text-sm text-green-600">Please use your new password next time you log in.</p>
+              <p className="text-sm font-medium text-green-800">{t("success.title")}</p>
+              <p className="text-sm text-green-600">{t("success.message")}</p>
             </div>
           </div>
         )}
@@ -72,20 +74,20 @@ export default function SecurityTab() {
 
         <section className="border-b pb-6 sm:pb-8">
           <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6">
-            Change Password
+            {t("changePasswordTitle")}
           </h3>
 
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Current Password *
+                {t("currentPassword")} *
               </label>
               <input
                 type="password"
                 name="current_password"
                 value={formData.current_password}
                 onChange={handleChange}
-                placeholder="Enter current password"
+                placeholder={t("currentPasswordPlaceholder")}
                 required
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
@@ -93,14 +95,14 @@ export default function SecurityTab() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                New Password *
+                {t("newPassword")} *
               </label>
               <input
                 type="password"
                 name="new_password"
                 value={formData.new_password}
                 onChange={handleChange}
-                placeholder="Enter new password"
+                placeholder={t("newPasswordPlaceholder")}
                 required
                 minLength={8}
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -127,7 +129,7 @@ export default function SecurityTab() {
                   ) : (
                     <span className="text-red-600 font-bold text-xs">✕</span>
                   )}
-                  <span className="text-xs text-gray-600">8 characters minimum</span>
+                  <span className="text-xs text-gray-600">{t("strength.minLength")}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   {passwordValidation.hasNumber ? (
@@ -135,7 +137,7 @@ export default function SecurityTab() {
                   ) : (
                     <span className="text-red-600 font-bold text-xs">✕</span>
                   )}
-                  <span className="text-xs text-gray-600">Contains a number</span>
+                  <span className="text-xs text-gray-600">{t("strength.hasNumber")}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   {passwordValidation.hasSymbol ? (
@@ -143,21 +145,21 @@ export default function SecurityTab() {
                   ) : (
                     <span className="text-red-600 font-bold text-xs">✕</span>
                   )}
-                  <span className="text-xs text-gray-600">Contains a symbol</span>
+                  <span className="text-xs text-gray-600">{t("strength.hasSymbol")}</span>
                 </div>
               </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Confirm New Password *
+                {t("confirmNewPassword")} *
               </label>
               <input
                 type="password"
                 name="confirm_new_password"
                 value={formData.confirm_new_password}
                 onChange={handleChange}
-                placeholder="Confirm new password"
+                placeholder={t("confirmNewPasswordPlaceholder")}
                 required
                 className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                   formData.new_password && formData.confirm_new_password &&
@@ -168,7 +170,7 @@ export default function SecurityTab() {
               />
               {formData.new_password && formData.confirm_new_password &&
                formData.new_password !== formData.confirm_new_password && (
-                <p className="mt-1 text-xs text-red-600">Passwords do not match</p>
+                <p className="mt-1 text-xs text-red-600">{t("passwordMismatch")}</p>
               )}
             </div>
           </div>
@@ -176,16 +178,16 @@ export default function SecurityTab() {
 
         <section className="bg-red-50 border border-red-200 rounded-lg p-4 sm:p-6">
           <h3 className="text-base sm:text-lg font-semibold text-red-600 mb-2">
-            Delete Account
+            {t("deleteAccountTitle")}
           </h3>
           <p className="text-sm text-red-600 mb-4">
-            Deleting your account is permanent and will remove all associated data. This action cannot be undone.
+            {t("deleteAccountSubtitle")}
           </p>
           <button
             type="button"
             className="w-full sm:w-auto px-6 py-2.5 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition"
           >
-            Delete Account
+            {t("deleteButton")}
           </button>
         </section>
 
@@ -198,10 +200,10 @@ export default function SecurityTab() {
             {loading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Changing...
+                {t("buttonChanging")}
               </>
             ) : (
-              "Save Changes"
+              t("saveButton")
             )}
           </button>
         </div>
