@@ -2685,6 +2685,13 @@
         "tryAgain": "Try Again",
         "initFailed": "Failed to initialize payment setup"
       },
+      "paymentMethodForm": {
+        "stripeNotInitialized": "Stripe not initialized",
+        "processing": "Processing...",
+        "saveButton": "Save Payment Method",
+        "setupIncomplete": "Setup did not complete successfully",
+        "genericError": "An error occurred"
+      },
       "usageMeter": {
         "remaining": "{count} remaining",
         "usedOf": "({used} / {limit} {unit} used)",

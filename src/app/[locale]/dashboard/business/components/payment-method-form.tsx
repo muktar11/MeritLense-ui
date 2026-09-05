@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { Loader2 } from 'lucide-react';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 interface PaymentMethodFormProps {
   clientSecret: string;
@@ -16,8 +16,9 @@ export function PaymentMethodForm({
   clientSecret,
   onSuccess,
   onError,
-  submitButtonText = 'Save Payment Method'
+  submitButtonText
 }: PaymentMethodFormProps) {
+  const t = useTranslations('dashboard.indivisual.paymentMethodForm');
   const stripe = useStripe();
   const locale = useLocale();
   const elements = useElements();
@@ -28,7 +29,7 @@ export function PaymentMethodForm({
     e.preventDefault();
 
     if (!stripe || !elements) {
-      setError('Stripe not initialized');
+      setError(t('stripeNotInitialized'));
       return;
     }
 
@@ -49,19 +50,19 @@ export function PaymentMethodForm({
       }
 
       console.log('Setup successful:', setupIntent);
-      
+
       if (setupIntent?.status === 'succeeded') {
         // Wait a moment for Stripe to process
         await new Promise(resolve => setTimeout(resolve, 1500));
         onSuccess?.();
       } else {
-        throw new Error('Setup did not complete successfully');
+        throw new Error(t('setupIncomplete'));
       }
-      
+
     } catch (err: any) {
       console.error('Setup error:', err);
-      setError(err.message || 'An error occurred');
-      onError?.(err.message || 'An error occurred');
+      setError(err.message || t('genericError'));
+      onError?.(err.message || t('genericError'));
     } finally {
       setLoading(false);
     }
@@ -70,7 +71,7 @@ export function PaymentMethodForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <PaymentElement />
-      
+
       {error && (
         <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm">
           {error}
@@ -85,10 +86,10 @@ export function PaymentMethodForm({
         {loading ? (
           <>
             <Loader2 className="w-4 h-4 animate-spin" />
-            Processing...
+            {t('processing')}
           </>
         ) : (
-          submitButtonText
+          submitButtonText ?? t('saveButton')
         )}
       </button>
     </form>

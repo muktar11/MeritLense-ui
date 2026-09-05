@@ -2510,6 +2510,13 @@
         "tryAgain": "إعادة المحاولة",
         "initFailed": "فشل تهيئة إعداد الدفع"
       },
+      "paymentMethodForm": {
+        "stripeNotInitialized": "لم يتم تهيئة Stripe",
+        "processing": "جارٍ المعالجة...",
+        "saveButton": "حفظ طريقة الدفع",
+        "setupIncomplete": "لم يكتمل الإعداد بنجاح",
+        "genericError": "حدث خطأ ما"
+      },
       "usageMeter": {
         "remaining": "{count} متبقٍ",
         "usedOf": "({used} / {limit} {unit} مستخدَم)",
