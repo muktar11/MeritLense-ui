@@ -1505,6 +1505,13 @@
         "more": "المزيد",
         "logout": "تسجيل الخروج",
 
+        "edit": "تعديل",
+        "cancel": "إلغاء",
+        "addButton": "إضافة",
+        "updateSuccess": "تم تحديث ملف الشركة بنجاح!",
+        "noAddressProvided": "لم يتم تقديم عنوان",
+        "bothNotifications": "كلاهما",
+
         "companyDescription": "وصف الشركة",
         "uploadLogo": "رفع الشعار",
         "companyName": "اسم الشركة",
@@ -1513,6 +1520,20 @@
         "sales": "مبيعات",
         "market": "تسويق",
         "addRole": "إضافة دور",
+        "savingRole": "جارٍ الحفظ...",
+        "rolePlaceholder": "مثال: وكالة، توظيف",
+        "removeRoleAriaLabel": "إزالة {role}",
+        "logoErrors": {
+          "invalidType": "يرجى اختيار صورة بصيغة JPG أو PNG أو WEBP.",
+          "tooLarge": "يجب أن يكون الشعار أصغر من 5 ميغابايت.",
+          "uploadFailed": "فشل رفع الشعار. يرجى المحاولة مرة أخرى."
+        },
+        "roleErrors": {
+          "saveFailed": "فشل الحفظ. يرجى المحاولة مرة أخرى.",
+          "alreadyAdded": "هذا الدور مضاف بالفعل.",
+          "maxCount": "يمكنك إضافة حتى {count} أدوار.",
+          "maxLength": "يجب ألا تتجاوز الأدوار {count} حرفًا."
+        },
 
         "email": "البريد الإلكتروني",
         "address": "العنوان",
@@ -1523,18 +1544,30 @@
 
         "manageUsers": "إدارة المستخدمين",
         "addUser": "إضافة مستخدم",
+        "noTeamMembers": "لا يوجد أعضاء فريق بعد. ادعُ أول عضو في فريقك!",
+        "memberActive": "نشط",
+        "memberInactive": "غير نشط",
+        "joinedLabel": "انضم في: {date}",
+        "itemLabelPlural": "أعضاء الفريق",
+        "removeMemberConfirm": "هل أنت متأكد أنك تريد إزالة عضو الفريق هذا؟",
+        "downloadPdfTooltip": "تحميل PDF",
+        "viewAuditTrailTooltip": "عرض سجل التدقيق",
 
         "columns": {
           "user": "المستخدم",
           "userRole": "دور المستخدم",
           "systemRole": "دور النظام",
-          "permission": "الصلاحيات"
+          "permission": "الصلاحيات",
+          "status": "الحالة"
         },
 
         "roles": {
           "businessManager": "مدير أعمال",
           "agent": "وكيل",
-          "analyst": "محلل"
+          "analyst": "محلل",
+          "hrManager": "مدير موارد بشرية",
+          "recruiter": "موظف توظيف",
+          "juniorRecruiter": "موظف توظيف مبتدئ"
         },
 
         "permissions": {
