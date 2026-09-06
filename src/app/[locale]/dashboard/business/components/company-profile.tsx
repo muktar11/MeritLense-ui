@@ -23,6 +23,7 @@ import type { Agreement } from "@/app/api/agreements/types"
 import companyService from "@/app/api/company/endpoints"
 import TablePagination from "@/components/ui/table-pagination"
 import { format } from "date-fns"
+import { ar } from "date-fns/locale"
 
 const REQUIRED_AGREEMENT_TYPES = ["B2B_AGREEMENT", "DPA"] as const
 const TEAM_MEMBERS_PAGE_SIZE = 10
@@ -33,6 +34,8 @@ const ROLE_MAX_LENGTH = 30
 
 export function CompanyProfile() {
   const t = useTranslations("dashboard.business.company-profile")
+  const tLanguages = useTranslations("dashboard.indivisual.settings.edit-profile-tab.languages")
+  const tAgreementDocs = useTranslations("dashboard.business.signAgreements.docLabels")
   const locale = useLocale()
   const router = useRouter()
   const { profile, loading, error, updateProfile } = useProfile()
@@ -126,11 +129,11 @@ export function CompanyProfile() {
 
     setLogoError(null)
     if (!LOGO_ACCEPTED_TYPES.includes(file.type)) {
-      setLogoError("Please choose a JPG, PNG, or WEBP image.")
+      setLogoError(t("logoErrors.invalidType"))
       return
     }
     if (file.size > LOGO_MAX_BYTES) {
-      setLogoError("Logo must be smaller than 5MB.")
+      setLogoError(t("logoErrors.tooLarge"))
       return
     }
 
@@ -140,7 +143,7 @@ export function CompanyProfile() {
       setCompanyLogo(company.logo)
     } catch (uploadError) {
       console.error('Failed to upload company logo:', uploadError)
-      setLogoError("Failed to upload logo. Please try again.")
+      setLogoError(t("logoErrors.uploadFailed"))
     } finally {
       setLogoUploading(false)
     }
@@ -155,7 +158,7 @@ export function CompanyProfile() {
       return true
     } catch (saveError) {
       console.error('Failed to update company roles:', saveError)
-      setRolesError("Failed to save. Please try again.")
+      setRolesError(t("roleErrors.saveFailed"))
       return false
     } finally {
       setRolesSaving(false)
@@ -176,15 +179,15 @@ export function CompanyProfile() {
       return
     }
     if (companyRoles.includes(role)) {
-      setRolesError("That role is already added.")
+      setRolesError(t("roleErrors.alreadyAdded"))
       return
     }
     if (companyRoles.length >= ROLES_MAX_COUNT) {
-      setRolesError(`You can add up to ${ROLES_MAX_COUNT} roles.`)
+      setRolesError(t("roleErrors.maxCount", { count: ROLES_MAX_COUNT }))
       return
     }
     if (role.length > ROLE_MAX_LENGTH) {
-      setRolesError(`Roles must be ${ROLE_MAX_LENGTH} characters or fewer.`)
+      setRolesError(t("roleErrors.maxLength", { count: ROLE_MAX_LENGTH }))
       return
     }
     const success = await saveRoles([...companyRoles, role])
@@ -274,7 +277,7 @@ export function CompanyProfile() {
   }
 
   const handleRemoveMember = async (memberId: number) => {
-    if (!confirm('Are you sure you want to remove this team member?')) return
+    if (!confirm(t('removeMemberConfirm'))) return
     
     setUpdatingMember(memberId)
     try {
@@ -346,7 +349,7 @@ export function CompanyProfile() {
       <div className="space-y-6">
         {saveSuccess && (
           <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-            <p className="text-sm text-green-600">Company profile updated successfully!</p>
+            <p className="text-sm text-green-600">{t("updateSuccess")}</p>
           </div>
         )}
 
@@ -365,24 +368,24 @@ export function CompanyProfile() {
                 size="sm"
                 onClick={() => setIsEditing(true)}
               >
-                Edit
+                {t("edit")}
               </Button>
             ) : (
               <div className="flex gap-2">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   onClick={() => setIsEditing(false)}
                 >
-                  Cancel
+                  {t("cancel")}
                 </Button>
-                <Button 
+                <Button
                   size="sm"
                   onClick={handleSave}
                   disabled={loading}
                 >
                   {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                  Save
+                  {t("save")}
                 </Button>
               </div>
             )}
@@ -452,7 +455,7 @@ export function CompanyProfile() {
                             onClick={() => handleRemoveRole(role)}
                             disabled={rolesSaving}
                             className="hover:text-purple-900 disabled:opacity-50"
-                            aria-label={`Remove ${role}`}
+                            aria-label={t("removeRoleAriaLabel", { role })}
                           >
                             ×
                           </button>
@@ -474,7 +477,7 @@ export function CompanyProfile() {
                             if (e.key === "Enter") { e.preventDefault(); handleConfirmAddRole() }
                             if (e.key === "Escape") setIsAddingRole(false)
                           }}
-                          placeholder="e.g. Agency, Staffing"
+                          placeholder={t("rolePlaceholder")}
                           maxLength={ROLE_MAX_LENGTH}
                           autoFocus
                           disabled={rolesSaving}
@@ -486,7 +489,7 @@ export function CompanyProfile() {
                           disabled={rolesSaving}
                           className="text-sm font-medium text-purple-600 hover:underline disabled:opacity-50"
                         >
-                          {rolesSaving ? "Saving..." : "Add"}
+                          {rolesSaving ? t("savingRole") : t("addButton")}
                         </button>
                         <button
                           type="button"
@@ -494,7 +497,7 @@ export function CompanyProfile() {
                           disabled={rolesSaving}
                           className="text-sm text-muted-foreground hover:underline disabled:opacity-50"
                         >
-                          Cancel
+                          {t("cancel")}
                         </button>
                       </div>
                     ) : (
@@ -596,13 +599,13 @@ export function CompanyProfile() {
                     >
                       {LANGUAGES.map((lang) => (
                         <option key={lang.key} value={lang.key}>
-                          {lang.label}
+                          {tLanguages(lang.key)}
                         </option>
                       ))}
                     </select>
                   ) : (
                     <p className="text-sm font-medium truncate">
-                      {LANGUAGES.find(l => l.key === formData.preferred_language)?.label || formData.preferred_language}
+                      {formData.preferred_language ? tLanguages(formData.preferred_language) : formData.preferred_language}
                     </p>
                   )}
                 </div>
@@ -620,7 +623,7 @@ export function CompanyProfile() {
                   className="w-full mt-1 px-3 py-2 border rounded-lg"
                 />
               ) : (
-                <p className="text-sm">{formData.address || "No address provided"}</p>
+                <p className="text-sm">{formData.address || t("noAddressProvided")}</p>
               )}
             </div>
           </CardContent>
@@ -657,7 +660,7 @@ export function CompanyProfile() {
                             <TableHead>{t("columns.user")}</TableHead>
                             <TableHead>{t("columns.userRole")}</TableHead>
                             <TableHead>{t("columns.permission")}</TableHead>
-                            <TableHead>Status</TableHead>
+                            <TableHead>{t("columns.status")}</TableHead>
                             <TableHead></TableHead>
                           </TableRow>
                         </TableHeader>
@@ -665,7 +668,7 @@ export function CompanyProfile() {
 {teamMembers.length === 0 && pendingInvitations.length === 0 ? (
   <TableRow>
     <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-      No team members yet. Invite your first team member!
+      {t("noTeamMembers")}
     </TableCell>
   </TableRow>
 ) : (
@@ -679,7 +682,7 @@ export function CompanyProfile() {
           <p className="text-xs text-muted-foreground">{member.email}</p>
           {member.invitation_accepted_at && (
             <p className="text-xs text-gray-400 mt-1">
-              Joined: {format(new Date(member.invitation_accepted_at), 'MMM d, yyyy')}
+              {t("joinedLabel", { date: format(new Date(member.invitation_accepted_at), 'MMM d, yyyy', locale === 'ar' ? { locale: ar } : undefined) })}
             </p>
           )}
         </div>
@@ -699,12 +702,12 @@ export function CompanyProfile() {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="business-manager">Business Manager</SelectItem>
-            <SelectItem value="agent">Agent</SelectItem>
-            <SelectItem value="analyst">Analyst</SelectItem>
-            <SelectItem value="hr-manager">HR Manager</SelectItem>
-            <SelectItem value="recruiter">Recruiter</SelectItem>
-            <SelectItem value="junior-recruiter">Junior Recruiter</SelectItem>
+            <SelectItem value="business-manager">{t("roles.businessManager")}</SelectItem>
+            <SelectItem value="agent">{t("roles.agent")}</SelectItem>
+            <SelectItem value="analyst">{t("roles.analyst")}</SelectItem>
+            <SelectItem value="hr-manager">{t("roles.hrManager")}</SelectItem>
+            <SelectItem value="recruiter">{t("roles.recruiter")}</SelectItem>
+            <SelectItem value="junior-recruiter">{t("roles.juniorRecruiter")}</SelectItem>
           </SelectContent>
         </Select>
       </TableCell>
@@ -726,9 +729,9 @@ export function CompanyProfile() {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="full-access">Full Access</SelectItem>
-            <SelectItem value="standard">Standard</SelectItem>
-            <SelectItem value="read-only">Read Only</SelectItem>
+            <SelectItem value="full-access">{t("permissions.fullAccess")}</SelectItem>
+            <SelectItem value="standard">{t("permissions.standard")}</SelectItem>
+            <SelectItem value="read-only">{t("permissions.readOnly")}</SelectItem>
           </SelectContent>
         </Select>
       </TableCell>
@@ -736,12 +739,12 @@ export function CompanyProfile() {
         {member.is_active ? (
           <span className="inline-flex items-center gap-1 text-xs text-green-600">
             <UserCheck className="w-3 h-3" />
-            Active
+            {t("memberActive")}
           </span>
         ) : (
           <span className="inline-flex items-center gap-1 text-xs text-gray-400">
             <Clock className="w-3 h-3" />
-            Inactive
+            {t("memberInactive")}
           </span>
         )}
       </TableCell>
@@ -772,7 +775,7 @@ export function CompanyProfile() {
                         totalItems={teamMembers.length}
                         pageSize={TEAM_MEMBERS_PAGE_SIZE}
                         onPageChange={setTeamMembersPage}
-                        itemLabel="team members"
+                        itemLabel={t("itemLabelPlural")}
                       />
                     )}
                   </>
@@ -852,7 +855,7 @@ export function CompanyProfile() {
                       {REQUIRED_AGREEMENT_TYPES.map((type) => {
                         const agreement = agreements.find((a) => a.agreement_type === type)
                         const isSigned = agreement?.status === "SIGNED"
-                        const label = agreement?.agreement_type_display || type
+                        const label = type === "B2B_AGREEMENT" ? tAgreementDocs("b2bAgreement") : tAgreementDocs("dpa")
                         return (
                           <div key={type} className="flex items-center justify-between text-xs gap-2">
                             <span className="truncate">{label}</span>
@@ -871,7 +874,7 @@ export function CompanyProfile() {
                                   <button
                                     type="button"
                                     onClick={() => handleDownloadAgreement(agreement.id)}
-                                    title="Download PDF"
+                                    title={t("downloadPdfTooltip")}
                                     className="text-gray-400 hover:text-purple-600"
                                   >
                                     <Download className="w-3.5 h-3.5" />
@@ -879,7 +882,7 @@ export function CompanyProfile() {
                                   <button
                                     type="button"
                                     onClick={() => setAuditTarget({ id: agreement.id, label })}
-                                    title="View Audit Trail"
+                                    title={t("viewAuditTrailTooltip")}
                                     className="text-gray-400 hover:text-purple-600"
                                   >
                                     <History className="w-3.5 h-3.5" />
@@ -948,7 +951,7 @@ export function CompanyProfile() {
                     <SelectContent>
                       <SelectItem value="email">{t("email")}</SelectItem>
                       <SelectItem value="push">{t("push")}</SelectItem>
-                      <SelectItem value="both">Both</SelectItem>
+                      <SelectItem value="both">{t("bothNotifications")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

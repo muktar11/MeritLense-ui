@@ -1685,6 +1685,13 @@
         "more": "More",
         "logout": "Logout",
 
+        "edit": "Edit",
+        "cancel": "Cancel",
+        "addButton": "Add",
+        "updateSuccess": "Company profile updated successfully!",
+        "noAddressProvided": "No address provided",
+        "bothNotifications": "Both",
+
         "companyDescription": "Company Description",
         "uploadLogo": "Upload Logo",
         "companyName": "Company Name",
@@ -1693,6 +1700,20 @@
         "sales": "Sales",
         "market": "Market",
         "addRole": "Add Role",
+        "savingRole": "Saving...",
+        "rolePlaceholder": "e.g. Agency, Staffing",
+        "removeRoleAriaLabel": "Remove {role}",
+        "logoErrors": {
+          "invalidType": "Please choose a JPG, PNG, or WEBP image.",
+          "tooLarge": "Logo must be smaller than 5MB.",
+          "uploadFailed": "Failed to upload logo. Please try again."
+        },
+        "roleErrors": {
+          "saveFailed": "Failed to save. Please try again.",
+          "alreadyAdded": "That role is already added.",
+          "maxCount": "You can add up to {count} roles.",
+          "maxLength": "Roles must be {count} characters or fewer."
+        },
 
         "email": "Email",
         "address": "Address",
@@ -1704,18 +1725,30 @@
 
         "manageUsers": "Manage Users",
         "addUser": "Add User",
+        "noTeamMembers": "No team members yet. Invite your first team member!",
+        "memberActive": "Active",
+        "memberInactive": "Inactive",
+        "joinedLabel": "Joined: {date}",
+        "itemLabelPlural": "team members",
+        "removeMemberConfirm": "Are you sure you want to remove this team member?",
+        "downloadPdfTooltip": "Download PDF",
+        "viewAuditTrailTooltip": "View Audit Trail",
 
         "columns": {
           "user": "User",
           "userRole": "User Role",
           "systemRole": "System Role",
-          "permission": "Permission"
+          "permission": "Permission",
+          "status": "Status"
         },
 
         "roles": {
           "businessManager": "Business Manager",
           "agent": "Agent",
-          "analyst": "Analyst"
+          "analyst": "Analyst",
+          "hrManager": "HR Manager",
+          "recruiter": "Recruiter",
+          "juniorRecruiter": "Junior Recruiter"
         },
 
         "permissions": {
