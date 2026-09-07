@@ -736,6 +736,7 @@
   "pages_list": {
     "overview": "لوحة القيادة",
     "user_management": "ملفات المستخدمين",
+    "business_candidate_management": "إدارة المرشحين",
     "candidate_management": "إدارة المرشحين",
     "business_management": "إدارة الشركات",
     "system_configuration": "إعدادات النظام",
@@ -754,7 +755,16 @@
         "subtitle": "مراقبة أداء المنصة والمقاييس الرئيسية",
          "B2B": "من شركة إلى شركة",
          "B2C": "من شركة إلى مستهلك",
-  
+         "users": "المستخدمون",
+         "companies": "الشركات",
+         "evaluations": "التقييمات",
+         "subscribers": "المشتركون",
+         "revenue": "الإيرادات",
+         "totalRevenue": "إجمالي الإيرادات",
+         "paymentRevenue": "المدفوعات لمرة واحدة",
+         "subscriptionRevenue": "الاشتراكات",
+         "cumulativeRevenue": "تراكمي",
+
          "stats": {
     "totalUsers": "إجمالي المستخدمين",
     "activeAgencies": "الوكالات النشطة",
@@ -771,9 +781,22 @@
     "systemLoadTrend": "اتجاه تحميل النظام",
     "userGrowthTrend": "اتجاه نمو المستخدمين",
     "evaluationTypesDistribution": "توزيع أنواع التقييم",
-    "packageContribution": "مساهمة باقات الاشتراك"
+    "packageContribution": "مساهمة باقات الاشتراك",
+    "revenueTrend": "اتجاه الإيرادات"
   },
         "months": {
+          "1": "يناير",
+          "2": "فبراير",
+          "3": "مارس",
+          "4": "أبريل",
+          "5": "مايو",
+          "6": "يونيو",
+          "7": "يوليو",
+          "8": "أغسطس",
+          "9": "سبتمبر",
+          "10": "أكتوبر",
+          "11": "نوفمبر",
+          "12": "ديسمبر",
           "jan": "يناير",
           "feb": "فبراير",
           "mar": "مارس",
@@ -807,6 +830,14 @@
         "title": "إدارة المستخدمين والصلاحيات",
         "access": "الوصول: للمشرف العام فقط",
 
+        "search": {
+          "placeholder": "بحث عن المستخدمين..."
+        },
+        "filters": {
+          "allRoles": "جميع الأدوار",
+          "allStatus": "جميع الحالات"
+        },
+
         "actions": {
           "createUser": "إنشاء مستخدم داخلي",
           "activityLog": "عرض سجل الأنشطة العام"
@@ -816,8 +847,11 @@
           "title": "مستخدمي النظام الحاليين",
           "headers": {
             "userName": "اسم المستخدم",
+            "user": "المستخدم",
             "role": "الدور الحالي",
             "status": "الحالة",
+            "permissions": "الصلاحيات",
+            "lastLogin": "آخر تسجيل دخول",
             "actions": "إجراءات الإدارة"
           },
           "actions": {
@@ -838,11 +872,46 @@
         "status": {
           "active": "نشط",
           "disabled": "معطل"
+        },
+
+        "createAdmin": {
+          "title": "إنشاء مستخدم مشرف",
+          "email": "البريد الإلكتروني",
+          "firstName": "الاسم الأول",
+          "lastName": "اسم العائلة",
+          "department": "القسم",
+          "phoneNumber": "رقم الهاتف",
+          "password": "كلمة المرور",
+          "confirmPassword": "تأكيد كلمة المرور",
+          "passwordHint": "اتركه فارغًا للاحتفاظ بكلمة المرور الحالية",
+          "permissions": "صلاحيات المشرف",
+          "infoText": "سيتم إنشاء المستخدم المشرف بالصلاحيات المحددة أعلاه. سيتلقى بريدًا إلكترونيًا يحتوي على تعليمات تسجيل الدخول.",
+          "cancel": "إلغاء",
+          "create": "إنشاء مشرف",
+          "creating": "جارٍ الإنشاء..."
         }
       },
         "candidateManagement": {
         "title": "لوحة إدارة المرشحين",
         "subtitle": "مركز العمليات للمسؤولين ومسؤولي التوظيف لإضافة وتقييم وإدارة المواهب.",
+
+        "search": {
+          "placeholder": "بحث عن المرشحين..."
+        },
+        "filters": {
+          "allRoles": "جميع الأدوار",
+          "verificationStatus": "حالة التحقق",
+          "documents": "المستندات"
+        },
+        "detailModal": {
+          "title": "تفاصيل المرشح"
+        },
+        "verificationStatus": {
+          "pending": "قيد الانتظار",
+          "approved": "موافق عليه",
+          "rejected": "مرفوض",
+          "info_needed": "معلومات مطلوبة"
+        },
 
         "quickActions": {
           "title": "إجراءات سريعة:",
@@ -858,6 +927,9 @@
             "role": "الدور / الصلاحية",
             "jobRole": "المسمى الوظيفي",
             "language": "اللغة",
+            "email": "البريد الإلكتروني",
+            "verification": "التحقق",
+            "joined": "تاريخ الانضمام",
             "evaluation": "حالة التقييم",
             "documents": "حالة المستندات",
             "actions": "الإجراءات"
@@ -867,7 +939,10 @@
         "roles": {
           "admin": "مشرف",
           "recruiter": "مسؤول توظيف",
-          "viewer": "مشاهد"
+          "viewer": "مشاهد",
+          "B2C": "فردي",
+          "B2B": "شركة",
+          "B2B_TEAM_MEMBER": "عضو فريق"
         },
 
         "jobRoles": {
@@ -906,6 +981,8 @@
         "description": "تحدد هذه المصفوفة قواعد التفويض بناءً على أدوار النظام.",
         "selectSystem": "اختر النظام",
         "selectRole": "اختر الدور",
+        "search": "البحث عن المستخدمين",
+        "searchPlaceholder": "البحث بالاسم أو البريد الإلكتروني...",
         "placeholders": {
           "system": "اختر النظام",
           "role": "اختر الدور"
@@ -913,14 +990,21 @@
         "systems": {
           "b2bEnterprise": "مسؤول شركات B2B المتقدم",
           "b2bBasic": "مسؤول شركات B2B الأساسي",
-          "b2cAdmin": "مسؤول B2C"
+          "b2cAdmin": "مسؤول B2C",
+          "b2benterprise": "B2B للمؤسسات",
+          "b2bbasic": "B2B الأساسي",
+          "b2cadmin": "إدارة B2C"
         },
         "roles": {
           "superAdmin": "مشرف عام",
           "admin": "مشرف",
           "manager": "مدير",
           "user": "مستخدم",
-          "moderator": "مشرف محتوى"
+          "moderator": "مشرف محتوى",
+          "superadmin": "مشرف عام",
+          "companyadmin": "مشرف الشركة",
+          "companyAdmin": "مشرف الشركة",
+          "teammember": "عضو فريق"
         },
         "access": {
           "authentication": "المصادقة",
@@ -933,7 +1017,13 @@
           "feature": "الميزة / الإجراء",
           "access": "الصلاحية",
           "nationalId": "الرقم الوطني",
-          "nationalIdAlt": "رقم وطني إضافي"
+          "nationalIdAlt": "رقم وطني إضافي",
+          "user": "المستخدم",
+          "type": "النوع",
+          "role": "الدور",
+          "system": "النظام",
+          "permissions": "الصلاحيات",
+          "contact": "التواصل"
         },
         "dialogs": {
           "auth": "المصادقة",
@@ -1013,6 +1103,14 @@
         "title": "أمان النظام",
         "subtitle": "مراقبة نشاط الأمان وإدارة وصول المسؤول",
         "description": "إدارة إعدادات التطبيق الهامة وسياسات الأمان، ضوابط الوصول، وإعدادات الإشعارات.",
+        "systemOverview": "نظرة عامة على النظام",
+        "search": {
+          "placeholder": "بحث عن المستخدمين..."
+        },
+        "filters": {
+          "role": "الدور",
+          "status": "الحالة"
+        },
 
         "quickActions": {
           "title": "إجراءات سريعة:",
@@ -1025,7 +1123,11 @@
         "stats": {
           "failedLogins": "محاولات تسجيل دخول فاشلة",
           "activeUsers": "المستخدمون النشطون",
-          "pendingApprovals": "الموافقات المعلقة"
+          "pendingApprovals": "الموافقات المعلقة",
+          "totalUsers": "إجمالي المستخدمين",
+          "pendingVerification": "التحقق من البريد الإلكتروني معلق",
+          "pendingDocuments": "التحقق من المستندات معلق",
+          "recentRegistrations": "التسجيلات الأخيرة"
         },
 
         "alerts": {
@@ -1033,7 +1135,9 @@
           "failedLoginThreshold": "تجاوز حد محاولات تسجيل الدخول الفاشلة (10+ محاولات)",
           "newUserCreated": "تم إنشاء حساب مستخدم جديد",
           "dbConnectionError": "خطأ في اتصال قاعدة البيانات",
-          "systemUpgradeCompleted": "اكتمل ترقية النظام"
+          "systemUpgradeCompleted": "اكتمل ترقية النظام",
+          "highFailedLogins": "تنبيه عند ارتفاع معدل محاولات تسجيل الدخول الفاشلة",
+          "documentVerificationBacklog": "تنبيه عند تراكم التحقق من المستندات"
         },
 
         "table": {
@@ -1042,6 +1146,7 @@
             "user": "المستخدم",
             "role": "الدور",
             "status": "الحالة",
+            "joined": "تاريخ الانضمام",
             "actions": "الإجراءات"
           }
         },
@@ -1054,23 +1159,85 @@
 
         "status": {
           "active": "نشط",
-          "disabled": "معطل"
+          "disabled": "معطل",
+          "inactive": "غير نشط",
+          "pending": "قيد الانتظار"
         },
 
         "actions": {
           "edit": "تعديل",
           "reset": "إعادة تعيين",
-          "revoke": "إلغاء الوصول"
+          "revoke": "إلغاء الوصول",
+          "disable": "تعطيل",
+          "enable": "تفعيل"
         }
       },
       "auditLog": {
         "title": "سجلات التدقيق ومركز التقييم",
+        "adminAccess": "وصول المشرف",
         "tabs": {
           "evaluation": "مركز التقييم",
-          "audit": "سجلات التدقيق"
+          "audit": "سجلات التدقيق",
+          "pendingVerifications": "التحققات المعلقة",
+          "auditLogs": "سجلات التدقيق"
         },
         "roles": {
-          "superAdmin": "المسؤول الأعلى"
+          "superAdmin": "المسؤول الأعلى",
+          "b2c": "فردي",
+          "b2b": "شركة"
+        },
+        "severity": {
+          "INFO": "معلومات",
+          "WARNING": "تحذير",
+          "ERROR": "خطأ",
+          "CRITICAL": "حرج"
+        },
+        "pending": {
+          "title": "قائمة انتظار التحقق من المستندات",
+          "total": "إجمالي المعلقة",
+          "b2c": "مستخدمو B2C",
+          "b2b": "مستخدمو B2B",
+          "empty": "لا توجد تحققات معلقة",
+          "table": {
+            "user": "المستخدم",
+            "role": "الدور",
+            "documents": "المستندات",
+            "submitted": "تاريخ التقديم",
+            "actions": "الإجراءات",
+            "review": "مراجعة"
+          }
+        },
+        "audit": {
+          "totalLogs": "إجمالي السجلات (30 يومًا)",
+          "search": "بحث في السجلات...",
+          "allCategories": "جميع الفئات",
+          "allSeverities": "جميع مستويات الخطورة",
+          "noLogs": "لا توجد سجلات تدقيق",
+          "system": "النظام",
+          "showing": "عرض {from} إلى {to} من {total} سجل",
+          "page": "صفحة {current} من {total}",
+          "table": {
+            "user": "المستخدم",
+            "action": "الإجراء",
+            "category": "الفئة",
+            "severity": "الخطورة",
+            "resource": "المورد",
+            "timestamp": "الطابع الزمني",
+            "description": "الوصف"
+          }
+        },
+        "verifyDocuments": {
+          "title": "التحقق من المستندات",
+          "verify": "تحقق",
+          "reject": "رفض",
+          "cancel": "إلغاء",
+          "confirmReject": "تأكيد الرفض",
+          "processing": "جارٍ المعالجة...",
+          "back": "رجوع",
+          "verificationNotes": "ملاحظات التحقق",
+          "rejectionReason": "سبب الرفض",
+          "notesPlaceholder": "أضف أي ملاحظات حول هذا التحقق...",
+          "rejectionPlaceholder": "اشرح سبب رفض المستندات..."
         },
         "evaluationCenter": {
           "contractListTitle": "قائمة عقود المرشحين",
@@ -1153,6 +1320,25 @@
 
     "billing": {
         "title": "الفوترة والاشتراكات",
+        "search": "بحث عن الاشتراكات...",
+        "filters": {
+          "allStatus": "جميع الحالات"
+        },
+        "stats": {
+          "total": "إجمالي الاشتراكات",
+          "active": "الاشتراكات النشطة",
+          "revenue": "الإيرادات الشهرية",
+          "expiring": "تنتهي قريبًا"
+        },
+        "table": {
+          "user": "المستخدم",
+          "plan": "الخطة",
+          "status": "الحالة",
+          "amount": "المبلغ",
+          "periodEnd": "نهاية الفترة",
+          "daysLeft": "الأيام المتبقية",
+          "actions": "الإجراءات"
+        },
         "paymentSuccess": {
           "title": "تم الدفع بنجاح!",
           "description": "تمت معالجة دفعتك بنجاح. ستتلقى رسالة تأكيد عبر البريد الإلكتروني قريبًا.",
