@@ -864,17 +864,33 @@
             "viewActivity": "عرض سجل النشاط",
             "disable": "تعطيل المستخدم",
             "enable": "تفعيل المستخدم"
-          }
+          },
+          "noResults": "لم يتم العثور على مستخدمين مشرفين",
+          "neverLoggedIn": "أبدًا"
         },
 
         "roles": {
           "superAdmin": "مشرف عام",
+          "admin": "مشرف",
           "recruiterAdmin": "مشرف توظيف",
           "viewer": "مشاهد"
         },
 
+        "confirm": {
+          "cannotDisableSelf": "لا يمكنك تعطيل حسابك الخاص!",
+          "lastSuperAdminWarning": "هذا هو آخر مشرف عام نشط. سيؤدي تعطيل هذا الحساب إلى إزالة كل صلاحيات المشرف العام. هل أنت متأكد تمامًا؟",
+          "disableUser": "هل أنت متأكد أنك تريد تعطيل {name}؟ سيفقدون الوصول إلى لوحة الإدارة.",
+          "enableUser": "هل أنت متأكد أنك تريد تفعيل {name}؟",
+          "updateStatusError": "فشل تحديث حالة المستخدم. يرجى المحاولة مرة أخرى."
+        },
+        "pagination": {
+          "showing": "عرض {start} إلى {end} من {total} مستخدم",
+          "page": "صفحة {current} من {total}"
+        },
+
         "status": {
           "active": "نشط",
+          "inactive": "غير نشط",
           "disabled": "معطل"
         },
 
@@ -920,7 +936,35 @@
           "page": "صفحة {current} من {total}"
         },
         "detailModal": {
-          "title": "تفاصيل المرشح"
+          "title": "تفاصيل المرشح",
+          "status": {
+            "verified": "موثّق",
+            "rejected": "مرفوض",
+            "pendingVerification": "قيد التحقق"
+          },
+          "accountStatus": "حالة الحساب",
+          "active": "نشط",
+          "inactive": "غير نشط",
+          "emailVerified": "التحقق من البريد الإلكتروني",
+          "pending": "قيد الانتظار",
+          "joined": "تاريخ الانضمام",
+          "role": "الدور",
+          "profileInformation": "معلومات الملف الشخصي",
+          "passportId": "رقم جواز السفر",
+          "phone": "الهاتف",
+          "nationality": "الجنسية",
+          "jobRole": "المسمى الوظيفي",
+          "company": "الشركة",
+          "registrationNumber": "رقم السجل",
+          "companySize": "حجم الشركة",
+          "location": "الموقع",
+          "documentsHeading": "المستندات",
+          "approveError": "فشل في الموافقة على المستندات. يرجى المحاولة مرة أخرى.",
+          "rejectError": "فشل في رفض المستندات. يرجى المحاولة مرة أخرى.",
+          "rejectPrompt": "سبب رفض هذه المستندات (يظهر للمستخدم):",
+          "rejectDocuments": "رفض المستندات",
+          "approveDocuments": "الموافقة على المستندات",
+          "close": "إغلاق"
         },
         "verificationStatus": {
           "pending": "قيد الانتظار",
@@ -1143,7 +1187,30 @@
           "totalUsers": "إجمالي المستخدمين",
           "pendingVerification": "التحقق من البريد الإلكتروني معلق",
           "pendingDocuments": "التحقق من المستندات معلق",
-          "recentRegistrations": "التسجيلات الأخيرة"
+          "recentRegistrations": "التسجيلات الأخيرة",
+          "admins": "المشرفون",
+          "totalB2C": "أفراد",
+          "totalB2B": "شركات",
+          "emailVerificationPending": "التحقق من البريد الإلكتروني معلق",
+          "approved": "موافق عليه",
+          "rejected": "مرفوض",
+          "newUsersLast30Days": "مستخدمون جدد (آخر 30 يومًا)"
+        },
+        "recentRegistrationsHeading": "التسجيلات الأخيرة",
+        "recentUsers": {
+          "verified": "موثّق",
+          "pending": "قيد الانتظار"
+        },
+        "roleOptions": {
+          "all": "جميع الأدوار",
+          "superAdmin": "مشرف عام",
+          "admin": "مشرف",
+          "company": "شركة",
+          "individual": "فردي",
+          "teamMember": "عضو فريق"
+        },
+        "statusOptions": {
+          "all": "جميع الحالات"
         },
 
         "alerts": {
@@ -1164,7 +1231,9 @@
             "status": "الحالة",
             "joined": "تاريخ الانضمام",
             "actions": "الإجراءات"
-          }
+          },
+          "noResults": "لم يتم العثور على مستخدمين",
+          "showingLimited": "عرض 10 من {count} مستخدم. استخدم الفلاتر لتضييق النتائج."
         },
 
         "roles": {

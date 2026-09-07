@@ -14,12 +14,13 @@ import {
 } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useTranslations } from "next-intl"
+import { useTranslations, useLocale } from "next-intl"
 import { Loader2, Search, ChevronLeft, ChevronRight, MoreVertical, UserPlus } from "lucide-react"
 import { CreateAdminModal } from "./components/create-admin-modal"
 import adminUserService from "@/app/api/admin/users/endpoints"
 import type { AdminUser } from "@/app/api/admin/users/types"
 import { format } from "date-fns"
+import { ar } from "date-fns/locale"
 
 /* ---------------------------
    COLOR MAPS
@@ -39,7 +40,8 @@ const STATUS_STYLE: Record<string, string> = {
 ---------------------------- */
 export default function UserRoleManagement() {
   const t = useTranslations("dashboard.admin.userRoleManagement")
-  
+  const locale = useLocale()
+
   const [users, setUsers] = useState<AdminUser[]>([])
   const [loading, setLoading] = useState(true)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
@@ -88,24 +90,22 @@ export default function UserRoleManagement() {
 const handleToggleStatus = async (user: AdminUser) => {
   const currentUser = JSON.parse(localStorage.getItem('userData') || '{}');
   if (user.id === currentUser.id) {
-    alert("You cannot disable your own account!");
+    alert(t("confirm.cannotDisableSelf"));
     return;
   }
 
   if (user.role === 'SUPERADMIN') {
     const superAdmins = users.filter(u => u.role === 'SUPERADMIN' && u.is_active);
     if (superAdmins.length <= 1 && user.is_active) {
-      const confirm = window.confirm(
-        "This is the last active Super Admin. Disabling this account will remove all super admin access. Are you absolutely sure?"
-      );
+      const confirm = window.confirm(t("confirm.lastSuperAdminWarning"));
       if (!confirm) return;
     }
   }
 
   const action = user.is_active ? 'disable' : 'enable';
-  const confirmMessage = user.is_active 
-    ? `Are you sure you want to disable ${user.full_name}? They will lose access to the admin panel.`
-    : `Are you sure you want to enable ${user.full_name}?`;
+  const confirmMessage = user.is_active
+    ? t("confirm.disableUser", { name: user.full_name })
+    : t("confirm.enableUser", { name: user.full_name });
 
   if (!window.confirm(confirmMessage)) return;
 
@@ -116,7 +116,7 @@ const handleToggleStatus = async (user: AdminUser) => {
     await fetchUsers();
   } catch (error) {
     console.error('Failed to update user status:', error);
-    alert('Failed to update user status. Please try again.');
+    alert(t("confirm.updateStatusError"));
   }
 };
 
@@ -168,9 +168,9 @@ const handleToggleStatus = async (user: AdminUser) => {
                 <SelectValue placeholder={t("filters.allRoles")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Roles</SelectItem>
-                <SelectItem value="SUPERADMIN">Super Admin</SelectItem>
-                <SelectItem value="ADMIN">Admin</SelectItem>
+                <SelectItem value="all">{t("filters.allRoles")}</SelectItem>
+                <SelectItem value="SUPERADMIN">{t("roles.superAdmin")}</SelectItem>
+                <SelectItem value="ADMIN">{t("roles.admin")}</SelectItem>
               </SelectContent>
             </Select>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -178,9 +178,9 @@ const handleToggleStatus = async (user: AdminUser) => {
                 <SelectValue placeholder={t("filters.allStatus")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="inactive">Inactive</SelectItem>
+                <SelectItem value="all">{t("filters.allStatus")}</SelectItem>
+                <SelectItem value="active">{t("status.active")}</SelectItem>
+                <SelectItem value="inactive">{t("status.inactive")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -228,7 +228,7 @@ const handleToggleStatus = async (user: AdminUser) => {
                       {users.length === 0 ? (
                         <TableRow>
                           <TableCell colSpan={6} className="text-center py-8 text-gray-500">
-                            No admin users found
+                            {t("table.noResults")}
                           </TableCell>
                         </TableRow>
                       ) : (
@@ -250,7 +250,7 @@ const handleToggleStatus = async (user: AdminUser) => {
                               <span
                                 className={`px-3 py-1 text-xs font-medium rounded-full ${ROLE_BADGE_STYLE[user.role]}`}
                               >
-                                {user.role === 'SUPERADMIN' ? 'Super Admin' : 'Admin'}
+                                {user.role === 'SUPERADMIN' ? t("roles.superAdmin") : t("roles.admin")}
                               </span>
                             </TableCell>
 
@@ -275,14 +275,14 @@ const handleToggleStatus = async (user: AdminUser) => {
                               <span
                                 className={`text-sm font-medium ${STATUS_STYLE[String(user.is_active)]}`}
                               >
-                                {user.is_active ? 'Active' : 'Inactive'}
+                                {user.is_active ? t("status.active") : t("status.inactive")}
                               </span>
                             </TableCell>
 
                             {/* Last Login */}
                             <TableCell>
                               <span className="text-sm text-gray-600">
-                                {user.last_login ? format(new Date(user.last_login), 'MMM d, yyyy') : 'Never'}
+                                {user.last_login ? format(new Date(user.last_login), 'MMM d, yyyy', locale === 'ar' ? { locale: ar } : undefined) : t("table.neverLoggedIn")}
                               </span>
                             </TableCell>
 
@@ -320,7 +320,7 @@ const handleToggleStatus = async (user: AdminUser) => {
                 {totalPages > 1 && (
                   <div className="flex items-center justify-between mt-4">
                     <p className="text-sm text-gray-600">
-                      Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, totalCount)} of {totalCount} users
+                      {t("pagination.showing", { start: ((currentPage - 1) * pageSize) + 1, end: Math.min(currentPage * pageSize, totalCount), total: totalCount })}
                     </p>
                     <div className="flex items-center gap-2">
                       <Button
@@ -332,7 +332,7 @@ const handleToggleStatus = async (user: AdminUser) => {
                         <ChevronLeft className="w-4 h-4" />
                       </Button>
                       <span className="text-sm text-gray-600">
-                        Page {currentPage} of {totalPages}
+                        {t("pagination.page", { current: currentPage, total: totalPages })}
                       </span>
                       <Button
                         variant="outline"
