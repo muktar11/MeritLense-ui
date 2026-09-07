@@ -3,10 +3,42 @@
     "tablePagination": {
       "showing": "Showing {start}-{end} of {total} {label}"
     },
+    "evaluatorRatingCard": {
+      "title": "Evaluator Rating",
+      "edit": "Edit",
+      "pools": {
+        "safety_awareness": "Safety Awareness",
+        "hygiene": "Hygiene & Standards",
+        "communication": "Communication Ability",
+        "task_execution": "Practical Task Execution",
+        "behavior_integrity": "Behavioral Indicators"
+      },
+      "consistency": "Consistency",
+      "consistencyHint": "Calculated automatically from the candidate's responses.",
+      "scorePlaceholder": "0-100",
+      "submitButton": "Submit Rating",
+      "scoreRangeError": "Enter a value between 0 and 100 for every pool.",
+      "submitFailedError": "Failed to submit rating. Try again.",
+      "notAvailable": "N/A",
+      "riskLevel": {
+        "Low": "Low",
+        "Medium": "Medium",
+        "High": "High",
+        "Not Assessed": "Not Assessed"
+      },
+      "riskLabel": "({level} risk)",
+      "ratedByOn": "Rated by {name} on {date}"
+    },
     "auditTrailModal": {
       "title": "Audit Trail — {label}",
       "loadFailed": "Failed to load the audit trail.",
-      "empty": "No audit events recorded yet."
+      "empty": "No audit events recorded yet.",
+      "actions": {
+        "AGREEMENT_ACCEPTED": "Agreement Accepted",
+        "AGREEMENT_SIGN_INITIATED": "Agreement Sign Initiated",
+        "AGREEMENT_SIGNED": "Agreement Signed",
+        "AGREEMENT_SIGN_FAILED": "Agreement Sign Failed"
+      }
     },
     "startSessionModal": {
       "headerTitle": "Create Workforce Readiness Assessment",
@@ -68,6 +100,12 @@
       "assessmentDecision": "Assessment Decision",
       "overrideTriggered": "Override triggered",
       "suggestedAction": "Suggested Action",
+      "suggestedActions": {
+        "PROCEED": "Proceed",
+        "CONSIDER_TRAINING": "Consider Training",
+        "RE_EVALUATE_CRITICAL": "Re-evaluate after Critical Training",
+        "RE_EVALUATE": "Re-evaluate"
+      },
       "assessmentCoverage": "Assessment Coverage",
       "assessmentReliability": "Assessment Reliability",
       "topStrengths": "Top Strengths",

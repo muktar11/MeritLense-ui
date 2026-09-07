@@ -61,7 +61,9 @@ export function AuditTrailModal({ agreementId, agreementLabel, onClose }: AuditT
               {entries.map((entry) => (
                 <li key={entry.id} className="border-b border-gray-100 pb-3 text-sm">
                   <div className="flex items-center justify-between">
-                    <span className="font-medium text-gray-900">{entry.action_display}</span>
+                    <span className="font-medium text-gray-900">
+                      {t.has(`actions.${entry.action}`) ? t(`actions.${entry.action}`) : entry.action_display}
+                    </span>
                     <span className="text-xs text-gray-400">
                       {new Date(entry.created_at).toLocaleString()}
                     </span>

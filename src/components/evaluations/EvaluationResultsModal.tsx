@@ -452,7 +452,9 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
                         <div className="rounded-lg bg-gray-50 border border-gray-200 px-3 py-2">
                           <p className="text-gray-500">{t("suggestedAction")}</p>
                           <p className="font-medium text-gray-900">
-                            {executiveSummary?.suggested_action_display || "—"}
+                            {executiveSummary?.suggested_action && t.has(`suggestedActions.${executiveSummary.suggested_action}`)
+                              ? t(`suggestedActions.${executiveSummary.suggested_action}`)
+                              : executiveSummary?.suggested_action_display || "—"}
                           </p>
                         </div>
                         <div className="rounded-lg bg-gray-50 border border-gray-200 px-3 py-2">

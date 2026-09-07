@@ -3,10 +3,42 @@
     "tablePagination": {
       "showing": "عرض {start}-{end} من {total} {label}"
     },
+    "evaluatorRatingCard": {
+      "title": "تقييم المُقيِّم",
+      "edit": "تعديل",
+      "pools": {
+        "safety_awareness": "الوعي بالسلامة",
+        "hygiene": "النظافة والمعايير",
+        "communication": "القدرة على التواصل",
+        "task_execution": "تنفيذ المهام العملية",
+        "behavior_integrity": "المؤشرات السلوكية"
+      },
+      "consistency": "الاتساق",
+      "consistencyHint": "يُحسب تلقائيًا من استجابات المرشح.",
+      "scorePlaceholder": "0-100",
+      "submitButton": "إرسال التقييم",
+      "scoreRangeError": "أدخل قيمة بين 0 و100 لكل مجموعة.",
+      "submitFailedError": "فشل إرسال التقييم. حاول مرة أخرى.",
+      "notAvailable": "غير متوفر",
+      "riskLevel": {
+        "Low": "منخفض",
+        "Medium": "متوسط",
+        "High": "مرتفع",
+        "Not Assessed": "لم يُقيَّم"
+      },
+      "riskLabel": "(مخاطرة {level})",
+      "ratedByOn": "قيَّمه {name} في {date}"
+    },
     "auditTrailModal": {
       "title": "سجل التدقيق — {label}",
       "loadFailed": "فشل تحميل سجل التدقيق.",
-      "empty": "لا توجد أحداث تدقيق مسجلة بعد."
+      "empty": "لا توجد أحداث تدقيق مسجلة بعد.",
+      "actions": {
+        "AGREEMENT_ACCEPTED": "تم قبول الاتفاقية",
+        "AGREEMENT_SIGN_INITIATED": "بدء توقيع الاتفاقية",
+        "AGREEMENT_SIGNED": "تم توقيع الاتفاقية",
+        "AGREEMENT_SIGN_FAILED": "فشل توقيع الاتفاقية"
+      }
     },
     "startSessionModal": {
       "headerTitle": "إنشاء تقييم جاهزية القوى العاملة",
@@ -68,6 +100,12 @@
       "assessmentDecision": "قرار التقييم",
       "overrideTriggered": "تم تفعيل التجاوز",
       "suggestedAction": "الإجراء المقترح",
+      "suggestedActions": {
+        "PROCEED": "المتابعة",
+        "CONSIDER_TRAINING": "النظر في التدريب",
+        "RE_EVALUATE_CRITICAL": "إعادة التقييم بعد تدريب أساسي",
+        "RE_EVALUATE": "إعادة التقييم"
+      },
       "assessmentCoverage": "تغطية التقييم",
       "assessmentReliability": "موثوقية التقييم",
       "topStrengths": "أبرز نقاط القوة",
