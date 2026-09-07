@@ -852,13 +852,28 @@
             "viewActivity": "View Activity Log",
             "disable": "Disable User",
             "enable": "Enable User"
-          }
+          },
+          "noResults": "No admin users found",
+          "neverLoggedIn": "Never"
         },
 
         "roles": {
           "superAdmin": "Super Admin",
+          "admin": "Admin",
           "recruiterAdmin": "Recruiter Admin",
           "viewer": "Viewer"
+        },
+
+        "confirm": {
+          "cannotDisableSelf": "You cannot disable your own account!",
+          "lastSuperAdminWarning": "This is the last active Super Admin. Disabling this account will remove all super admin access. Are you absolutely sure?",
+          "disableUser": "Are you sure you want to disable {name}? They will lose access to the admin panel.",
+          "enableUser": "Are you sure you want to enable {name}?",
+          "updateStatusError": "Failed to update user status. Please try again."
+        },
+        "pagination": {
+          "showing": "Showing {start} to {end} of {total} users",
+          "page": "Page {current} of {total}"
         },
         "createAdmin": {
           "title": "Create Admin User",
@@ -879,6 +894,7 @@
 
         "status": {
           "active": "Active",
+          "inactive": "Inactive",
           "disabled": "Disabled"
         }
       },
@@ -929,7 +945,35 @@
         },
 
         "detailModal": {
-          "title": "Candidate Details"
+          "title": "Candidate Details",
+          "status": {
+            "verified": "Verified",
+            "rejected": "Rejected",
+            "pendingVerification": "Pending Verification"
+          },
+          "accountStatus": "Account Status",
+          "active": "Active",
+          "inactive": "Inactive",
+          "emailVerified": "Email Verified",
+          "pending": "Pending",
+          "joined": "Joined",
+          "role": "Role",
+          "profileInformation": "Profile Information",
+          "passportId": "Passport ID",
+          "phone": "Phone",
+          "nationality": "Nationality",
+          "jobRole": "Job Role",
+          "company": "Company",
+          "registrationNumber": "Registration #",
+          "companySize": "Company Size",
+          "location": "Location",
+          "documentsHeading": "Documents",
+          "approveError": "Failed to approve documents. Please try again.",
+          "rejectError": "Failed to reject documents. Please try again.",
+          "rejectPrompt": "Reason for rejecting these documents (shown to the user):",
+          "rejectDocuments": "Reject Documents",
+          "approveDocuments": "Approve Documents",
+          "close": "Close"
         },
         "roles": {
           "B2C": "Individual",
@@ -1105,7 +1149,30 @@
           "totalUsers": "Total Users",
           "pendingVerification": "Pending Email Verification",
           "pendingDocuments": "Pending Document Verification",
-          "recentRegistrations": "Recent Registrations"
+          "recentRegistrations": "Recent Registrations",
+          "admins": "Admins",
+          "totalB2C": "B2C",
+          "totalB2B": "B2B",
+          "emailVerificationPending": "Email verification pending",
+          "approved": "Approved",
+          "rejected": "Rejected",
+          "newUsersLast30Days": "New users (last 30 days)"
+        },
+        "recentRegistrationsHeading": "Recent Registrations",
+        "recentUsers": {
+          "verified": "Verified",
+          "pending": "Pending"
+        },
+        "roleOptions": {
+          "all": "All Roles",
+          "superAdmin": "Super Admin",
+          "admin": "Admin",
+          "company": "Company",
+          "individual": "Individual",
+          "teamMember": "Team Member"
+        },
+        "statusOptions": {
+          "all": "All Status"
         },
 
         "quickActions": {
@@ -1146,7 +1213,9 @@
             "status": "Status",
             "joined": "Joined",
             "actions": "Actions"
-          }
+          },
+          "noResults": "No users found",
+          "showingLimited": "Showing 10 of {count} users. Use filters to narrow results."
         },
 
         "roles": {

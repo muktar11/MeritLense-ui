@@ -5,10 +5,11 @@ import { useState } from "react";
 import { Fragment } from "react";
 import { Dialog, Transition } from '@headlessui/react';
 import { X, Mail, User, Calendar, CheckCircle, XCircle, Clock, Building2, Phone, MapPin, Briefcase, FileText, Users, Loader2 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import employerService from "@/app/api/admin/employers/endpoints";
 import type { Employer } from "@/app/api/admin/employers/types";
 import { format } from "date-fns";
+import { ar } from "date-fns/locale";
 
 interface EmployerDetailModalProps {
   isOpen: boolean;
@@ -19,6 +20,7 @@ interface EmployerDetailModalProps {
 
 export function EmployerDetailModal({ isOpen, onClose, employer, onVerified }: EmployerDetailModalProps) {
   const t = useTranslations("dashboard.admin.candidateManagement");
+  const locale = useLocale();
   const [actionLoading, setActionLoading] = useState<'approve' | 'reject' | null>(null);
   const [actionError, setActionError] = useState("");
 
@@ -32,14 +34,14 @@ export function EmployerDetailModal({ isOpen, onClose, employer, onVerified }: E
       onVerified();
       onClose();
     } catch (error: any) {
-      setActionError(error?.response?.data?.error || 'Failed to approve documents. Please try again.');
+      setActionError(error?.response?.data?.error || t("detailModal.approveError"));
     } finally {
       setActionLoading(null);
     }
   };
 
   const handleReject = async () => {
-    const reason = window.prompt("Reason for rejecting these documents (shown to the user):");
+    const reason = window.prompt(t("detailModal.rejectPrompt"));
     if (!reason || !reason.trim()) return;
 
     setActionError("");
@@ -49,7 +51,7 @@ export function EmployerDetailModal({ isOpen, onClose, employer, onVerified }: E
       onVerified();
       onClose();
     } catch (error: any) {
-      setActionError(error?.response?.data?.error || 'Failed to reject documents. Please try again.');
+      setActionError(error?.response?.data?.error || t("detailModal.rejectError"));
     } finally {
       setActionLoading(null);
     }
@@ -66,9 +68,9 @@ export function EmployerDetailModal({ isOpen, onClose, employer, onVerified }: E
   };
 
   const getStatusText = () => {
-    if (employer.documents_verified) return 'Verified';
-    if (employer.documents_verification_status === 'rejected') return 'Rejected';
-    return 'Pending Verification';
+    if (employer.documents_verified) return t("detailModal.status.verified");
+    if (employer.documents_verification_status === 'rejected') return t("detailModal.status.rejected");
+    return t("detailModal.status.pendingVerification");
   };
 
   const isB2C = employer.role === 'B2C';
@@ -138,32 +140,32 @@ export function EmployerDetailModal({ isOpen, onClose, employer, onVerified }: E
                     <div className="flex items-center gap-2">
                       <User className="w-4 h-4 text-gray-400" />
                       <div>
-                        <p className="text-xs text-gray-500">Account Status</p>
+                        <p className="text-xs text-gray-500">{t("detailModal.accountStatus")}</p>
                         <p className={`text-sm font-medium ${employer.is_active ? 'text-green-600' : 'text-red-600'}`}>
-                          {employer.is_active ? 'Active' : 'Inactive'}
+                          {employer.is_active ? t("detailModal.active") : t("detailModal.inactive")}
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <Mail className="w-4 h-4 text-gray-400" />
                       <div>
-                        <p className="text-xs text-gray-500">Email Verified</p>
+                        <p className="text-xs text-gray-500">{t("detailModal.emailVerified")}</p>
                         <p className={`text-sm font-medium ${employer.is_verified ? 'text-green-600' : 'text-yellow-600'}`}>
-                          {employer.is_verified ? 'Verified' : 'Pending'}
+                          {employer.is_verified ? t("detailModal.status.verified") : t("detailModal.pending")}
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-gray-400" />
                       <div>
-                        <p className="text-xs text-gray-500">Joined</p>
-                        <p className="text-sm font-medium">{format(new Date(employer.created_at), 'MMM d, yyyy')}</p>
+                        <p className="text-xs text-gray-500">{t("detailModal.joined")}</p>
+                        <p className="text-sm font-medium">{format(new Date(employer.created_at), 'MMM d, yyyy', locale === 'ar' ? { locale: ar } : undefined)}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <Briefcase className="w-4 h-4 text-gray-400" />
                       <div>
-                        <p className="text-xs text-gray-500">Role</p>
+                        <p className="text-xs text-gray-500">{t("detailModal.role")}</p>
                         <p className="text-sm font-medium">{employer.role}</p>
                       </div>
                     </div>
@@ -171,7 +173,7 @@ export function EmployerDetailModal({ isOpen, onClose, employer, onVerified }: E
 
                   {/* Profile Details */}
                   <div>
-                    <h4 className="text-sm font-medium text-gray-700 mb-3">Profile Information</h4>
+                    <h4 className="text-sm font-medium text-gray-700 mb-3">{t("detailModal.profileInformation")}</h4>
                     <div className="grid grid-cols-2 gap-4">
                       {isB2C ? (
                         <>
@@ -179,7 +181,7 @@ export function EmployerDetailModal({ isOpen, onClose, employer, onVerified }: E
                             <div className="flex items-center gap-2">
                               <FileText className="w-4 h-4 text-gray-400" />
                               <div>
-                                <p className="text-xs text-gray-500">Passport ID</p>
+                                <p className="text-xs text-gray-500">{t("detailModal.passportId")}</p>
                                 <p className="text-sm">{profile.passport_id}</p>
                               </div>
                             </div>
@@ -188,7 +190,7 @@ export function EmployerDetailModal({ isOpen, onClose, employer, onVerified }: E
                             <div className="flex items-center gap-2">
                               <Phone className="w-4 h-4 text-gray-400" />
                               <div>
-                                <p className="text-xs text-gray-500">Phone</p>
+                                <p className="text-xs text-gray-500">{t("detailModal.phone")}</p>
                                 <p className="text-sm">{profile.phone_number}</p>
                               </div>
                             </div>
@@ -197,7 +199,7 @@ export function EmployerDetailModal({ isOpen, onClose, employer, onVerified }: E
                             <div className="flex items-center gap-2">
                               <MapPin className="w-4 h-4 text-gray-400" />
                               <div>
-                                <p className="text-xs text-gray-500">Nationality</p>
+                                <p className="text-xs text-gray-500">{t("detailModal.nationality")}</p>
                                 <p className="text-sm">{profile.nationality}</p>
                               </div>
                             </div>
@@ -206,7 +208,7 @@ export function EmployerDetailModal({ isOpen, onClose, employer, onVerified }: E
                             <div className="flex items-center gap-2">
                               <Briefcase className="w-4 h-4 text-gray-400" />
                               <div>
-                                <p className="text-xs text-gray-500">Job Role</p>
+                                <p className="text-xs text-gray-500">{t("detailModal.jobRole")}</p>
                                 <p className="text-sm">{profile.job_role}</p>
                               </div>
                             </div>
@@ -218,7 +220,7 @@ export function EmployerDetailModal({ isOpen, onClose, employer, onVerified }: E
                             <div className="flex items-center gap-2">
                               <Building2 className="w-4 h-4 text-gray-400" />
                               <div>
-                                <p className="text-xs text-gray-500">Company</p>
+                                <p className="text-xs text-gray-500">{t("detailModal.company")}</p>
                                 <p className="text-sm">{profile.company_name}</p>
                               </div>
                             </div>
@@ -227,7 +229,7 @@ export function EmployerDetailModal({ isOpen, onClose, employer, onVerified }: E
                             <div className="flex items-center gap-2">
                               <FileText className="w-4 h-4 text-gray-400" />
                               <div>
-                                <p className="text-xs text-gray-500">Registration #</p>
+                                <p className="text-xs text-gray-500">{t("detailModal.registrationNumber")}</p>
                                 <p className="text-sm">{profile.company_registration_number}</p>
                               </div>
                             </div>
@@ -236,7 +238,7 @@ export function EmployerDetailModal({ isOpen, onClose, employer, onVerified }: E
                             <div className="flex items-center gap-2">
                               <Users className="w-4 h-4 text-gray-400" />
                               <div>
-                                <p className="text-xs text-gray-500">Company Size</p>
+                                <p className="text-xs text-gray-500">{t("detailModal.companySize")}</p>
                                 <p className="text-sm">{profile.company_size}</p>
                               </div>
                             </div>
@@ -245,7 +247,7 @@ export function EmployerDetailModal({ isOpen, onClose, employer, onVerified }: E
                             <div className="flex items-center gap-2">
                               <MapPin className="w-4 h-4 text-gray-400" />
                               <div>
-                                <p className="text-xs text-gray-500">Location</p>
+                                <p className="text-xs text-gray-500">{t("detailModal.location")}</p>
                                 <p className="text-sm">{profile.city}, {profile.country}</p>
                               </div>
                             </div>
@@ -257,7 +259,7 @@ export function EmployerDetailModal({ isOpen, onClose, employer, onVerified }: E
 
                   {/* Document Status */}
                   <div>
-                    <h4 className="text-sm font-medium text-gray-700 mb-3">Documents</h4>
+                    <h4 className="text-sm font-medium text-gray-700 mb-3">{t("detailModal.documentsHeading")}</h4>
                     <div className="space-y-2">
                       {Object.entries(employer.documents_status).map(([key, value]) => {
                         if (key === 'verified') return null;
@@ -290,7 +292,7 @@ export function EmployerDetailModal({ isOpen, onClose, employer, onVerified }: E
                           className="px-4 py-2 bg-red-50 text-red-700 border border-red-200 rounded-lg text-sm hover:bg-red-100 disabled:opacity-50 flex items-center gap-2"
                         >
                           {actionLoading === 'reject' && <Loader2 className="w-4 h-4 animate-spin" />}
-                          Reject Documents
+                          {t("detailModal.rejectDocuments")}
                         </button>
                       )}
                       {!employer.documents_verified && (
@@ -300,7 +302,7 @@ export function EmployerDetailModal({ isOpen, onClose, employer, onVerified }: E
                           className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 disabled:opacity-50 flex items-center gap-2"
                         >
                           {actionLoading === 'approve' && <Loader2 className="w-4 h-4 animate-spin" />}
-                          Approve Documents
+                          {t("detailModal.approveDocuments")}
                         </button>
                       )}
                     </div>
@@ -308,7 +310,7 @@ export function EmployerDetailModal({ isOpen, onClose, employer, onVerified }: E
                       onClick={onClose}
                       className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600"
                     >
-                      Close
+                      {t("detailModal.close")}
                     </button>
                   </div>
                 </div>

@@ -2,7 +2,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useTranslations } from "next-intl"
+import { useTranslations, useLocale } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -15,10 +15,12 @@ import { AlertTriangle, Loader2, Search, UserCheck, UserX, Clock, Users, Buildin
 import systemService from "@/app/api/admin/system/endpoints"
 import type { SystemStats, SystemUser } from "@/app/api/admin/system/types"
 import { format } from "date-fns"
+import { ar } from "date-fns/locale"
 
 export default function SystemConfigSecurity() {
   const t = useTranslations("dashboard.admin.systemSecurity")
-  
+  const locale = useLocale()
+
   const [stats, setStats] = useState<SystemStats | null>(null)
   const [users, setUsers] = useState<SystemUser[]>([])
   const [loading, setLoading] = useState(true)
@@ -135,9 +137,9 @@ export default function SystemConfigSecurity() {
           <Users className="w-8 h-8 text-blue-500 opacity-50" />
         </div>
         <div className="mt-4 flex gap-4 text-xs text-gray-500">
-          <span>Admins: {stats.user_stats?.total_admins ?? 0}</span>
-          <span>B2C: {stats.user_stats?.total_b2c ?? 0}</span>
-          <span>B2B: {stats.user_stats?.total_b2b ?? 0}</span>
+          <span>{t("stats.admins")}: {stats.user_stats?.total_admins ?? 0}</span>
+          <span>{t("stats.totalB2C")}: {stats.user_stats?.total_b2c ?? 0}</span>
+          <span>{t("stats.totalB2B")}: {stats.user_stats?.total_b2b ?? 0}</span>
         </div>
       </Card>
 
@@ -152,7 +154,7 @@ export default function SystemConfigSecurity() {
           </div>
           <Clock className="w-8 h-8 text-yellow-500 opacity-50" />
         </div>
-        <p className="mt-4 text-xs text-gray-500">Email verification pending</p>
+        <p className="mt-4 text-xs text-gray-500">{t("stats.emailVerificationPending")}</p>
       </Card>
 
       {/* Pending Documents Card */}
@@ -167,8 +169,8 @@ export default function SystemConfigSecurity() {
           <Shield className="w-8 h-8 text-orange-500 opacity-50" />
         </div>
         <div className="mt-4 flex gap-4 text-xs text-gray-500">
-          <span>Approved: {stats.verification_stats?.approved_documents ?? 0}</span>
-          <span>Rejected: {stats.verification_stats?.rejected_documents ?? 0}</span>
+          <span>{t("stats.approved")}: {stats.verification_stats?.approved_documents ?? 0}</span>
+          <span>{t("stats.rejected")}: {stats.verification_stats?.rejected_documents ?? 0}</span>
         </div>
       </Card>
 
@@ -183,14 +185,14 @@ export default function SystemConfigSecurity() {
           </div>
           <UserCheck className="w-8 h-8 text-green-500 opacity-50" />
         </div>
-        <p className="mt-4 text-xs text-gray-500">New users (last 30 days)</p>
+        <p className="mt-4 text-xs text-gray-500">{t("stats.newUsersLast30Days")}</p>
       </Card>
     </div>
 
     {/* Recent Users List */}
     {stats.recent_users && stats.recent_users.length > 0 && (
       <Card className="p-6 shadow-lg mb-8">
-        <h3 className="text-lg font-bold text-gray-900 mb-4">Recent Registrations</h3>
+        <h3 className="text-lg font-bold text-gray-900 mb-4">{t("recentRegistrationsHeading")}</h3>
         <div className="space-y-3">
           {stats.recent_users.slice(0, 5).map(user => (
             <div key={user.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
@@ -200,9 +202,9 @@ export default function SystemConfigSecurity() {
               </div>
               <div className="flex gap-2">
                 {user.is_verified ? (
-                  <Badge className="bg-green-100 text-green-800">Verified</Badge>
+                  <Badge className="bg-green-100 text-green-800">{t("recentUsers.verified")}</Badge>
                 ) : (
-                  <Badge className="bg-yellow-100 text-yellow-800">Pending</Badge>
+                  <Badge className="bg-yellow-100 text-yellow-800">{t("recentUsers.pending")}</Badge>
                 )}
                 <Badge className="bg-blue-100 text-blue-800">{user.role}</Badge>
               </div>
@@ -253,12 +255,12 @@ export default function SystemConfigSecurity() {
                   <SelectValue placeholder={t("filters.role")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Roles</SelectItem>
-                  <SelectItem value="SUPERADMIN">Super Admin</SelectItem>
-                  <SelectItem value="ADMIN">Admin</SelectItem>
-                  <SelectItem value="B2B">Company</SelectItem>
-                  <SelectItem value="B2C">Individual</SelectItem>
-                  <SelectItem value="B2B_TEAM_MEMBER">Team Member</SelectItem>
+                  <SelectItem value="all">{t("roleOptions.all")}</SelectItem>
+                  <SelectItem value="SUPERADMIN">{t("roleOptions.superAdmin")}</SelectItem>
+                  <SelectItem value="ADMIN">{t("roleOptions.admin")}</SelectItem>
+                  <SelectItem value="B2B">{t("roleOptions.company")}</SelectItem>
+                  <SelectItem value="B2C">{t("roleOptions.individual")}</SelectItem>
+                  <SelectItem value="B2B_TEAM_MEMBER">{t("roleOptions.teamMember")}</SelectItem>
                 </SelectContent>
               </Select>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -266,10 +268,10 @@ export default function SystemConfigSecurity() {
                   <SelectValue placeholder={t("filters.status")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
-                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="all">{t("statusOptions.all")}</SelectItem>
+                  <SelectItem value="active">{t("status.active")}</SelectItem>
+                  <SelectItem value="inactive">{t("status.inactive")}</SelectItem>
+                  <SelectItem value="pending">{t("status.pending")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -290,7 +292,7 @@ export default function SystemConfigSecurity() {
                 {filteredUsers.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center py-8 text-gray-500">
-                      No users found
+                      {t("table.noResults")}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -309,7 +311,7 @@ export default function SystemConfigSecurity() {
                         {getStatusBadge(user.status)}
                       </TableCell>
                       <TableCell className="text-sm text-gray-600">
-                        {format(new Date(user.created_at), 'MMM d, yyyy')}
+                        {format(new Date(user.created_at), 'MMM d, yyyy', locale === 'ar' ? { locale: ar } : undefined)}
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-2">
@@ -339,7 +341,7 @@ export default function SystemConfigSecurity() {
 
           {filteredUsers.length > 10 && (
             <p className="text-sm text-gray-500 mt-4 text-center">
-              Showing 10 of {filteredUsers.length} users. Use filters to narrow results.
+              {t("table.showingLimited", { count: filteredUsers.length })}
             </p>
           )}
 
