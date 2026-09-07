@@ -54,25 +54,25 @@ export function CreateAdminModal({ isOpen, onClose, onSubmit }: CreateAdminModal
     const newErrors: Record<string, string> = {};
 
     if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
+      newErrors.email = t("createAdmin.errors.emailRequired");
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Invalid email format";
+      newErrors.email = t("createAdmin.errors.emailInvalid");
     }
 
     if (!formData.first_name.trim()) {
-      newErrors.first_name = "First name is required";
+      newErrors.first_name = t("createAdmin.errors.firstNameRequired");
     }
 
     if (!formData.last_name.trim()) {
-      newErrors.last_name = "Last name is required";
+      newErrors.last_name = t("createAdmin.errors.lastNameRequired");
     }
 
     if (formData.password && formData.password.length < 8) {
-      newErrors.password = "Password must be at least 8 characters";
+      newErrors.password = t("createAdmin.errors.passwordMinLength");
     }
 
     if (formData.password !== formData.confirm_password) {
-      newErrors.confirm_password = "Passwords do not match";
+      newErrors.confirm_password = t("createAdmin.errors.passwordMismatch");
     }
 
     setErrors(newErrors);
@@ -321,7 +321,7 @@ export function CreateAdminModal({ isOpen, onClose, onSubmit }: CreateAdminModal
                             onChange={() => handlePermissionChange(permission.key)}
                             className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                           />
-                          <span className="text-sm text-gray-700">{permission.label}</span>
+                          <span className="text-sm text-gray-700">{t(`createAdmin.permissionLabels.${permission.key}`)}</span>
                         </label>
                       ))}
                     </div>

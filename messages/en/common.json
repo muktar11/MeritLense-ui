@@ -889,7 +889,22 @@
           "infoText": "The admin user will be created with the permissions selected above. They will receive an email with login instructions.",
           "cancel": "Cancel",
           "create": "Create Admin",
-          "creating": "Creating..."
+          "creating": "Creating...",
+          "permissionLabels": {
+            "can_manage_users": "Manage Users",
+            "can_verify_companies": "Company Verification",
+            "can_verify_documents": "Document Verification",
+            "can_access_financial": "Financial Access",
+            "can_access_reports": "Reports Access"
+          },
+          "errors": {
+            "emailRequired": "Email is required",
+            "emailInvalid": "Invalid email format",
+            "firstNameRequired": "First name is required",
+            "lastNameRequired": "Last name is required",
+            "passwordMinLength": "Password must be at least 8 characters",
+            "passwordMismatch": "Passwords do not match"
+          }
         },
 
         "status": {

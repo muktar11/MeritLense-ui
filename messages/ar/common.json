@@ -908,7 +908,22 @@
           "infoText": "سيتم إنشاء المستخدم المشرف بالصلاحيات المحددة أعلاه. سيتلقى بريدًا إلكترونيًا يحتوي على تعليمات تسجيل الدخول.",
           "cancel": "إلغاء",
           "create": "إنشاء مشرف",
-          "creating": "جارٍ الإنشاء..."
+          "creating": "جارٍ الإنشاء...",
+          "permissionLabels": {
+            "can_manage_users": "إدارة المستخدمين",
+            "can_verify_companies": "التحقق من الشركات",
+            "can_verify_documents": "التحقق من المستندات",
+            "can_access_financial": "الوصول المالي",
+            "can_access_reports": "الوصول إلى التقارير"
+          },
+          "errors": {
+            "emailRequired": "البريد الإلكتروني مطلوب",
+            "emailInvalid": "صيغة البريد الإلكتروني غير صحيحة",
+            "firstNameRequired": "الاسم الأول مطلوب",
+            "lastNameRequired": "اسم العائلة مطلوب",
+            "passwordMinLength": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل",
+            "passwordMismatch": "كلمتا المرور غير متطابقتين"
+          }
         }
       },
         "candidateManagement": {
