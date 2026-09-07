@@ -1649,6 +1649,237 @@
         }
       },
 
+      "interviewSetup": {
+        "title": "Interview Setup",
+        "subtitle": "Manage the question bank and interview configurations behind each role package.",
+        "newQuestion": "New Question",
+        "newConfiguration": "New Configuration",
+        "newRuleSet": "New Rule Set",
+        "tabs": {
+          "questionTemplates": "Question Templates ({count})",
+          "interviewConfigurations": "Interview Configurations ({count})",
+          "scoringRuleSets": "Scoring Rule Sets ({count})"
+        },
+        "table": {
+          "headers": {
+            "role": "Role",
+            "question": "Question",
+            "skill": "Skill",
+            "tier": "Tier",
+            "difficulty": "Difficulty",
+            "status": "Status",
+            "actions": "Actions",
+            "language": "Language",
+            "questions": "Questions",
+            "duration": "Duration",
+            "name": "Name",
+            "rules": "Rules",
+            "used": "Used"
+          },
+          "noQuestions": "No question templates yet — add one to get started.",
+          "noConfigs": "No interview configurations yet — add one to make a role package selectable when starting a session.",
+          "noRuleSets": "No scoring rule sets yet — add one so \"Run Scoring\" has something to score against for this role.",
+          "active": "Active",
+          "inactive": "Inactive",
+          "usedLocked": "Used — locked",
+          "notYetUsed": "Not yet used"
+        },
+        "confirm": {
+          "deleteQuestion": "Delete question \"{text}...\"? This cannot be undone.",
+          "deleteConfig": "Delete the {role} ({tier}) configuration? This cannot be undone.",
+          "deleteRuleSet": "Delete the {name} ({version}) scoring rule set? This cannot be undone."
+        },
+        "errors": {
+          "deleteQuestionFailed": "Failed to delete question template. Please try again.",
+          "deleteConfigFailed": "Failed to delete configuration. Please try again.",
+          "deleteRuleSetFailed": "Failed to delete scoring rule set. If it has already been used to score an evaluation, the backend keeps it for historical accuracy and won't allow deletion."
+        },
+        "roles": {
+          "domestic_worker": "Domestic Worker (Housekeeper)",
+          "child_caregiver": "Child Caregiver",
+          "elderly_caregiver": "Elderly Caregiver",
+          "special_needs_caregiver": "Special Needs Caregiver",
+          "nursing_assistant": "Nursing Assistant",
+          "home_care_assistant": "Home Care Assistant",
+          "elderly_medical_support": "Elderly Medical Support",
+          "basic_patient_support": "Basic Patient Support",
+          "hotel_housekeeper": "Hotel Housekeeper",
+          "front_desk_agent": "Front Desk & Guest Service",
+          "restaurant_staff": "Restaurant Staff",
+          "security_guard": "Security Guard",
+          "event_security": "Event Security",
+          "commercial_cleaner": "Commercial Cleaner",
+          "industrial_cleaner": "Industrial Cleaner",
+          "warehouse_staff": "Warehouse Staff",
+          "driver": "Driver",
+          "general_labor": "General Labor",
+          "skilled_trades": "Skilled Trades & Maintenance",
+          "farm_worker": "Farm Worker",
+          "livestock_support": "Livestock Support"
+        },
+        "evaluationTiers": {
+          "FULL": "Full Evaluation",
+          "SCREENING": "Screening",
+          "BOTH": "Both"
+        },
+        "questionDifficulties": {
+          "EASY": "Easy",
+          "MEDIUM": "Medium",
+          "HARD": "Hard"
+        },
+        "questionTypes": {
+          "safety": "Safety",
+          "integrity": "Integrity",
+          "behavioral": "Behavioral",
+          "communication": "Communication",
+          "situational": "Situational",
+          "scenario": "Scenario",
+          "knowledge": "Knowledge"
+        },
+        "questionFormats": {
+          "TEXT": "Text",
+          "SCENARIO": "Scenario",
+          "TASK": "Task"
+        },
+        "expectedAnswerTypes": {
+          "short": "Short",
+          "structured": "Structured",
+          "multi_step": "Multi Step"
+        },
+        "questionStatuses": {
+          "active": "Active",
+          "draft": "Draft",
+          "deprecated": "Deprecated",
+          "archived": "Archived"
+        },
+        "scoringMethods": {
+          "WEIGHTED_INDICATOR_MATCH": "Weighted Indicator Match",
+          "ALL_OR_NOTHING": "All Or Nothing",
+          "REQUIRED_INDICATOR_GATE": "Required Indicator Gate",
+          "CRITICAL_FAILURE_OVERRIDE": "Critical Failure Override"
+        },
+        "languages": {
+          "EN": "English",
+          "AR": "Arabic"
+        },
+        "configModal": {
+          "editTitle": "Edit Interview Configuration",
+          "newTitle": "New Interview Configuration",
+          "role": "Role",
+          "language": "Language",
+          "evaluationTier": "Evaluation Tier",
+          "tierHint": "Only active question templates for this role whose tier matches (or is \"Both\") will be pulled into sessions using this config.",
+          "totalQuestions": "Total Questions",
+          "duration": "Duration (minutes)",
+          "maxRetries": "Max Retries",
+          "allowRetries": "Allow retries",
+          "enableTranslation": "Enable translation",
+          "enableTaskModule": "Enable task module",
+          "enableIntegrityChecks": "Enable integrity checks",
+          "active": "Active",
+          "inactiveWarning": "Heads up: deactivating hides this config from every list view (including this admin page) — there is currently no way to browse back to it here. You would need to reactivate it directly via the API or Django admin.",
+          "cancel": "Cancel",
+          "saveChanges": "Save Changes",
+          "createConfiguration": "Create Configuration",
+          "errors": {
+            "roleNameRequired": "Role name is required",
+            "roleCodeRequired": "Role code is required",
+            "questionsMinOne": "Must be at least 1",
+            "durationMinOne": "Must be at least 1",
+            "saveFailed": "Failed to save interview configuration. Please try again."
+          }
+        },
+        "questionModal": {
+          "editTitle": "Edit Question Template",
+          "newTitle": "New Question Template",
+          "role": "Role",
+          "language": "Language",
+          "questionText": "Question Text",
+          "questionTextPlaceholder": "e.g. You notice a spill on the kitchen floor. Walk me through what you would do.",
+          "domain": "Domain",
+          "domainPlaceholder": "e.g. Safety & Hygiene",
+          "skill": "Skill",
+          "skillPlaceholder": "e.g. Safety Awareness",
+          "skillTag": "Skill Tag",
+          "skillTagHint": "(used to match scoring rules — leave blank to reuse Skill)",
+          "skillTagPlaceholder": "e.g. safety_awareness",
+          "questionType": "Question Type",
+          "format": "Format",
+          "difficulty": "Difficulty",
+          "evaluationTier": "Evaluation Tier",
+          "expectedAnswerType": "Expected Answer Type",
+          "status": "Status",
+          "sequenceNumber": "Sequence Number",
+          "questionCode": "Question Code",
+          "questionCodePlaceholder": "optional",
+          "estTime": "Est. Time (sec)",
+          "mandatory": "Mandatory",
+          "criticalQuestion": "Critical question",
+          "followUpAllowed": "Follow-up allowed",
+          "active": "Active",
+          "cancel": "Cancel",
+          "saveChanges": "Save Changes",
+          "createQuestion": "Create Question",
+          "errors": {
+            "roleNameRequired": "Role name is required",
+            "roleCodeRequired": "Role code is required",
+            "domainRequired": "Domain is required",
+            "skillRequired": "Skill is required",
+            "questionTextRequired": "Question text is required",
+            "saveFailed": "Failed to save question template. Please try again."
+          }
+        },
+        "ruleSetModal": {
+          "editTitle": "Edit Scoring Rule Set",
+          "newTitle": "New Scoring Rule Set",
+          "lockedNotice": "This rule set has already been used to score at least one evaluation and can no longer be modified — this is enforced by the backend to keep historical scores reproducible. Create a new version instead.",
+          "role": "Role",
+          "evaluationTier": "Evaluation Tier",
+          "tierHint": "Must match the Interview Configuration's tier used for this role.",
+          "name": "Name",
+          "namePlaceholder": "e.g. Nursing Assistant Default",
+          "version": "Version",
+          "versionPlaceholder": "e.g. v1",
+          "description": "Description",
+          "descriptionPlaceholder": "optional",
+          "active": "Active",
+          "rulesHeading": "Rules",
+          "addRule": "Add Rule",
+          "ruleLabel": "Rule {number}",
+          "competencyCode": "Competency Code",
+          "competencyCodePlaceholder": "e.g. safety_awareness — must match the question's Skill Tag",
+          "competencyName": "Competency Name",
+          "competencyNamePlaceholder": "e.g. Safety Awareness",
+          "questionCode": "Question Code",
+          "questionCodePlaceholder": "matches Question Template's code",
+          "expectedIndicators": "Expected Indicators",
+          "expectedIndicatorsHint": "(comma-separated)",
+          "expectedIndicatorsPlaceholder": "identify hazard, clean spill, prevent recurrence",
+          "requiredIndicators": "Required Indicators",
+          "requiredIndicatorsHint": "(must be present, or score = 0)",
+          "requiredIndicatorsPlaceholder": "identify hazard",
+          "criticalFailureIndicators": "Critical Failure Indicators",
+          "criticalFailureIndicatorsHint": "(zeroes score, flags review)",
+          "criticalFailureIndicatorsPlaceholder": "e.g. ignored unresponsive patient",
+          "weightedIndicators": "Weighted Indicators",
+          "weightedIndicatorsHint": "(one per line, \"indicator: weight\")",
+          "weightedIndicatorsPlaceholder": "identify hazard: 4\nclean spill: 3\nprevent recurrence: 3",
+          "maxScore": "Max Score",
+          "passThreshold": "Pass Threshold",
+          "scoringMethod": "Scoring Method",
+          "cancel": "Cancel",
+          "saveChanges": "Save Changes",
+          "createRuleSet": "Create Rule Set",
+          "errors": {
+            "nameRequired": "Name is required",
+            "versionRequired": "Version is required",
+            "atLeastOneRule": "At least one rule is required",
+            "competencyCodeRequired": "Competency code is required",
+            "saveFailed": "Failed to save scoring rule set. Please try again."
+          }
+        }
+      },
+
  "billing": {
         "title": "Billing and Subscriptions",
         "search": "Search subscriptions...",

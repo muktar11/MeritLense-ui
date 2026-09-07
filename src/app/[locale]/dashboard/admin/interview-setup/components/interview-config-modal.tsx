@@ -3,6 +3,7 @@
 import { useState, useEffect, Fragment } from "react";
 import { Dialog, Transition } from '@headlessui/react';
 import { X, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import interviewService from "@/app/api/interviews/endpoints";
 import type { InterviewConfig, InterviewConfigPayload } from "@/app/api/interviews/types";
 import { CANDIDATE_JOB_ROLES, EVALUATION_TIERS } from "@/app/api/interviews/types";
@@ -30,6 +31,8 @@ const initialForm: InterviewConfigPayload = {
 };
 
 export function InterviewConfigModal({ isOpen, onClose, onSuccess, configToEdit }: InterviewConfigModalProps) {
+  const t = useTranslations("dashboard.admin.interviewSetup.configModal");
+  const tShared = useTranslations("dashboard.admin.interviewSetup");
   const [form, setForm] = useState<InterviewConfigPayload>(initialForm);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -73,10 +76,10 @@ export function InterviewConfigModal({ isOpen, onClose, onSuccess, configToEdit 
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
-    if (!form.role_name.trim()) newErrors.role_name = "Role name is required";
-    if (!form.role_code.trim()) newErrors.role_code = "Role code is required";
-    if (!form.total_questions || form.total_questions < 1) newErrors.total_questions = "Must be at least 1";
-    if (!form.duration_minutes || form.duration_minutes < 1) newErrors.duration_minutes = "Must be at least 1";
+    if (!form.role_name.trim()) newErrors.role_name = t("errors.roleNameRequired");
+    if (!form.role_code.trim()) newErrors.role_code = t("errors.roleCodeRequired");
+    if (!form.total_questions || form.total_questions < 1) newErrors.total_questions = t("errors.questionsMinOne");
+    if (!form.duration_minutes || form.duration_minutes < 1) newErrors.duration_minutes = t("errors.durationMinOne");
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -103,7 +106,7 @@ export function InterviewConfigModal({ isOpen, onClose, onSuccess, configToEdit 
         });
         setErrors(backendErrors);
       } else {
-        setErrors({ form: 'Failed to save interview configuration. Please try again.' });
+        setErrors({ form: t("errors.saveFailed") });
       }
     } finally {
       setLoading(false);
@@ -144,7 +147,7 @@ export function InterviewConfigModal({ isOpen, onClose, onSuccess, configToEdit 
               <Dialog.Panel className="w-full max-w-xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                 <div className="flex justify-between items-center mb-4">
                   <Dialog.Title as="h3" className="text-lg font-semibold text-gray-900">
-                    {isEditMode ? 'Edit Interview Configuration' : 'New Interview Configuration'}
+                    {isEditMode ? t("editTitle") : t("newTitle")}
                   </Dialog.Title>
                   <button onClick={onClose} className="text-gray-400 hover:text-gray-500">
                     <X size={20} />
@@ -160,44 +163,44 @@ export function InterviewConfigModal({ isOpen, onClose, onSuccess, configToEdit 
                 <form onSubmit={handleSubmit} className="space-y-4 text-left">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className={labelClass}>Role</label>
+                      <label className={labelClass}>{t("role")}</label>
                       <select name="role_code" value={form.role_code} onChange={(e) => {
                         const role = CANDIDATE_JOB_ROLES.find(r => r.code === e.target.value);
                         setForm(prev => ({ ...prev, role_code: e.target.value, role_name: role?.name ?? prev.role_name }));
                       }} className={inputClass}>
                         {CANDIDATE_JOB_ROLES.map(role => (
-                          <option key={role.code} value={role.code}>{role.icon} {role.name} ({role.code})</option>
+                          <option key={role.code} value={role.code}>{role.icon} {tShared(`roles.${role.code}`)} ({role.code})</option>
                         ))}
                       </select>
                       {errors.role_code && <p className="text-xs text-red-600 mt-1">{errors.role_code}</p>}
                     </div>
                     <div>
-                      <label className={labelClass}>Language</label>
+                      <label className={labelClass}>{t("language")}</label>
                       <select name="language" value={form.language} onChange={handleChange} className={inputClass}>
-                        <option value="EN">English</option>
-                        <option value="AR">Arabic</option>
+                        <option value="EN">{tShared("languages.EN")}</option>
+                        <option value="AR">{tShared("languages.AR")}</option>
                       </select>
                     </div>
                   </div>
 
                   <div>
-                    <label className={labelClass}>Evaluation Tier</label>
+                    <label className={labelClass}>{t("evaluationTier")}</label>
                     <select name="evaluation_tier" value={form.evaluation_tier} onChange={handleChange} className={inputClass}>
-                      {EVALUATION_TIERS.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+                      {EVALUATION_TIERS.map(tier => <option key={tier.value} value={tier.value}>{tShared(`evaluationTiers.${tier.value}`)}</option>)}
                     </select>
                     <p className="text-xs text-gray-400 mt-1">
-                      Only active question templates for this role whose tier matches (or is &quot;Both&quot;) will be pulled into sessions using this config.
+                      {t("tierHint")}
                     </p>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className={labelClass}>Total Questions</label>
+                      <label className={labelClass}>{t("totalQuestions")}</label>
                       <input type="number" name="total_questions" value={form.total_questions} onChange={handleChange} className={inputClass} min={1} />
                       {errors.total_questions && <p className="text-xs text-red-600 mt-1">{errors.total_questions}</p>}
                     </div>
                     <div>
-                      <label className={labelClass}>Duration (minutes)</label>
+                      <label className={labelClass}>{t("duration")}</label>
                       <input type="number" name="duration_minutes" value={form.duration_minutes} onChange={handleChange} className={inputClass} min={1} />
                       {errors.duration_minutes && <p className="text-xs text-red-600 mt-1">{errors.duration_minutes}</p>}
                     </div>
@@ -205,13 +208,13 @@ export function InterviewConfigModal({ isOpen, onClose, onSuccess, configToEdit 
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className={labelClass}>Max Retries</label>
+                      <label className={labelClass}>{t("maxRetries")}</label>
                       <input type="number" name="max_retries" value={form.max_retries} onChange={handleChange} className={inputClass} min={0} />
                     </div>
                     <div className="flex items-end pb-2">
                       <label className="flex items-center gap-2 text-sm text-gray-700">
                         <input type="checkbox" name="allow_retries" checked={form.allow_retries} onChange={handleChange} className="rounded border-gray-300 text-purple-600" />
-                        Allow retries
+                        {t("allowRetries")}
                       </label>
                     </div>
                   </div>
@@ -219,31 +222,31 @@ export function InterviewConfigModal({ isOpen, onClose, onSuccess, configToEdit 
                   <div className="flex flex-wrap gap-6 pt-1">
                     <label className="flex items-center gap-2 text-sm text-gray-700">
                       <input type="checkbox" name="enable_translation" checked={form.enable_translation} onChange={handleChange} className="rounded border-gray-300 text-purple-600" />
-                      Enable translation
+                      {t("enableTranslation")}
                     </label>
                     <label className="flex items-center gap-2 text-sm text-gray-700">
                       <input type="checkbox" name="enable_task_module" checked={form.enable_task_module} onChange={handleChange} className="rounded border-gray-300 text-purple-600" />
-                      Enable task module
+                      {t("enableTaskModule")}
                     </label>
                     <label className="flex items-center gap-2 text-sm text-gray-700">
                       <input type="checkbox" name="enable_integrity_checks" checked={form.enable_integrity_checks} onChange={handleChange} className="rounded border-gray-300 text-purple-600" />
-                      Enable integrity checks
+                      {t("enableIntegrityChecks")}
                     </label>
                     <label className="flex items-center gap-2 text-sm text-gray-700">
                       <input type="checkbox" name="is_active" checked={form.is_active} onChange={handleChange} className="rounded border-gray-300 text-purple-600" />
-                      Active
+                      {t("active")}
                     </label>
                   </div>
 
                   {form.is_active === false && (
                     <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
-                      Heads up: deactivating hides this config from every list view (including this admin page) — there is currently no way to browse back to it here. You would need to reactivate it directly via the API or Django admin.
+                      {t("inactiveWarning")}
                     </p>
                   )}
 
                   <div className="flex justify-end gap-3 pt-2">
                     <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg">
-                      Cancel
+                      {t("cancel")}
                     </button>
                     <button
                       type="submit"
@@ -251,7 +254,7 @@ export function InterviewConfigModal({ isOpen, onClose, onSuccess, configToEdit 
                       className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white rounded-lg text-sm font-medium"
                     >
                       {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-                      {isEditMode ? 'Save Changes' : 'Create Configuration'}
+                      {isEditMode ? t("saveChanges") : t("createConfiguration")}
                     </button>
                   </div>
                 </form>

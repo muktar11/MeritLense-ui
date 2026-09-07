@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -24,12 +25,13 @@ import { ScoringRuleSetModal } from "./components/scoring-rule-set-modal";
 
 type Tab = "questions" | "configs" | "rulesets";
 
-function roleName(code: string): string {
-  return CANDIDATE_JOB_ROLES.find(r => r.code === code)?.name ?? code;
-}
-
 export default function InterviewSetupPage() {
+  const t = useTranslations("dashboard.admin.interviewSetup");
   const [tab, setTab] = useState<Tab>("questions");
+
+  const roleName = (code: string): string => {
+    return CANDIDATE_JOB_ROLES.find(r => r.code === code) ? t(`roles.${code}`) : code;
+  };
 
   const [templates, setTemplates] = useState<QuestionTemplate[]>([]);
   const [configs, setConfigs] = useState<InterviewConfig[]>([]);
@@ -78,13 +80,13 @@ export default function InterviewSetupPage() {
   };
 
   const handleDeleteTemplate = async (template: QuestionTemplate) => {
-    if (!confirm(`Delete question "${template.question_text.slice(0, 60)}..."? This cannot be undone.`)) return;
+    if (!confirm(t("confirm.deleteQuestion", { text: template.question_text.slice(0, 60) }))) return;
     try {
       await interviewService.deleteQuestionTemplate(template.id);
       fetchAll();
     } catch (error) {
       console.error("Failed to delete question template:", error);
-      alert("Failed to delete question template. Please try again.");
+      alert(t("errors.deleteQuestionFailed"));
     }
   };
 
@@ -99,13 +101,13 @@ export default function InterviewSetupPage() {
   };
 
   const handleDeleteConfig = async (config: InterviewConfig) => {
-    if (!confirm(`Delete the ${roleName(config.role_code)} (${config.evaluation_tier}) configuration? This cannot be undone.`)) return;
+    if (!confirm(t("confirm.deleteConfig", { role: roleName(config.role_code), tier: t(`evaluationTiers.${config.evaluation_tier}`) }))) return;
     try {
       await interviewService.deleteConfig(config.id);
       fetchAll();
     } catch (error) {
       console.error("Failed to delete interview configuration:", error);
-      alert("Failed to delete configuration. Please try again.");
+      alert(t("errors.deleteConfigFailed"));
     }
   };
 
@@ -120,13 +122,13 @@ export default function InterviewSetupPage() {
   };
 
   const handleDeleteRuleSet = async (ruleSet: ScoringRuleSet) => {
-    if (!confirm(`Delete the ${ruleSet.name} (${ruleSet.version}) scoring rule set? This cannot be undone.`)) return;
+    if (!confirm(t("confirm.deleteRuleSet", { name: ruleSet.name, version: ruleSet.version }))) return;
     try {
       await evaluationService.deleteRuleSet(ruleSet.id);
       fetchAll();
     } catch (error) {
       console.error("Failed to delete scoring rule set:", error);
-      alert("Failed to delete scoring rule set. If it has already been used to score an evaluation, the backend keeps it for historical accuracy and won't allow deletion.");
+      alert(t("errors.deleteRuleSetFailed"));
     }
   };
 
@@ -135,9 +137,9 @@ export default function InterviewSetupPage() {
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Interview Setup</h1>
+            <h1 className="text-2xl font-bold text-gray-900">{t("title")}</h1>
             <p className="text-sm text-gray-500 mt-1">
-              Manage the question bank and interview configurations behind each role package.
+              {t("subtitle")}
             </p>
           </div>
           <Button
@@ -145,7 +147,7 @@ export default function InterviewSetupPage() {
             className="bg-purple-600 hover:bg-purple-700 text-white"
           >
             <Plus className="w-4 h-4 mr-2" />
-            {tab === "questions" ? "New Question" : tab === "configs" ? "New Configuration" : "New Rule Set"}
+            {tab === "questions" ? t("newQuestion") : tab === "configs" ? t("newConfiguration") : t("newRuleSet")}
           </Button>
         </div>
 
@@ -156,7 +158,7 @@ export default function InterviewSetupPage() {
               tab === "questions" ? "border-purple-600 text-purple-700" : "border-transparent text-gray-500 hover:text-gray-700"
             }`}
           >
-            Question Templates ({templates.length})
+            {t("tabs.questionTemplates", { count: templates.length })}
           </button>
           <button
             onClick={() => setTab("configs")}
@@ -164,7 +166,7 @@ export default function InterviewSetupPage() {
               tab === "configs" ? "border-purple-600 text-purple-700" : "border-transparent text-gray-500 hover:text-gray-700"
             }`}
           >
-            Interview Configurations ({configs.length})
+            {t("tabs.interviewConfigurations", { count: configs.length })}
           </button>
           <button
             onClick={() => setTab("rulesets")}
@@ -172,7 +174,7 @@ export default function InterviewSetupPage() {
               tab === "rulesets" ? "border-purple-600 text-purple-700" : "border-transparent text-gray-500 hover:text-gray-700"
             }`}
           >
-            Scoring Rule Sets ({ruleSets.length})
+            {t("tabs.scoringRuleSets", { count: ruleSets.length })}
           </button>
         </div>
 
@@ -186,52 +188,52 @@ export default function InterviewSetupPage() {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-gray-50">
-                    <TableHead>Role</TableHead>
-                    <TableHead>Question</TableHead>
-                    <TableHead>Skill</TableHead>
-                    <TableHead>Tier</TableHead>
-                    <TableHead>Difficulty</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Actions</TableHead>
+                    <TableHead>{t("table.headers.role")}</TableHead>
+                    <TableHead>{t("table.headers.question")}</TableHead>
+                    <TableHead>{t("table.headers.skill")}</TableHead>
+                    <TableHead>{t("table.headers.tier")}</TableHead>
+                    <TableHead>{t("table.headers.difficulty")}</TableHead>
+                    <TableHead>{t("table.headers.status")}</TableHead>
+                    <TableHead>{t("table.headers.actions")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {templates.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={7} className="text-center py-8 text-gray-500">
-                        No question templates yet — add one to get started.
+                        {t("table.noQuestions")}
                       </TableCell>
                     </TableRow>
                   ) : (
-                    templates.map((t) => (
-                      <TableRow key={t.id} className="hover:bg-gray-50">
+                    templates.map((template) => (
+                      <TableRow key={template.id} className="hover:bg-gray-50">
                         <TableCell>
-                          <p className="font-medium text-gray-900">{t.role_name}</p>
-                          <p className="text-xs text-gray-400">{t.role_code}</p>
+                          <p className="font-medium text-gray-900">{roleName(template.role_code)}</p>
+                          <p className="text-xs text-gray-400">{template.role_code}</p>
                         </TableCell>
                         <TableCell className="max-w-xs">
-                          <p className="text-sm text-gray-700 truncate">{t.question_text}</p>
+                          <p className="text-sm text-gray-700 truncate">{template.question_text}</p>
                         </TableCell>
                         <TableCell>
-                          <span className="text-sm text-gray-600">{t.skill}</span>
+                          <span className="text-sm text-gray-600">{template.skill}</span>
                         </TableCell>
                         <TableCell>
-                          <Badge className="bg-blue-100 text-blue-800 border-0">{t.evaluation_tier}</Badge>
+                          <Badge className="bg-blue-100 text-blue-800 border-0">{t(`evaluationTiers.${template.evaluation_tier}`)}</Badge>
                         </TableCell>
                         <TableCell>
-                          <span className="text-sm text-gray-600">{t.difficulty}</span>
+                          <span className="text-sm text-gray-600">{t(`questionDifficulties.${template.difficulty}`)}</span>
                         </TableCell>
                         <TableCell>
-                          <Badge className={t.is_active ? 'bg-green-100 text-green-800 border-0' : 'bg-gray-100 text-gray-600 border-0'}>
-                            {t.is_active ? 'Active' : 'Inactive'}
+                          <Badge className={template.is_active ? 'bg-green-100 text-green-800 border-0' : 'bg-gray-100 text-gray-600 border-0'}>
+                            {template.is_active ? t("table.active") : t("table.inactive")}
                           </Badge>
                         </TableCell>
                         <TableCell>
                           <div className="flex gap-2">
-                            <Button variant="ghost" size="sm" onClick={() => handleEditTemplate(t)} className="text-blue-600 hover:text-blue-700">
+                            <Button variant="ghost" size="sm" onClick={() => handleEditTemplate(template)} className="text-blue-600 hover:text-blue-700">
                               <Pencil className="w-4 h-4" />
                             </Button>
-                            <Button variant="ghost" size="sm" onClick={() => handleDeleteTemplate(t)} className="text-red-600 hover:text-red-700">
+                            <Button variant="ghost" size="sm" onClick={() => handleDeleteTemplate(template)} className="text-red-600 hover:text-red-700">
                               <Trash2 className="w-4 h-4" />
                             </Button>
                           </div>
@@ -247,20 +249,20 @@ export default function InterviewSetupPage() {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-gray-50">
-                    <TableHead>Role</TableHead>
-                    <TableHead>Language</TableHead>
-                    <TableHead>Tier</TableHead>
-                    <TableHead>Questions</TableHead>
-                    <TableHead>Duration</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Actions</TableHead>
+                    <TableHead>{t("table.headers.role")}</TableHead>
+                    <TableHead>{t("table.headers.language")}</TableHead>
+                    <TableHead>{t("table.headers.tier")}</TableHead>
+                    <TableHead>{t("table.headers.questions")}</TableHead>
+                    <TableHead>{t("table.headers.duration")}</TableHead>
+                    <TableHead>{t("table.headers.status")}</TableHead>
+                    <TableHead>{t("table.headers.actions")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {configs.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={7} className="text-center py-8 text-gray-500">
-                        No interview configurations yet — add one to make a role package selectable when starting a session.
+                        {t("table.noConfigs")}
                       </TableCell>
                     </TableRow>
                   ) : (
@@ -271,10 +273,10 @@ export default function InterviewSetupPage() {
                           <p className="text-xs text-gray-400">{c.role_code}</p>
                         </TableCell>
                         <TableCell>
-                          <span className="text-sm text-gray-600">{c.language}</span>
+                          <span className="text-sm text-gray-600">{t(`languages.${c.language}`)}</span>
                         </TableCell>
                         <TableCell>
-                          <Badge className="bg-blue-100 text-blue-800 border-0">{c.evaluation_tier}</Badge>
+                          <Badge className="bg-blue-100 text-blue-800 border-0">{t(`evaluationTiers.${c.evaluation_tier}`)}</Badge>
                         </TableCell>
                         <TableCell>
                           <span className="text-sm text-gray-600">{c.total_questions}</span>
@@ -284,7 +286,7 @@ export default function InterviewSetupPage() {
                         </TableCell>
                         <TableCell>
                           <Badge className={c.is_active ? 'bg-green-100 text-green-800 border-0' : 'bg-gray-100 text-gray-600 border-0'}>
-                            {c.is_active ? 'Active' : 'Inactive'}
+                            {c.is_active ? t("table.active") : t("table.inactive")}
                           </Badge>
                         </TableCell>
                         <TableCell>
@@ -308,20 +310,20 @@ export default function InterviewSetupPage() {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-gray-50">
-                    <TableHead>Role</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Tier</TableHead>
-                    <TableHead>Rules</TableHead>
-                    <TableHead>Used</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Actions</TableHead>
+                    <TableHead>{t("table.headers.role")}</TableHead>
+                    <TableHead>{t("table.headers.name")}</TableHead>
+                    <TableHead>{t("table.headers.tier")}</TableHead>
+                    <TableHead>{t("table.headers.rules")}</TableHead>
+                    <TableHead>{t("table.headers.used")}</TableHead>
+                    <TableHead>{t("table.headers.status")}</TableHead>
+                    <TableHead>{t("table.headers.actions")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {ruleSets.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={7} className="text-center py-8 text-gray-500">
-                        No scoring rule sets yet — add one so &quot;Run Scoring&quot; has something to score against for this role.
+                        {t("table.noRuleSets")}
                       </TableCell>
                     </TableRow>
                   ) : (
@@ -336,21 +338,21 @@ export default function InterviewSetupPage() {
                           <p className="text-xs text-gray-400">{rs.version}</p>
                         </TableCell>
                         <TableCell>
-                          <Badge className="bg-blue-100 text-blue-800 border-0">{rs.evaluation_tier}</Badge>
+                          <Badge className="bg-blue-100 text-blue-800 border-0">{t(`evaluationTiers.${rs.evaluation_tier}`)}</Badge>
                         </TableCell>
                         <TableCell>
                           <span className="text-sm text-gray-600">{rs.rules.length}</span>
                         </TableCell>
                         <TableCell>
                           {rs.has_usage ? (
-                            <Badge className="bg-amber-100 text-amber-800 border-0">Used — locked</Badge>
+                            <Badge className="bg-amber-100 text-amber-800 border-0">{t("table.usedLocked")}</Badge>
                           ) : (
-                            <span className="text-xs text-gray-400">Not yet used</span>
+                            <span className="text-xs text-gray-400">{t("table.notYetUsed")}</span>
                           )}
                         </TableCell>
                         <TableCell>
                           <Badge className={rs.is_active ? 'bg-green-100 text-green-800 border-0' : 'bg-gray-100 text-gray-600 border-0'}>
-                            {rs.is_active ? 'Active' : 'Inactive'}
+                            {rs.is_active ? t("table.active") : t("table.inactive")}
                           </Badge>
                         </TableCell>
                         <TableCell>

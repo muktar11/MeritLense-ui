@@ -1675,6 +1675,237 @@
         }
       },
 
+      "interviewSetup": {
+        "title": "إعداد المقابلات",
+        "subtitle": "إدارة بنك الأسئلة وإعدادات المقابلات الخاصة بكل باقة دور وظيفي.",
+        "newQuestion": "سؤال جديد",
+        "newConfiguration": "إعداد جديد",
+        "newRuleSet": "مجموعة قواعد جديدة",
+        "tabs": {
+          "questionTemplates": "قوالب الأسئلة ({count})",
+          "interviewConfigurations": "إعدادات المقابلات ({count})",
+          "scoringRuleSets": "مجموعات قواعد التقييم ({count})"
+        },
+        "table": {
+          "headers": {
+            "role": "الدور",
+            "question": "السؤال",
+            "skill": "المهارة",
+            "tier": "المستوى",
+            "difficulty": "الصعوبة",
+            "status": "الحالة",
+            "actions": "الإجراءات",
+            "language": "اللغة",
+            "questions": "الأسئلة",
+            "duration": "المدة",
+            "name": "الاسم",
+            "rules": "القواعد",
+            "used": "الاستخدام"
+          },
+          "noQuestions": "لا توجد قوالب أسئلة بعد - أضف واحدًا للبدء.",
+          "noConfigs": "لا توجد إعدادات مقابلات بعد - أضف واحدًا لجعل باقة الدور قابلة للاختيار عند بدء جلسة.",
+          "noRuleSets": "لا توجد مجموعات قواعد تقييم بعد - أضف واحدة حتى يكون لدى \"تشغيل التقييم\" ما تُقيّم مقابله لهذا الدور.",
+          "active": "نشط",
+          "inactive": "غير نشط",
+          "usedLocked": "مستخدم - مُقفل",
+          "notYetUsed": "لم يُستخدم بعد"
+        },
+        "confirm": {
+          "deleteQuestion": "حذف السؤال \"{text}...\"؟ لا يمكن التراجع عن هذا الإجراء.",
+          "deleteConfig": "حذف إعداد {role} ({tier})؟ لا يمكن التراجع عن هذا الإجراء.",
+          "deleteRuleSet": "حذف مجموعة قواعد التقييم {name} ({version})؟ لا يمكن التراجع عن هذا الإجراء."
+        },
+        "errors": {
+          "deleteQuestionFailed": "فشل حذف قالب السؤال. يرجى المحاولة مرة أخرى.",
+          "deleteConfigFailed": "فشل حذف الإعداد. يرجى المحاولة مرة أخرى.",
+          "deleteRuleSetFailed": "فشل حذف مجموعة قواعد التقييم. إذا كانت قد استُخدمت بالفعل لتقييم تقييم ما، فإن الخادم يحتفظ بها للحفاظ على دقة السجل التاريخي ولا يسمح بحذفها."
+        },
+        "roles": {
+          "domestic_worker": "عامل منزلي (مدبرة منزل)",
+          "child_caregiver": "مربية أطفال",
+          "elderly_caregiver": "مقدم رعاية لكبار السن",
+          "special_needs_caregiver": "مقدم رعاية لذوي الاحتياجات الخاصة",
+          "nursing_assistant": "مساعد تمريض",
+          "home_care_assistant": "مساعد رعاية منزلية",
+          "elderly_medical_support": "دعم طبي لكبار السن",
+          "basic_patient_support": "دعم أساسي للمرضى",
+          "hotel_housekeeper": "عامل تدبير فندقي",
+          "front_desk_agent": "موظف استقبال وخدمة ضيوف",
+          "restaurant_staff": "طاقم مطعم",
+          "security_guard": "حارس أمن",
+          "event_security": "أمن الفعاليات",
+          "commercial_cleaner": "عامل تنظيف تجاري",
+          "industrial_cleaner": "عامل تنظيف صناعي",
+          "warehouse_staff": "طاقم مستودع",
+          "driver": "سائق",
+          "general_labor": "عامل عام",
+          "skilled_trades": "حرف ماهرة وصيانة",
+          "farm_worker": "عامل مزرعة",
+          "livestock_support": "دعم رعاية الماشية"
+        },
+        "evaluationTiers": {
+          "FULL": "تقييم كامل",
+          "SCREENING": "فرز",
+          "BOTH": "كلاهما"
+        },
+        "questionDifficulties": {
+          "EASY": "سهل",
+          "MEDIUM": "متوسط",
+          "HARD": "صعب"
+        },
+        "questionTypes": {
+          "safety": "السلامة",
+          "integrity": "النزاهة",
+          "behavioral": "سلوكي",
+          "communication": "التواصل",
+          "situational": "موقفي",
+          "scenario": "سيناريو",
+          "knowledge": "معرفي"
+        },
+        "questionFormats": {
+          "TEXT": "نص",
+          "SCENARIO": "سيناريو",
+          "TASK": "مهمة"
+        },
+        "expectedAnswerTypes": {
+          "short": "قصيرة",
+          "structured": "منظمة",
+          "multi_step": "متعددة الخطوات"
+        },
+        "questionStatuses": {
+          "active": "نشط",
+          "draft": "مسودة",
+          "deprecated": "متوقف",
+          "archived": "مؤرشف"
+        },
+        "scoringMethods": {
+          "WEIGHTED_INDICATOR_MATCH": "مطابقة مؤشرات موزونة",
+          "ALL_OR_NOTHING": "الكل أو لا شيء",
+          "REQUIRED_INDICATOR_GATE": "بوابة مؤشر مطلوب",
+          "CRITICAL_FAILURE_OVERRIDE": "تجاوز فشل حرج"
+        },
+        "languages": {
+          "EN": "الإنجليزية",
+          "AR": "العربية"
+        },
+        "configModal": {
+          "editTitle": "تعديل إعداد المقابلة",
+          "newTitle": "إعداد مقابلة جديد",
+          "role": "الدور",
+          "language": "اللغة",
+          "evaluationTier": "مستوى التقييم",
+          "tierHint": "سيتم سحب قوالب الأسئلة النشطة لهذا الدور والتي يتطابق مستواها (أو \"كلاهما\") فقط إلى الجلسات التي تستخدم هذا الإعداد.",
+          "totalQuestions": "إجمالي الأسئلة",
+          "duration": "المدة (بالدقائق)",
+          "maxRetries": "الحد الأقصى لإعادة المحاولة",
+          "allowRetries": "السماح بإعادة المحاولة",
+          "enableTranslation": "تفعيل الترجمة",
+          "enableTaskModule": "تفعيل وحدة المهام",
+          "enableIntegrityChecks": "تفعيل فحوصات النزاهة",
+          "active": "نشط",
+          "inactiveWarning": "تنبيه: إلغاء التفعيل يخفي هذا الإعداد من كل عرض قوائم (بما في ذلك صفحة الإدارة هذه) - لا توجد حاليًا طريقة للعودة إليه من هنا. ستحتاج إلى إعادة تفعيله مباشرة عبر الواجهة البرمجية أو لوحة إدارة Django.",
+          "cancel": "إلغاء",
+          "saveChanges": "حفظ التغييرات",
+          "createConfiguration": "إنشاء إعداد",
+          "errors": {
+            "roleNameRequired": "اسم الدور مطلوب",
+            "roleCodeRequired": "رمز الدور مطلوب",
+            "questionsMinOne": "يجب أن يكون واحدًا على الأقل",
+            "durationMinOne": "يجب أن تكون واحدة على الأقل",
+            "saveFailed": "فشل حفظ إعداد المقابلة. يرجى المحاولة مرة أخرى."
+          }
+        },
+        "questionModal": {
+          "editTitle": "تعديل قالب السؤال",
+          "newTitle": "قالب سؤال جديد",
+          "role": "الدور",
+          "language": "اللغة",
+          "questionText": "نص السؤال",
+          "questionTextPlaceholder": "مثال: تلاحظ انسكابًا على أرضية المطبخ. اشرح لي ما الذي ستفعله.",
+          "domain": "المجال",
+          "domainPlaceholder": "مثال: السلامة والنظافة",
+          "skill": "المهارة",
+          "skillPlaceholder": "مثال: الوعي بالسلامة",
+          "skillTag": "وسم المهارة",
+          "skillTagHint": "(يُستخدم لمطابقة قواعد التقييم - اتركه فارغًا لإعادة استخدام المهارة)",
+          "skillTagPlaceholder": "مثال: safety_awareness",
+          "questionType": "نوع السؤال",
+          "format": "الصيغة",
+          "difficulty": "الصعوبة",
+          "evaluationTier": "مستوى التقييم",
+          "expectedAnswerType": "نوع الإجابة المتوقعة",
+          "status": "الحالة",
+          "sequenceNumber": "رقم التسلسل",
+          "questionCode": "رمز السؤال",
+          "questionCodePlaceholder": "اختياري",
+          "estTime": "الوقت المقدر (ثانية)",
+          "mandatory": "إلزامي",
+          "criticalQuestion": "سؤال حرج",
+          "followUpAllowed": "يسمح بمتابعة",
+          "active": "نشط",
+          "cancel": "إلغاء",
+          "saveChanges": "حفظ التغييرات",
+          "createQuestion": "إنشاء سؤال",
+          "errors": {
+            "roleNameRequired": "اسم الدور مطلوب",
+            "roleCodeRequired": "رمز الدور مطلوب",
+            "domainRequired": "المجال مطلوب",
+            "skillRequired": "المهارة مطلوبة",
+            "questionTextRequired": "نص السؤال مطلوب",
+            "saveFailed": "فشل حفظ قالب السؤال. يرجى المحاولة مرة أخرى."
+          }
+        },
+        "ruleSetModal": {
+          "editTitle": "تعديل مجموعة قواعد التقييم",
+          "newTitle": "مجموعة قواعد تقييم جديدة",
+          "lockedNotice": "تم استخدام مجموعة القواعد هذه بالفعل لتقييم تقييم واحد على الأقل ولم يعد بالإمكان تعديلها - يفرض الخادم ذلك للحفاظ على قابلية إعادة إنتاج النتائج التاريخية. أنشئ إصدارًا جديدًا بدلاً من ذلك.",
+          "role": "الدور",
+          "evaluationTier": "مستوى التقييم",
+          "tierHint": "يجب أن يطابق مستوى إعداد المقابلة المستخدم لهذا الدور.",
+          "name": "الاسم",
+          "namePlaceholder": "مثال: الافتراضي لمساعد التمريض",
+          "version": "الإصدار",
+          "versionPlaceholder": "مثال: v1",
+          "description": "الوصف",
+          "descriptionPlaceholder": "اختياري",
+          "active": "نشط",
+          "rulesHeading": "القواعد",
+          "addRule": "إضافة قاعدة",
+          "ruleLabel": "القاعدة {number}",
+          "competencyCode": "رمز الكفاءة",
+          "competencyCodePlaceholder": "مثال: safety_awareness - يجب أن يطابق وسم مهارة السؤال",
+          "competencyName": "اسم الكفاءة",
+          "competencyNamePlaceholder": "مثال: الوعي بالسلامة",
+          "questionCode": "رمز السؤال",
+          "questionCodePlaceholder": "يطابق رمز قالب السؤال",
+          "expectedIndicators": "المؤشرات المتوقعة",
+          "expectedIndicatorsHint": "(مفصولة بفواصل)",
+          "expectedIndicatorsPlaceholder": "تحديد الخطر، تنظيف الانسكاب، منع التكرار",
+          "requiredIndicators": "المؤشرات المطلوبة",
+          "requiredIndicatorsHint": "(يجب أن تكون موجودة، وإلا فالنتيجة = 0)",
+          "requiredIndicatorsPlaceholder": "تحديد الخطر",
+          "criticalFailureIndicators": "مؤشرات الفشل الحرج",
+          "criticalFailureIndicatorsHint": "(تُصفّر النتيجة، وتُعلّم للمراجعة)",
+          "criticalFailureIndicatorsPlaceholder": "مثال: تجاهل مريض فاقد للاستجابة",
+          "weightedIndicators": "المؤشرات الموزونة",
+          "weightedIndicatorsHint": "(واحد في كل سطر، \"المؤشر: الوزن\")",
+          "weightedIndicatorsPlaceholder": "تحديد الخطر: 4\nتنظيف الانسكاب: 3\nمنع التكرار: 3",
+          "maxScore": "الحد الأقصى للنتيجة",
+          "passThreshold": "حد النجاح",
+          "scoringMethod": "طريقة التقييم",
+          "cancel": "إلغاء",
+          "saveChanges": "حفظ التغييرات",
+          "createRuleSet": "إنشاء مجموعة قواعد",
+          "errors": {
+            "nameRequired": "الاسم مطلوب",
+            "versionRequired": "الإصدار مطلوب",
+            "atLeastOneRule": "يجب إضافة قاعدة واحدة على الأقل",
+            "competencyCodeRequired": "رمز الكفاءة مطلوب",
+            "saveFailed": "فشل حفظ مجموعة قواعد التقييم. يرجى المحاولة مرة أخرى."
+          }
+        }
+      },
+
     "billing": {
         "title": "الفوترة والاشتراكات",
         "search": "بحث عن الاشتراكات...",

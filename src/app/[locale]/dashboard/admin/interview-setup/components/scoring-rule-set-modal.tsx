@@ -3,6 +3,7 @@
 import { useState, useEffect, Fragment } from "react";
 import { Dialog, Transition } from '@headlessui/react';
 import { X, Loader2, Plus, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import evaluationService from "@/app/api/evaluations/endpoints";
 import type {
   ScoringRuleSet,
@@ -109,6 +110,8 @@ function formatWeightedIndicators(dict: Record<string, string> | undefined): str
 }
 
 export function ScoringRuleSetModal({ isOpen, onClose, onSuccess, ruleSetToEdit }: ScoringRuleSetModalProps) {
+  const t = useTranslations("dashboard.admin.interviewSetup.ruleSetModal");
+  const tShared = useTranslations("dashboard.admin.interviewSetup");
   const [form, setForm] = useState<RuleSetForm>(initialForm());
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -174,11 +177,11 @@ export function ScoringRuleSetModal({ isOpen, onClose, onSuccess, ruleSetToEdit 
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
-    if (!form.name.trim()) newErrors.name = "Name is required";
-    if (!form.version.trim()) newErrors.version = "Version is required";
-    if (form.rules.length === 0) newErrors.rules = "At least one rule is required";
+    if (!form.name.trim()) newErrors.name = t("errors.nameRequired");
+    if (!form.version.trim()) newErrors.version = t("errors.versionRequired");
+    if (form.rules.length === 0) newErrors.rules = t("errors.atLeastOneRule");
     form.rules.forEach((r, i) => {
-      if (!r.competency_code.trim()) newErrors[`rule_${i}_competency_code`] = "Competency code is required";
+      if (!r.competency_code.trim()) newErrors[`rule_${i}_competency_code`] = t("errors.competencyCodeRequired");
     });
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -231,7 +234,7 @@ export function ScoringRuleSetModal({ isOpen, onClose, onSuccess, ruleSetToEdit 
         });
         setErrors(backendErrors);
       } else {
-        setErrors({ form: "Failed to save scoring rule set. Please try again." });
+        setErrors({ form: t("errors.saveFailed") });
       }
     } finally {
       setLoading(false);
@@ -272,7 +275,7 @@ export function ScoringRuleSetModal({ isOpen, onClose, onSuccess, ruleSetToEdit 
               <Dialog.Panel className="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                 <div className="flex justify-between items-center mb-4">
                   <Dialog.Title as="h3" className="text-lg font-semibold text-gray-900">
-                    {isEditMode ? "Edit Scoring Rule Set" : "New Scoring Rule Set"}
+                    {isEditMode ? t("editTitle") : t("newTitle")}
                   </Dialog.Title>
                   <button onClick={onClose} className="text-gray-400 hover:text-gray-500">
                     <X size={20} />
@@ -281,9 +284,7 @@ export function ScoringRuleSetModal({ isOpen, onClose, onSuccess, ruleSetToEdit 
 
                 {locked && (
                   <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-4">
-                    This rule set has already been used to score at least one evaluation and can no longer be
-                    modified — this is enforced by the backend to keep historical scores reproducible. Create a new
-                    version instead.
+                    {t("lockedNotice")}
                   </p>
                 )}
 
@@ -297,7 +298,7 @@ export function ScoringRuleSetModal({ isOpen, onClose, onSuccess, ruleSetToEdit 
                   <fieldset disabled={locked} className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className={labelClass}>Role</label>
+                        <label className={labelClass}>{t("role")}</label>
                         <select
                           name="role_code"
                           value={form.role_code}
@@ -309,56 +310,56 @@ export function ScoringRuleSetModal({ isOpen, onClose, onSuccess, ruleSetToEdit 
                         >
                           {CANDIDATE_JOB_ROLES.map((role) => (
                             <option key={role.code} value={role.code}>
-                              {role.icon} {role.name} ({role.code})
+                              {role.icon} {tShared(`roles.${role.code}`)} ({role.code})
                             </option>
                           ))}
                         </select>
                       </div>
                       <div>
-                        <label className={labelClass}>Evaluation Tier</label>
+                        <label className={labelClass}>{t("evaluationTier")}</label>
                         <select name="evaluation_tier" value={form.evaluation_tier} onChange={handleChange} className={inputClass}>
-                          {EVALUATION_TIERS.map((t) => (
-                            <option key={t.value} value={t.value}>
-                              {t.label}
+                          {EVALUATION_TIERS.map((tier) => (
+                            <option key={tier.value} value={tier.value}>
+                              {tShared(`evaluationTiers.${tier.value}`)}
                             </option>
                           ))}
                         </select>
-                        <p className="text-xs text-gray-400 mt-1">Must match the Interview Configuration&apos;s tier used for this role.</p>
+                        <p className="text-xs text-gray-400 mt-1">{t("tierHint")}</p>
                       </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className={labelClass}>Name</label>
-                        <input name="name" value={form.name} onChange={handleChange} className={inputClass} placeholder="e.g. Nursing Assistant Default" />
+                        <label className={labelClass}>{t("name")}</label>
+                        <input name="name" value={form.name} onChange={handleChange} className={inputClass} placeholder={t("namePlaceholder")} />
                         {errors.name && <p className="text-xs text-red-600 mt-1">{errors.name}</p>}
                       </div>
                       <div>
-                        <label className={labelClass}>Version</label>
-                        <input name="version" value={form.version} onChange={handleChange} className={inputClass} placeholder="e.g. v1" />
+                        <label className={labelClass}>{t("version")}</label>
+                        <input name="version" value={form.version} onChange={handleChange} className={inputClass} placeholder={t("versionPlaceholder")} />
                         {errors.version && <p className="text-xs text-red-600 mt-1">{errors.version}</p>}
                       </div>
                     </div>
 
                     <div>
-                      <label className={labelClass}>Description</label>
-                      <input name="description" value={form.description} onChange={handleChange} className={inputClass} placeholder="optional" />
+                      <label className={labelClass}>{t("description")}</label>
+                      <input name="description" value={form.description} onChange={handleChange} className={inputClass} placeholder={t("descriptionPlaceholder")} />
                     </div>
 
                     <label className="flex items-center gap-2 text-sm text-gray-700">
                       <input type="checkbox" name="is_active" checked={form.is_active} onChange={handleChange} className="rounded border-gray-300 text-purple-600" />
-                      Active
+                      {t("active")}
                     </label>
 
                     <div className="border-t border-gray-200 pt-4">
                       <div className="flex items-center justify-between mb-2">
-                        <p className="text-sm font-semibold text-gray-900">Rules</p>
+                        <p className="text-sm font-semibold text-gray-900">{t("rulesHeading")}</p>
                         <button
                           type="button"
                           onClick={addRule}
                           className="inline-flex items-center gap-1 text-xs font-medium text-purple-600 hover:text-purple-700"
                         >
-                          <Plus className="w-3.5 h-3.5" /> Add Rule
+                          <Plus className="w-3.5 h-3.5" /> {t("addRule")}
                         </button>
                       </div>
                       {errors.rules && <p className="text-xs text-red-600 mb-2">{errors.rules}</p>}
@@ -367,7 +368,7 @@ export function ScoringRuleSetModal({ isOpen, onClose, onSuccess, ruleSetToEdit 
                         {form.rules.map((rule, i) => (
                           <div key={i} className="border border-gray-200 rounded-lg p-3 space-y-3 bg-gray-50">
                             <div className="flex items-center justify-between">
-                              <p className="text-xs font-semibold text-gray-500">Rule {i + 1}</p>
+                              <p className="text-xs font-semibold text-gray-500">{t("ruleLabel", { number: i + 1 })}</p>
                               {form.rules.length > 1 && (
                                 <button type="button" onClick={() => removeRule(i)} className="text-red-500 hover:text-red-700">
                                   <Trash2 className="w-3.5 h-3.5" />
@@ -377,90 +378,90 @@ export function ScoringRuleSetModal({ isOpen, onClose, onSuccess, ruleSetToEdit 
 
                             <div className="grid grid-cols-3 gap-3">
                               <div>
-                                <label className={labelClass}>Competency Code</label>
+                                <label className={labelClass}>{t("competencyCode")}</label>
                                 <input
                                   value={rule.competency_code}
                                   onChange={(e) => updateRule(i, { competency_code: e.target.value })}
                                   className={inputClass}
-                                  placeholder="e.g. safety_awareness — must match the question's Skill Tag"
+                                  placeholder={t("competencyCodePlaceholder")}
                                 />
                                 {errors[`rule_${i}_competency_code`] && (
                                   <p className="text-xs text-red-600 mt-1">{errors[`rule_${i}_competency_code`]}</p>
                                 )}
                               </div>
                               <div>
-                                <label className={labelClass}>Competency Name</label>
+                                <label className={labelClass}>{t("competencyName")}</label>
                                 <input
                                   value={rule.competency_name}
                                   onChange={(e) => updateRule(i, { competency_name: e.target.value })}
                                   className={inputClass}
-                                  placeholder="e.g. Safety Awareness"
+                                  placeholder={t("competencyNamePlaceholder")}
                                 />
                               </div>
                               <div>
-                                <label className={labelClass}>Question Code</label>
+                                <label className={labelClass}>{t("questionCode")}</label>
                                 <input
                                   value={rule.question_code}
                                   onChange={(e) => updateRule(i, { question_code: e.target.value })}
                                   className={inputClass}
-                                  placeholder="matches Question Template's code"
+                                  placeholder={t("questionCodePlaceholder")}
                                 />
                               </div>
                             </div>
 
                             <div>
                               <label className={labelClass}>
-                                Expected Indicators <span className="text-gray-400 font-normal">(comma-separated)</span>
+                                {t("expectedIndicators")} <span className="text-gray-400 font-normal">{t("expectedIndicatorsHint")}</span>
                               </label>
                               <input
                                 value={rule.expected_indicators}
                                 onChange={(e) => updateRule(i, { expected_indicators: e.target.value })}
                                 className={inputClass}
-                                placeholder="identify hazard, clean spill, prevent recurrence"
+                                placeholder={t("expectedIndicatorsPlaceholder")}
                               />
                             </div>
 
                             <div className="grid grid-cols-2 gap-3">
                               <div>
                                 <label className={labelClass}>
-                                  Required Indicators <span className="text-gray-400 font-normal">(must be present, or score = 0)</span>
+                                  {t("requiredIndicators")} <span className="text-gray-400 font-normal">{t("requiredIndicatorsHint")}</span>
                                 </label>
                                 <input
                                   value={rule.required_indicators}
                                   onChange={(e) => updateRule(i, { required_indicators: e.target.value })}
                                   className={inputClass}
-                                  placeholder="identify hazard"
+                                  placeholder={t("requiredIndicatorsPlaceholder")}
                                 />
                               </div>
                               <div>
                                 <label className={labelClass}>
-                                  Critical Failure Indicators <span className="text-gray-400 font-normal">(zeroes score, flags review)</span>
+                                  {t("criticalFailureIndicators")} <span className="text-gray-400 font-normal">{t("criticalFailureIndicatorsHint")}</span>
                                 </label>
                                 <input
                                   value={rule.critical_failure_indicators}
                                   onChange={(e) => updateRule(i, { critical_failure_indicators: e.target.value })}
                                   className={inputClass}
-                                  placeholder="e.g. ignored unresponsive patient"
+                                  placeholder={t("criticalFailureIndicatorsPlaceholder")}
                                 />
                               </div>
                             </div>
 
                             <div>
                               <label className={labelClass}>
-                                Weighted Indicators <span className="text-gray-400 font-normal">(one per line, &quot;indicator: weight&quot;)</span>
+                                {t("weightedIndicators")} <span className="text-gray-400 font-normal">{t("weightedIndicatorsHint")}</span>
                               </label>
                               <textarea
                                 value={rule.weighted_indicators}
                                 onChange={(e) => updateRule(i, { weighted_indicators: e.target.value })}
                                 className={inputClass}
                                 rows={3}
-                                placeholder={"identify hazard: 4\nclean spill: 3\nprevent recurrence: 3"}
+                                placeholder={t("weightedIndicatorsPlaceholder")}
                               />
                             </div>
 
                             <div className="grid grid-cols-3 gap-3">
                               <div>
-                                <label className={labelClass}>Max Score</label>
+                                <label className={labelClass}>{t("maxScore")}</label>
                                 <input
                                   value={rule.max_score}
                                   onChange={(e) => updateRule(i, { max_score: e.target.value })}
@@ -468,7 +469,7 @@ export function ScoringRuleSetModal({ isOpen, onClose, onSuccess, ruleSetToEdit 
                                 />
                               </div>
                               <div>
-                                <label className={labelClass}>Pass Threshold</label>
+                                <label className={labelClass}>{t("passThreshold")}</label>
                                 <input
                                   value={rule.pass_threshold}
                                   onChange={(e) => updateRule(i, { pass_threshold: e.target.value })}
@@ -476,7 +477,7 @@ export function ScoringRuleSetModal({ isOpen, onClose, onSuccess, ruleSetToEdit 
                                 />
                               </div>
                               <div>
-                                <label className={labelClass}>Scoring Method</label>
+                                <label className={labelClass}>{t("scoringMethod")}</label>
                                 <select
                                   value={rule.scoring_method}
                                   onChange={(e) => updateRule(i, { scoring_method: e.target.value as ScoringMethod })}
@@ -484,7 +485,7 @@ export function ScoringRuleSetModal({ isOpen, onClose, onSuccess, ruleSetToEdit 
                                 >
                                   {SCORING_METHODS.map((m) => (
                                     <option key={m.value} value={m.value}>
-                                      {m.label}
+                                      {tShared(`scoringMethods.${m.value}`)}
                                     </option>
                                   ))}
                                 </select>
@@ -498,7 +499,7 @@ export function ScoringRuleSetModal({ isOpen, onClose, onSuccess, ruleSetToEdit 
                                 onChange={(e) => updateRule(i, { is_active: e.target.checked })}
                                 className="rounded border-gray-300 text-purple-600"
                               />
-                              Active
+                              {t("active")}
                             </label>
                           </div>
                         ))}
@@ -509,7 +510,7 @@ export function ScoringRuleSetModal({ isOpen, onClose, onSuccess, ruleSetToEdit 
                   {!locked && (
                     <div className="flex justify-end gap-3 pt-2 border-t border-gray-200">
                       <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg">
-                        Cancel
+                        {t("cancel")}
                       </button>
                       <button
                         type="submit"
@@ -517,7 +518,7 @@ export function ScoringRuleSetModal({ isOpen, onClose, onSuccess, ruleSetToEdit 
                         className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white rounded-lg text-sm font-medium"
                       >
                         {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-                        {isEditMode ? "Save Changes" : "Create Rule Set"}
+                        {isEditMode ? t("saveChanges") : t("createRuleSet")}
                       </button>
                     </div>
                   )}
