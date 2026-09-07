@@ -780,6 +780,10 @@
         "paymentRevenue": "One-time Payments",
         "subscriptionRevenue": "Subscriptions",
         "cumulativeRevenue": "Cumulative",
+        "monthlyRevenueLabel": "Monthly Revenue",
+        "newSubscriptionsLabel": "New Subscriptions",
+        "totalPaymentsLabel": "Total Payments",
+        "monthLabel": "Month: {month}",
         "months": {
           "1": "Jan",
           "2": "Feb",

@@ -764,6 +764,10 @@
          "paymentRevenue": "المدفوعات لمرة واحدة",
          "subscriptionRevenue": "الاشتراكات",
          "cumulativeRevenue": "تراكمي",
+         "monthlyRevenueLabel": "الإيرادات الشهرية",
+         "newSubscriptionsLabel": "الاشتراكات الجديدة",
+         "totalPaymentsLabel": "إجمالي المدفوعات",
+         "monthLabel": "الشهر: {month}",
 
          "stats": {
     "totalUsers": "إجمالي المستخدمين",
