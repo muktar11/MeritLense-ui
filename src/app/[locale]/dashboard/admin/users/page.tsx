@@ -129,7 +129,7 @@ export default function RoleBasedManagementPage() {
                     <SelectValue placeholder={t("placeholders.system")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Systems</SelectItem>
+                    <SelectItem value="all">{t("allSystems")}</SelectItem>
                     {systems.map(system => (
                       <SelectItem key={system.id} value={system.value}>
                         {t(system.labelKey)}
@@ -148,7 +148,7 @@ export default function RoleBasedManagementPage() {
                     <SelectValue placeholder={t("placeholders.role")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Roles</SelectItem>
+                    <SelectItem value="all">{t("allRoles")}</SelectItem>
                     {availableRoles.map(role => (
                       <SelectItem key={role.id} value={role.value}>
                         {t(role.labelKey)}
@@ -175,11 +175,11 @@ export default function RoleBasedManagementPage() {
             </div>
 
             <div className="flex gap-4 text-sm text-gray-600">
-              <span>Total Users: {filteredUsers.length}</span>
+              <span>{t("stats.totalUsers", { count: filteredUsers.length })}</span>
               <span>•</span>
-              <span>Admins: {filteredUsers.filter(u => u.type === 'admin').length}</span>
+              <span>{t("stats.admins", { count: filteredUsers.filter(u => u.type === 'admin').length })}</span>
               <span>•</span>
-              <span>Employers: {filteredUsers.filter(u => u.type === 'employer').length}</span>
+              <span>{t("stats.employers", { count: filteredUsers.filter(u => u.type === 'employer').length })}</span>
             </div>
 
             {loading ? (
@@ -204,7 +204,7 @@ export default function RoleBasedManagementPage() {
                     {filteredUsers.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={6} className="text-center py-8 text-gray-500">
-                          No users found matching the selected filters
+                          {t("table.noResults")}
                         </TableCell>
                       </TableRow>
                     ) : (
@@ -221,12 +221,12 @@ export default function RoleBasedManagementPage() {
                           </TableCell>
                           <TableCell>
                             <Badge variant="outline" className="capitalize">
-                              {user.type.replace('_', ' ')}
+                              {t(`userTypes.${user.type}`)}
                             </Badge>
                           </TableCell>
                           <TableCell>
                             <span className="text-sm font-medium">
-                              {t(`roles.${user.role.toLowerCase().replace(' ', '')}`) || user.role}
+                              {t(`roles.${user.role.toLowerCase().replace(' ', '')}`)}
                             </span>
                           </TableCell>
                           <TableCell>
@@ -239,11 +239,11 @@ export default function RoleBasedManagementPage() {
                               {user.permissions.length > 0 ? (
                                 user.permissions.slice(0, 2).map((perm, idx) => (
                                   <Badge key={idx} className={getAccessBadgeColor(perm)}>
-                                    {perm.replace(/_/g, ' ')}
+                                    {t.has(`permissions.${perm}`) ? t(`permissions.${perm}`) : perm.replace(/_/g, ' ')}
                                   </Badge>
                                 ))
                               ) : (
-                                <span className="text-sm text-gray-400">No permissions</span>
+                                <span className="text-sm text-gray-400">{t("noPermissions")}</span>
                               )}
                               {user.permissions.length > 2 && (
                                 <Badge className="bg-gray-100 text-gray-800">

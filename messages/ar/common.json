@@ -1137,6 +1137,8 @@
           "b2bbasic": "B2B الأساسي",
           "b2cadmin": "إدارة B2C"
         },
+        "allSystems": "جميع الأنظمة",
+        "allRoles": "جميع الأدوار",
         "roles": {
           "superAdmin": "مشرف عام",
           "admin": "مشرف",
@@ -1148,6 +1150,23 @@
           "companyAdmin": "مشرف الشركة",
           "teammember": "عضو فريق"
         },
+        "stats": {
+          "totalUsers": "إجمالي المستخدمين: {count}",
+          "admins": "المشرفون: {count}",
+          "employers": "أصحاب العمل: {count}"
+        },
+        "userTypes": {
+          "admin": "مشرف",
+          "employer": "صاحب عمل",
+          "team_member": "عضو فريق"
+        },
+        "permissions": {
+          "full_access": "وصول كامل",
+          "manage_evaluations": "إدارة التقييمات",
+          "view_candidates": "عرض المرشحين",
+          "manage_users": "إدارة المستخدمين"
+        },
+        "noPermissions": "لا توجد صلاحيات",
         "access": {
           "authentication": "المصادقة",
           "readOnly": "قراءة فقط",
@@ -1165,7 +1184,8 @@
           "role": "الدور",
           "system": "النظام",
           "permissions": "الصلاحيات",
-          "contact": "التواصل"
+          "contact": "التواصل",
+          "noResults": "لم يتم العثور على مستخدمين مطابقين للفلاتر المحددة"
         },
         "dialogs": {
           "auth": "المصادقة",
