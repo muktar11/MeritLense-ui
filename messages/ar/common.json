@@ -1551,6 +1551,130 @@
       }
       },
 
+    "packages": {
+        "accessRestricted": {
+          "title": "يتطلب صلاحيات المشرف العام",
+          "description": "إدارة الباقات مقتصرة على حسابات المشرف العام."
+        },
+        "title": "إدارة الباقات",
+        "subtitle": "إنشاء وإدارة باقات الاشتراك لعملاء B2C وB2B.",
+        "newPackage": "باقة جديدة",
+        "filters": {
+          "availableTo": "متاح لـ",
+          "allAudiences": "جميع الفئات",
+          "billingType": "نوع الفوترة",
+          "allBillingTypes": "جميع أنواع الفوترة",
+          "status": "الحالة",
+          "allStatus": "جميع الحالات",
+          "active": "نشط",
+          "inactive": "غير نشط"
+        },
+        "table": {
+          "title": "الباقات ({count})",
+          "headers": {
+            "name": "الاسم",
+            "availableTo": "متاح لـ",
+            "price": "السعر",
+            "billing": "الفوترة",
+            "tier": "المستوى",
+            "slots": "الفتحات",
+            "points": "النقاط",
+            "status": "الحالة",
+            "actions": "الإجراءات"
+          },
+          "noResults": "لم يتم العثور على باقات",
+          "unlimited": "غير محدود"
+        },
+        "pagination": {
+          "showing": "عرض {start} إلى {end} من {total} باقة",
+          "page": "صفحة {current} من {total}"
+        },
+        "confirm": {
+          "deactivate": "إلغاء تفعيل \"{name}\"؟ سيحتفظ المشتركون الحاليون بها، لكن لن يتم عرضها للمشترين الجدد.",
+          "delete": "حذف \"{name}\" نهائيًا؟ لا يمكن التراجع عن هذا الإجراء. يُسمح به فقط إذا لم يكن للباقة أي مشترك من قبل."
+        },
+        "errors": {
+          "deactivateFailed": "فشل إلغاء تفعيل الباقة. يرجى المحاولة مرة أخرى.",
+          "deleteFailed": "فشل حذف الباقة. يرجى المحاولة مرة أخرى."
+        },
+        "targetUserTypes": {
+          "B2C": "فردي (B2C)",
+          "B2B": "شركة (B2B)",
+          "BOTH": "كلاهما"
+        },
+        "billingTypes": {
+          "RECURRING": "متكرر",
+          "ONE_TIME": "مرة واحدة"
+        },
+        "intervals": {
+          "MONTHLY": "شهري",
+          "QUARTERLY": "ربع سنوي",
+          "YEARLY": "سنوي"
+        },
+        "evaluationTiers": {
+          "none": "بدون",
+          "SCREENING": "فرز",
+          "FULL": "كامل",
+          "BOTH": "كلاهما"
+        },
+        "companySizes": {
+          "any": "أي حجم",
+          "1-10": "1-10 موظفين",
+          "11-50": "11-50 موظفًا",
+          "51-200": "51-200 موظف",
+          "201-1000": "201-1000 موظف",
+          "1000+": "أكثر من 1000 موظف"
+        },
+        "outputReportLevels": {
+          "none": "بدون",
+          "summary": "ملخص",
+          "standard": "قياسي",
+          "detailed": "مفصّل"
+        },
+        "modal": {
+          "editTitle": "تعديل الباقة",
+          "newTitle": "باقة جديدة",
+          "priceChangeWarning": "تغيير السعر أو العملة أو نوع الفوترة أو الفترة يؤدي إلى إيقاف هذه الباقة وإنشاء باقة جديدة بالشروط الجديدة - يحتفظ المشتركون الحاليون بالشروط التي اشتروها أصلًا.",
+          "name": "اسم الباقة *",
+          "availableTo": "متاح لـ",
+          "billingType": "نوع الفوترة",
+          "amount": "المبلغ *",
+          "currency": "العملة *",
+          "billingInterval": "فترة الفوترة",
+          "intervalCount": "عدد الفترات",
+          "minCompanySize": "الحد الأدنى لحجم الشركة",
+          "maxCompanySize": "الحد الأقصى لحجم الشركة",
+          "evaluationTier": "مستوى التقييم",
+          "outputReportLevel": "مستوى تقرير المخرجات",
+          "includesTaskObservation": "يتضمن مراقبة المهام",
+          "slotsPointsHeading": "فتحات تقييم المرشحين والنقاط",
+          "slotsPointsDescription": "رصيدان مستقلان: فتحات التقييم تُستهلك مرة واحدة لكل جلسة تقييم تبدأ؛ أما النقاط فتُستخدم فقط للإضافات الاختيارية. اتركها فارغة لعدم فرض حدود تلقائية (للباقات المخصصة/حسب الاتفاقية).",
+          "assessmentSlots": "فتحات التقييم (لكل فترة)",
+          "pointsBalance": "رصيد النقاط (لكل فترة)",
+          "unlimitedPlaceholder": "غير محدود",
+          "otherLimitsHeading": "حدود أخرى",
+          "candidateLimit": "حد المرشحين",
+          "evaluationLimit": "حد التقييمات",
+          "teamMemberLimit": "حد أعضاء الفريق",
+          "sessionConfigHeading": "إعدادات الجلسة",
+          "questionsMin": "الأسئلة (الحد الأدنى)",
+          "questionsMax": "الأسئلة (الحد الأقصى)",
+          "durationMin": "الحد الأدنى للمدة (دقيقة)",
+          "durationMax": "الحد الأقصى للمدة (دقيقة)",
+          "active": "نشط",
+          "cancel": "إلغاء",
+          "saving": "جارٍ الحفظ...",
+          "saveChanges": "حفظ التغييرات",
+          "createPackage": "إنشاء باقة",
+          "errors": {
+            "nameRequired": "الاسم مطلوب",
+            "amountInvalid": "أدخل مبلغًا يساوي 0 أو أكثر",
+            "currencyRequired": "العملة مطلوبة",
+            "saveFailed": "فشل حفظ الباقة. يرجى المحاولة مرة أخرى."
+          }
+        }
+      },
+
     "billing": {
         "title": "الفوترة والاشتراكات",
         "search": "بحث عن الاشتراكات...",
