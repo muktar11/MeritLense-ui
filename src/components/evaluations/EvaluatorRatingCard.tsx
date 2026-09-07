@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Loader2, Pencil, Star } from "lucide-react";
+import { useTranslations } from "next-intl";
 import evaluationService from "@/app/api/evaluations/endpoints";
 import type { EvaluatorRating, EvaluatorRatingPayload } from "@/app/api/evaluations/types";
 
@@ -10,12 +11,12 @@ import type { EvaluatorRating, EvaluatorRatingPayload } from "@/app/api/evaluati
 // shown as a Risk Level (High/Medium/Low) on the certificate/report, per
 // Report Specification Section 4. psych_professional is no longer
 // collected - it isn't an approved dimension and is pending legal review.
-const RATING_POOLS: { key: keyof EvaluatorRatingPayload; label: string }[] = [
-  { key: "safety_awareness", label: "Safety Awareness" },
-  { key: "hygiene", label: "Hygiene & Standards" },
-  { key: "communication", label: "Communication Ability" },
-  { key: "task_execution", label: "Practical Task Execution" },
-  { key: "behavior_integrity", label: "Behavioral Indicators" },
+const RATING_POOLS: { key: keyof EvaluatorRatingPayload }[] = [
+  { key: "safety_awareness" },
+  { key: "hygiene" },
+  { key: "communication" },
+  { key: "task_execution" },
+  { key: "behavior_integrity" },
 ];
 
 const EMPTY_RATING_FORM: Record<keyof EvaluatorRatingPayload, string> = {
@@ -36,6 +37,7 @@ interface EvaluatorRatingCardProps {
 // to rate a candidate - the "View AI Results" modal, and the live-call
 // "Call ended" screen - without duplicating this state/logic in each spot.
 export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRatingCardProps) {
+  const t = useTranslations("shared.evaluatorRatingCard");
   const [loading, setLoading] = useState(true);
   const [evaluatorRating, setEvaluatorRating] = useState<EvaluatorRating | null>(null);
   const [ratingForm, setRatingForm] = useState(EMPTY_RATING_FORM);
@@ -77,7 +79,7 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
     for (const { key } of RATING_POOLS) {
       const numeric = Number(ratingForm[key]);
       if (ratingForm[key].trim() === "" || Number.isNaN(numeric) || numeric < 0 || numeric > 100) {
-        setRatingError("Enter a value between 0 and 100 for every pool.");
+        setRatingError(t("scoreRangeError"));
         return;
       }
       parsed[key] = numeric;
@@ -92,7 +94,7 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
     } catch (err) {
       const detail = (err as { detail?: string; response?: { data?: { detail?: string } } })?.detail
         ?? (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
-      setRatingError(detail ?? "Failed to submit rating. Try again.");
+      setRatingError(detail ?? t("submitFailedError"));
     } finally {
       setSubmittingRating(false);
     }
@@ -111,7 +113,7 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Star className="w-5 h-5 text-purple-600" />
-          <h4 className="text-base font-bold text-gray-900">Evaluator Rating</h4>
+          <h4 className="text-base font-bold text-gray-900">{t("title")}</h4>
         </div>
         {evaluatorRating && !isEditingRating && (
           <button
@@ -120,7 +122,7 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
             className="inline-flex items-center gap-1 px-2.5 py-1.5 border border-purple-200 bg-white hover:bg-purple-50 text-purple-700 rounded-lg text-xs font-medium"
           >
             <Pencil className="w-3.5 h-3.5" />
-            Edit
+            {t("edit")}
           </button>
         )}
       </div>
@@ -134,9 +136,9 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
       {!evaluatorRating || isEditingRating ? (
         <div className="space-y-5">
           <div className="grid gap-x-6 gap-y-4 sm:grid-cols-2">
-            {RATING_POOLS.map(({ key, label }) => (
+            {RATING_POOLS.map(({ key }) => (
               <label key={key} className="block">
-                <span className="text-sm font-medium text-gray-700">{label}</span>
+                <span className="text-sm font-medium text-gray-700">{t(`pools.${key}`)}</span>
                 <input
                   type="number"
                   min={0}
@@ -144,7 +146,7 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
                   value={ratingForm[key]}
                   onChange={(e) => handleRatingFieldChange(key, e.target.value)}
                   className="mt-1.5 w-full rounded-xl border border-gray-200 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="0-100"
+                  placeholder={t("scorePlaceholder")}
                 />
               </label>
             ))}
@@ -152,8 +154,8 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
           <div className="rounded-xl bg-purple-50/60 border border-purple-100 px-4 py-3.5">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-sm font-bold text-purple-700">Consistency</p>
-                <p className="mt-0.5 text-xs text-gray-500">Calculated automatically from the candidate&apos;s responses.</p>
+                <p className="text-sm font-bold text-purple-700">{t("consistency")}</p>
+                <p className="mt-0.5 text-xs text-gray-500">{t("consistencyHint")}</p>
               </div>
               {evaluatorRating && (
                 <p className="text-lg font-bold text-gray-900">{evaluatorRating.consistency}</p>
@@ -167,32 +169,31 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
             className="w-full flex items-center justify-center gap-2 py-3.5 bg-linear-to-r from-teal-400 to-purple-500 hover:opacity-90 disabled:opacity-50 text-white rounded-xl text-sm font-semibold shadow-md shadow-purple-200"
           >
             {submittingRating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Star className="w-4 h-4" />}
-            Submit Rating
+            {t("submitButton")}
           </button>
         </div>
       ) : (
         <div className="grid gap-3 sm:grid-cols-5">
-          {RATING_POOLS.map(({ key, label }) => (
+          {RATING_POOLS.map(({ key }) => (
             <div key={key} className="rounded-xl bg-purple-50/60 border border-purple-100 px-3 py-2.5 text-center">
-              <p className="text-xs text-gray-500">{label}</p>
+              <p className="text-xs text-gray-500">{t(`pools.${key}`)}</p>
               <p className="text-lg font-bold text-gray-900">
-                {evaluatorRating[key] ?? "N/A"}
+                {evaluatorRating[key] ?? t("notAvailable")}
                 {key === "behavior_integrity" && (
                   <span className="ml-1 text-xs font-medium text-gray-500">
-                    ({evaluatorRating.behavioral_risk_level} risk)
+                    {t("riskLabel", { level: t(`riskLevel.${evaluatorRating.behavioral_risk_level}`) })}
                   </span>
                 )}
               </p>
             </div>
           ))}
           <div className="rounded-xl bg-purple-50/60 border border-purple-100 px-3 py-2.5 text-center">
-            <p className="text-xs text-gray-500">Consistency</p>
+            <p className="text-xs text-gray-500">{t("consistency")}</p>
             <p className="text-lg font-bold text-gray-900">{evaluatorRating.consistency}</p>
           </div>
           {evaluatorRating.rated_by_name && (
             <p className="sm:col-span-5 text-[11px] text-gray-500">
-              Rated by {evaluatorRating.rated_by_name} on{" "}
-              {new Date(evaluatorRating.rated_at).toLocaleString()}
+              {t("ratedByOn", { name: evaluatorRating.rated_by_name, date: new Date(evaluatorRating.rated_at).toLocaleString() })}
             </p>
           )}
         </div>
