@@ -3,6 +3,7 @@
 import { useState, Fragment } from "react";
 import { Dialog, Transition } from '@headlessui/react';
 import { X, Loader2, Upload } from "lucide-react";
+import { useTranslations } from "next-intl";
 import employerService from "@/app/api/admin/employers/endpoints";
 import { JOB_ROLES, NATIONALITIES, LANGUAGES, COMPANY_SIZES } from "@/app/api/auth/endpoints";
 import type { B2CRegistrationData, B2BRegistrationData } from "@/app/api/auth/auth";
@@ -33,6 +34,10 @@ const initialB2B = {
 };
 
 export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModalProps) {
+  const t = useTranslations("dashboard.admin.candidateManagement.addModal");
+  const tRoles = useTranslations("dashboard.indivisual.settings.edit-profile-tab.jobRoles");
+  const tNationalities = useTranslations("dashboard.indivisual.settings.edit-profile-tab.nationalities");
+  const tLanguages = useTranslations("dashboard.indivisual.settings.edit-profile-tab.languages");
   const [accountType, setAccountType] = useState<AccountType>('B2C');
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -71,36 +76,36 @@ export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModa
 
   const validateB2C = (): boolean => {
     const newErrors: Record<string, string> = {};
-    if (!b2c.email.trim()) newErrors.email = "Email is required";
-    if (!b2c.first_name.trim()) newErrors.first_name = "First name is required";
-    if (!b2c.last_name.trim()) newErrors.last_name = "Last name is required";
-    if (b2c.password.length < 8) newErrors.password = "Password must be at least 8 characters";
-    if (b2c.password !== b2c.confirm_password) newErrors.confirm_password = "Passwords do not match";
-    if (!b2c.passport_id.trim()) newErrors.passport_id = "Passport ID is required";
-    if (!b2c.job_role) newErrors.job_role = "Job role is required";
-    if (!b2c.nationality) newErrors.nationality = "Nationality is required";
-    if (!b2c.phone_number.trim()) newErrors.phone_number = "Phone number is required";
-    if (!b2c.id_document) newErrors.id_document = "ID document is required";
-    if (!b2c.resume_document) newErrors.resume_document = "Resume document is required";
+    if (!b2c.email.trim()) newErrors.email = t("errors.emailRequired");
+    if (!b2c.first_name.trim()) newErrors.first_name = t("errors.firstNameRequired");
+    if (!b2c.last_name.trim()) newErrors.last_name = t("errors.lastNameRequired");
+    if (b2c.password.length < 8) newErrors.password = t("errors.passwordMinLength");
+    if (b2c.password !== b2c.confirm_password) newErrors.confirm_password = t("errors.passwordMismatch");
+    if (!b2c.passport_id.trim()) newErrors.passport_id = t("errors.passportIdRequired");
+    if (!b2c.job_role) newErrors.job_role = t("errors.jobRoleRequired");
+    if (!b2c.nationality) newErrors.nationality = t("errors.nationalityRequired");
+    if (!b2c.phone_number.trim()) newErrors.phone_number = t("errors.phoneRequired");
+    if (!b2c.id_document) newErrors.id_document = t("errors.idDocumentRequired");
+    if (!b2c.resume_document) newErrors.resume_document = t("errors.resumeDocumentRequired");
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const validateB2B = (): boolean => {
     const newErrors: Record<string, string> = {};
-    if (!b2b.email.trim()) newErrors.email = "Email is required";
-    if (!b2b.first_name.trim()) newErrors.first_name = "First name is required";
-    if (!b2b.last_name.trim()) newErrors.last_name = "Last name is required";
-    if (b2b.password.length < 8) newErrors.password = "Password must be at least 8 characters";
-    if (b2b.password !== b2b.confirm_password) newErrors.confirm_password = "Passwords do not match";
-    if (!b2b.company_name.trim()) newErrors.company_name = "Company name is required";
-    if (!b2b.company_registration_number.trim()) newErrors.company_registration_number = "Registration number is required";
-    if (!b2b.company_size) newErrors.company_size = "Company size is required";
-    if (!b2b.country.trim()) newErrors.country = "Country is required";
-    if (!b2b.city.trim()) newErrors.city = "City is required";
-    if (!b2b.phone_number.trim()) newErrors.phone_number = "Phone number is required";
-    if (!b2b.registration_certificate) newErrors.registration_certificate = "Registration certificate is required";
-    if (!b2b.resachetified_license) newErrors.resachetified_license = "License document is required";
+    if (!b2b.email.trim()) newErrors.email = t("errors.emailRequired");
+    if (!b2b.first_name.trim()) newErrors.first_name = t("errors.firstNameRequired");
+    if (!b2b.last_name.trim()) newErrors.last_name = t("errors.lastNameRequired");
+    if (b2b.password.length < 8) newErrors.password = t("errors.passwordMinLength");
+    if (b2b.password !== b2b.confirm_password) newErrors.confirm_password = t("errors.passwordMismatch");
+    if (!b2b.company_name.trim()) newErrors.company_name = t("errors.companyNameRequired");
+    if (!b2b.company_registration_number.trim()) newErrors.company_registration_number = t("errors.registrationNumberRequired");
+    if (!b2b.company_size) newErrors.company_size = t("errors.companySizeRequired");
+    if (!b2b.country.trim()) newErrors.country = t("errors.countryRequired");
+    if (!b2b.city.trim()) newErrors.city = t("errors.cityRequired");
+    if (!b2b.phone_number.trim()) newErrors.phone_number = t("errors.phoneRequired");
+    if (!b2b.registration_certificate) newErrors.registration_certificate = t("errors.registrationCertificateRequired");
+    if (!b2b.resachetified_license) newErrors.resachetified_license = t("errors.licenseDocumentRequired");
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -124,7 +129,7 @@ export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModa
           });
           setErrors(backendErrors);
         } else {
-          setErrors({ form: 'Failed to create employer. Please try again.' });
+          setErrors({ form: t("errors.createFailed") });
         }
       } finally {
         setLoading(false);
@@ -145,7 +150,7 @@ export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModa
           });
           setErrors(backendErrors);
         } else {
-          setErrors({ form: 'Failed to create employer. Please try again.' });
+          setErrors({ form: t("errors.createFailed") });
         }
       } finally {
         setLoading(false);
@@ -184,7 +189,7 @@ export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModa
               <Dialog.Panel className="w-full max-w-2xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                 <div className="flex justify-between items-center mb-4">
                   <Dialog.Title as="h3" className="text-lg font-semibold text-gray-900">
-                    Add Employer
+                    {t("title")}
                   </Dialog.Title>
                   <button onClick={handleClose} className="text-gray-400 hover:text-gray-500">
                     <X size={20} />
@@ -206,7 +211,7 @@ export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModa
                       accountType === 'B2C' ? 'bg-white shadow text-purple-700' : 'text-gray-500'
                     }`}
                   >
-                    Individual (B2C)
+                    {t("individualToggle")}
                   </button>
                   <button
                     type="button"
@@ -215,7 +220,7 @@ export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModa
                       accountType === 'B2B' ? 'bg-white shadow text-purple-700' : 'text-gray-500'
                     }`}
                   >
-                    Company (B2B)
+                    {t("companyToggle")}
                   </button>
                 </div>
 
@@ -223,7 +228,7 @@ export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModa
                   {/* Shared account fields */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">{t("email")}</label>
                       <input
                         type="email"
                         name="email"
@@ -234,7 +239,7 @@ export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModa
                       {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email}</p>}
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">{t("phoneNumber")}</label>
                       <input
                         type="tel"
                         name="phone_number"
@@ -245,7 +250,7 @@ export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModa
                       {errors.phone_number && <p className="mt-1 text-xs text-red-600">{errors.phone_number}</p>}
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">First Name *</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">{t("firstName")}</label>
                       <input
                         type="text"
                         name="first_name"
@@ -256,7 +261,7 @@ export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModa
                       {errors.first_name && <p className="mt-1 text-xs text-red-600">{errors.first_name}</p>}
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Last Name *</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">{t("lastName")}</label>
                       <input
                         type="text"
                         name="last_name"
@@ -267,7 +272,7 @@ export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModa
                       {errors.last_name && <p className="mt-1 text-xs text-red-600">{errors.last_name}</p>}
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Password *</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">{t("password")}</label>
                       <input
                         type="password"
                         name="password"
@@ -278,7 +283,7 @@ export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModa
                       {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password}</p>}
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password *</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">{t("confirmPassword")}</label>
                       <input
                         type="password"
                         name="confirm_password"
@@ -294,7 +299,7 @@ export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModa
                     <>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Passport ID *</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">{t("passportId")}</label>
                           <input
                             type="text"
                             name="passport_id"
@@ -305,44 +310,44 @@ export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModa
                           {errors.passport_id && <p className="mt-1 text-xs text-red-600">{errors.passport_id}</p>}
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Job Role *</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">{t("jobRole")}</label>
                           <select
                             name="job_role"
                             value={b2c.job_role}
                             onChange={handleB2cChange}
                             className={`w-full px-3 py-2 border rounded-lg text-sm ${errors.job_role ? 'border-red-500' : 'border-gray-300'}`}
                           >
-                            <option value="">Select role</option>
-                            {JOB_ROLES.map(r => <option key={r.key} value={r.key}>{r.label}</option>)}
+                            <option value="">{t("selectRole")}</option>
+                            {JOB_ROLES.map(r => <option key={r.key} value={r.key}>{tRoles(r.key)}</option>)}
                           </select>
                           {errors.job_role && <p className="mt-1 text-xs text-red-600">{errors.job_role}</p>}
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Nationality *</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">{t("nationality")}</label>
                           <select
                             name="nationality"
                             value={b2c.nationality}
                             onChange={handleB2cChange}
                             className={`w-full px-3 py-2 border rounded-lg text-sm ${errors.nationality ? 'border-red-500' : 'border-gray-300'}`}
                           >
-                            <option value="">Select nationality</option>
-                            {NATIONALITIES.map(n => <option key={n.key} value={n.key}>{n.label}</option>)}
+                            <option value="">{t("selectNationality")}</option>
+                            {NATIONALITIES.map(n => <option key={n.key} value={n.key}>{tNationalities(n.key)}</option>)}
                           </select>
                           {errors.nationality && <p className="mt-1 text-xs text-red-600">{errors.nationality}</p>}
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Preferred Language</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">{t("preferredLanguage")}</label>
                           <select
                             name="preferred_language"
                             value={b2c.preferred_language}
                             onChange={handleB2cChange}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                           >
-                            {LANGUAGES.map(l => <option key={l.key} value={l.key}>{l.label}</option>)}
+                            {LANGUAGES.map(l => <option key={l.key} value={l.key}>{tLanguages(l.key)}</option>)}
                           </select>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">{t("dateOfBirth")}</label>
                           <input
                             type="date"
                             name="date_of_birth"
@@ -352,7 +357,7 @@ export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModa
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">{t("address")}</label>
                           <input
                             type="text"
                             name="address"
@@ -365,11 +370,11 @@ export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModa
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">ID Document *</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">{t("idDocument")}</label>
                           <label className={`flex items-center gap-2 border-2 border-dashed rounded-lg p-3 cursor-pointer hover:border-purple-500 transition ${errors.id_document ? 'border-red-500' : 'border-gray-300'}`}>
                             <Upload size={16} className="text-gray-400" />
                             <span className="text-sm text-gray-600 truncate">
-                              {b2c.id_document ? b2c.id_document.name : 'Click to upload'}
+                              {b2c.id_document ? b2c.id_document.name : t("clickToUpload")}
                             </span>
                             <input
                               type="file"
@@ -381,11 +386,11 @@ export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModa
                           {errors.id_document && <p className="mt-1 text-xs text-red-600">{errors.id_document}</p>}
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Resume Document *</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">{t("resumeDocument")}</label>
                           <label className={`flex items-center gap-2 border-2 border-dashed rounded-lg p-3 cursor-pointer hover:border-purple-500 transition ${errors.resume_document ? 'border-red-500' : 'border-gray-300'}`}>
                             <Upload size={16} className="text-gray-400" />
                             <span className="text-sm text-gray-600 truncate">
-                              {b2c.resume_document ? b2c.resume_document.name : 'Click to upload'}
+                              {b2c.resume_document ? b2c.resume_document.name : t("clickToUpload")}
                             </span>
                             <input
                               type="file"
@@ -402,7 +407,7 @@ export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModa
                     <>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Company Name *</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">{t("companyName")}</label>
                           <input
                             type="text"
                             name="company_name"
@@ -413,7 +418,7 @@ export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModa
                           {errors.company_name && <p className="mt-1 text-xs text-red-600">{errors.company_name}</p>}
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Registration Number *</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">{t("registrationNumber")}</label>
                           <input
                             type="text"
                             name="company_registration_number"
@@ -424,20 +429,20 @@ export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModa
                           {errors.company_registration_number && <p className="mt-1 text-xs text-red-600">{errors.company_registration_number}</p>}
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Company Size *</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">{t("companySize")}</label>
                           <select
                             name="company_size"
                             value={b2b.company_size}
                             onChange={handleB2bChange}
                             className={`w-full px-3 py-2 border rounded-lg text-sm ${errors.company_size ? 'border-red-500' : 'border-gray-300'}`}
                           >
-                            <option value="">Select size</option>
-                            {COMPANY_SIZES.map(s => <option key={s.key} value={s.key}>{s.label}</option>)}
+                            <option value="">{t("selectSize")}</option>
+                            {COMPANY_SIZES.map(s => <option key={s.key} value={s.key}>{t(`companySizes.${s.key}`)}</option>)}
                           </select>
                           {errors.company_size && <p className="mt-1 text-xs text-red-600">{errors.company_size}</p>}
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Industry</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">{t("industry")}</label>
                           <input
                             type="text"
                             name="industry"
@@ -447,7 +452,7 @@ export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModa
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Country *</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">{t("country")}</label>
                           <input
                             type="text"
                             name="country"
@@ -458,7 +463,7 @@ export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModa
                           {errors.country && <p className="mt-1 text-xs text-red-600">{errors.country}</p>}
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">City *</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">{t("city")}</label>
                           <input
                             type="text"
                             name="city"
@@ -469,7 +474,7 @@ export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModa
                           {errors.city && <p className="mt-1 text-xs text-red-600">{errors.city}</p>}
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Website</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">{t("website")}</label>
                           <input
                             type="url"
                             name="website"
@@ -480,18 +485,18 @@ export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModa
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Preferred Language</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">{t("preferredLanguage")}</label>
                           <select
                             name="preferred_language"
                             value={b2b.preferred_language}
                             onChange={handleB2bChange}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                           >
-                            {LANGUAGES.map(l => <option key={l.key} value={l.key}>{l.label}</option>)}
+                            {LANGUAGES.map(l => <option key={l.key} value={l.key}>{tLanguages(l.key)}</option>)}
                           </select>
                         </div>
                         <div className="md:col-span-2">
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">{t("address")}</label>
                           <input
                             type="text"
                             name="address"
@@ -504,11 +509,11 @@ export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModa
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Registration Certificate *</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">{t("registrationCertificate")}</label>
                           <label className={`flex items-center gap-2 border-2 border-dashed rounded-lg p-3 cursor-pointer hover:border-purple-500 transition ${errors.registration_certificate ? 'border-red-500' : 'border-gray-300'}`}>
                             <Upload size={16} className="text-gray-400" />
                             <span className="text-sm text-gray-600 truncate">
-                              {b2b.registration_certificate ? b2b.registration_certificate.name : 'Click to upload'}
+                              {b2b.registration_certificate ? b2b.registration_certificate.name : t("clickToUpload")}
                             </span>
                             <input
                               type="file"
@@ -520,11 +525,11 @@ export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModa
                           {errors.registration_certificate && <p className="mt-1 text-xs text-red-600">{errors.registration_certificate}</p>}
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">License Document *</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">{t("licenseDocument")}</label>
                           <label className={`flex items-center gap-2 border-2 border-dashed rounded-lg p-3 cursor-pointer hover:border-purple-500 transition ${errors.resachetified_license ? 'border-red-500' : 'border-gray-300'}`}>
                             <Upload size={16} className="text-gray-400" />
                             <span className="text-sm text-gray-600 truncate">
-                              {b2b.resachetified_license ? b2b.resachetified_license.name : 'Click to upload'}
+                              {b2b.resachetified_license ? b2b.resachetified_license.name : t("clickToUpload")}
                             </span>
                             <input
                               type="file"
@@ -536,11 +541,11 @@ export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModa
                           {errors.resachetified_license && <p className="mt-1 text-xs text-red-600">{errors.resachetified_license}</p>}
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Tax ID Document</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">{t("taxIdDocument")}</label>
                           <label className="flex items-center gap-2 border-2 border-dashed border-gray-300 rounded-lg p-3 cursor-pointer hover:border-purple-500 transition">
                             <Upload size={16} className="text-gray-400" />
                             <span className="text-sm text-gray-600 truncate">
-                              {b2b.tax_id_document ? b2b.tax_id_document.name : 'Click to upload (optional)'}
+                              {b2b.tax_id_document ? b2b.tax_id_document.name : t("clickToUploadOptional")}
                             </span>
                             <input
                               type="file"
@@ -556,7 +561,7 @@ export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModa
 
                   <div className="bg-blue-50 p-3 rounded-lg">
                     <p className="text-xs text-blue-700">
-                      The account will be created and marked verified. The new user will receive an email with login instructions.
+                      {t("infoNote")}
                     </p>
                   </div>
 
@@ -567,7 +572,7 @@ export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModa
                       className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg text-sm hover:bg-gray-50"
                       disabled={loading}
                     >
-                      Cancel
+                      {t("cancel")}
                     </button>
                     <button
                       type="submit"
@@ -577,10 +582,10 @@ export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModa
                       {loading ? (
                         <>
                           <Loader2 className="w-4 h-4 animate-spin" />
-                          Creating...
+                          {t("creating")}
                         </>
                       ) : (
-                        'Create Employer'
+                        t("createEmployer")
                       )}
                     </button>
                   </div>
