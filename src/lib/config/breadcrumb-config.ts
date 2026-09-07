@@ -7,6 +7,8 @@ export const ADMIN_BREADCRUMB_CONFIG: Record<string, string[]> = {
   '/dashboard/admin/logs': ['page_type', 'pages_list.audit_logs'],
   '/dashboard/admin/billing': ['page_type', 'pages_list.multi_agency_panel'],
    '/dashboard/admin/settings': ['page_type', 'pages_list.settings'],
+  '/dashboard/admin/packages': ['page_type', 'pages_list.package_management'],
+  '/dashboard/admin/interview-setup': ['page_type', 'pages_list.interview_setup'],
 };
 
 export const BUSINESS_BREADCRUMB_CONFIG: Record<string, string[]> = {
