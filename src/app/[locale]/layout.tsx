@@ -36,8 +36,6 @@ export default async function LocaleLayout({
   try {
     messages = {
       ...(await import(`../../../messages/${locale}/common.json`)).default,
-      ...(await import(`../../../messages/${locale}/admin_companies.json`))
-        .default,
     };
   } catch {
     notFound();
