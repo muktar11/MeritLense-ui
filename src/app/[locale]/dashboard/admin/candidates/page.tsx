@@ -16,12 +16,13 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Plus, Archive, Upload, Search, Loader2, ChevronLeft, ChevronRight, Eye } from "lucide-react"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { EmployerDetailModal } from "./components/employer-detail-modal"
 import { AddEmployerModal } from "./components/add-employer-modal"
 import employerService from "@/app/api/admin/employers/endpoints"
 import type { Employer } from "@/app/api/admin/employers/types"
 import { format } from "date-fns"
+import { ar } from "date-fns/locale"
 
 /* ---------------------------
    COLOR MAPS
@@ -46,7 +47,8 @@ const DOC_STATUS_COLOR: Record<string, string> = {
 
 export default function CandidateManagementConsole() {
   const t = useTranslations("dashboard.admin.candidateManagement")
-  
+  const locale = useLocale()
+
   const [employers, setEmployers] = useState<Employer[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedEmployer, setSelectedEmployer] = useState<Employer | null>(null)
@@ -155,10 +157,10 @@ export default function CandidateManagementConsole() {
               <SelectValue placeholder={t("filters.allRoles")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Roles</SelectItem>
-              <SelectItem value="B2C">Individual</SelectItem>
-              <SelectItem value="B2B">Company</SelectItem>
-              <SelectItem value="B2B_TEAM_MEMBER">Team Member</SelectItem>
+              <SelectItem value="all">{t("filters.allRoles")}</SelectItem>
+              <SelectItem value="B2C">{t("roles.B2C")}</SelectItem>
+              <SelectItem value="B2B">{t("roles.B2B")}</SelectItem>
+              <SelectItem value="B2B_TEAM_MEMBER">{t("roles.B2B_TEAM_MEMBER")}</SelectItem>
             </SelectContent>
           </Select>
 
@@ -167,10 +169,10 @@ export default function CandidateManagementConsole() {
               <SelectValue placeholder={t("filters.verificationStatus")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="approved">Approved</SelectItem>
-              <SelectItem value="rejected">Rejected</SelectItem>
+              <SelectItem value="all">{t("filters.allStatusOption")}</SelectItem>
+              <SelectItem value="pending">{t("verificationStatus.pending")}</SelectItem>
+              <SelectItem value="approved">{t("verificationStatus.approved")}</SelectItem>
+              <SelectItem value="rejected">{t("verificationStatus.rejected")}</SelectItem>
             </SelectContent>
           </Select>
 
@@ -179,9 +181,9 @@ export default function CandidateManagementConsole() {
               <SelectValue placeholder={t("filters.documents")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All</SelectItem>
-              <SelectItem value="true">Verified</SelectItem>
-              <SelectItem value="false">Not Verified</SelectItem>
+              <SelectItem value="all">{t("filters.allDocumentsOption")}</SelectItem>
+              <SelectItem value="true">{t("docStatus.verified")}</SelectItem>
+              <SelectItem value="false">{t("docStatus.notVerified")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -218,7 +220,7 @@ export default function CandidateManagementConsole() {
                     {employers.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={7} className="text-center py-8 text-gray-500">
-                          No employers found
+                          {t("noEmployersFound")}
                         </TableCell>
                       </TableRow>
                     ) : (
@@ -233,7 +235,7 @@ export default function CandidateManagementConsole() {
 
                           <TableCell>
                             <Badge className={`${ROLE_COLOR[employer.role]} border-0`}>
-                              {employer.role}
+                              {t(`roles.${employer.role}`)}
                             </Badge>
                           </TableCell>
 
@@ -243,18 +245,18 @@ export default function CandidateManagementConsole() {
 
                           <TableCell>
                             <Badge className={`${VERIFICATION_COLOR[employer.documents_verification_status] || 'bg-gray-400'} border-0`}>
-                              {employer.documents_verification_status || 'Pending'}
+                              {employer.documents_verification_status ? t(`verificationStatus.${employer.documents_verification_status}`) : t("verificationStatus.pending")}
                             </Badge>
                           </TableCell>
 
                           <TableCell className="hidden lg:table-cell">
                             <Badge className={`${DOC_STATUS_COLOR[String(employer.documents_verified)]} border-0`}>
-                              {employer.documents_verified ? 'Verified' : 'Not Verified'}
+                              {employer.documents_verified ? t("docStatus.verified") : t("docStatus.notVerified")}
                             </Badge>
                           </TableCell>
 
                           <TableCell className="text-sm text-gray-600">
-                            {format(new Date(employer.created_at), 'MMM d, yyyy')}
+                            {format(new Date(employer.created_at), 'MMM d, yyyy', locale === 'ar' ? { locale: ar } : undefined)}
                           </TableCell>
 
                           <TableCell>
@@ -265,7 +267,7 @@ export default function CandidateManagementConsole() {
                               className="text-blue-600 hover:text-blue-700"
                             >
                               <Eye className="w-4 h-4 mr-1" />
-                              View
+                              {t("viewButton")}
                             </Button>
                           </TableCell>
                         </TableRow>
@@ -279,7 +281,7 @@ export default function CandidateManagementConsole() {
               {totalPages > 1 && (
                 <div className="flex items-center justify-between px-6 py-4 border-t">
                   <p className="text-sm text-gray-600">
-                    Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, totalCount)} of {totalCount} employers
+                    {t("pagination.showing", { start: ((currentPage - 1) * pageSize) + 1, end: Math.min(currentPage * pageSize, totalCount), total: totalCount })}
                   </p>
                   <div className="flex items-center gap-2">
                     <Button
@@ -291,7 +293,7 @@ export default function CandidateManagementConsole() {
                       <ChevronLeft className="w-4 h-4" />
                     </Button>
                     <span className="text-sm text-gray-600">
-                      Page {currentPage} of {totalPages}
+                      {t("pagination.page", { current: currentPage, total: totalPages })}
                     </span>
                     <Button
                       variant="outline"

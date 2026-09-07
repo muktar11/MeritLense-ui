@@ -900,8 +900,20 @@
         },
         "filters": {
           "allRoles": "جميع الأدوار",
+          "allStatusOption": "جميع الحالات",
+          "allDocumentsOption": "الكل",
           "verificationStatus": "حالة التحقق",
           "documents": "المستندات"
+        },
+        "docStatus": {
+          "verified": "موثّق",
+          "notVerified": "غير موثّق"
+        },
+        "noEmployersFound": "لم يتم العثور على أصحاب عمل",
+        "viewButton": "عرض",
+        "pagination": {
+          "showing": "عرض {start} إلى {end} من {total} صاحب عمل",
+          "page": "صفحة {current} من {total}"
         },
         "detailModal": {
           "title": "تفاصيل المرشح"
@@ -1237,7 +1249,15 @@
           "verificationNotes": "ملاحظات التحقق",
           "rejectionReason": "سبب الرفض",
           "notesPlaceholder": "أضف أي ملاحظات حول هذا التحقق...",
-          "rejectionPlaceholder": "اشرح سبب رفض المستندات..."
+          "rejectionPlaceholder": "اشرح سبب رفض المستندات...",
+          "roleLabel": "الدور: {role}",
+          "documentsHeading": "المستندات",
+          "idDocument": "وثيقة الهوية",
+          "resume": "السيرة الذاتية",
+          "registrationCertificate": "شهادة التسجيل",
+          "businessLicense": "الرخصة التجارية",
+          "taxIdDocument": "مستند الرقم الضريبي",
+          "viewLink": "عرض"
         },
         "evaluationCenter": {
           "contractListTitle": "قائمة عقود المرشحين",
@@ -1321,6 +1341,9 @@
     "billing": {
         "title": "الفوترة والاشتراكات",
         "search": "بحث عن الاشتراكات...",
+        "export": "تصدير",
+        "planDistribution": "توزيع الخطط",
+        "subscriberCount": "{count, plural, one {مشترك واحد} two {مشتركان} few {# مشتركين} many {# مشتركًا} other {# مشترك}}",
         "filters": {
           "allStatus": "جميع الحالات"
         },
@@ -1329,6 +1352,29 @@
           "active": "الاشتراكات النشطة",
           "revenue": "الإيرادات الشهرية",
           "expiring": "تنتهي قريبًا"
+        },
+        "noSubscriptionsFound": "لم يتم العثور على اشتراكات",
+        "companyIdLabel": "رقم الشركة: {id}",
+        "unknownPlan": "غير معروف",
+        "oneTime": "لمرة واحدة",
+        "monthlyFallback": "شهري",
+        "notAvailable": "غير متوفر",
+        "daysLeftLabel": "{days} يوم",
+        "expiredLabel": "منتهي الصلاحية",
+        "pagination": {
+          "showing": "عرض {start} إلى {end} من {total}",
+          "page": "صفحة {current} من {total}"
+        },
+        "dialog": {
+          "title": "تفاصيل الاشتراك",
+          "customer": "العميل",
+          "plan": "الخطة",
+          "status": "الحالة",
+          "amount": "المبلغ",
+          "currentPeriod": "الفترة الحالية",
+          "trialEnds": "انتهاء الفترة التجريبية",
+          "canceledAt": "تاريخ الإلغاء",
+          "stripeSubscriptionId": "معرّف اشتراك Stripe"
         },
         "table": {
           "user": "المستخدم",

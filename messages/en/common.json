@@ -894,6 +894,8 @@
         },
         "filters": {
           "allRoles": "All Roles",
+          "allStatusOption": "All Status",
+          "allDocumentsOption": "All",
           "verificationStatus": "Verification Status",
           "documents": "Documents"
         },
@@ -909,6 +911,17 @@
             "joined": "Joined",
             "actions": "Actions"
           }
+        },
+
+        "docStatus": {
+          "verified": "Verified",
+          "notVerified": "Not Verified"
+        },
+        "noEmployersFound": "No employers found",
+        "viewButton": "View",
+        "pagination": {
+          "showing": "Showing {start} to {end} of {total} employers",
+          "page": "Page {current} of {total}"
         },
 
         "detailModal": {
@@ -1210,7 +1223,15 @@
           "verificationNotes": "Verification Notes",
           "rejectionReason": "Rejection Reason",
           "notesPlaceholder": "Add any notes about this verification...",
-          "rejectionPlaceholder": "Explain why the documents are being rejected..."
+          "rejectionPlaceholder": "Explain why the documents are being rejected...",
+          "roleLabel": "Role: {role}",
+          "documentsHeading": "Documents",
+          "idDocument": "ID Document",
+          "resume": "Resume",
+          "registrationCertificate": "Registration Certificate",
+          "businessLicense": "Business License",
+          "taxIdDocument": "Tax ID Document",
+          "viewLink": "View"
         },
         "evaluationCenter": {
           "contractListTitle": "Candidate Contract List",
@@ -1294,6 +1315,9 @@
  "billing": {
         "title": "Billing and Subscriptions",
         "search": "Search subscriptions...",
+        "export": "Export",
+        "planDistribution": "Plan Distribution",
+        "subscriberCount": "{count, plural, one {# subscriber} other {# subscribers}}",
         "filters": {
           "allStatus": "All Status"
         },
@@ -1302,6 +1326,29 @@
           "active": "Active Subscriptions",
           "revenue": "Monthly Revenue",
           "expiring": "Expiring Soon"
+        },
+        "noSubscriptionsFound": "No subscriptions found",
+        "companyIdLabel": "Company ID: {id}",
+        "unknownPlan": "Unknown",
+        "oneTime": "one-time",
+        "monthlyFallback": "monthly",
+        "notAvailable": "N/A",
+        "daysLeftLabel": "{days} days",
+        "expiredLabel": "Expired",
+        "pagination": {
+          "showing": "Showing {start} to {end} of {total}",
+          "page": "Page {current} of {total}"
+        },
+        "dialog": {
+          "title": "Subscription Details",
+          "customer": "Customer",
+          "plan": "Plan",
+          "status": "Status",
+          "amount": "Amount",
+          "currentPeriod": "Current Period",
+          "trialEnds": "Trial Ends",
+          "canceledAt": "Canceled At",
+          "stripeSubscriptionId": "Stripe Subscription ID"
         },
         "table": {
           "user": "User",

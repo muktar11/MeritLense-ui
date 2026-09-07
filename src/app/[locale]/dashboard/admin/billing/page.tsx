@@ -2,7 +2,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
+import { format } from "date-fns"
+import { ar } from "date-fns/locale"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -46,7 +48,9 @@ import type { AdminSubscription, AdminSubscriptionStats } from "@/app/api/admin/
 
 export default function BillingAndSubscriptions() {
   const t = useTranslations("dashboard.admin.billing")
-  
+  const tSubStatus = useTranslations("dashboard.indivisual.settings.billing-tab.subscriptionStatus")
+  const locale = useLocale()
+
   const [subscriptions, setSubscriptions] = useState<AdminSubscription[]>([])
   const [stats, setStats] = useState<AdminSubscriptionStats | null>(null)
   const [loading, setLoading] = useState(true)
@@ -149,11 +153,7 @@ export default function BillingAndSubscriptions() {
 
   // Format date
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    })
+    return format(new Date(dateString), 'MMM d, yyyy', locale === 'ar' ? { locale: ar } : undefined)
   }
 
   return (
@@ -167,7 +167,7 @@ export default function BillingAndSubscriptions() {
           <div className="flex gap-2">
             <Button variant="outline" className="gap-2">
               <Download className="w-4 h-4" />
-              Export
+              {t("export")}
             </Button>
           </div>
         </div>
@@ -247,12 +247,12 @@ export default function BillingAndSubscriptions() {
                 <SelectValue placeholder={t("filters.allStatus")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="trialing">Trialing</SelectItem>
-                <SelectItem value="incomplete">Incomplete</SelectItem>
-                <SelectItem value="past_due">Past Due</SelectItem>
-                <SelectItem value="canceled">Canceled</SelectItem>
+                <SelectItem value="all">{t("filters.allStatus")}</SelectItem>
+                <SelectItem value="active">{tSubStatus("active")}</SelectItem>
+                <SelectItem value="trialing">{tSubStatus("trialing")}</SelectItem>
+                <SelectItem value="incomplete">{tSubStatus("incomplete")}</SelectItem>
+                <SelectItem value="past_due">{tSubStatus("pastDue")}</SelectItem>
+                <SelectItem value="canceled">{tSubStatus("canceled")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -261,13 +261,13 @@ export default function BillingAndSubscriptions() {
         {/* Plan Distribution Summary */}
         {Object.keys(planDistribution).length > 0 && (
           <Card className="p-4">
-            <h3 className="text-sm font-medium text-gray-700 mb-3">Plan Distribution</h3>
+            <h3 className="text-sm font-medium text-gray-700 mb-3">{t("planDistribution")}</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {Object.entries(planDistribution).map(([plan, data]) => (
                 <div key={plan} className="flex justify-between items-center p-3 bg-gray-50 rounded">
                   <div>
                     <p className="font-medium text-gray-900">{plan}</p>
-                    <p className="text-xs text-gray-500">{data.count} subscriber{data.count !== 1 ? 's' : ''}</p>
+                    <p className="text-xs text-gray-500">{t("subscriberCount", { count: data.count })}</p>
                   </div>
                   <p className="text-sm font-semibold text-gray-900">
                     {formatCurrency(data.revenue)}
@@ -289,20 +289,20 @@ export default function BillingAndSubscriptions() {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-gray-50">
-                    <TableHead>User</TableHead>
-                    <TableHead>Plan</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Amount</TableHead>
-                    <TableHead>Period End</TableHead>
-                    <TableHead>Days Left</TableHead>
-                    <TableHead>Actions</TableHead>
+                    <TableHead>{t("table.user")}</TableHead>
+                    <TableHead>{t("table.plan")}</TableHead>
+                    <TableHead>{t("table.status")}</TableHead>
+                    <TableHead>{t("table.amount")}</TableHead>
+                    <TableHead>{t("table.periodEnd")}</TableHead>
+                    <TableHead>{t("table.daysLeft")}</TableHead>
+                    <TableHead>{t("table.actions")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {!subscriptions || subscriptions.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={7} className="text-center py-8 text-gray-500">
-                        No subscriptions found
+                        {t("noSubscriptionsFound")}
                       </TableCell>
                     </TableRow>
                   ) : (
@@ -319,22 +319,25 @@ export default function BillingAndSubscriptions() {
                               <p className="text-sm text-gray-500">{sub.user_email}</p>
                             </div>
                             {sub.company && (
-                              <p className="text-xs text-gray-400">{sub.company_name || `Company ID: ${sub.company}`}</p>
+                              <p className="text-xs text-gray-400">{sub.company_name || t("companyIdLabel", { id: sub.company })}</p>
                             )}
                           </TableCell>
                           <TableCell>
                             <div>
-                              <p className="font-medium">{sub.price_details?.name || 'Unknown'}</p>
+                              <p className="font-medium">{sub.price_details?.name || t("unknownPlan")}</p>
                               <p className="text-xs text-gray-500">
                                 {sub.price_details?.billing_type === 'ONE_TIME'
-                                  ? 'one-time'
-                                  : (sub.price_details?.interval?.toLowerCase() || 'monthly')}
+                                  ? t("oneTime")
+                                  : (sub.price_details?.interval?.toLowerCase() || t("monthlyFallback"))}
                               </p>
                             </div>
                           </TableCell>
                           <TableCell>
                             <Badge className={getStatusColor(sub.status)}>
-                              {sub.status}
+                              {(() => {
+                                const key = sub.status === 'past_due' ? 'pastDue' : sub.status
+                                return tSubStatus.has(key) ? tSubStatus(key) : sub.status
+                              })()}
                             </Badge>
                           </TableCell>
                           <TableCell>
@@ -347,16 +350,16 @@ export default function BillingAndSubscriptions() {
                           </TableCell>
                           <TableCell>
                             <p className="text-sm">
-                              {sub.current_period_end 
+                              {sub.current_period_end
                                 ? formatDate(sub.current_period_end)
-                                : 'N/A'}
+                                : t("notAvailable")}
                             </p>
                           </TableCell>
                           <TableCell>
                             <Badge variant="outline" className={
                               daysLeft < 7 && daysLeft > 0 ? 'border-orange-200 text-orange-700' : ''
                             }>
-                              {daysLeft > 0 ? `${daysLeft} days` : 'Expired'}
+                              {daysLeft > 0 ? t("daysLeftLabel", { days: daysLeft }) : t("expiredLabel")}
                             </Badge>
                           </TableCell>
                           <TableCell>
@@ -379,7 +382,7 @@ export default function BillingAndSubscriptions() {
               {totalCount > pageSize && (
                 <div className="p-4 border-t flex items-center justify-between">
                   <p className="text-sm text-gray-500">
-                    Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, totalCount)} of {totalCount}
+                    {t("pagination.showing", { start: ((currentPage - 1) * pageSize) + 1, end: Math.min(currentPage * pageSize, totalCount), total: totalCount })}
                   </p>
                   <div className="flex items-center gap-2">
                     <Button
@@ -391,7 +394,7 @@ export default function BillingAndSubscriptions() {
                       <ChevronLeft className="w-4 h-4" />
                     </Button>
                     <span className="text-sm">
-                      Page {currentPage} of {totalPages}
+                      {t("pagination.page", { current: currentPage, total: totalPages })}
                     </span>
                     <Button
                       variant="outline"
@@ -412,37 +415,40 @@ export default function BillingAndSubscriptions() {
       <Dialog open={viewingSubscription !== null} onOpenChange={(open) => !open && setViewingSubscription(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Subscription Details</DialogTitle>
+            <DialogTitle>{t("dialog.title")}</DialogTitle>
           </DialogHeader>
           {viewingSubscription && (
             <div className="space-y-4 text-sm">
               <div>
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Customer</p>
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">{t("dialog.customer")}</p>
                 <p className="font-medium text-gray-900">{viewingSubscription.user_name}</p>
                 <p className="text-gray-500">{viewingSubscription.user_email}</p>
                 {viewingSubscription.company && (
-                  <p className="text-xs text-gray-400">{viewingSubscription.company_name || `Company ID: ${viewingSubscription.company}`}</p>
+                  <p className="text-xs text-gray-400">{viewingSubscription.company_name || t("companyIdLabel", { id: viewingSubscription.company })}</p>
                 )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Plan</p>
-                  <p className="font-medium">{viewingSubscription.price_details?.name || 'Unknown'}</p>
+                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">{t("dialog.plan")}</p>
+                  <p className="font-medium">{viewingSubscription.price_details?.name || t("unknownPlan")}</p>
                   <p className="text-xs text-gray-500">
                     {viewingSubscription.price_details?.billing_type === 'ONE_TIME'
-                      ? 'one-time'
-                      : (viewingSubscription.price_details?.interval?.toLowerCase() || 'monthly')}
+                      ? t("oneTime")
+                      : (viewingSubscription.price_details?.interval?.toLowerCase() || t("monthlyFallback"))}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Status</p>
+                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">{t("dialog.status")}</p>
                   <Badge className={getStatusColor(viewingSubscription.status)}>
-                    {viewingSubscription.status}
+                    {(() => {
+                      const key = viewingSubscription.status === 'past_due' ? 'pastDue' : viewingSubscription.status
+                      return tSubStatus.has(key) ? tSubStatus(key) : viewingSubscription.status
+                    })()}
                   </Badge>
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Amount</p>
+                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">{t("dialog.amount")}</p>
                   <p className="font-medium">
                     {formatCurrency(
                       viewingSubscription.price_details?.unit_amount || '0',
@@ -452,29 +458,29 @@ export default function BillingAndSubscriptions() {
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Current Period</p>
+                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">{t("dialog.currentPeriod")}</p>
                   <p>
-                    {viewingSubscription.current_period_start ? formatDate(viewingSubscription.current_period_start) : 'N/A'}
+                    {viewingSubscription.current_period_start ? formatDate(viewingSubscription.current_period_start) : t("notAvailable")}
                     {' - '}
-                    {viewingSubscription.current_period_end ? formatDate(viewingSubscription.current_period_end) : 'N/A'}
+                    {viewingSubscription.current_period_end ? formatDate(viewingSubscription.current_period_end) : t("notAvailable")}
                   </p>
                 </div>
                 {viewingSubscription.trial_end && (
                   <div>
-                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Trial Ends</p>
+                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">{t("dialog.trialEnds")}</p>
                     <p>{formatDate(viewingSubscription.trial_end)}</p>
                   </div>
                 )}
                 {viewingSubscription.canceled_at && (
                   <div>
-                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Canceled At</p>
+                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">{t("dialog.canceledAt")}</p>
                     <p>{formatDate(viewingSubscription.canceled_at)}</p>
                   </div>
                 )}
               </div>
 
               <div>
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Stripe Subscription ID</p>
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">{t("dialog.stripeSubscriptionId")}</p>
                 <p className="font-mono text-xs text-gray-600 break-all">{viewingSubscription.stripe_subscription_id}</p>
               </div>
             </div>

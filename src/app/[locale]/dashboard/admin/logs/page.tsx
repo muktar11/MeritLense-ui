@@ -341,7 +341,7 @@ export default function AuditLog() {
                 </Card>
                 {auditSummary.by_severity.slice(0, 3).map(item => (
                   <Card key={item.severity} className="p-4 bg-white">
-                    <p className="text-sm text-gray-600">{item.severity_display}</p>
+                    <p className="text-sm text-gray-600">{t.has(`severity.${item.severity}`) ? t(`severity.${item.severity}`) : item.severity_display}</p>
                     <p className="text-2xl font-bold text-gray-900">{item.count}</p>
                   </Card>
                 ))}
