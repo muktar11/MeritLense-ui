@@ -1240,7 +1240,45 @@
         "companyName": "Company Name",
         "email": "Email",
         "save": "Save",
-        "saveChanges": "Save Changes"
+        "saveChanges": "Save Changes",
+
+        "firstName": "First Name *",
+        "lastName": "Last Name *",
+        "department": "Department",
+        "departmentPlaceholder": "e.g., IT, HR, Finance",
+        "phoneNumber": "Phone Number",
+        "updateSuccess": "Profile updated successfully!",
+        "cancel": "Cancel",
+        "saving": "Saving...",
+
+        "changePassword": {
+          "heading": "Change Password",
+          "successTitle": "Password changed successfully!",
+          "successBody": "Please use your new password next time you log in.",
+          "currentPassword": "Current Password *",
+          "currentPasswordPlaceholder": "Enter current password",
+          "requiredTag": "(required)",
+          "newPassword": "New Password *",
+          "newPasswordPlaceholder": "Enter new password",
+          "invalidTag": "(invalid)",
+          "reqMinLength": "At least 8 characters",
+          "reqNumber": "Contains a number",
+          "reqSymbol": "Contains a symbol",
+          "confirmPassword": "Confirm New Password *",
+          "confirmPasswordPlaceholder": "Confirm new password",
+          "mismatchTag": "(mismatch)",
+          "mismatchError": "Passwords do not match",
+          "changing": "Changing Password...",
+          "submit": "Change Password",
+          "errors": {
+            "currentRequired": "Current password is required",
+            "newRequired": "New password is required",
+            "minLength": "Password must be at least 8 characters",
+            "needNumberSymbol": "Password must contain at least one number and one symbol",
+            "confirmRequired": "Please confirm your new password",
+            "sameAsCurrent": "New password must be different from current password"
+          }
+        }
       },
           "systemSecurity": {
         "title": "System Security",

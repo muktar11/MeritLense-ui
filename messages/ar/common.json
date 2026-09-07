@@ -1259,7 +1259,45 @@
         "companyName": "اسم الشركة",
         "email": "البريد الإلكتروني",
         "save": "حفظ",
-        "saveChanges": "حفظ التغييرات"
+        "saveChanges": "حفظ التغييرات",
+
+        "firstName": "الاسم الأول *",
+        "lastName": "اسم العائلة *",
+        "department": "القسم",
+        "departmentPlaceholder": "مثال: تقنية المعلومات، الموارد البشرية، المالية",
+        "phoneNumber": "رقم الهاتف",
+        "updateSuccess": "تم تحديث الملف الشخصي بنجاح!",
+        "cancel": "إلغاء",
+        "saving": "جارٍ الحفظ...",
+
+        "changePassword": {
+          "heading": "تغيير كلمة المرور",
+          "successTitle": "تم تغيير كلمة المرور بنجاح!",
+          "successBody": "يرجى استخدام كلمة المرور الجديدة في المرة القادمة لتسجيل الدخول.",
+          "currentPassword": "كلمة المرور الحالية *",
+          "currentPasswordPlaceholder": "أدخل كلمة المرور الحالية",
+          "requiredTag": "(مطلوب)",
+          "newPassword": "كلمة المرور الجديدة *",
+          "newPasswordPlaceholder": "أدخل كلمة المرور الجديدة",
+          "invalidTag": "(غير صالحة)",
+          "reqMinLength": "8 أحرف على الأقل",
+          "reqNumber": "تحتوي على رقم",
+          "reqSymbol": "تحتوي على رمز",
+          "confirmPassword": "تأكيد كلمة المرور الجديدة *",
+          "confirmPasswordPlaceholder": "تأكيد كلمة المرور الجديدة",
+          "mismatchTag": "(غير متطابقة)",
+          "mismatchError": "كلمتا المرور غير متطابقتين",
+          "changing": "جارٍ تغيير كلمة المرور...",
+          "submit": "تغيير كلمة المرور",
+          "errors": {
+            "currentRequired": "كلمة المرور الحالية مطلوبة",
+            "newRequired": "كلمة المرور الجديدة مطلوبة",
+            "minLength": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل",
+            "needNumberSymbol": "يجب أن تحتوي كلمة المرور على رقم ورمز واحد على الأقل",
+            "confirmRequired": "يرجى تأكيد كلمة المرور الجديدة",
+            "sameAsCurrent": "يجب أن تكون كلمة المرور الجديدة مختلفة عن كلمة المرور الحالية"
+          }
+        }
       },
       "systemSecurity": {
         "title": "أمان النظام",
