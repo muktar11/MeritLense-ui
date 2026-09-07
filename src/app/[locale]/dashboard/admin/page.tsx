@@ -19,7 +19,8 @@ import {
   ResponsiveContainer,
 } from "recharts"
 import { Users, Building2, FileText, DollarSign, UserCheck, Loader2 } from "lucide-react"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
+import { ar } from "date-fns/locale"
 import adminDashboardService from "@/app/api/dashboard/admin/endpoints"
 import type {
   AdminDashboardStats,
@@ -35,6 +36,13 @@ const COLORS = {
   evaluationType: ["#6366F1", "#22D3EE", "#A855F7", "#EC4899", "#F97316", "#22C55E"],
   packageCont: ["#3B82F6", "#22D3EE", "#22C55E", "#F97316", "#A855F7", "#EC4899"],
   userType: ["#3B82F6", "#EC4899", "#22C55E", "#F97316", "#A855F7"]
+}
+
+const TYPE_KEYS: Record<string, string> = {
+  INTERVIEW: 'interview',
+  TECHNICAL_TEST: 'technicalTest',
+  ASSESSMENT: 'assessment',
+  LANGUAGE_PROFICIENCY: 'languageProficiency',
 }
 
 const StatCard = ({ title, value, change, icon: Icon, trend, iconColor }: any) => (
@@ -58,6 +66,8 @@ const StatCard = ({ title, value, change, icon: Icon, trend, iconColor }: any) =
 
 export default function AdminDashboardPage() {
   const t = useTranslations("dashboard.admin.overview_page")
+  const tTypes = useTranslations("dashboard.indivisual.evaluationManagement.types")
+  const locale = useLocale()
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState<AdminDashboardStats | null>(null)
   const [systemLoad, setSystemLoad] = useState<SystemLoadData[]>([])
@@ -112,7 +122,7 @@ const systemLoadChartData = systemLoad
   )
   .slice(-14) // Last 14 days with activity
   .map(item => ({
-    date: format(new Date(item.date), 'MMM d'),
+    date: format(new Date(item.date), 'MMM d', locale === 'ar' ? { locale: ar } : undefined),
     B2C: item.users_registered,
     B2B: item.companies_registered,
     evaluations: item.evaluations_created
@@ -120,13 +130,13 @@ const systemLoadChartData = systemLoad
 
   // Transform user growth data for chart
   const userGrowthChartData = userGrowth.map(item => ({
-    role: format(new Date(item.month + '-01'), 'MMM'),
+    role: format(new Date(item.month + '-01'), 'MMM', locale === 'ar' ? { locale: ar } : undefined),
     value: item.total_users
   }))
 
   // Transform evaluation types for pie chart
   const evaluationTypesChartData = evaluationTypes.slice(0, 4).map(item => ({
-    name: item.type_display,
+    name: TYPE_KEYS[item.type] ? tTypes(TYPE_KEYS[item.type]) : item.type_display,
     value: item.count
   }))
 
@@ -443,7 +453,7 @@ const systemLoadChartData = systemLoad
               if (name === "cumulative_revenue") return [`€${value?.toFixed(2)}`, t("cumulativeRevenue")];
               return [value, name];
             }}
-            labelFormatter={(label) => `Month: ${label}`}
+            labelFormatter={(label) => t("monthLabel", { month: label })}
           />
           <Legend
             align="right"
@@ -482,25 +492,25 @@ const systemLoadChartData = systemLoad
       {/* Summary Stats for Revenue */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
         <div className="bg-gray-50 p-3 rounded-lg">
-          <p className="text-xs text-gray-500">Total Revenue</p>
+          <p className="text-xs text-gray-500">{t("totalRevenue")}</p>
           <p className="text-lg font-bold text-gray-900">
             €{revenueTrend[revenueTrend.length - 1]?.cumulative_revenue.toFixed(2)}
           </p>
         </div>
         <div className="bg-gray-50 p-3 rounded-lg">
-          <p className="text-xs text-gray-500">Monthly Revenue</p>
+          <p className="text-xs text-gray-500">{t("monthlyRevenueLabel")}</p>
           <p className="text-lg font-bold text-gray-900">
             €{revenueTrend[revenueTrend.length - 1]?.total_revenue.toFixed(2)}
           </p>
         </div>
         <div className="bg-gray-50 p-3 rounded-lg">
-          <p className="text-xs text-gray-500">New Subscriptions</p>
+          <p className="text-xs text-gray-500">{t("newSubscriptionsLabel")}</p>
           <p className="text-lg font-bold text-gray-900">
             {revenueTrend.reduce((sum, month) => sum + month.new_subscriptions, 0)}
           </p>
         </div>
         <div className="bg-gray-50 p-3 rounded-lg">
-          <p className="text-xs text-gray-500">Total Payments</p>
+          <p className="text-xs text-gray-500">{t("totalPaymentsLabel")}</p>
           <p className="text-lg font-bold text-gray-900">
             {revenueTrend.reduce((sum, month) => sum + month.payment_count, 0)}
           </p>
