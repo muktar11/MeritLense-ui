@@ -1119,6 +1119,8 @@
           "b2bbasic": "B2B Basic",
           "b2cadmin": "B2C Admin"
         },
+        "allSystems": "All Systems",
+        "allRoles": "All Roles",
         "roles": {
          "superadmin": "Super Admin",
          "superAdmin": "Super Admin",
@@ -1129,6 +1131,23 @@
           "companyAdmin": "Company Admin",
           "teammember": "Team Member"
         },
+        "stats": {
+          "totalUsers": "Total Users: {count}",
+          "admins": "Admins: {count}",
+          "employers": "Employers: {count}"
+        },
+        "userTypes": {
+          "admin": "Admin",
+          "employer": "Employer",
+          "team_member": "Team Member"
+        },
+        "permissions": {
+          "full_access": "Full Access",
+          "manage_evaluations": "Manage Evaluations",
+          "view_candidates": "View Candidates",
+          "manage_users": "Manage Users"
+        },
+        "noPermissions": "No permissions",
         "access": {
           "authentication": "Authentication",
           "readOnly": "Read Only",
@@ -1146,7 +1165,8 @@
           "role": "Role",
           "system": "System",
           "permissions": "Permissions",
-          "contact": "Contact"
+          "contact": "Contact",
+          "noResults": "No users found matching the selected filters"
         },
         "dialogs": {
           "auth": "Authentication",
