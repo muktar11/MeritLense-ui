@@ -3,6 +3,7 @@
 import { useState, useEffect, Fragment } from "react";
 import { Dialog, Transition } from '@headlessui/react';
 import { X, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import adminPackageService from "@/app/api/admin/packages/endpoints";
 import type { Package, PackagePayload } from "@/app/api/admin/packages/types";
 
@@ -14,43 +15,43 @@ interface PackageModalProps {
 }
 
 const TARGET_USER_TYPES = [
-  { key: 'B2C', label: 'Individual (B2C)' },
-  { key: 'B2B', label: 'Company (B2B)' },
-  { key: 'BOTH', label: 'Both' },
+  { key: 'B2C', labelKey: 'targetUserTypes.B2C' },
+  { key: 'B2B', labelKey: 'targetUserTypes.B2B' },
+  { key: 'BOTH', labelKey: 'targetUserTypes.BOTH' },
 ];
 
 const BILLING_TYPES = [
-  { key: 'RECURRING', label: 'Recurring' },
-  { key: 'ONE_TIME', label: 'One-Time' },
+  { key: 'RECURRING', labelKey: 'billingTypes.RECURRING' },
+  { key: 'ONE_TIME', labelKey: 'billingTypes.ONE_TIME' },
 ];
 
 const INTERVALS = [
-  { key: 'MONTHLY', label: 'Monthly' },
-  { key: 'QUARTERLY', label: 'Quarterly' },
-  { key: 'YEARLY', label: 'Yearly' },
+  { key: 'MONTHLY', labelKey: 'intervals.MONTHLY' },
+  { key: 'QUARTERLY', labelKey: 'intervals.QUARTERLY' },
+  { key: 'YEARLY', labelKey: 'intervals.YEARLY' },
 ];
 
 const EVALUATION_TIERS = [
-  { key: '', label: 'None' },
-  { key: 'SCREENING', label: 'Screening' },
-  { key: 'FULL', label: 'Full' },
-  { key: 'BOTH', label: 'Both' },
+  { key: '', labelKey: 'evaluationTiers.none' },
+  { key: 'SCREENING', labelKey: 'evaluationTiers.SCREENING' },
+  { key: 'FULL', labelKey: 'evaluationTiers.FULL' },
+  { key: 'BOTH', labelKey: 'evaluationTiers.BOTH' },
 ];
 
 const COMPANY_SIZES = [
-  { key: '', label: 'Any' },
-  { key: '1-10', label: '1-10 employees' },
-  { key: '11-50', label: '11-50 employees' },
-  { key: '51-200', label: '51-200 employees' },
-  { key: '201-1000', label: '201-1000 employees' },
-  { key: '1000+', label: '1000+ employees' },
+  { key: '', labelKey: 'companySizes.any' },
+  { key: '1-10', labelKey: 'companySizes.1-10' },
+  { key: '11-50', labelKey: 'companySizes.11-50' },
+  { key: '51-200', labelKey: 'companySizes.51-200' },
+  { key: '201-1000', labelKey: 'companySizes.201-1000' },
+  { key: '1000+', labelKey: 'companySizes.1000+' },
 ];
 
 const OUTPUT_REPORT_LEVELS = [
-  { key: '', label: 'None' },
-  { key: 'summary', label: 'Summary' },
-  { key: 'standard', label: 'Standard' },
-  { key: 'detailed', label: 'Detailed' },
+  { key: '', labelKey: 'outputReportLevels.none' },
+  { key: 'summary', labelKey: 'outputReportLevels.summary' },
+  { key: 'standard', labelKey: 'outputReportLevels.standard' },
+  { key: 'detailed', labelKey: 'outputReportLevels.detailed' },
 ];
 
 const initialForm = {
@@ -79,6 +80,8 @@ const initialForm = {
 };
 
 export function PackageModal({ isOpen, onClose, onSuccess, packageToEdit }: PackageModalProps) {
+  const t = useTranslations("dashboard.admin.packages.modal");
+  const tOptions = useTranslations("dashboard.admin.packages");
   const [form, setForm] = useState(initialForm);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -127,9 +130,9 @@ export function PackageModal({ isOpen, onClose, onSuccess, packageToEdit }: Pack
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
-    if (!form.name.trim()) newErrors.name = "Name is required";
-    if (form.unit_amount.trim() === '' || Number(form.unit_amount) < 0) newErrors.unit_amount = "Enter an amount of 0 or more";
-    if (!form.currency.trim()) newErrors.currency = "Currency is required";
+    if (!form.name.trim()) newErrors.name = t("errors.nameRequired");
+    if (form.unit_amount.trim() === '' || Number(form.unit_amount) < 0) newErrors.unit_amount = t("errors.amountInvalid");
+    if (!form.currency.trim()) newErrors.currency = t("errors.currencyRequired");
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -196,7 +199,7 @@ export function PackageModal({ isOpen, onClose, onSuccess, packageToEdit }: Pack
         });
         setErrors(backendErrors);
       } else {
-        setErrors({ form: 'Failed to save package. Please try again.' });
+        setErrors({ form: t("errors.saveFailed") });
       }
     } finally {
       setLoading(false);
@@ -234,7 +237,7 @@ export function PackageModal({ isOpen, onClose, onSuccess, packageToEdit }: Pack
               <Dialog.Panel className="w-full max-w-2xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                 <div className="flex justify-between items-center mb-4">
                   <Dialog.Title as="h3" className="text-lg font-semibold text-gray-900">
-                    {isEditMode ? 'Edit Package' : 'New Package'}
+                    {isEditMode ? t("editTitle") : t("newTitle")}
                   </Dialog.Title>
                   <button onClick={onClose} className="text-gray-400 hover:text-gray-500">
                     <X size={20} />
@@ -250,15 +253,14 @@ export function PackageModal({ isOpen, onClose, onSuccess, packageToEdit }: Pack
                 {isEditMode && (form.billing_type !== packageToEdit?.billing_type ||
                   form.unit_amount !== packageToEdit?.unit_amount) && (
                   <div className="mb-4 p-3 bg-blue-50 border border-blue-200 text-blue-700 rounded-lg text-sm">
-                    Changing price, currency, billing type, or interval retires this package and creates a new one
-                    with the new terms — existing subscribers keep the terms they originally bought.
+                    {t("priceChangeWarning")}
                   </div>
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-4 max-h-[65vh] overflow-y-auto px-1">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Package Name *</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">{t("name")}</label>
                       <input
                         type="text"
                         name="name"
@@ -270,23 +272,23 @@ export function PackageModal({ isOpen, onClose, onSuccess, packageToEdit }: Pack
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Available To</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">{t("availableTo")}</label>
                       <select name="target_user_type" value={form.target_user_type} onChange={handleChange}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                        {TARGET_USER_TYPES.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
+                        {TARGET_USER_TYPES.map(o => <option key={o.key} value={o.key}>{tOptions(o.labelKey)}</option>)}
                       </select>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Billing Type</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">{t("billingType")}</label>
                       <select name="billing_type" value={form.billing_type} onChange={handleChange}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                        {BILLING_TYPES.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
+                        {BILLING_TYPES.map(o => <option key={o.key} value={o.key}>{tOptions(o.labelKey)}</option>)}
                       </select>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Amount *</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">{t("amount")}</label>
                       <input
                         type="number"
                         step="0.01"
@@ -299,7 +301,7 @@ export function PackageModal({ isOpen, onClose, onSuccess, packageToEdit }: Pack
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Currency *</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">{t("currency")}</label>
                       <input
                         type="text"
                         name="currency"
@@ -314,14 +316,14 @@ export function PackageModal({ isOpen, onClose, onSuccess, packageToEdit }: Pack
                     {form.billing_type === 'RECURRING' && (
                       <>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Billing Interval</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">{t("billingInterval")}</label>
                           <select name="interval" value={form.interval} onChange={handleChange}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                            {INTERVALS.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
+                            {INTERVALS.map(o => <option key={o.key} value={o.key}>{tOptions(o.labelKey)}</option>)}
                           </select>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Interval Count</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">{t("intervalCount")}</label>
                           <input
                             type="number"
                             min="1"
@@ -337,35 +339,35 @@ export function PackageModal({ isOpen, onClose, onSuccess, packageToEdit }: Pack
                     {(form.target_user_type === 'B2B' || form.target_user_type === 'BOTH') && (
                       <>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Min Company Size</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">{t("minCompanySize")}</label>
                           <select name="min_company_size" value={form.min_company_size} onChange={handleChange}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                            {COMPANY_SIZES.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
+                            {COMPANY_SIZES.map(o => <option key={o.key} value={o.key}>{tOptions(o.labelKey)}</option>)}
                           </select>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Max Company Size</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">{t("maxCompanySize")}</label>
                           <select name="max_company_size" value={form.max_company_size} onChange={handleChange}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                            {COMPANY_SIZES.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
+                            {COMPANY_SIZES.map(o => <option key={o.key} value={o.key}>{tOptions(o.labelKey)}</option>)}
                           </select>
                         </div>
                       </>
                     )}
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Evaluation Tier</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">{t("evaluationTier")}</label>
                       <select name="evaluation_tier" value={form.evaluation_tier} onChange={handleChange}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                        {EVALUATION_TIERS.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
+                        {EVALUATION_TIERS.map(o => <option key={o.key} value={o.key}>{tOptions(o.labelKey)}</option>)}
                       </select>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Output Report Level</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">{t("outputReportLevel")}</label>
                       <select name="output_report_level" value={form.output_report_level} onChange={handleChange}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                        {OUTPUT_REPORT_LEVELS.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
+                        {OUTPUT_REPORT_LEVELS.map(o => <option key={o.key} value={o.key}>{tOptions(o.labelKey)}</option>)}
                       </select>
                     </div>
 
@@ -379,49 +381,47 @@ export function PackageModal({ isOpen, onClose, onSuccess, packageToEdit }: Pack
                         className="rounded border-gray-300 text-purple-600"
                       />
                       <label htmlFor="task_observation_enabled" className="text-sm text-gray-700">
-                        Includes task observation
+                        {t("includesTaskObservation")}
                       </label>
                     </div>
                   </div>
 
                   <div className="border-t pt-4">
-                    <h4 className="text-sm font-medium text-gray-700 mb-1">Candidate Assessment Slots &amp; Points</h4>
+                    <h4 className="text-sm font-medium text-gray-700 mb-1">{t("slotsPointsHeading")}</h4>
                     <p className="text-xs text-gray-500 mb-3">
-                      Two independent balances: Assessment Slots are consumed once per assessment session
-                      started; Points are spent only on optional add-ons. Leave blank for no automated
-                      enforcement (per-agreement/custom packages).
+                      {t("slotsPointsDescription")}
                     </p>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-xs text-gray-600 mb-1">Assessment Slots (per period)</label>
+                        <label className="block text-xs text-gray-600 mb-1">{t("assessmentSlots")}</label>
                         <input type="number" name="slot_grant" value={form.slot_grant} onChange={handleChange}
-                          placeholder="Unlimited"
+                          placeholder={t("unlimitedPlaceholder")}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
                       </div>
                       <div>
-                        <label className="block text-xs text-gray-600 mb-1">Points Balance (per period)</label>
+                        <label className="block text-xs text-gray-600 mb-1">{t("pointsBalance")}</label>
                         <input type="number" name="points_grant" value={form.points_grant} onChange={handleChange}
-                          placeholder="Unlimited"
+                          placeholder={t("unlimitedPlaceholder")}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
                       </div>
                     </div>
                   </div>
 
                   <div className="border-t pt-4">
-                    <h4 className="text-sm font-medium text-gray-700 mb-3">Other Limits</h4>
+                    <h4 className="text-sm font-medium text-gray-700 mb-3">{t("otherLimitsHeading")}</h4>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                       <div>
-                        <label className="block text-xs text-gray-600 mb-1">Candidate Limit</label>
+                        <label className="block text-xs text-gray-600 mb-1">{t("candidateLimit")}</label>
                         <input type="number" name="candidate_limit" value={form.candidate_limit} onChange={handleChange}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
                       </div>
                       <div>
-                        <label className="block text-xs text-gray-600 mb-1">Evaluation Limit</label>
+                        <label className="block text-xs text-gray-600 mb-1">{t("evaluationLimit")}</label>
                         <input type="number" name="evaluation_limit" value={form.evaluation_limit} onChange={handleChange}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
                       </div>
                       <div>
-                        <label className="block text-xs text-gray-600 mb-1">Team Member Limit</label>
+                        <label className="block text-xs text-gray-600 mb-1">{t("teamMemberLimit")}</label>
                         <input type="number" name="team_member_limit" value={form.team_member_limit} onChange={handleChange}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
                       </div>
@@ -429,25 +429,25 @@ export function PackageModal({ isOpen, onClose, onSuccess, packageToEdit }: Pack
                   </div>
 
                   <div className="border-t pt-4">
-                    <h4 className="text-sm font-medium text-gray-700 mb-3">Session Configuration</h4>
+                    <h4 className="text-sm font-medium text-gray-700 mb-3">{t("sessionConfigHeading")}</h4>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                       <div>
-                        <label className="block text-xs text-gray-600 mb-1">Questions (Min)</label>
+                        <label className="block text-xs text-gray-600 mb-1">{t("questionsMin")}</label>
                         <input type="number" name="question_count_min" value={form.question_count_min} onChange={handleChange}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
                       </div>
                       <div>
-                        <label className="block text-xs text-gray-600 mb-1">Questions (Max)</label>
+                        <label className="block text-xs text-gray-600 mb-1">{t("questionsMax")}</label>
                         <input type="number" name="question_count_max" value={form.question_count_max} onChange={handleChange}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
                       </div>
                       <div>
-                        <label className="block text-xs text-gray-600 mb-1">Duration Min (min)</label>
+                        <label className="block text-xs text-gray-600 mb-1">{t("durationMin")}</label>
                         <input type="number" name="session_duration_min_minutes" value={form.session_duration_min_minutes} onChange={handleChange}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
                       </div>
                       <div>
-                        <label className="block text-xs text-gray-600 mb-1">Duration Max (min)</label>
+                        <label className="block text-xs text-gray-600 mb-1">{t("durationMax")}</label>
                         <input type="number" name="session_duration_max_minutes" value={form.session_duration_max_minutes} onChange={handleChange}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" />
                       </div>
@@ -463,7 +463,7 @@ export function PackageModal({ isOpen, onClose, onSuccess, packageToEdit }: Pack
                       onChange={handleChange}
                       className="rounded border-gray-300 text-purple-600"
                     />
-                    <label htmlFor="is_active" className="text-sm text-gray-700">Active</label>
+                    <label htmlFor="is_active" className="text-sm text-gray-700">{t("active")}</label>
                   </div>
 
                   <div className="flex justify-end gap-3 pt-4 border-t sticky bottom-0 bg-white">
@@ -473,7 +473,7 @@ export function PackageModal({ isOpen, onClose, onSuccess, packageToEdit }: Pack
                       className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg text-sm hover:bg-gray-50"
                       disabled={loading}
                     >
-                      Cancel
+                      {t("cancel")}
                     </button>
                     <button
                       type="submit"
@@ -483,10 +483,10 @@ export function PackageModal({ isOpen, onClose, onSuccess, packageToEdit }: Pack
                       {loading ? (
                         <>
                           <Loader2 className="w-4 h-4 animate-spin" />
-                          Saving...
+                          {t("saving")}
                         </>
                       ) : (
-                        isEditMode ? 'Save Changes' : 'Create Package'
+                        isEditMode ? t("saveChanges") : t("createPackage")
                       )}
                     </button>
                   </div>

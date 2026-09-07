@@ -1525,6 +1525,130 @@
       }
       }, 
 
+ "packages": {
+        "accessRestricted": {
+          "title": "SuperAdmin Access Required",
+          "description": "Package management is restricted to SuperAdmin accounts."
+        },
+        "title": "Package Management",
+        "subtitle": "Create and manage subscription packages for B2C and B2B customers.",
+        "newPackage": "New Package",
+        "filters": {
+          "availableTo": "Available To",
+          "allAudiences": "All Audiences",
+          "billingType": "Billing Type",
+          "allBillingTypes": "All Billing Types",
+          "status": "Status",
+          "allStatus": "All Status",
+          "active": "Active",
+          "inactive": "Inactive"
+        },
+        "table": {
+          "title": "Packages ({count})",
+          "headers": {
+            "name": "Name",
+            "availableTo": "Available To",
+            "price": "Price",
+            "billing": "Billing",
+            "tier": "Tier",
+            "slots": "Slots",
+            "points": "Points",
+            "status": "Status",
+            "actions": "Actions"
+          },
+          "noResults": "No packages found",
+          "unlimited": "Unlimited"
+        },
+        "pagination": {
+          "showing": "Showing {start} to {end} of {total} packages",
+          "page": "Page {current} of {total}"
+        },
+        "confirm": {
+          "deactivate": "Deactivate \"{name}\"? Existing subscribers keep it, but it won't be offered to new purchasers.",
+          "delete": "Permanently delete \"{name}\"? This cannot be undone. Only allowed if it has never had a subscriber."
+        },
+        "errors": {
+          "deactivateFailed": "Failed to deactivate package. Please try again.",
+          "deleteFailed": "Failed to delete package. Please try again."
+        },
+        "targetUserTypes": {
+          "B2C": "Individual (B2C)",
+          "B2B": "Company (B2B)",
+          "BOTH": "Both"
+        },
+        "billingTypes": {
+          "RECURRING": "Recurring",
+          "ONE_TIME": "One-Time"
+        },
+        "intervals": {
+          "MONTHLY": "Monthly",
+          "QUARTERLY": "Quarterly",
+          "YEARLY": "Yearly"
+        },
+        "evaluationTiers": {
+          "none": "None",
+          "SCREENING": "Screening",
+          "FULL": "Full",
+          "BOTH": "Both"
+        },
+        "companySizes": {
+          "any": "Any",
+          "1-10": "1-10 employees",
+          "11-50": "11-50 employees",
+          "51-200": "51-200 employees",
+          "201-1000": "201-1000 employees",
+          "1000+": "1000+ employees"
+        },
+        "outputReportLevels": {
+          "none": "None",
+          "summary": "Summary",
+          "standard": "Standard",
+          "detailed": "Detailed"
+        },
+        "modal": {
+          "editTitle": "Edit Package",
+          "newTitle": "New Package",
+          "priceChangeWarning": "Changing price, currency, billing type, or interval retires this package and creates a new one with the new terms — existing subscribers keep the terms they originally bought.",
+          "name": "Package Name *",
+          "availableTo": "Available To",
+          "billingType": "Billing Type",
+          "amount": "Amount *",
+          "currency": "Currency *",
+          "billingInterval": "Billing Interval",
+          "intervalCount": "Interval Count",
+          "minCompanySize": "Min Company Size",
+          "maxCompanySize": "Max Company Size",
+          "evaluationTier": "Evaluation Tier",
+          "outputReportLevel": "Output Report Level",
+          "includesTaskObservation": "Includes task observation",
+          "slotsPointsHeading": "Candidate Assessment Slots & Points",
+          "slotsPointsDescription": "Two independent balances: Assessment Slots are consumed once per assessment session started; Points are spent only on optional add-ons. Leave blank for no automated enforcement (per-agreement/custom packages).",
+          "assessmentSlots": "Assessment Slots (per period)",
+          "pointsBalance": "Points Balance (per period)",
+          "unlimitedPlaceholder": "Unlimited",
+          "otherLimitsHeading": "Other Limits",
+          "candidateLimit": "Candidate Limit",
+          "evaluationLimit": "Evaluation Limit",
+          "teamMemberLimit": "Team Member Limit",
+          "sessionConfigHeading": "Session Configuration",
+          "questionsMin": "Questions (Min)",
+          "questionsMax": "Questions (Max)",
+          "durationMin": "Duration Min (min)",
+          "durationMax": "Duration Max (min)",
+          "active": "Active",
+          "cancel": "Cancel",
+          "saving": "Saving...",
+          "saveChanges": "Save Changes",
+          "createPackage": "Create Package",
+          "errors": {
+            "nameRequired": "Name is required",
+            "amountInvalid": "Enter an amount of 0 or more",
+            "currencyRequired": "Currency is required",
+            "saveFailed": "Failed to save package. Please try again."
+          }
+        }
+      },
+
  "billing": {
         "title": "Billing and Subscriptions",
         "search": "Search subscriptions...",
