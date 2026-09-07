@@ -159,34 +159,34 @@ export default function AdminProfileSettings() {
     let isValid = true
 
     if (!passwordForm.current_password) {
-      errors.current_password = ['Current password is required']
+      errors.current_password = [t("changePassword.errors.currentRequired")]
       isValid = false
     }
 
     if (!passwordForm.new_password) {
-      errors.new_password = ['New password is required']
+      errors.new_password = [t("changePassword.errors.newRequired")]
       isValid = false
     } else {
       if (!passwordValidation.minLength) {
-        errors.new_password = ['Password must be at least 8 characters']
+        errors.new_password = [t("changePassword.errors.minLength")]
         isValid = false
       } else if (!passwordValidation.hasNumber || !passwordValidation.hasSymbol) {
-        errors.new_password = ['Password must contain at least one number and one symbol']
+        errors.new_password = [t("changePassword.errors.needNumberSymbol")]
         isValid = false
       }
     }
 
     if (!passwordForm.confirm_new_password) {
-      errors.confirm_new_password = ['Please confirm your new password']
+      errors.confirm_new_password = [t("changePassword.errors.confirmRequired")]
       isValid = false
     } else if (passwordForm.new_password !== passwordForm.confirm_new_password) {
-      errors.confirm_new_password = ['Passwords do not match']
+      errors.confirm_new_password = [t("changePassword.mismatchError")]
       isValid = false
     }
 
-    if (passwordForm.current_password && passwordForm.new_password && 
+    if (passwordForm.current_password && passwordForm.new_password &&
         passwordForm.current_password === passwordForm.new_password) {
-      errors.new_password = ['New password must be different from current password']
+      errors.new_password = [t("changePassword.errors.sameAsCurrent")]
       isValid = false
     }
 
@@ -382,7 +382,7 @@ export default function AdminProfileSettings() {
                   size="sm"
                   onClick={() => setIsEditing(true)}
                 >
-                  Edit Profile
+                  {t("tabs.profile")}
                 </Button>
               ) : (
                 <div className="flex gap-2">
@@ -402,7 +402,7 @@ export default function AdminProfileSettings() {
                       }
                     }}
                   >
-                    Cancel
+                    {t("cancel")}
                   </Button>
                 </div>
               )}
@@ -412,7 +412,7 @@ export default function AdminProfileSettings() {
               {profileSaveSuccess && (
                 <div className="p-4 bg-green-50 border border-green-200 rounded-lg flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 shrink-0" />
-                  <p className="text-sm text-green-600">Profile updated successfully!</p>
+                  <p className="text-sm text-green-600">{t("updateSuccess")}</p>
                 </div>
               )}
 
@@ -428,7 +428,7 @@ export default function AdminProfileSettings() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* First Name */}
                   <div className="space-y-2">
-                    <Label htmlFor="first_name">First Name *</Label>
+                    <Label htmlFor="first_name">{t("firstName")}</Label>
                     {isEditing ? (
                       <Input
                         id="first_name"
@@ -446,7 +446,7 @@ export default function AdminProfileSettings() {
 
                   {/* Last Name */}
                   <div className="space-y-2">
-                    <Label htmlFor="last_name">Last Name *</Label>
+                    <Label htmlFor="last_name">{t("lastName")}</Label>
                     {isEditing ? (
                       <Input
                         id="last_name"
@@ -464,7 +464,7 @@ export default function AdminProfileSettings() {
 
                   {/* Email (read-only) */}
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="email">{t("email")}</Label>
                     <p className="text-sm text-gray-900 p-2 border rounded-lg bg-gray-50">
                       {profileForm.email}
                     </p>
@@ -472,14 +472,14 @@ export default function AdminProfileSettings() {
 
                   {/* Department */}
                   <div className="space-y-2">
-                    <Label htmlFor="department">Department</Label>
+                    <Label htmlFor="department">{t("department")}</Label>
                     {isEditing ? (
                       <Input
                         id="department"
                         name="department"
                         value={profileForm.department}
                         onChange={handleProfileChange}
-                        placeholder="e.g., IT, HR, Finance"
+                        placeholder={t("departmentPlaceholder")}
                       />
                     ) : (
                       <p className="text-sm text-gray-900 p-2 border rounded-lg bg-gray-50">
@@ -490,7 +490,7 @@ export default function AdminProfileSettings() {
 
                   {/* Phone Number */}
                   <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="phone_number">Phone Number</Label>
+                    <Label htmlFor="phone_number">{t("phoneNumber")}</Label>
                     {isEditing ? (
                       <Input
                         id="phone_number"
@@ -517,10 +517,10 @@ export default function AdminProfileSettings() {
                       {loading ? (
                         <>
                           <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                          Saving...
+                          {t("saving")}
                         </>
                       ) : (
-                        "Save Changes"
+                        t("saveChanges")
                       )}
                     </Button>
                   </div>
@@ -529,15 +529,15 @@ export default function AdminProfileSettings() {
 
               {/* Change Password Section */}
               <div className="border-t pt-8">
-                <h3 className="text-lg font-semibold mb-6">Change Password</h3>
+                <h3 className="text-lg font-semibold mb-6">{t("changePassword.heading")}</h3>
 
                 {/* Password Success Message */}
                 {passwordSuccess && (
                   <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-start gap-3">
                     <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 shrink-0" />
                     <div>
-                      <p className="text-sm font-medium text-green-800">Password changed successfully!</p>
-                      <p className="text-sm text-green-600">Please use your new password next time you log in.</p>
+                      <p className="text-sm font-medium text-green-800">{t("changePassword.successTitle")}</p>
+                      <p className="text-sm text-green-600">{t("changePassword.successBody")}</p>
                     </div>
                   </div>
                 )}
@@ -558,9 +558,9 @@ export default function AdminProfileSettings() {
                   {/* Current Password */}
                   <div className="space-y-2">
                     <Label htmlFor="current_password" className="flex items-center gap-1">
-                      Current Password *
+                      {t("changePassword.currentPassword")}
                       {touchedFields.current_password && passwordFieldErrors.current_password && (
-                        <span className="text-xs text-red-500">(required)</span>
+                        <span className="text-xs text-red-500">{t("changePassword.requiredTag")}</span>
                       )}
                     </Label>
                     <div className="relative">
@@ -571,7 +571,7 @@ export default function AdminProfileSettings() {
                         value={passwordForm.current_password}
                         onChange={handlePasswordChange}
                         onBlur={() => handleFieldBlur('current_password')}
-                        placeholder="Enter current password"
+                        placeholder={t("changePassword.currentPasswordPlaceholder")}
                         required
                         className={`pr-10 ${
                           touchedFields.current_password && passwordFieldErrors.current_password
@@ -602,9 +602,9 @@ export default function AdminProfileSettings() {
                   {/* New Password */}
                   <div className="space-y-2">
                     <Label htmlFor="new_password" className="flex items-center gap-1">
-                      New Password *
+                      {t("changePassword.newPassword")}
                       {touchedFields.new_password && passwordFieldErrors.new_password && (
-                        <span className="text-xs text-red-500">(invalid)</span>
+                        <span className="text-xs text-red-500">{t("changePassword.invalidTag")}</span>
                       )}
                     </Label>
                     <div className="relative">
@@ -615,7 +615,7 @@ export default function AdminProfileSettings() {
                         value={passwordForm.new_password}
                         onChange={handlePasswordChange}
                         onBlur={() => handleFieldBlur('new_password')}
-                        placeholder="Enter new password"
+                        placeholder={t("changePassword.newPasswordPlaceholder")}
                         required
                         minLength={8}
                         className={`pr-10 ${
@@ -669,7 +669,7 @@ export default function AdminProfileSettings() {
                             ) : (
                               <span className="text-red-600 font-bold text-xs">✕</span>
                             )}
-                            <span className="text-xs text-gray-600">At least 8 characters</span>
+                            <span className="text-xs text-gray-600">{t("changePassword.reqMinLength")}</span>
                           </div>
                           <div className="flex items-center gap-2">
                             {passwordValidation.hasNumber ? (
@@ -677,7 +677,7 @@ export default function AdminProfileSettings() {
                             ) : (
                               <span className="text-red-600 font-bold text-xs">✕</span>
                             )}
-                            <span className="text-xs text-gray-600">Contains a number</span>
+                            <span className="text-xs text-gray-600">{t("changePassword.reqNumber")}</span>
                           </div>
                           <div className="flex items-center gap-2">
                             {passwordValidation.hasSymbol ? (
@@ -685,7 +685,7 @@ export default function AdminProfileSettings() {
                             ) : (
                               <span className="text-red-600 font-bold text-xs">✕</span>
                             )}
-                            <span className="text-xs text-gray-600">Contains a symbol</span>
+                            <span className="text-xs text-gray-600">{t("changePassword.reqSymbol")}</span>
                           </div>
                         </div>
                       </div>
@@ -695,9 +695,9 @@ export default function AdminProfileSettings() {
                   {/* Confirm New Password */}
                   <div className="space-y-2">
                     <Label htmlFor="confirm_new_password" className="flex items-center gap-1">
-                      Confirm New Password *
+                      {t("changePassword.confirmPassword")}
                       {touchedFields.confirm_new_password && passwordFieldErrors.confirm_new_password && (
-                        <span className="text-xs text-red-500">(mismatch)</span>
+                        <span className="text-xs text-red-500">{t("changePassword.mismatchTag")}</span>
                       )}
                     </Label>
                     <div className="relative">
@@ -708,7 +708,7 @@ export default function AdminProfileSettings() {
                         value={passwordForm.confirm_new_password}
                         onChange={handlePasswordChange}
                         onBlur={() => handleFieldBlur('confirm_new_password')}
-                        placeholder="Confirm new password"
+                        placeholder={t("changePassword.confirmPasswordPlaceholder")}
                         required
                         className={`pr-10 ${
                           touchedFields.confirm_new_password && passwordFieldErrors.confirm_new_password
@@ -743,7 +743,7 @@ export default function AdminProfileSettings() {
                       passwordForm.new_password !== passwordForm.confirm_new_password && (
                         <p className="text-xs text-red-500 flex items-center gap-1 mt-1">
                           <XCircle size={12} />
-                          Passwords do not match
+                          {t("changePassword.mismatchError")}
                         </p>
                       )
                     )}
@@ -758,10 +758,10 @@ export default function AdminProfileSettings() {
                     {passwordLoading ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                        Changing Password...
+                        {t("changePassword.changing")}
                       </>
                     ) : (
-                      "Change Password"
+                      t("changePassword.submit")
                     )}
                   </Button>
                 </form>
