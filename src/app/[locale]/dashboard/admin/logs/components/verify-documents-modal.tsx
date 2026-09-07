@@ -104,40 +104,40 @@ export function VerifyDocumentsModal({
                   <div className="bg-gray-50 p-4 rounded-lg">
                     <p className="font-medium text-gray-900">{user.full_name}</p>
                     <p className="text-sm text-gray-600">{user.email}</p>
-                    <p className="text-xs text-gray-500 mt-1">Role: {user.role}</p>
+                    <p className="text-xs text-gray-500 mt-1">{t("verifyDocuments.roleLabel", { role: t(`roles.${user.role.toLowerCase()}`) })}</p>
                   </div>
 
                   {/* Documents */}
                   <div>
-                    <h4 className="text-sm font-medium text-gray-700 mb-2">Documents</h4>
+                    <h4 className="text-sm font-medium text-gray-700 mb-2">{t("verifyDocuments.documentsHeading")}</h4>
                     <div className="space-y-2">
                       {isB2C ? (
                         <>
                           {user.documents.id_document && (
                             <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                              <span className="text-sm">ID Document</span>
-                              <a 
-                                href={user.documents.id_document} 
-                                target="_blank" 
+                              <span className="text-sm">{t("verifyDocuments.idDocument")}</span>
+                              <a
+                                href={user.documents.id_document}
+                                target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-blue-600 hover:text-blue-700 flex items-center gap-1"
                               >
                                 <Eye size={16} />
-                                View
+                                {t("verifyDocuments.viewLink")}
                               </a>
                             </div>
                           )}
                           {user.documents.resume_document && (
                             <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                              <span className="text-sm">Resume</span>
-                              <a 
-                                href={user.documents.resume_document} 
-                                target="_blank" 
+                              <span className="text-sm">{t("verifyDocuments.resume")}</span>
+                              <a
+                                href={user.documents.resume_document}
+                                target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-blue-600 hover:text-blue-700 flex items-center gap-1"
                               >
                                 <Eye size={16} />
-                                View
+                                {t("verifyDocuments.viewLink")}
                               </a>
                             </div>
                           )}
@@ -146,43 +146,43 @@ export function VerifyDocumentsModal({
                         <>
                           {user.documents.registration_certificate && (
                             <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                              <span className="text-sm">Registration Certificate</span>
-                              <a 
-                                href={user.documents.registration_certificate} 
-                                target="_blank" 
+                              <span className="text-sm">{t("verifyDocuments.registrationCertificate")}</span>
+                              <a
+                                href={user.documents.registration_certificate}
+                                target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-blue-600 hover:text-blue-700 flex items-center gap-1"
                               >
                                 <Eye size={16} />
-                                View
+                                {t("verifyDocuments.viewLink")}
                               </a>
                             </div>
                           )}
                           {user.documents.resachetified_license && (
                             <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                              <span className="text-sm">Resachetified License</span>
-                              <a 
-                                href={user.documents.resachetified_license} 
-                                target="_blank" 
+                              <span className="text-sm">{t("verifyDocuments.businessLicense")}</span>
+                              <a
+                                href={user.documents.resachetified_license}
+                                target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-blue-600 hover:text-blue-700 flex items-center gap-1"
                               >
                                 <Eye size={16} />
-                                View
+                                {t("verifyDocuments.viewLink")}
                               </a>
                             </div>
                           )}
                           {user.documents.tax_id_document && (
                             <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                              <span className="text-sm">Tax ID Document</span>
-                              <a 
-                                href={user.documents.tax_id_document} 
-                                target="_blank" 
+                              <span className="text-sm">{t("verifyDocuments.taxIdDocument")}</span>
+                              <a
+                                href={user.documents.tax_id_document}
+                                target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-blue-600 hover:text-blue-700 flex items-center gap-1"
                               >
                                 <Eye size={16} />
-                                View
+                                {t("verifyDocuments.viewLink")}
                               </a>
                             </div>
                           )}
@@ -194,12 +194,12 @@ export function VerifyDocumentsModal({
                   {/* Verification Notes */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Verification Notes
+                      {t("verifyDocuments.verificationNotes")}
                     </label>
                     <Textarea
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
-                      placeholder="Add any notes about this verification..."
+                      placeholder={t("verifyDocuments.notesPlaceholder")}
                       rows={3}
                     />
                   </div>
@@ -208,12 +208,12 @@ export function VerifyDocumentsModal({
                   {action === 'reject' && (
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Rejection Reason *
+                        {t("verifyDocuments.rejectionReason")} *
                       </label>
                       <Textarea
                         value={rejectionReason}
                         onChange={(e) => setRejectionReason(e.target.value)}
-                        placeholder="Explain why the documents are being rejected..."
+                        placeholder={t("verifyDocuments.rejectionPlaceholder")}
                         rows={2}
                       />
                     </div>
@@ -226,9 +226,9 @@ export function VerifyDocumentsModal({
                       className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
                       disabled={loading}
                     >
-                      Cancel
+                      {t("verifyDocuments.cancel")}
                     </button>
-                    
+
                     {!action && (
                       <>
                         <button
@@ -236,14 +236,14 @@ export function VerifyDocumentsModal({
                           className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 flex items-center gap-2"
                         >
                           <XCircle size={16} />
-                          Reject
+                          {t("verifyDocuments.reject")}
                         </button>
                         <button
                           onClick={handleVerify}
                           className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 flex items-center gap-2"
                         >
                           <CheckCircle size={16} />
-                          Verify
+                          {t("verifyDocuments.verify")}
                         </button>
                       </>
                     )}
@@ -255,7 +255,7 @@ export function VerifyDocumentsModal({
                           className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
                           disabled={loading}
                         >
-                          Back
+                          {t("verifyDocuments.back")}
                         </button>
                         <button
                           onClick={handleReject}
@@ -265,10 +265,10 @@ export function VerifyDocumentsModal({
                           {loading ? (
                             <>
                               <Loader2 size={16} className="animate-spin" />
-                              Processing...
+                              {t("verifyDocuments.processing")}
                             </>
                           ) : (
-                            'Confirm Rejection'
+                            t("verifyDocuments.confirmReject")
                           )}
                         </button>
                       </>
