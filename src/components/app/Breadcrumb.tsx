@@ -13,7 +13,12 @@ export function Breadcrumb() {
   const pathname = usePathname();
 
   // Remove locale from pathname if it exists
-  const cleanPathname = pathname.replace(/^\/[a-z]{2}\//, '/');
+  let cleanPathname = pathname.replace(/^\/[a-z]{2}\//, '/');
+  // Static export builds (trailingSlash: true) always append a trailing slash,
+  // but breadcrumb config keys are defined without one - strip it for lookup.
+  if (cleanPathname.length > 1 && cleanPathname.endsWith('/')) {
+    cleanPathname = cleanPathname.slice(0, -1);
+  }
 
   // Detect user type from pathname
   const userType = cleanPathname.includes('/dashboard/admin')
