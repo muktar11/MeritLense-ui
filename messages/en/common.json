@@ -784,7 +784,7 @@
           "totalUsers": "Total Users",
           "activeAgencies": "Active Agencies",
           "totalEvaluations": "Total Evaluations",
-          "revenue": "Monthly Revenue",
+          "revenue": "Monthly Recurring Revenue (MRR)",
           "currentlyActive": "Currently active",
           "userBreakdown": "{b2c} B2C · {b2b} B2B",
           "verifiedAgencies": "Verified agencies",
@@ -1167,7 +1167,12 @@
           "full_access": "Full Access",
           "manage_evaluations": "Manage Evaluations",
           "view_candidates": "View Candidates",
-          "manage_users": "Manage Users"
+          "manage_users": "Manage Users",
+          "can_manage_users": "Manage Users",
+          "can_verify_companies": "Company Verification",
+          "can_verify_documents": "Document Verification",
+          "can_access_financial": "Financial Access",
+          "can_access_reports": "Reports Access"
         },
         "noPermissions": "No permissions",
         "access": {
@@ -2922,6 +2927,8 @@
           "unlimitedEvaluations": "Unlimited evaluations",
           "upToTeamMembers": "Up to {count} team members",
           "unlimitedTeamMembers": "Unlimited team members",
+          "assessmentSlotsPerPeriod": "{count} Assessment Slots / month",
+          "pointsPerPeriod": "{count} Points / month",
           "processing": "Processing...",
           "currentPlanButton": "Current Plan",
           "upgradeButton": "Upgrade",

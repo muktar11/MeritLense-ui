@@ -796,7 +796,7 @@
     "activeAgencies": "الوكالات النشطة",
     "activeCandidates": "المرشحون النشطون",
     "totalEvaluations": "إجمالي التقييمات",
-    "revenue": "الإيرادات (يورو)",
+    "revenue": "الإيرادات المتكررة الشهرية (MRR)",
     "currentlyActive": "نشط حاليًا",
     "userBreakdown": "{b2c} فردي · {b2b} شركات",
     "verifiedAgencies": "وكالات موثقة",
@@ -1186,7 +1186,12 @@
           "full_access": "وصول كامل",
           "manage_evaluations": "إدارة التقييمات",
           "view_candidates": "عرض المرشحين",
-          "manage_users": "إدارة المستخدمين"
+          "manage_users": "إدارة المستخدمين",
+          "can_manage_users": "إدارة المستخدمين",
+          "can_verify_companies": "التحقق من الشركات",
+          "can_verify_documents": "التحقق من المستندات",
+          "can_access_financial": "الوصول المالي",
+          "can_access_reports": "الوصول إلى التقارير"
         },
         "noPermissions": "لا توجد صلاحيات",
         "access": {
@@ -2931,6 +2936,8 @@
       "unlimitedEvaluations": "تقييمات غير محدودة",
       "upToTeamMembers": "حتى {count} أعضاء فريق",
       "unlimitedTeamMembers": "أعضاء فريق غير محدودين",
+      "assessmentSlotsPerPeriod": "{count} فتحة تقييم / شهريًا",
+      "pointsPerPeriod": "{count} نقطة / شهريًا",
       "processing": "جارٍ المعالجة...",
       "currentPlanButton": "الخطة الحالية",
       "upgradeButton": "ترقية",

@@ -77,6 +77,14 @@ export interface Price {
     points_granted?: number;
     [key: string]: number | undefined;
   };
+  // Slots/Points entitlement model (Growth, Business, etc.) - independent of
+  // feature_limits, which only the older candidate/evaluation/team-member cap
+  // model uses. Null means "not applicable" for this billing model, not
+  // "unlimited" - a plan can legitimately have neither set (e.g. one-time
+  // points packages track their grant via feature_limits.points_granted
+  // instead).
+  slot_grant: number | null;
+  points_grant: number | null;
   is_active: boolean;
   metadata: Record<string, any>;
   created_at: string;
