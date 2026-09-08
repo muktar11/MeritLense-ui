@@ -379,6 +379,7 @@
       "organizations_agencies": {
         "title": "For Recruitment Agencies & Employers",
         "time_unit": "/month",
+        "per_agreement_label": "Per Agreement",
         "plans": [
           {
             "name": "Starter",
@@ -411,7 +412,7 @@
           },
           {
             "name": "Enterprise",
-            "candidates_count": "Unlimited",
+            "candidates_count": "Tailored to your organization",
             "features": [
               "Everything in Business",
               "API access",
