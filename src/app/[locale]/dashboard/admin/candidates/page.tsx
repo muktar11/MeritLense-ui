@@ -244,8 +244,8 @@ export default function CandidateManagementConsole() {
                           </TableCell>
 
                           <TableCell>
-                            <Badge className={`${VERIFICATION_COLOR[employer.documents_verification_status] || 'bg-gray-400'} border-0`}>
-                              {employer.documents_verification_status ? t(`verificationStatus.${employer.documents_verification_status}`) : t("verificationStatus.pending")}
+                            <Badge className={`${VERIFICATION_COLOR[employer.documents_verification_status?.toLowerCase()] || 'bg-gray-400'} border-0`}>
+                              {employer.documents_verification_status ? t(`verificationStatus.${employer.documents_verification_status.toLowerCase()}`) : t("verificationStatus.pending")}
                             </Badge>
                           </TableCell>
 

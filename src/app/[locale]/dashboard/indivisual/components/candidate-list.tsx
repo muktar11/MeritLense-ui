@@ -20,6 +20,7 @@ interface CandidateListProps {
 
 export function CandidateList({ candidates, searchTerm = "" }: CandidateListProps) {
   const t = useTranslations("dashboard.indivisual.candidateList")
+  const tRoles = useTranslations("dashboard.candidates.table")
   const [currentPage, setCurrentPage] = useState(1)
   const [rowsPerPage] = useState(5)
   const [loadingResultsFor, setLoadingResultsFor] = useState<string | null>(null)
@@ -106,7 +107,7 @@ export function CandidateList({ candidates, searchTerm = "" }: CandidateListProp
                       </div>
                     </div>
                   </td>
-                  <td className="py-3 px-2">{candidate.job_role}</td>
+                  <td className="py-3 px-2">{tRoles.has(`candidateRoles.${candidate.job_role}`) ? tRoles(`candidateRoles.${candidate.job_role}`) : candidate.job_role}</td>
                   <td className="py-3 px-2 text-xs">
                     {candidate.last_evaluation_date
                       ? format(new Date(candidate.last_evaluation_date), 'MMM d, yyyy')
@@ -156,7 +157,7 @@ export function CandidateList({ candidates, searchTerm = "" }: CandidateListProp
               </div>
 
               <p className="text-xs text-muted-foreground">
-                {candidate.job_role}
+                {tRoles.has(`candidateRoles.${candidate.job_role}`) ? tRoles(`candidateRoles.${candidate.job_role}`) : candidate.job_role}
               </p>
 
               <div className="flex items-center justify-between">

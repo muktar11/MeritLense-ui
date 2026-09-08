@@ -199,7 +199,7 @@ export function ChangePassword() {
                   ) : (
                     <span className="text-red-600 font-bold text-xs">✕</span>
                   )}
-                  <span className="text-xs text-gray-600">8 characters minimum</span>
+                  <span className="text-xs text-gray-600">{t("strength.minLength")}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   {passwordValidation.hasNumber ? (
@@ -207,7 +207,7 @@ export function ChangePassword() {
                   ) : (
                     <span className="text-red-600 font-bold text-xs">✕</span>
                   )}
-                  <span className="text-xs text-gray-600">Contains a number</span>
+                  <span className="text-xs text-gray-600">{t("strength.hasNumber")}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   {passwordValidation.hasSymbol ? (
@@ -215,7 +215,7 @@ export function ChangePassword() {
                   ) : (
                     <span className="text-red-600 font-bold text-xs">✕</span>
                   )}
-                  <span className="text-xs text-gray-600">Contains a symbol</span>
+                  <span className="text-xs text-gray-600">{t("strength.hasSymbol")}</span>
                 </div>
               </div>
             </div>

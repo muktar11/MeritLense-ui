@@ -1,5 +1,27 @@
 {
   "shared": {
+    "pageMeta": {
+      "b2cDashboard": {
+        "title": "لوحة تحكم الأفراد - الموارد البشرية والتوظيف",
+        "description": "إدارة التقييمات والمرشحين ومقاييس التوظيف"
+      },
+      "b2cScoreManagement": {
+        "title": "إدارة الدرجات - لوحة تحكم الأفراد",
+        "description": "إدارة درجات المرشحين عبر فئات المهارات المختلفة"
+      },
+      "b2bDashboard": {
+        "title": "لوحة تحكم الشركات - الموارد البشرية والتوظيف",
+        "description": "إدارة التقييمات والمرشحين ومقاييس التوظيف"
+      },
+      "b2bScoreManagement": {
+        "title": "إدارة الدرجات - لوحة تحكم الشركات",
+        "description": "إدارة درجات المرشحين عبر فئات المهارات المختلفة"
+      },
+      "b2bCompanyProfile": {
+        "title": "الملف التعريفي للشركة - لوحة تحكم الشركات",
+        "description": "إدارة تفاصيل الشركة والمستخدمين والشراكات"
+      }
+    },
     "tablePagination": {
       "showing": "عرض {start}-{end} من {total} {label}"
     },
@@ -1242,7 +1264,7 @@
         },
 
         "jobRoles": {
-          "houseKeeper": "مدبرة منزل",
+          "houseKeeper": "مدبر/مدبرة منزل",
           "cleaner": "عامل نظافة",
           "driver": "سائق"
         },
@@ -1721,7 +1743,7 @@
           "deleteRuleSetFailed": "فشل حذف مجموعة قواعد التقييم. إذا كانت قد استُخدمت بالفعل لتقييم تقييم ما، فإن الخادم يحتفظ بها للحفاظ على دقة السجل التاريخي ولا يسمح بحذفها."
         },
         "roles": {
-          "domestic_worker": "عامل منزلي (مدبرة منزل)",
+          "domestic_worker": "عامل منزلي (مدبر/مدبرة منزل)",
           "child_caregiver": "مربية أطفال",
           "elderly_caregiver": "مقدم رعاية لكبار السن",
           "special_needs_caregiver": "مقدم رعاية لذوي الاحتياجات الخاصة",
@@ -2075,7 +2097,7 @@
       "alerts": {
         "critical": "تنبيه عاجل",
         "contractRejection": "رفض العقد",
-        "lowSuccessRate": "معدل النجاح أقل من 50%. راجع التقييمات الأخيرة."
+        "lowSuccessRate": "معدل النجاح أقل من 50٪. راجع التقييمات الأخيرة."
       },
       "candidateEvaluation": {
         "title": "التقييمات الأخيرة",
@@ -2089,7 +2111,8 @@
         },
         "pagination": {
           "rowsPerPage": "الصفوف لكل صفحة"
-        }
+        },
+        "noEvaluations": "لم يتم العثور على تقييمات حديثة"
       },
       "evaluationTrend": {
         "title": "اتجاهات التقييم",
@@ -2100,7 +2123,14 @@
         }
       },
       "statusDistribution": {
-        "title": "حالة التقييم"
+        "title": "حالة التقييم",
+        "status": {
+          "COMPLETED": "مكتمل",
+          "SCHEDULED": "مجدول",
+          "RESCHEDULED": "أعيدت جدولته",
+          "CANCELLED": "ملغى",
+          "NO_SHOW": "لم يحضر"
+        }
       },
       "recentActivity": {
         "title": "النشاط الشهري",
@@ -2242,7 +2272,7 @@
         "score": "الدرجة",
         "roles": {
           "agent": "وكيل",
-          "housekeeper": "مدبرة منزل",
+          "housekeeper": "مدبر/مدبرة منزل",
           "companion": "مرافق",
           "manager": "مدير"
         }
@@ -2253,7 +2283,7 @@
         "search": "بحث...",
         "roles": {
           "maintenance": "صيانة",
-          "housekeeper": "مدبرة منزل",
+          "housekeeper": "مدبر/مدبرة منزل",
           "nanny": "مربية",
           "elderCompanion": "مرافق مسن"
         },
@@ -2283,7 +2313,7 @@
         "noCandidatesForRole": "لم يتم العثور على مرشحين لهذا الدور",
         "candidatesHeading": "مرشحو {role}",
         "roleNames": {
-          "HK": "مدبرة منزل",
+          "HK": "مدبر/مدبرة منزل",
           "EC": "مرافق كبار السن",
           "NA": "مساعد تمريض",
           "DR": "سائق",
@@ -2294,7 +2324,7 @@
         "jobRoleTabs": {
           "selectPlaceholder": "اختر مسمى وظيفيًا",
           "roles": {
-            "HK": "مدبرات المنزل",
+            "HK": "مدبرو/مدبرات المنزل",
             "EC": "مرافقو كبار السن",
             "NA": "مساعدو التمريض",
             "DR": "السائقون",
@@ -2352,6 +2382,7 @@
 
         "companyDescription": "وصف الشركة",
         "uploadLogo": "رفع الشعار",
+        "logoAlt": "شعار الشركة",
         "companyName": "اسم الشركة",
         "companyDescriptionText": "إدارة تفاصيل الشركة والأدوار.",
         "agency": "وكالة",
@@ -2637,7 +2668,7 @@
           "actions": "تحميل / نسخ الرابط"
         },
         "roles": {
-          "housekeeper": "مدبرة منزل",
+          "housekeeper": "مدبر/مدبرة منزل",
           "nanny": "مربية",
           "elderCompanion": "مرافق كبار السن",
           "kitchenAssistant": "مساعد مطبخ",
@@ -2693,7 +2724,7 @@
         "candidateRoles": {
           "NA": "مربية أطفال",
           "DR": "سائق",
-          "HK": "مدبرة منزل",
+          "HK": "مدبر/مدبرة منزل",
           "EC": "مرافق كبار السن",
           "KA": "مساعد مطبخ",
           "MW": "عامل صيانة",
@@ -2885,9 +2916,15 @@
       "manageBillingButton": "إدارة الفوترة"
     },
     "plansGrid": {
-      "noPlansForBilling": "لا توجد خطط متاحة للفوترة {period}",
-      "availableIntervals": "الفترات المتاحة: شهري (للفوترة الشهرية)، سنوي (للفوترة السنوية)",
+      "noPlansForBillingMonthly": "لا توجد خطط متاحة للفوترة الشهرية",
+      "noPlansForBillingAnnual": "لا توجد خطط متاحة للفوترة السنوية",
+      "availableIntervals": "يمكنك التبديل بين الفوترة الشهرية والسنوية باستخدام المفتاح أعلاه.",
       "perInterval": "/{interval}",
+      "intervalWords": {
+        "monthly": "شهر",
+        "quarterly": "ربع سنة",
+        "yearly": "سنة"
+      },
       "upToCandidates": "حتى {count} مرشح",
       "unlimitedCandidates": "مرشحون غير محدودين",
       "evaluationsPerMonth": "{count} تقييم/شهريًا",
@@ -3175,7 +3212,8 @@
         "deleteConfirm": "هل أنت متأكد أنك تريد حذف هذا المرشح؟",
         "exportPNG": "تصدير كصورة PNG",
         "exportPDF": "تصدير كتقرير PDF",
-        "loading": "جارٍ التحميل..."
+        "loading": "جارٍ التحميل...",
+        "linkAnalytics": "تحليلات الروابط"
       },
 
 "profile": {
@@ -3298,6 +3336,11 @@
           "remainingPoints": "النقاط المتبقية",
           "currentPackage": "الباقة الحالية",
           "availablePoints": "النقاط المتاحة",
+          "intervalWords": {
+            "monthly": "شهر",
+            "quarterly": "ربع سنة",
+            "yearly": "سنة"
+          },
 
           "consumptionHistory": "سجل الاستهلاك",
           "date": "التاريخ",
@@ -3475,7 +3518,7 @@
           "elderCompanion": "مرافق كبار السن",
           "cook": "طباخ",
           "maintenance": "صيانة",
-          "housekeeper": "مدبرة منزل"
+          "housekeeper": "مدبر/مدبرة منزل"
         },
 
         "languages": {
@@ -3508,7 +3551,7 @@
         "noEvaluations": "لا توجد تقييمات"
       },
       "roles": {
-        "houseKeeper": "مدبرة منزل",
+        "houseKeeper": "مدبر/مدبرة منزل",
         "nanny": "مربية أطفال",
         "elderCompanion": "مرافق كبار السن",
         "kitchenAssistant": "مساعد مطبخ",
@@ -3529,10 +3572,10 @@
       "rejected": "مرفوض",
       "loading": "جارٍ تحميل بيانات المقارنة...",
       "noData": "لا تتوفر بيانات لمقارنة المرشحين",
-      "showingTop": "عرض أفضل {count} مرشحين حسب متوسط النتيجة",
+      "showingTop": "عرض أفضل {count, plural, one {مرشح واحد} two {مرشحان} few {# مرشحين} many {# مرشحًا} other {# مرشح}} حسب متوسط النتيجة",
       "roles": {
         "agent": "وكيل",
-        "housekeeper": "مدبرة منزل",
+        "housekeeper": "مدبر/مدبرة منزل",
         "maintenance": "صيانة",
         "cleaner": "منظف",
         "sales": "مبيعات"
@@ -3574,8 +3617,24 @@
       "others": "أخرى"
     }
   },
+  "statusDistribution": {
+    "title": "حالة التقييم",
+    "status": {
+      "COMPLETED": "مكتمل",
+      "SCHEDULED": "مجدول",
+      "RESCHEDULED": "أعيدت جدولته",
+      "CANCELLED": "ملغى",
+      "NO_SHOW": "لم يحضر"
+    }
+  },
   "timeRange": {
     "title": "التقييمات حسب وقت اليوم",
+    "buckets": {
+      "morning": "صباحًا (6ص-12م)",
+      "afternoon": "بعد الظهر (12م-6م)",
+      "evening": "مساءً (6م-12ص)",
+      "night": "ليلاً (12ص-6ص)"
+    },
     "tabs": {
       "monthly": "شهري",
       "quarterly": "ربع سنوي",
@@ -3606,7 +3665,7 @@
           "elderCompanion": "مرافق مسنين",
           "cook": "طباخ",
           "maintenance": "صيانة",
-          "housekeeper": "مدبرة منزل"
+          "housekeeper": "مدبر/مدبرة منزل"
         },
 
         "languages": {

@@ -293,6 +293,7 @@ export default function AdminProfileSettings() {
           </button>
 
           <span className="text-xs text-gray-500">{t("lightMode")}</span>
+          <span className="text-xs text-gray-400" aria-hidden="true">|</span>
           <span className="text-xs text-gray-500">{t("language")}</span>
 
           <Bell size={18} className="text-gray-600" />
@@ -301,7 +302,7 @@ export default function AdminProfileSettings() {
             {t("allowMode")}
           </button>
 
-          <button 
+          <button
             onClick={handleLogout}
             className="ml-2 px-3 py-1 text-xs bg-gray-100 rounded flex items-center gap-1 hover:bg-gray-200 transition"
           >

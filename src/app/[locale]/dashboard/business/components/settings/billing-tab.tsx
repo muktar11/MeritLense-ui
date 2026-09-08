@@ -312,8 +312,8 @@ export function BillingTab() {
                       subscription.stripe_price.currency
                     )
                   : t('notAvailable')}
-                {subscription.price_details?.interval && `/${subscription.price_details.interval.toLowerCase()}`}
-                {!subscription.price_details && subscription.stripe_price?.interval && `/${subscription.stripe_price.interval.toLowerCase()}`}
+                {subscription.price_details?.interval && `/${t(`intervalWords.${subscription.price_details.interval.toLowerCase()}`)}`}
+                {!subscription.price_details && subscription.stripe_price?.interval && `/${t(`intervalWords.${subscription.stripe_price.interval.toLowerCase()}`)}`}
               </p>
             </div>
             <div>

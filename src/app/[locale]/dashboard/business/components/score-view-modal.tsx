@@ -91,12 +91,14 @@ export function ScoreViewModal({
             </div>
           </div>
 
-          <div className="mt-4 pt-4 border-t border-purple-200">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-700">{t("overallAverageScore")}</span>
-              <span className="text-2xl font-bold text-purple-600">{calculatedAverage}%</span>
+          {sortedScores.length > 0 && (
+            <div className="mt-4 pt-4 border-t border-purple-200">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-gray-700">{t("overallAverageScore")}</span>
+                <span className="text-2xl font-bold text-purple-600">{calculatedAverage}%</span>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {sortedScores.length > 0 ? (

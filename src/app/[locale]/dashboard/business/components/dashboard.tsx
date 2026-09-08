@@ -219,14 +219,14 @@ export function Dashboard() {
 
             <MetricCard
               title={t("metrics.successRate")}
-              value={`${stats.success_rate}%`}
+              value={stats.completed_evaluations > 0 ? `${stats.success_rate}%` : "—"}
               change={t("metrics.changes.basedOnEvaluations", { value: stats.completed_evaluations })}
               changeType="neutral"
               icon="trending"
             />
 
-            {/* Critical Alert - Show if any issues */}
-            {stats.success_rate < 50 && (
+            {/* Critical Alert - Show only when there's real evaluation data behind the rate */}
+            {stats.completed_evaluations > 0 && stats.success_rate < 50 && (
               <div className="bg-white rounded-xl p-4 border border-red-200 min-w-35 flex-1 sm:flex-none">
                 <div className="text-red-500 text-sm font-semibold mb-1 flex items-center gap-1">
                   <AlertCircle className="w-4 h-4" />

@@ -22,7 +22,7 @@ export function StatusDistributionChart({ data }: StatusDistributionChartProps) 
   const t = useTranslations("dashboard.indivisual.statusDistribution")
 
   const chartData = data.map(item => ({
-    name: item.status_display,
+    name: item.status in COLORS ? t(`status.${item.status}`) : item.status_display,
     value: item.count,
     color: COLORS[item.status as keyof typeof COLORS] || "#9ca3af"
   }))

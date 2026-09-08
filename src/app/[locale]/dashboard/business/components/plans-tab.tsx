@@ -197,7 +197,9 @@ export function PlansTab() {
             {plans.length === 0 ? (
               <div className="col-span-full text-center py-12">
                 <CreditCard className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500">{t('plansGrid.noPlansForBilling', { period: billingPeriod })}</p>
+                <p className="text-gray-500">
+                  {billingPeriod === 'monthly' ? t('plansGrid.noPlansForBillingMonthly') : t('plansGrid.noPlansForBillingAnnual')}
+                </p>
                 <p className="text-sm text-gray-400 mt-2">
                   {t('plansGrid.availableIntervals')}
                 </p>
@@ -221,7 +223,7 @@ export function PlansTab() {
                       {paymentService.formatPrice(Number(plan.unit_amount), plan.currency)}
                     </span>
                     <span className="text-gray-500 text-xs sm:text-sm">
-                      {t('plansGrid.perInterval', { interval: plan.interval?.toLowerCase() ?? '' })}
+                      {t('plansGrid.perInterval', { interval: plan.interval ? t(`plansGrid.intervalWords.${plan.interval.toLowerCase()}`) : '' })}
                     </span>
                   </div>
 

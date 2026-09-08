@@ -14,13 +14,14 @@ const COLORS = ["#9333ea", "#ec4899", "#3b82f6", "#10b981", "#f59e0b", "#ef4444"
 
 export function PointConsumptionChart({ data }: PointConsumptionChartProps) {
   const t = useTranslations("dashboard.indivisual.pointConsumption")
+  const tRoles = useTranslations("dashboard.candidates.table")
 
   // Filter out items with zero count and sort by count descending
   const validData = data?.filter(item => item.count > 0) || []
-  
+
   const chartData = validData.map(item => ({
     nameKey: item.job_role,
-    name: item.job_role_display,
+    name: tRoles.has(`candidateRoles.${item.job_role}`) ? tRoles(`candidateRoles.${item.job_role}`) : item.job_role_display,
     value: item.count
   }))
 

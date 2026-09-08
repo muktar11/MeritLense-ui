@@ -41,6 +41,7 @@ const CANDIDATE_COLORS = ['#6366F1', '#10B981', '#F59E0B', '#EF4444'];
 
 export default function CandidateComparison() {
   const t = useTranslations("dashboard.indivisual.candidates");
+  const tRoles = useTranslations("dashboard.candidates.table");
   const { userRole, userId, isAuthenticated, loading: authLoading } = useAuth();
 
   // State for candidates
@@ -300,7 +301,7 @@ export default function CandidateComparison() {
                         <div className="truncate">
                           <p className="font-medium">{candidate.full_name}</p>
                           <p className="text-xs sm:text-sm opacity-75 truncate">
-                            {candidate.job_role}
+                            {tRoles.has(`candidateRoles.${candidate.job_role}`) ? tRoles(`candidateRoles.${candidate.job_role}`) : candidate.job_role}
                           </p>
                         </div>
                       </div>

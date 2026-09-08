@@ -1,5 +1,27 @@
 {
   "shared": {
+    "pageMeta": {
+      "b2cDashboard": {
+        "title": "B2C Dashboard - HR & Recruitment",
+        "description": "Manage evaluations, candidates, and recruitment metrics"
+      },
+      "b2cScoreManagement": {
+        "title": "Score Management - B2C Dashboard",
+        "description": "Manage candidate scores across different skill categories"
+      },
+      "b2bDashboard": {
+        "title": "B2B Dashboard - HR & Recruitment",
+        "description": "Manage evaluations, candidates, and recruitment metrics"
+      },
+      "b2bScoreManagement": {
+        "title": "Score Management - B2B Dashboard",
+        "description": "Manage candidate scores across different skill categories"
+      },
+      "b2bCompanyProfile": {
+        "title": "Company Profile - B2B Dashboard",
+        "description": "Manage company details, users, and partnerships"
+      }
+    },
     "tablePagination": {
       "showing": "Showing {start}-{end} of {total} {label}"
     },
@@ -2079,7 +2101,8 @@
         },
         "pagination": {
           "rowsPerPage": "Rows per page"
-        }
+        },
+        "noEvaluations": "No recent evaluations found"
       },
       "evaluationTrend": {
         "title": "Evaluation Trends",
@@ -2090,7 +2113,14 @@
         }
       },
       "statusDistribution": {
-        "title": "Evaluation Status"
+        "title": "Evaluation Status",
+        "status": {
+          "COMPLETED": "Completed",
+          "SCHEDULED": "Scheduled",
+          "RESCHEDULED": "Rescheduled",
+          "CANCELLED": "Cancelled",
+          "NO_SHOW": "No Show"
+        }
       },
       "recentActivity": {
         "title": "Monthly Activity",
@@ -2347,6 +2377,7 @@
 
         "companyDescription": "Company Description",
         "uploadLogo": "Upload Logo",
+        "logoAlt": "Company logo",
         "companyName": "Company Name",
         "companyDescriptionText": "Manage company details and roles.",
         "agency": "Agency",
@@ -2876,9 +2907,15 @@
           "manageBillingButton": "Manage Billing"
         },
         "plansGrid": {
-          "noPlansForBilling": "No plans available for {period} billing",
-          "availableIntervals": "Available intervals: MONTH (for monthly), YEAR (for annual)",
+          "noPlansForBillingMonthly": "No plans available for monthly billing",
+          "noPlansForBillingAnnual": "No plans available for annual billing",
+          "availableIntervals": "You can switch between monthly and annual billing using the toggle above.",
           "perInterval": "/{interval}",
+          "intervalWords": {
+            "monthly": "month",
+            "quarterly": "quarter",
+            "yearly": "year"
+          },
           "upToCandidates": "Up to {count} candidates",
           "unlimitedCandidates": "Unlimited candidates",
           "evaluationsPerMonth": "{count} evaluations/month",
@@ -3166,7 +3203,8 @@
         "deleteConfirm": "Are you sure you want to delete this candidate?",
         "exportPNG": "Export as PNG Image",
         "exportPDF": "Export as PDF Report",
-        "loading": "Loading..."
+        "loading": "Loading...",
+        "linkAnalytics": "Link Analytics"
       },
 
      "profile": {
@@ -3289,6 +3327,11 @@
           "remainingPoints": "Remaining Points",
           "currentPackage": "Current Package",
           "availablePoints": "Available Points",
+          "intervalWords": {
+            "monthly": "month",
+            "quarterly": "quarter",
+            "yearly": "year"
+          },
 
           "consumptionHistory": "Consumption History",
           "date": "Date",
@@ -3519,7 +3562,7 @@
       "rejected": "Rejected",
       "loading": "Loading comparison data...",
       "noData": "No candidate comparison data available",
-      "showingTop": "Showing top {count} candidates by average score",
+      "showingTop": "Showing top {count, plural, one {# candidate} other {# candidates}} by average score",
       "roles": {
         "agent": "Agent",
         "housekeeper": "Housekeeper",
@@ -3565,8 +3608,24 @@
       "others": "Others"
     }
   },
+  "statusDistribution": {
+    "title": "Evaluation Status",
+    "status": {
+      "COMPLETED": "Completed",
+      "SCHEDULED": "Scheduled",
+      "RESCHEDULED": "Rescheduled",
+      "CANCELLED": "Cancelled",
+      "NO_SHOW": "No Show"
+    }
+  },
   "timeRange": {
     "title": "Evaluations by Time of Day",
+    "buckets": {
+      "morning": "Morning (6am-12pm)",
+      "afternoon": "Afternoon (12pm-6pm)",
+      "evening": "Evening (6pm-12am)",
+      "night": "Night (12am-6am)"
+    },
     "tabs": {
       "monthly": "Monthly",
       "quarterly": "Quarterly",
