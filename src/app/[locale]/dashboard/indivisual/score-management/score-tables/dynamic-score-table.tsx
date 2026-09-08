@@ -189,7 +189,7 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
                   </div>
                 </td>
                 <td className="px-4 sm:px-6 py-3 font-medium text-purple-600">
-                  {summary ? `${summary.overall_percentage}%` : "-"}
+                  {summary?.evaluation_id ? `${summary.overall_percentage}%` : "—"}
                 </td>
                 <td className="px-4 sm:px-6 py-3">
                   <div className="space-y-2">

@@ -10,8 +10,20 @@ interface TimeRangeChartProps {
   data: EvaluationTimeRange[]
 }
 
+const RANGE_KEYS: Record<string, string> = {
+  "Morning (6am-12pm)": "morning",
+  "Afternoon (12pm-6pm)": "afternoon",
+  "Evening (6pm-12am)": "evening",
+  "Night (12am-6am)": "night",
+}
+
 export function TimeRangeChart({ data }: TimeRangeChartProps) {
   const t = useTranslations("dashboard.indivisual.timeRange")
+
+  const chartData = data.map(item => ({
+    ...item,
+    range: RANGE_KEYS[item.range] ? t(`buckets.${RANGE_KEYS[item.range]}`) : item.range,
+  }))
 
   return (
     <Card className="w-full">
@@ -24,7 +36,7 @@ export function TimeRangeChart({ data }: TimeRangeChartProps) {
       <CardContent>
         <div className="w-full h-45 sm:h-55 lg:h-65">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 20 }}>
+            <BarChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 20 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis dataKey="range" tick={{ fontSize: 10 }} tickMargin={8} />
               <YAxis tick={{ fontSize: 10 }} tickMargin={8} />

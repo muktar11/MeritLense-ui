@@ -117,7 +117,7 @@ export function CandidateEvaluationTable({ evaluations, searchTerm = "" }: Candi
               ) : (
                 <tr>
                   <td colSpan={6} className="py-8 text-center text-gray-500">
-                    No recent evaluations found
+                    {t("noEvaluations")}
                   </td>
                 </tr>
               )}

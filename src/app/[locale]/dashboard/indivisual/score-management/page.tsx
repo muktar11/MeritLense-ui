@@ -1,8 +1,10 @@
+import { getTranslations } from "next-intl/server"
 import { ScoreManagement } from "../components/score-management"
 
-export const metadata = {
-  title: "Score Management - B2C Dashboard",
-  description: "Manage candidate scores across different skill categories",
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: "shared.pageMeta.b2cScoreManagement" })
+  return { title: t("title"), description: t("description") }
 }
 
 export default function Page() {

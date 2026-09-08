@@ -48,7 +48,7 @@ function PaymentPageContent() {
 
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
           <div className="border-b border-gray-200">
-            <nav className="flex gap-1 px-4" aria-label="Tabs">
+            <nav className="flex gap-3 px-4" aria-label="Tabs">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
                 return (

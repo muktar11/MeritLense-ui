@@ -410,7 +410,7 @@ export function CompanyProfile() {
                   {logoUploading ? (
                     <Loader2 className="w-6 h-6 text-muted-foreground animate-spin" />
                   ) : companyLogo ? (
-                    <img src={companyLogo} alt="Company logo" className="w-full h-full object-contain" />
+                    <img src={companyLogo} alt={t("logoAlt")} className="w-full h-full object-contain" />
                   ) : (
                     <Upload className="w-6 h-6 text-muted-foreground" />
                   )}
@@ -433,10 +433,10 @@ export function CompanyProfile() {
                       className="w-full mt-1 px-3 py-2 border rounded-lg"
                     />
                   ) : (
-                    <p className="text-sm text-foreground truncate">{formData.company_name}</p>
+                    <p className="text-sm text-foreground break-words">{formData.company_name}</p>
                   )}
                 </div>
-                
+
                 <div className="text-sm text-muted-foreground space-y-2">
                   <p>{t("companyDescriptionText")}</p>
                 </div>
