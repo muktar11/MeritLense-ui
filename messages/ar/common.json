@@ -379,6 +379,7 @@
       "organizations_agencies": {
         "title": "وكالات التوظيف وأصحاب العمل",
         "time_unit": "/الشهر",
+        "per_agreement_label": "حسب الاتفاقية",
         "plans": [
           {
             "name": "المبتدئة",
@@ -411,7 +412,7 @@
           },
           {
             "name": "المؤسسات",
-            "candidates_count": "غير محدود",
+            "candidates_count": "مصمم خصيصًا لمؤسستك",
             "features": [
               "كل ما في خطة الأعمال",
               "الوصول إلى API",
