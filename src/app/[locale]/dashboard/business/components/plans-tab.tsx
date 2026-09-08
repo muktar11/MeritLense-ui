@@ -228,52 +228,75 @@ export function PlansTab() {
                   </div>
 
                   <div className="space-y-2 sm:space-y-3 mb-6 sm:mb-8">
-                    {plan.feature_limits?.candidate_limit ? (
-                      <div className="flex items-start gap-2 sm:gap-3">
-                        <Check className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 shrink-0 mt-1" />
-                        <span className="text-gray-700 text-xs sm:text-sm">
-                          {t('plansGrid.upToCandidates', { count: plan.feature_limits.candidate_limit })}
-                        </span>
-                      </div>
+                    {plan.slot_grant != null || plan.points_grant != null ? (
+                      <>
+                        {plan.slot_grant != null && (
+                          <div className="flex items-start gap-2 sm:gap-3">
+                            <Check className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 shrink-0 mt-1" />
+                            <span className="text-gray-700 text-xs sm:text-sm">
+                              {t('plansGrid.assessmentSlotsPerPeriod', { count: plan.slot_grant })}
+                            </span>
+                          </div>
+                        )}
+                        {plan.points_grant != null && (
+                          <div className="flex items-start gap-2 sm:gap-3">
+                            <Check className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 shrink-0 mt-1" />
+                            <span className="text-gray-700 text-xs sm:text-sm">
+                              {t('plansGrid.pointsPerPeriod', { count: plan.points_grant })}
+                            </span>
+                          </div>
+                        )}
+                      </>
                     ) : (
-                      <div className="flex items-start gap-2 sm:gap-3">
-                        <Check className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 shrink-0 mt-1" />
-                        <span className="text-gray-700 text-xs sm:text-sm">
-                          {t('plansGrid.unlimitedCandidates')}
-                        </span>
-                      </div>
-                    )}
+                      <>
+                        {plan.feature_limits?.candidate_limit ? (
+                          <div className="flex items-start gap-2 sm:gap-3">
+                            <Check className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 shrink-0 mt-1" />
+                            <span className="text-gray-700 text-xs sm:text-sm">
+                              {t('plansGrid.upToCandidates', { count: plan.feature_limits.candidate_limit })}
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="flex items-start gap-2 sm:gap-3">
+                            <Check className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 shrink-0 mt-1" />
+                            <span className="text-gray-700 text-xs sm:text-sm">
+                              {t('plansGrid.unlimitedCandidates')}
+                            </span>
+                          </div>
+                        )}
 
-                    {plan.feature_limits?.evaluation_limit ? (
-                      <div className="flex items-start gap-2 sm:gap-3">
-                        <Check className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 shrink-0 mt-1" />
-                        <span className="text-gray-700 text-xs sm:text-sm">
-                          {t('plansGrid.evaluationsPerMonth', { count: plan.feature_limits.evaluation_limit })}
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="flex items-start gap-2 sm:gap-3">
-                        <Check className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 shrink-0 mt-1" />
-                        <span className="text-gray-700 text-xs sm:text-sm">
-                          {t('plansGrid.unlimitedEvaluations')}
-                        </span>
-                      </div>
-                    )}
+                        {plan.feature_limits?.evaluation_limit ? (
+                          <div className="flex items-start gap-2 sm:gap-3">
+                            <Check className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 shrink-0 mt-1" />
+                            <span className="text-gray-700 text-xs sm:text-sm">
+                              {t('plansGrid.evaluationsPerMonth', { count: plan.feature_limits.evaluation_limit })}
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="flex items-start gap-2 sm:gap-3">
+                            <Check className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 shrink-0 mt-1" />
+                            <span className="text-gray-700 text-xs sm:text-sm">
+                              {t('plansGrid.unlimitedEvaluations')}
+                            </span>
+                          </div>
+                        )}
 
-                    {plan.feature_limits?.team_member_limit ? (
-                      <div className="flex items-start gap-2 sm:gap-3">
-                        <Check className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 shrink-0 mt-1" />
-                        <span className="text-gray-700 text-xs sm:text-sm">
-                          {t('plansGrid.upToTeamMembers', { count: plan.feature_limits.team_member_limit })}
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="flex items-start gap-2 sm:gap-3">
-                        <Check className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 shrink-0 mt-1" />
-                        <span className="text-gray-700 text-xs sm:text-sm">
-                          {t('plansGrid.unlimitedTeamMembers')}
-                        </span>
-                      </div>
+                        {plan.feature_limits?.team_member_limit ? (
+                          <div className="flex items-start gap-2 sm:gap-3">
+                            <Check className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 shrink-0 mt-1" />
+                            <span className="text-gray-700 text-xs sm:text-sm">
+                              {t('plansGrid.upToTeamMembers', { count: plan.feature_limits.team_member_limit })}
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="flex items-start gap-2 sm:gap-3">
+                            <Check className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 shrink-0 mt-1" />
+                            <span className="text-gray-700 text-xs sm:text-sm">
+                              {t('plansGrid.unlimitedTeamMembers')}
+                            </span>
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
 
