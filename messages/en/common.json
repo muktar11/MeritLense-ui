@@ -2315,7 +2315,7 @@
         "roleNames": {
           "HK": "Housekeeper",
           "EC": "Elder Companion",
-          "NA": "Nursing Assistant",
+          "NA": "Nanny",
           "DR": "Driver",
           "KA": "Kitchen Assistant",
           "MW": "Maintenance Worker",
@@ -2326,7 +2326,7 @@
           "roles": {
             "HK": "Housekeepers",
             "EC": "Elder Companions",
-            "NA": "Nursing Assistants",
+            "NA": "Nannies",
             "DR": "Drivers",
             "KA": "Kitchen Assistants",
             "MW": "Maintenance Workers",
