@@ -23,7 +23,10 @@ export default function PaymentPage() {
   const router = useRouter();
   const { userRole, isAuthenticated } = useAuth();
 
-  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "annual">("monthly");
+  // B2C is one-time-only per the approved Sign-off - no recurring billing
+  // period toggle. Fixed to "monthly" only because recurringPlans filters on
+  // it below; in practice this always yields an empty B2C recurring catalog.
+  const billingPeriod: "monthly" | "annual" = "monthly";
   const [allPlans, setAllPlans] = useState<Price[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -255,37 +258,6 @@ export default function PaymentPage() {
           <p className="text-gray-600 max-w-2xl mx-auto mb-8">
             {t("subtitle")}
           </p>
-
-          {!selectedPlan && !(currentSubscription && !showPlanPicker) && (
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <span
-                className={`text-sm font-medium ${
-                  billingPeriod === "monthly" ? "text-gray-900" : "text-gray-500"
-                }`}
-              >
-                {t("billingMonthly")}
-              </span>
-              <button
-                onClick={() =>
-                  setBillingPeriod(billingPeriod === "monthly" ? "annual" : "monthly")
-                }
-                className="relative inline-flex h-8 w-14 items-center rounded-full bg-purple-500"
-              >
-                <span
-                  className={`inline-block h-6 w-6 transform rounded-full bg-white transition ${
-                    billingPeriod === "annual" ? "translate-x-7" : "translate-x-1"
-                  }`}
-                />
-              </button>
-              <span
-                className={`text-sm font-medium ${
-                  billingPeriod === "annual" ? "text-gray-900" : "text-gray-500"
-                }`}
-              >
-                {t("billingAnnual")}
-              </span>
-            </div>
-          )}
         </div>
 
         {upgradeMessage && (
@@ -430,18 +402,9 @@ export default function PaymentPage() {
               </div>
             )}
 
+            {recurringPlans.length > 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-              {recurringPlans.length === 0 ? (
-                <div className="col-span-full text-center py-12">
-                  <CreditCard className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-500">
-                    {billingPeriod === 'monthly' ? t('plansGrid.noPlansForBillingMonthly') : t('plansGrid.noPlansForBillingAnnual')}
-                  </p>
-                  <p className="text-sm text-gray-400 mt-2">
-                    {t('plansGrid.availableIntervals')}
-                  </p>
-                </div>
-              ) : (
+              {
                 recurringPlans.map((plan) => (
                   <div
                     key={plan.id}
@@ -529,8 +492,9 @@ export default function PaymentPage() {
                     </button>
                   </div>
                 ))
-              )}
+              }
             </div>
+            )}
 
             {oneTimePlans.length > 0 && (
               <div className="mb-12">
