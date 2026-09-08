@@ -1573,7 +1573,7 @@
             "price": "Price",
             "billing": "Billing",
             "tier": "Tier",
-            "slots": "Slots",
+            "slots": "Assessment Slots",
             "points": "Points",
             "status": "Status",
             "actions": "Actions"

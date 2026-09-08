@@ -357,9 +357,9 @@ export default function BillingAndSubscriptions() {
                           </TableCell>
                           <TableCell>
                             <Badge variant="outline" className={
-                              daysLeft < 7 && daysLeft > 0 ? 'border-orange-200 text-orange-700' : ''
+                              daysLeft < 7 && daysLeft > 0 && sub.status !== 'canceled' ? 'border-orange-200 text-orange-700' : ''
                             }>
-                              {daysLeft > 0 ? t("daysLeftLabel", { days: daysLeft }) : t("expiredLabel")}
+                              {sub.status === 'canceled' ? t("notAvailable") : daysLeft > 0 ? t("daysLeftLabel", { days: daysLeft }) : t("expiredLabel")}
                             </Badge>
                           </TableCell>
                           <TableCell>

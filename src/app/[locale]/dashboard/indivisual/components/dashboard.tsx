@@ -31,6 +31,7 @@ import { ScoreTrendChart } from "./score-trend-chart"
 
 export function Dashboard() {
   const t = useTranslations("dashboard.indivisual.dashboard")
+  const tStatus = useTranslations("dashboard.indivisual.statusDistribution")
   const router = useRouter()
   const locale = useLocale()
 
@@ -262,7 +263,7 @@ export function Dashboard() {
                 {statusDistribution.slice(0, 2).map((item) => (
                   <div key={item.status} className="text-sm">
                     <p className="font-medium">
-                      • {item.count} {item.status_display}
+                      • {item.count} {tStatus.has(`status.${item.status}`) ? tStatus(`status.${item.status}`) : item.status_display}
                     </p>
                   </div>
                 ))}
