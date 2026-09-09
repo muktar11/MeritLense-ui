@@ -746,6 +746,9 @@
         "message": "Welcome to our platform. Your account has been created and is ready to use.",
         "getStarted": "Let's Start"
       }
+    },
+    "common": {
+      "back_to_home": "Back to Home"
     }
   },
   "dashboard": {
@@ -756,31 +759,30 @@
       "user_type": "Admin",
       "page_type": "Admin",
       "pages_list": {
-          "overview": "Dashboard ",
-          "user_management": "User Profiles",
-          "business_candidate_management": "Candidate Management",
-          "candidate_management": "Candidate Management",
-          "business_management": "Business Management",
-          "system_configuration": "System Configuration",
-          "audit_logs": "Audit Logs",
-          "settings": "Settings",
-          "api_settings": "Payment Package",
-          "multi_agency_panel": "Billing and Subscription",
-          "package_management": "Package Management",
-          "interview_setup": "Interview Setup"
-        }
-,
+        "overview": "Dashboard ",
+        "user_management": "User Profiles",
+        "business_candidate_management": "Candidate Management",
+        "candidate_management": "Candidate Management",
+        "business_management": "Business Management",
+        "system_configuration": "System Configuration",
+        "audit_logs": "Audit Logs",
+        "settings": "Settings",
+        "api_settings": "Payment Package",
+        "multi_agency_panel": "Billing and Subscription",
+        "package_management": "Package Management",
+        "interview_setup": "Interview Setup"
+      },
       "overview_page": {
         "title": "Dashboard Overview",
         "subtitle": "Monitor platform performance and key metrics",
-         "users": "Users",
+        "users": "Users",
         "companies": "Companies",
         "evaluations": "Evaluations",
         "subscribers": "Subscribers",
         "revenue": "Revenue",
         "B2C": "Individual Users",
         "B2B": "Companies",
-          "stats": {
+        "stats": {
           "activeCandidates": "Active Candidates",
           "totalUsers": "Total Users",
           "activeAgencies": "Active Agencies",
@@ -792,8 +794,8 @@
           "completedPercent": "{value}% completed",
           "activeSubscriptions": "{value} active subscriptions"
         },
-         "charts": {
-         "systemLoadTrend": "System Load Trend",
+        "charts": {
+          "systemLoadTrend": "System Load Trend",
           "userGrowthTrend": "User Growth Trend",
           "evaluationTypesDistribution": "Evaluation Types Distribution",
           "packageContribution": "Subscription Package Contribution",
@@ -824,33 +826,26 @@
         "weeks": {
           "week": "Week"
         },
-
         "evaluationTypes": {
           "Basic": "Basic",
           "Advanced": "Advanced",
           "Essential": "Essential",
           "Premium": "Premium"
         },
-
-       "packages": {
-            "Basic": "Basic",
-            "Advanced": "Advanced",
-            "Essential": "Essential",
-            "Premium": "Premium"
-          }
-
+        "packages": {
+          "Basic": "Basic",
+          "Advanced": "Advanced",
+          "Essential": "Essential",
+          "Premium": "Premium"
+        }
       },
-
-
-       "userRoleManagement": {
+      "userRoleManagement": {
         "title": "User & Role Management",
         "access": "Access: Super Admin Only",
-
         "actions": {
           "createUser": "Create Internal Company User",
           "activityLog": "Global Activity Log Viewer"
         },
-
         "search": {
           "placeholder": "Search users..."
         },
@@ -858,7 +853,6 @@
           "allRoles": "All Roles",
           "allStatus": "All Status"
         },
-
         "table": {
           "title": "Current System Users",
           "headers": {
@@ -879,14 +873,12 @@
           "noResults": "No admin users found",
           "neverLoggedIn": "Never"
         },
-
         "roles": {
           "superAdmin": "Super Admin",
           "admin": "Admin",
           "recruiterAdmin": "Recruiter Admin",
           "viewer": "Viewer"
         },
-
         "confirm": {
           "cannotDisableSelf": "You cannot disable your own account!",
           "lastSuperAdminWarning": "This is the last active Super Admin. Disabling this account will remove all super admin access. Are you absolutely sure?",
@@ -929,18 +921,15 @@
             "passwordMismatch": "Passwords do not match"
           }
         },
-
         "status": {
           "active": "Active",
           "inactive": "Inactive",
           "disabled": "Disabled"
         }
       },
-
-       "candidateManagement": {
+      "candidateManagement": {
         "title": "Candidate Management Console",
         "subtitle": "Operational hub for admins and recruiters. Add, evaluate, and manage talent.",
-
         "quickActions": {
           "title": "Quick Actions:",
           "add": "Add New Candidate",
@@ -957,7 +946,6 @@
           "verificationStatus": "Verification Status",
           "documents": "Documents"
         },
-
         "table": {
           "title": "All Candidates",
           "headers": {
@@ -970,7 +958,6 @@
             "actions": "Actions"
           }
         },
-
         "docStatus": {
           "verified": "Verified",
           "notVerified": "Not Verified"
@@ -981,7 +968,6 @@
           "showing": "Showing {start} to {end} of {total} employers",
           "page": "Page {current} of {total}"
         },
-
         "detailModal": {
           "title": "Candidate Details",
           "status": {
@@ -1018,43 +1004,36 @@
           "B2B": "Company",
           "B2B_TEAM_MEMBER": "Team Member"
         },
-
         "verificationStatus": {
           "pending": "Pending",
           "approved": "Approved",
           "rejected": "Rejected",
           "info_needed": "Info Needed"
         },
-
         "jobRoles": {
           "seniorDev": "Senior Developer",
           "marketingLead": "Marketing Lead",
           "productManager": "Product Manager"
         },
-
         "languages": {
           "en": "English",
           "es": "Spanish"
         },
-
         "evaluationStatus": {
           "successful": "Completed (Successful)",
           "pending": "Evaluation Pending",
           "failed": "Failed"
         },
-
         "documentStatus": {
           "uploadedAttached": "Uploaded | Docs Attached",
           "uploadedMissing": "Uploaded | Docs Missing",
           "missingAttached": "Missing | Docs Attached"
         },
-
         "actions": {
           "downloadView": "Download Report | View Edit Link",
           "sendUpload": "Send Evaluation | Upload Offer Letter",
           "sendDownload": "Send/Edit | Download Report"
         },
-
         "addModal": {
           "title": "Add Employer",
           "individualToggle": "Individual (B2C)",
@@ -1145,8 +1124,8 @@
         "allSystems": "All Systems",
         "allRoles": "All Roles",
         "roles": {
-         "superadmin": "Super Admin",
-         "superAdmin": "Super Admin",
+          "superadmin": "Super Admin",
+          "superAdmin": "Super Admin",
           "admin": "Admin",
           "manager": "Manager",
           "user": "User",
@@ -1215,19 +1194,16 @@
         "language": "ENG",
         "allowMode": "Allow Mode",
         "logout": "Log Out",
-
         "tabs": {
           "msa": "Contract Approval",
           "profile": "Edit Profile",
           "billing": "Billing & Subscription"
         },
-
         "msa": {
           "title": "Master Service Agreement (MSA)",
           "description": "Awaiting Super Admin approval to unlock premium features.",
           "review": "Review and Approve"
         },
-
         "table": {
           "contract": "Contract Name",
           "date": "Date",
@@ -1236,26 +1212,22 @@
           "type": "Type",
           "amount": "Amount"
         },
-
         "contracts": {
           "update1": "Privacy Policy Update Completed 1",
           "update2": "Privacy Policy Update Completed 2",
           "update3": "Privacy Policy Update Completed 3"
         },
-
         "status": {
           "pending": "Pending",
           "success": "Completed / Successful",
           "failed": "Failed",
           "active": "Active"
         },
-
         "jobRoles": {
           "houseKeeper": "House Keeper",
           "cleaner": "Cleaner",
           "driver": "Driver"
         },
-
         "billing": {
           "title": "Consumption History",
           "types": {
@@ -1263,13 +1235,11 @@
             "subscription": "Subscription Renewal"
           }
         },
-
         "download": "Download",
         "companyName": "Company Name",
         "email": "Email",
         "save": "Save",
         "saveChanges": "Save Changes",
-
         "firstName": "First Name *",
         "lastName": "Last Name *",
         "department": "Department",
@@ -1278,7 +1248,6 @@
         "updateSuccess": "Profile updated successfully!",
         "cancel": "Cancel",
         "saving": "Saving...",
-
         "changePassword": {
           "heading": "Change Password",
           "successTitle": "Password changed successfully!",
@@ -1308,7 +1277,7 @@
           }
         }
       },
-          "systemSecurity": {
+      "systemSecurity": {
         "title": "System Security",
         "subtitle": "Monitor security activity and manage administrative access",
         "description": "Manage critical application settings and security policies, access controls, and notification defaults.",
@@ -1342,7 +1311,6 @@
         "statusOptions": {
           "all": "All Status"
         },
-
         "quickActions": {
           "title": "Quick Actions:",
           "viewLogs": "View Failed Logins",
@@ -1350,7 +1318,6 @@
           "createUser": "Create NEW User",
           "manageRoles": "Manage Roles"
         },
-
         "alerts": {
           "title": "System Alerts & Notifications",
           "failedLoginThreshold": "Failed Login Threshold Exceeded (10+ attempts)",
@@ -1372,7 +1339,6 @@
           "inactive": "Inactive",
           "pending": "Pending"
         },
-
         "table": {
           "title": "Current System Users",
           "headers": {
@@ -1385,13 +1351,11 @@
           "noResults": "No users found",
           "showingLimited": "Showing 10 of {count} users. Use filters to narrow results."
         },
-
         "roles": {
           "superAdmin": "Super Admin",
           "recruiterAdmin": "Recruiter Admin",
           "viewer": "Viewer"
         },
-
         "actions": {
           "edit": "Edit",
           "reset": "Reset Password",
@@ -1400,8 +1364,7 @@
           "revoke": "Revoke Access"
         }
       },
-
-  "auditLog": {
+      "auditLog": {
         "title": "Audit Logs & Evaluation Center",
         "adminAccess": "Admin Access",
         "tabs": {
@@ -1508,52 +1471,51 @@
             }
           }
         },
-         "auditLog": {
-        "title": "Audit Logs",
-        "tabs": {
-          "evaluation": "Evaluation Center",
-          "audit": "Audit Logs"
-        },
-        "table": {
-          "headers": {
-            "customer": "Customer",
-            "resourceTarget": "Resource Target",
-            "actionType": "Action Type",
-            "timestamp": "Time Stamp",
-            "category": "Category",
-            "description": "Description"
+        "auditLog": {
+          "title": "Audit Logs",
+          "tabs": {
+            "evaluation": "Evaluation Center",
+            "audit": "Audit Logs"
+          },
+          "table": {
+            "headers": {
+              "customer": "Customer",
+              "resourceTarget": "Resource Target",
+              "actionType": "Action Type",
+              "timestamp": "Time Stamp",
+              "category": "Category",
+              "description": "Description"
+            }
+          },
+          "statusTypes": {
+            "pending": "Pending",
+            "approved": "Approved",
+            "inprogress": "In Progress"
+          },
+          "categories": {
+            "security": "Security",
+            "override": "Override",
+            "billing": "Billing",
+            "ui": "UI",
+            "system": "System"
+          },
+          "actions": {
+            "viewDetails": "View Details",
+            "downloadReport": "Download Report"
+          },
+          "noSelection": {
+            "title": "No Selection",
+            "description": "Select a candidate to view logs and perform actions."
+          },
+          "pagination": {
+            "showing": "Showing",
+            "of": "of",
+            "prev": "Prev",
+            "next": "Next"
           }
-        },
-        "statusTypes": {
-          "pending": "Pending",
-          "approved": "Approved",
-          "inprogress": "In Progress"
-        },
-        "categories": {
-          "security": "Security",
-          "override": "Override",
-          "billing": "Billing",
-          "ui": "UI",
-          "system": "System"
-        },
-        "actions": {
-          "viewDetails": "View Details",
-          "downloadReport": "Download Report"
-        },
-        "noSelection": {
-          "title": "No Selection",
-          "description": "Select a candidate to view logs and perform actions."
-        },
-        "pagination": {
-          "showing": "Showing",
-          "of": "of",
-          "prev": "Prev",
-          "next": "Next"
         }
-      }
-      }, 
-
- "packages": {
+      },
+      "packages": {
         "accessRestricted": {
           "title": "SuperAdmin Access Required",
           "description": "Package management is restricted to SuperAdmin accounts."
@@ -1676,7 +1638,6 @@
           }
         }
       },
-
       "interviewSetup": {
         "title": "Interview Setup",
         "subtitle": "Manage the question bank and interview configurations behind each role package.",
@@ -1907,8 +1868,7 @@
           }
         }
       },
-
- "billing": {
+      "billing": {
         "title": "Billing and Subscriptions",
         "search": "Search subscriptions...",
         "export": "Export",
@@ -2025,54 +1985,52 @@
         }
       }
     },
-
     "business": {
       "bills": {
-          "companySubscription": "Company Subscription",
-          "noActiveSubscription":"No active subscription",
-          "viewPlans": "View Plans",
-          "paymentMethods": "Payment Methods",
-          "addPaymentMethod": "Add Payment Method",
-          "invoices": "Invoices",
-          "date": "Date",
-          "invoiceNumber": "Invoice Number",
-          "amount": "amount",
-          "status": "Status",
-          "action": "Action"
-          },
+        "companySubscription": "Company Subscription",
+        "noActiveSubscription": "No active subscription",
+        "viewPlans": "View Plans",
+        "paymentMethods": "Payment Methods",
+        "addPaymentMethod": "Add Payment Method",
+        "invoices": "Invoices",
+        "date": "Date",
+        "invoiceNumber": "Invoice Number",
+        "amount": "amount",
+        "status": "Status",
+        "action": "Action"
+      },
       "company": {
         "tabs": {
           "profile": "Company Profile",
           "billing": "Billing & Subscription"
         }
-        },
+      },
       "user_type": "Business",
       "page_type": "Business",
       "pages_list": {
-  "overview": "Dashboard ",
-  "profile_management": "User Profile ",
-  "candidate_management": "Candidate Comparison",
-  "multi_agency_panel": "Evaluation Management",
-  "assessments_monitor": "Assessments Monitor",
-  "reports_certificates": "Reports & Certificates",
-  "analytics_insights": "Analytics & Insights",
-  "performance_scorecard": "Performance Scorecard",
-  "user_management": "User Management",
-  "business_management": "Score Management",
-  "audit_logs": "Payment",
-  "notifications": "Notifications & Alerts",
-  "system_configuration": "Company Profile"
-},
-
-   "overview": {
-      "package": {
-        "expires": "Package expires in {days} days!",
-        "renew": "Renew Now"
+        "overview": "Dashboard ",
+        "profile_management": "User Profile ",
+        "candidate_management": "Candidate Comparison",
+        "multi_agency_panel": "Evaluation Management",
+        "assessments_monitor": "Assessments Monitor",
+        "reports_certificates": "Reports & Certificates",
+        "analytics_insights": "Analytics & Insights",
+        "performance_scorecard": "Performance Scorecard",
+        "user_management": "User Management",
+        "business_management": "Score Management",
+        "audit_logs": "Payment",
+        "notifications": "Notifications & Alerts",
+        "system_configuration": "Company Profile"
       },
-      "search": {
-        "placeholder": "Search..."
-      },
-      "metrics": {
+      "overview": {
+        "package": {
+          "expires": "Package expires in {days} days!",
+          "renew": "Renew Now"
+        },
+        "search": {
+          "placeholder": "Search..."
+        },
+        "metrics": {
           "evaluationsCompleted": "Evaluations Completed",
           "activeCandidates": "Active Candidates",
           "certificatesIssued": "Certificates Issued",
@@ -2090,75 +2048,75 @@
             "basedOnEvaluations": "Based on {value} evaluations"
           }
         },
-      "alerts": {
-        "critical": "Critical Alert",
-        "contractRejection": "Contract Rejection",
-        "lowSuccessRate": "Success rate is below 50%. Review recent evaluations."
-      },
-      "candidateEvaluation": {
-        "title": "Recent Evaluations",
-        "columns": {
-          "candidate": "Candidate",
-          "evaluationType": "Evaluation Type",
-          "status": "Status",
-          "score": "Score",
-          "scheduledDate": "Scheduled Date",
-          "actions": "Actions"
+        "alerts": {
+          "critical": "Critical Alert",
+          "contractRejection": "Contract Rejection",
+          "lowSuccessRate": "Success rate is below 50%. Review recent evaluations."
         },
-        "pagination": {
-          "rowsPerPage": "Rows per page"
+        "candidateEvaluation": {
+          "title": "Recent Evaluations",
+          "columns": {
+            "candidate": "Candidate",
+            "evaluationType": "Evaluation Type",
+            "status": "Status",
+            "score": "Score",
+            "scheduledDate": "Scheduled Date",
+            "actions": "Actions"
+          },
+          "pagination": {
+            "rowsPerPage": "Rows per page"
+          },
+          "noEvaluations": "No recent evaluations found"
         },
-        "noEvaluations": "No recent evaluations found"
-      },
-      "evaluationTrend": {
-        "title": "Evaluation Trends",
-        "legend": {
-          "completed": "Completed",
-          "scheduled": "Scheduled",
-          "cancelled": "Cancelled"
-        }
-      },
-      "statusDistribution": {
-        "title": "Evaluation Status",
-        "status": {
-          "COMPLETED": "Completed",
-          "SCHEDULED": "Scheduled",
-          "RESCHEDULED": "Rescheduled",
-          "CANCELLED": "Cancelled",
-          "NO_SHOW": "No Show"
-        }
-      },
-      "recentActivity": {
-        "title": "Monthly Activity",
-        "columns": {
-          "month": "Month",
-          "candidatesAdded": "Candidates Added",
-          "evaluationsCompleted": "Evaluations Completed",
-          "certificatesIssued": "Certificates Issued"
-        }
-      },
-      "performanceChart": {
-        "title": "Performance Metrics",
-        "tabs": {
-          "users": "Users",
-          "projects": "Projects",
-          "operatingStatus": "Status"
+        "evaluationTrend": {
+          "title": "Evaluation Trends",
+          "legend": {
+            "completed": "Completed",
+            "scheduled": "Scheduled",
+            "cancelled": "Cancelled"
+          }
         },
-        "tooltip": {
-          "score": "Average Score"
+        "statusDistribution": {
+          "title": "Evaluation Status",
+          "status": {
+            "COMPLETED": "Completed",
+            "SCHEDULED": "Scheduled",
+            "RESCHEDULED": "Rescheduled",
+            "CANCELLED": "Cancelled",
+            "NO_SHOW": "No Show"
+          }
+        },
+        "recentActivity": {
+          "title": "Monthly Activity",
+          "columns": {
+            "month": "Month",
+            "candidatesAdded": "Candidates Added",
+            "evaluationsCompleted": "Evaluations Completed",
+            "certificatesIssued": "Certificates Issued"
+          }
+        },
+        "performanceChart": {
+          "title": "Performance Metrics",
+          "tabs": {
+            "users": "Users",
+            "projects": "Projects",
+            "operatingStatus": "Status"
+          },
+          "tooltip": {
+            "score": "Average Score"
+          }
+        },
+        "score-distribution-chart": {
+          "title": "Average Scores by Role",
+          "score": "Score"
+        },
+        "languageDistributionChart": {
+          "title": "Language Distribution",
+          "tooltip": {
+            "usage": "Usage %"
+          }
         }
       },
-      "score-distribution-chart": {
-        "title": "Average Scores by Role",
-        "score": "Score"
-      },
-      "languageDistributionChart": {
-        "title": "Language Distribution",
-        "tooltip": {
-          "usage": "Usage %"
-        }
-      }
-    },
       "candidateEvaluation": {
         "title": "Candidate Evaluation",
         "columns": {
@@ -2192,8 +2150,7 @@
           "rowsPerPage": "Rows per page"
         }
       },
-
-       "performanceChart": {
+      "performanceChart": {
         "title": "Performance",
         "tabs": {
           "users": "Users",
@@ -2226,7 +2183,7 @@
           "lowReadiness": "Low Readiness"
         }
       },
-       "languageDistributionChart": {
+      "languageDistributionChart": {
         "title": "Evaluation Language Distribution",
         "tooltip": {
           "usage": "Usage"
@@ -2267,8 +2224,7 @@
           }
         }
       },
-       
-  "score-distribution-chart": {
+      "score-distribution-chart": {
         "title": "Candidate Score Distribution by Job Role",
         "score": "Score",
         "roles": {
@@ -2278,7 +2234,7 @@
           "manager": "Manager"
         }
       },
-        "score-management": {
+      "score-management": {
         "quickActions": "Quick Actions",
         "title": "Score Management",
         "search": "Search...",
@@ -2367,20 +2323,18 @@
           "itemLabelPlural": "candidates"
         }
       },
-       "company-profile": {
+      "company-profile": {
         "title": "Company Profile",
         "myProfile": "My Profile",
         "notification": "Notifications",
         "more": "More",
         "logout": "Logout",
-
         "edit": "Edit",
         "cancel": "Cancel",
         "addButton": "Add",
         "updateSuccess": "Company profile updated successfully!",
         "noAddressProvided": "No address provided",
         "bothNotifications": "Both",
-
         "companyDescription": "Company Description",
         "uploadLogo": "Upload Logo",
         "logoAlt": "Company logo",
@@ -2404,7 +2358,6 @@
           "maxCount": "You can add up to {count} roles.",
           "maxLength": "Roles must be {count} characters or fewer."
         },
-
         "email": "Email",
         "address": "Address",
         "phone": "Phone",
@@ -2412,7 +2365,6 @@
         "country": "Country",
         "city": "City",
         "preferredLanguage": "Preferred Language",
-
         "manageUsers": "Manage Users",
         "addUser": "Add User",
         "noTeamMembers": "No team members yet. Invite your first team member!",
@@ -2423,7 +2375,6 @@
         "removeMemberConfirm": "Are you sure you want to remove this team member?",
         "downloadPdfTooltip": "Download PDF",
         "viewAuditTrailTooltip": "View Audit Trail",
-
         "columns": {
           "user": "User",
           "userRole": "User Role",
@@ -2431,7 +2382,6 @@
           "permission": "Permission",
           "status": "Status"
         },
-
         "roles": {
           "businessManager": "Business Manager",
           "agent": "Agent",
@@ -2440,28 +2390,22 @@
           "recruiter": "Recruiter",
           "juniorRecruiter": "Junior Recruiter"
         },
-
         "permissions": {
           "fullAccess": "Full Access",
           "standard": "Standard",
           "readOnly": "Read Only"
         },
-
         "partnerships": "Partnerships",
-
         "tabs": {
           "myConnections": "My Connections",
           "discover": "Discover"
         },
-
         "connect": "Connect",
-
         "candidatesStatus": "Candidates Status",
         "downloadFiles": "Download Files",
         "downloadAllowed": "CSV / PDF files are allowed",
         "uploadFiles": "Upload Files",
         "uploadCandidatesFile": "Upload candidates list file",
-
         "agreements": {
           "title": "Legal Agreements",
           "description": "Review and sign the B2B Agreement and Data Processing Agreement required to use MeritLense.",
@@ -2471,7 +2415,6 @@
           "viewButton": "View Signed Documents",
           "loading": "Checking agreement status..."
         },
-
         "settings": "Settings",
         "theme": "Theme",
         "light": "Light",
@@ -2483,14 +2426,12 @@
         "spanish": "Spanish",
         "push": "Push",
         "save": "Save",
-
         "billing": "Billing & Subscription Status",
         "currentPlan": "Current Plan",
         "premium": "Premium",
         "monthlyCosts": "Monthly Costs",
         "nextBilling": "Next Billing",
         "update": "Update",
-
         "saveChanges": "Save Changes",
         "team": {
           "pendingInvitations": "Pending Invitations",
@@ -2510,7 +2451,6 @@
           }
         }
       },
-
       "settings": {
         "edit-profile-tab": {
           "profilePicture": {
@@ -2548,7 +2488,6 @@
           "save": "Save"
         }
       },
-
       "signAgreements": {
         "loadFailedError": "Failed to load your agreements. Please refresh the page.",
         "docLabels": {
@@ -2602,7 +2541,7 @@
           "stampUploadFailed": "Failed to upload company stamp. You can add it later from Company Profile."
         }
       },
-       "payment": {
+      "payment": {
         "title": "The Right Plan for Your Business",
         "subtitle": "Based on your selected role and coverage needs. You can upgrade or downgrade anytime.",
         "billMonthly": "Bill Monthly",
@@ -2610,14 +2549,20 @@
         "month": "month",
         "custom": "Custom",
         "getStarted": "Get Started",
-
         "plans": {
-          "starter": { "name": "Starter" },
-          "growth": { "name": "Growth" },
-          "business": { "name": "Business" },
-          "enterprise": { "name": "Enterprise" }
+          "starter": {
+            "name": "Starter"
+          },
+          "growth": {
+            "name": "Growth"
+          },
+          "business": {
+            "name": "Business"
+          },
+          "enterprise": {
+            "name": "Enterprise"
+          }
         },
-
         "features": {
           "eval5": "Monthly Evaluations up to 5",
           "essentialAdvanced": "Essential + Advanced Tests",
@@ -2625,7 +2570,6 @@
           "employerSummary": "Employer Summary Report (PDF)",
           "simulation": "Practical Simulation (5–30 mins)",
           "referenceVerification": "Digital Reference Verification",
-
           "eval50": "Monthly Evaluations up to 50",
           "dashboardAnalytics": "Dashboard + Analytics",
           "simulationTests": "Practical Simulation Tests",
@@ -2634,7 +2578,6 @@
           "videoIntro": "Video Introduction Recording",
           "smartInsights": "Smart Insights",
           "jobMatching": "Job Role Matching",
-
           "eval100": "Monthly Evaluations up to 100",
           "addonDiscount": "Add-on Discount 10%",
           "automations": "Custom Automations",
@@ -2642,7 +2585,6 @@
           "personalitySnapshot": "Personality Snapshot",
           "behavioralModels": "Custom Behavioral Models",
           "regulatoryMode": "Regulatory Audit Mode",
-
           "unlimitedEval": "Unlimited Monthly Evaluations",
           "unlimitedAddons": "Unlimited Add-ons",
           "discount": "Discount",
@@ -2650,7 +2592,7 @@
           "customFeatures": "All Custom Features"
         }
       },
-       "candidate-evaluation": {
+      "candidate-evaluation": {
         "title": "Candidate Evaluation",
         "quickActions": "Quick Actions:",
         "search": "Search...",
@@ -2685,9 +2627,9 @@
           "arabic": "Arabic",
           "spanish": "Spanish"
         }
-      }        
-},
-"candidates": {
+      }
+    },
+    "candidates": {
       "table": {
         "searchPlaceholder": "Search candidates...",
         "showing": "Showing {start}-{end} of {total}",
@@ -2846,16 +2788,15 @@
         "unshareFailed": "Failed to remove sharing"
       }
     },
-
     "indivisual": {
-        "scoreTrend": {
-          "title": "Performance Trends",
-          "averageScore": "Average Score",
-          "legend": {
-            "completed": "Completed",
-            "scheduled": "Scheduled",
-            "cancelled": "Cancelled"
-          }
+      "scoreTrend": {
+        "title": "Performance Trends",
+        "averageScore": "Average Score",
+        "legend": {
+          "completed": "Completed",
+          "scheduled": "Scheduled",
+          "cancelled": "Cancelled"
+        }
       },
       "user_type": "Individual",
       "page_type": "Individual",
@@ -2869,8 +2810,7 @@
         "packages_subscription": "Packages & Subscription",
         "notifications": "Notifications"
       },
-
-       "payment": {
+      "payment": {
         "title": "The Right Plan for Your Business",
         "subtitle": "Based on your selected job roles, key job focus areas, and evaluation metrics, choose the right subscription plan.",
         "billingMonthly": "Bill Monthly",
@@ -3187,7 +3127,6 @@
           }
         }
       },
-
       "candidates": {
         "title": "Candidates",
         "subtitle": "Manage and compare your candidates",
@@ -3201,7 +3140,7 @@
           "communication": "Communication",
           "score": "Candidate Score"
         },
-       "subjects": {
+        "subjects": {
           "experience": "Experience",
           "hardSkill": "Hard Skills",
           "softSkill": "Soft Skills",
@@ -3214,29 +3153,24 @@
         "loading": "Loading...",
         "linkAnalytics": "Link Analytics"
       },
-
-     "profile": {
+      "profile": {
         "pageTitle": "Profile Settings"
       },
-
       "dashboardHeader": {
         "premiumBadge": "Premium"
       },
-
       "settings-tabs": {
         "editProfile": "Edit Profile",
         "security": "Security",
         "billing": "Billing & Subscription",
         "agreements": "Agreements"
       },
-
       "settings": {
         "edit-profile-tab": {
           "profilePictureTitle": "Profile Picture",
           "profilePictureSubtitle": "Update your profile picture",
           "changeButton": "Change",
           "removeButton": "Remove",
-
           "yourName": "Your Name",
           "userName": "User Name",
           "firstName": "First Name",
@@ -3257,17 +3191,14 @@
           "selectJobRolePlaceholder": "Select job role",
           "selectNationalityPlaceholder": "Select nationality",
           "addressPlaceholder": "Your address",
-
           "updateSuccess": "Profile updated successfully!",
           "savingButton": "Saving...",
-
           "errors": {
             "invalidImageType": "Please choose a JPG, PNG, or WEBP image.",
             "imageTooLarge": "Image must be smaller than 5MB.",
             "uploadFailed": "Failed to upload profile picture. Please try again.",
             "removeFailed": "Failed to remove profile picture. Please try again."
           },
-
           "jobRoles": {
             "SE": "Software Engineer",
             "DS": "Data Scientist",
@@ -3278,7 +3209,6 @@
             "FN": "Finance",
             "OT": "Other"
           },
-
           "nationalities": {
             "US": "United States",
             "GB": "United Kingdom",
@@ -3298,7 +3228,6 @@
             "MX": "Mexico",
             "OT": "Other"
           },
-
           "languages": {
             "EN": "English",
             "AR": "Arabic",
@@ -3327,10 +3256,8 @@
             "LG": "Luganda",
             "MG": "Malagasy"
           },
-
           "saveButton": "Save Changes"
         },
-
         "billing-tab": {
           "remainingPoints": "Remaining Points",
           "currentPackage": "Current Package",
@@ -3340,15 +3267,12 @@
             "quarterly": "quarter",
             "yearly": "year"
           },
-
           "consumptionHistory": "Consumption History",
           "date": "Date",
           "description": "Description",
           "amount": "Amount",
-
           "Evaluation": "Evaluation",
           "Subscription Renewal": "Subscription Renewal",
-
           "saveButton": "Save Changes",
           "companySubscription": "Company Subscription",
           "currentPlan": "Current Plan",
@@ -3369,7 +3293,7 @@
           "nextBillingDate": "Next Billing Date",
           "daysRemaining": "Days Remaining",
           "days": "Days",
-          "noActiveSubscription":"No active subscription",
+          "noActiveSubscription": "No active subscription",
           "viewPlans": "View Plans",
           "paymentMethod": "Payment Method",
           "notSet": "Not Set",
@@ -3385,7 +3309,6 @@
           "invoiceNumber": "Invoice Number",
           "status": "Status",
           "action": "Action",
-
           "checkPaymentButton": "Check Payment",
           "cancelSubscriptionButton": "Cancel Subscription",
           "reactivateButton": "Reactivate",
@@ -3394,7 +3317,6 @@
           "completePaymentButton": "Complete Payment",
           "goToPaymentPageButton": "Go to Payment Page",
           "pdfLink": "PDF",
-
           "cancelModal": {
             "title": "Cancel Subscription",
             "confirmText": "Are you sure you want to cancel your subscription?",
@@ -3425,7 +3347,6 @@
           "currentEmailPlaceholder": "Enter your current email",
           "newEmail": "New Email",
           "newEmailPlaceholder": "Enter your new email",
-
           "changePasswordTitle": "Change Password",
           "currentPassword": "Current Password",
           "currentPasswordPlaceholder": "Enter your current password",
@@ -3443,13 +3364,11 @@
           "deleteAccountTitle": "Delete Account",
           "deleteAccountSubtitle": "Deleting your account is permanent and will remove all associated data. This action cannot be undone.",
           "deleteButton": "Delete Account",
-
           "strength": {
             "minLength": "8 characters minimum",
             "hasNumber": "Contains a number",
             "hasSymbol": "Contains a symbol"
           },
-
           "deleteModal": {
             "confirmText": "This permanently deactivates your account and cancels any active subscription immediately - you won't be able to log back in. This can't be undone. Enter your password to confirm.",
             "passwordPlaceholder": "Your password",
@@ -3458,7 +3377,6 @@
             "deleting": "Deleting...",
             "incorrectPassword": "Incorrect password. Please try again."
           },
-
           "saveButton": "Save Changes"
         }
       },
@@ -3489,42 +3407,36 @@
         "approachingLimit": "Approaching limit ({percent}% used)",
         "limitReached": "Limit reached. Upgrade your plan to add more."
       },
-       "evaluationManagement": {
+      "evaluationManagement": {
         "title": "Evaluation Management",
         "addBulkSchedule": "Add Bulk Schedule",
-
         "tabs": {
           "scheduled": "Scheduled",
           "inProgress": "In Progress",
           "completed": "Completed"
         },
-
         "filters": {
           "type": "Evaluation Type",
           "role": "Job Role",
           "language": "Language"
         },
-
         "types": {
           "interview": "Interview",
           "assessment": "Assessment",
           "technicalTest": "Technical Test",
           "languageProficiency": "Language Proficiency"
         },
-
         "roles": {
           "elderCompanion": "Elder Companion",
           "cook": "Cook",
           "maintenance": "Maintenance",
           "housekeeper": "Housekeeper"
         },
-
         "languages": {
           "english": "English",
           "arabic": "Arabic",
           "french": "French"
         },
-
         "status": {
           "inProgress": "In Progress",
           "scheduled": "Scheduled",
@@ -3536,50 +3448,49 @@
         "noEvaluationsFound": "No evaluations found",
         "noDate": "No date"
       },
-       "candidateList": {
-      "title": "Candidate List",
-      "table": {
-        "name": "Name",
-        "role": "Role",
-        "notes": "Notes",
-        "evaluation": "Evaluation",
-        "action": "Action",
-        "viewResults": "View Results",
-        "noResultsYet": "No completed evaluations yet",
-        "noEvaluations": "No evaluations"
+      "candidateList": {
+        "title": "Candidate List",
+        "table": {
+          "name": "Name",
+          "role": "Role",
+          "notes": "Notes",
+          "evaluation": "Evaluation",
+          "action": "Action",
+          "viewResults": "View Results",
+          "noResultsYet": "No completed evaluations yet",
+          "noEvaluations": "No evaluations"
+        },
+        "roles": {
+          "houseKeeper": "HouseKeeper",
+          "nanny": "Nanny",
+          "elderCompanion": "Elder Companion",
+          "kitchenAssistant": "Kitchen Assistant",
+          "maintenanceWorker": "Maintenance Worker"
+        },
+        "notes": {
+          "needsMoreEvaluation": "Needs more evaluation"
+        },
+        "pagination": {
+          "rowsPerPage": "Rows per page"
+        }
       },
-      "roles": {
-        "houseKeeper": "HouseKeeper",
-        "nanny": "Nanny",
-        "elderCompanion": "Elder Companion",
-        "kitchenAssistant": "Kitchen Assistant",
-        "maintenanceWorker": "Maintenance Worker"
+      "candidateComparison": {
+        "title": "Candidate Comparison",
+        "averageScore": "Average Score",
+        "accepted": "Accepted",
+        "rejected": "Rejected",
+        "loading": "Loading comparison data...",
+        "noData": "No candidate comparison data available",
+        "showingTop": "Showing top {count, plural, one {# candidate} other {# candidates}} by average score",
+        "roles": {
+          "agent": "Agent",
+          "housekeeper": "Housekeeper",
+          "maintenance": "Maintenance",
+          "cleaner": "Cleaner",
+          "sales": "Sales"
+        }
       },
-      "notes": {
-        "needsMoreEvaluation": "Needs more evaluation"
-      },
-      "pagination": {
-        "rowsPerPage": "Rows per page"
-      }
-    },
-    
-    "candidateComparison": {
-      "title": "Candidate Comparison",
-      "averageScore": "Average Score",
-      "accepted": "Accepted",
-      "rejected": "Rejected",
-      "loading": "Loading comparison data...",
-      "noData": "No candidate comparison data available",
-      "showingTop": "Showing top {count, plural, one {# candidate} other {# candidates}} by average score",
-      "roles": {
-        "agent": "Agent",
-        "housekeeper": "Housekeeper",
-        "maintenance": "Maintenance",
-        "cleaner": "Cleaner",
-        "sales": "Sales"
-      }
-    },
-     "dashboard": {
+      "dashboard": {
         "packageExpires": "Package expires in {days} days!",
         "search": "Search...",
         "notification": "Notification",
@@ -3604,90 +3515,82 @@
           "newReport": "New Report Ready"
         }
       },
-  
-  "pointConsumption": {
-    "title": "Point Consumption by Service",
-    "noData": "No job role data available",
-    "services": {
-      "cleaner": "Cleaner",
-      "cook": "Cook",
-      "companion": "Companion",
-      "nanny": "Nanny",
-      "others": "Others"
-    }
-  },
-  "statusDistribution": {
-    "title": "Evaluation Status",
-    "status": {
-      "COMPLETED": "Completed",
-      "SCHEDULED": "Scheduled",
-      "RESCHEDULED": "Rescheduled",
-      "CANCELLED": "Cancelled",
-      "NO_SHOW": "No Show"
-    }
-  },
-  "timeRange": {
-    "title": "Evaluations by Time of Day",
-    "buckets": {
-      "morning": "Morning (6am-12pm)",
-      "afternoon": "Afternoon (12pm-6pm)",
-      "evening": "Evening (6pm-12am)",
-      "night": "Night (12am-6am)"
-    },
-    "tabs": {
-      "monthly": "Monthly",
-      "quarterly": "Quarterly",
-      "yearly": "Yearly"
-    },
-    "months": {
-      "jan": "Jan",
-      "feb": "Feb",
-      "mar": "Mar",
-      "apr": "Apr",
-      "may": "May",
-      "jun": "Jun"
-    }
-  },
-
-  "scheduleEvaluation": {
+      "pointConsumption": {
+        "title": "Point Consumption by Service",
+        "noData": "No job role data available",
+        "services": {
+          "cleaner": "Cleaner",
+          "cook": "Cook",
+          "companion": "Companion",
+          "nanny": "Nanny",
+          "others": "Others"
+        }
+      },
+      "statusDistribution": {
+        "title": "Evaluation Status",
+        "status": {
+          "COMPLETED": "Completed",
+          "SCHEDULED": "Scheduled",
+          "RESCHEDULED": "Rescheduled",
+          "CANCELLED": "Cancelled",
+          "NO_SHOW": "No Show"
+        }
+      },
+      "timeRange": {
+        "title": "Evaluations by Time of Day",
+        "buckets": {
+          "morning": "Morning (6am-12pm)",
+          "afternoon": "Afternoon (12pm-6pm)",
+          "evening": "Evening (6pm-12am)",
+          "night": "Night (12am-6am)"
+        },
+        "tabs": {
+          "monthly": "Monthly",
+          "quarterly": "Quarterly",
+          "yearly": "Yearly"
+        },
+        "months": {
+          "jan": "Jan",
+          "feb": "Feb",
+          "mar": "Mar",
+          "apr": "Apr",
+          "may": "May",
+          "jun": "Jun"
+        }
+      },
+      "scheduleEvaluation": {
         "title": "Schedule Evaluation",
         "addBulkSchedule": "Select Candidate",
         "cancel": "Cancel",
         "schedule": "Schedule",
-
         "filters": {
           "type": "Email",
           "role": "Job Role",
           "language": "Evaluation Date / Language"
         },
-
         "roles": {
           "elderCompanion": "Elder Companion",
           "cook": "Cook",
           "maintenance": "Maintenance",
           "housekeeper": "Housekeeper"
         },
-
         "languages": {
           "english": "English",
           "arabic": "Arabic",
           "french": "French"
         },
-
         "types": {
           "interview": "Interview",
           "assessment": "Assessment",
           "technicalTest": "Technical Test",
           "languageProficiency": "Language Proficiency"
         },
-
         "placeholders": {
           "email": "email@example.com"
         }
       },
       "notifications": {
         "title": "Notifications",
-
         "items": {
           "comment": {
             "title": "{name} sent you a comment",
@@ -3706,7 +3609,6 @@
             "message": "Download and review"
           }
         },
-
         "time": {
           "daysAgo": "{value} days ago",
           "hoursAgo": "{value}h ago",
@@ -3756,18 +3658,7 @@
           "restartingReview": "{message} Restarting from document review."
         }
       }
-
-
-
-
-
-
-
-
-}
-
-
- 
+    }
   },
   "zodErrors": {
     "email_required": "Email is required",
