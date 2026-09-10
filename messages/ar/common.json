@@ -2009,6 +2009,38 @@
           "stripe": "سترايب",
           "paypal": "باي بال",
           "google": "الدفع"
+        },
+        "tabs": {
+          "subscriptions": "الاشتراكات",
+          "invoices": "الفواتير"
+        },
+        "invoices": {
+          "search": "ابحث باسم العميل أو البريد الإلكتروني أو رقم الفاتورة...",
+          "filters": {
+            "allStatus": "جميع الحالات"
+          },
+          "table": {
+            "customer": "العميل",
+            "invoiceNumber": "رقم الفاتورة",
+            "amount": "المبلغ",
+            "status": "الحالة",
+            "date": "التاريخ",
+            "actions": "الإجراءات"
+          },
+          "noInvoicesFound": "لا توجد فواتير",
+          "noPdfYet": "لا يوجد ملف PDF بعد",
+          "download": "تنزيل",
+          "send": "إرسال إلى العميل",
+          "sending": "جارٍ الإرسال...",
+          "sendSuccess": "تم إرسال الفاتورة إلى {email}",
+          "sendFailed": "فشل إرسال الفاتورة. يرجى المحاولة مرة أخرى.",
+          "statusLabels": {
+            "DRAFT": "مسودة",
+            "OPEN": "مفتوحة",
+            "PAID": "مدفوعة",
+            "VOID": "ملغاة",
+            "UNCOLLECTIBLE": "غير قابلة للتحصيل"
+          }
         }
       }
     },

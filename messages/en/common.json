@@ -1982,6 +1982,38 @@
           "stripe": "Stripe",
           "paypal": "PayPal",
           "google": "Pay"
+        },
+        "tabs": {
+          "subscriptions": "Subscriptions",
+          "invoices": "Invoices"
+        },
+        "invoices": {
+          "search": "Search by customer name, email, or invoice number...",
+          "filters": {
+            "allStatus": "All Status"
+          },
+          "table": {
+            "customer": "Customer",
+            "invoiceNumber": "Invoice",
+            "amount": "Amount",
+            "status": "Status",
+            "date": "Date",
+            "actions": "Actions"
+          },
+          "noInvoicesFound": "No invoices found",
+          "noPdfYet": "No PDF yet",
+          "download": "Download",
+          "send": "Send to customer",
+          "sending": "Sending...",
+          "sendSuccess": "Invoice sent to {email}",
+          "sendFailed": "Failed to send invoice. Please try again.",
+          "statusLabels": {
+            "DRAFT": "Draft",
+            "OPEN": "Open",
+            "PAID": "Paid",
+            "VOID": "Void",
+            "UNCOLLECTIBLE": "Uncollectible"
+          }
         }
       }
     },
