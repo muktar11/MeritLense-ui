@@ -3549,7 +3549,8 @@
           "increase": "زيادة {value}%",
           "totalEvaluations": "{value} تقييم إجمالاً",
           "basedOnEvaluations": "بناءً على {value} تقييم",
-          "noActivePlan": "لا توجد خطة نشطة"
+          "noActivePlan": "لا توجد خطة نشطة",
+          "unlimitedPlan": "خطة غير محدودة"
         },
         "quickAction": "إجراء سريع",
         "buyPoints": "شراء {value} نقاط",
