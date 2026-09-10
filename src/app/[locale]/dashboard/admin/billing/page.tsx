@@ -30,6 +30,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { InvoicesTab } from "./components/invoices-tab"
 import {
   Download,
   Search,
@@ -172,6 +174,13 @@ export default function BillingAndSubscriptions() {
           </div>
         </div>
 
+        <Tabs defaultValue="subscriptions">
+          <TabsList>
+            <TabsTrigger value="subscriptions">{t("tabs.subscriptions")}</TabsTrigger>
+            <TabsTrigger value="invoices">{t("tabs.invoices")}</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="subscriptions" className="space-y-6 mt-6">
         {/* Stats Cards */}
         {statsLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -410,6 +419,12 @@ export default function BillingAndSubscriptions() {
             </>
           )}
         </Card>
+          </TabsContent>
+
+          <TabsContent value="invoices" className="mt-6">
+            <InvoicesTab />
+          </TabsContent>
+        </Tabs>
       </div>
 
       <Dialog open={viewingSubscription !== null} onOpenChange={(open) => !open && setViewingSubscription(null)}>
