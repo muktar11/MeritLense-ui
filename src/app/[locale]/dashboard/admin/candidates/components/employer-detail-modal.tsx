@@ -1,13 +1,15 @@
 // app/dashboard/admin/candidates/components/employer-detail-modal.tsx
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Fragment } from "react";
 import { Dialog, Transition } from '@headlessui/react';
-import { X, Mail, User, Calendar, CheckCircle, XCircle, Clock, Building2, Phone, MapPin, Briefcase, FileText, Users, Loader2 } from "lucide-react";
+import { X, Mail, User, Calendar, CheckCircle, XCircle, Clock, Building2, Phone, MapPin, Briefcase, FileText, Users, Loader2, FileSignature } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import employerService from "@/app/api/admin/employers/endpoints";
 import type { Employer } from "@/app/api/admin/employers/types";
+import agreementService from "@/app/api/agreements/endpoints";
+import type { Agreement } from "@/app/api/agreements/types";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
 
@@ -23,8 +25,31 @@ export function EmployerDetailModal({ isOpen, onClose, employer, onVerified }: E
   const locale = useLocale();
   const [actionLoading, setActionLoading] = useState<'approve' | 'reject' | null>(null);
   const [actionError, setActionError] = useState("");
+  const [contracts, setContracts] = useState<Agreement[]>([]);
+  const [contractsLoading, setContractsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen || !employer || employer.role !== 'B2B') {
+      setContracts([]);
+      return;
+    }
+    setContractsLoading(true);
+    agreementService.getAdminUserAgreements(employer.id)
+      .then((data) => setContracts(data.filter((a) => a.status === 'SIGNED')))
+      .catch(() => setContracts([]))
+      .finally(() => setContractsLoading(false));
+  }, [isOpen, employer]);
 
   if (!employer) return null;
+
+  const handleViewContract = async (agreementId: string) => {
+    try {
+      const { url } = await agreementService.getDownloadUrl(agreementId);
+      window.open(url, '_blank', 'noopener,noreferrer');
+    } catch (error) {
+      console.error('Failed to load contract PDF:', error);
+    }
+  };
 
   const handleApprove = async () => {
     setActionError("");
@@ -276,6 +301,45 @@ export function EmployerDetailModal({ isOpen, onClose, employer, onVerified }: E
                       })}
                     </div>
                   </div>
+
+                  {/* Signed Contracts (B2B only) */}
+                  {!isB2C && (
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-700 mb-3">{t("detailModal.contractsHeading")}</h4>
+                      {contractsLoading ? (
+                        <div className="flex justify-center py-4">
+                          <Loader2 className="w-5 h-5 animate-spin text-purple-500" />
+                        </div>
+                      ) : contracts.length === 0 ? (
+                        <p className="text-sm text-gray-400">{t("detailModal.noContracts")}</p>
+                      ) : (
+                        <div className="space-y-2">
+                          {contracts.map((contract) => (
+                            <div key={contract.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                              <div className="flex items-center gap-2">
+                                <FileSignature className="w-4 h-4 text-gray-400" />
+                                <div>
+                                  <p className="text-sm text-gray-700">{contract.agreement_type_display}</p>
+                                  <p className="text-xs text-gray-500">
+                                    {contract.accepted_at &&
+                                      t("detailModal.contractSignedOn", {
+                                        date: format(new Date(contract.accepted_at), 'MMM d, yyyy', locale === 'ar' ? { locale: ar } : undefined),
+                                      })}
+                                  </p>
+                                </div>
+                              </div>
+                              <button
+                                onClick={() => handleViewContract(contract.id)}
+                                className="text-sm text-purple-600 hover:text-purple-800 font-medium"
+                              >
+                                {t("detailModal.viewContract")}
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   {/* Document verification actions */}
                   {actionError && (
