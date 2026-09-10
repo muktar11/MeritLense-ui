@@ -130,10 +130,20 @@ export function Dashboard() {
     )
   }
 
-  const evaluationUsage = subscription?.usage_percentages?.["evaluation_limit"]
-  const remainingPoints = evaluationUsage
-    ? Math.max(0, evaluationUsage.limit - evaluationUsage.used)
-    : null
+  // Remaining Points must come from stats.remaining_points (the real
+  // PackageBalance ledger via EntitlementService) - NOT from
+  // subscription.usage_percentages, which is keyed by each Price's own
+  // feature_limits (e.g. "points_granted" for real B2C packages, or
+  // "evaluation_limit" for a plan-level evaluation cap). Those are a
+  // different number under a different key, so reading them here always
+  // showed "No active plan" for every real B2C package.
+  const pointsUnlimited = stats?.points_unlimited ?? false
+  const remainingPoints = stats?.remaining_points ?? null
+  const pointsLimit = stats?.points_limit ?? null
+  const pointsUsedPercentage =
+    pointsLimit && pointsLimit > 0 && remainingPoints !== null
+      ? Math.round(((pointsLimit - remainingPoints) / pointsLimit) * 100)
+      : null
 
   return (
     <div className="min-h-screen bg-background">
@@ -193,11 +203,13 @@ export function Dashboard() {
             />
             <MetricCard
               title={t("metrics.remainingPoints")}
-              value={remainingPoints !== null ? remainingPoints.toString() : "-"}
+              value={pointsUnlimited ? "∞" : remainingPoints !== null ? remainingPoints.toString() : "-"}
               change={
-                evaluationUsage
-                  ? t("metrics.usedThisMonth", { value: Math.round(evaluationUsage.percentage) })
-                  : t("metrics.noActivePlan")
+                pointsUnlimited
+                  ? t("metrics.unlimitedPlan")
+                  : pointsUsedPercentage !== null
+                    ? t("metrics.usedThisMonth", { value: pointsUsedPercentage })
+                    : t("metrics.noActivePlan")
               }
               icon="🎯"
             />

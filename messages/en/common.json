@@ -3541,7 +3541,8 @@
           "increase": "{value}% increase",
           "totalEvaluations": "{value} total evaluations",
           "basedOnEvaluations": "Based on {value} evaluations",
-          "noActivePlan": "No active plan"
+          "noActivePlan": "No active plan",
+          "unlimitedPlan": "Unlimited plan"
         },
         "quickAction": "Quick Action",
         "buyPoints": "Buy {value} points",
