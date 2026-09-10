@@ -66,6 +66,14 @@ class AgreementService {
     const response = await apiClient.get(`${this.baseURL}audit/${agreementId}`);
     return response.data;
   }
+
+  // Admin/SuperAdmin only - every agreement (signed, pending, superseded)
+  // for one user, e.g. to review a company's signed B2B Agreement before
+  // approving/rejecting the account.
+  async getAdminUserAgreements(userId: string | number): Promise<Agreement[]> {
+    const response = await apiClient.get(`${this.baseURL}admin/user/${userId}`);
+    return response.data;
+  }
 }
 
 export default new AgreementService();

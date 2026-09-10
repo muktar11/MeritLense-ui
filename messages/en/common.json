@@ -997,7 +997,11 @@
           "rejectPrompt": "Reason for rejecting these documents (shown to the user):",
           "rejectDocuments": "Reject Documents",
           "approveDocuments": "Approve Documents",
-          "close": "Close"
+          "close": "Close",
+          "contractsHeading": "Signed Contracts",
+          "noContracts": "No signed contracts yet.",
+          "viewContract": "View PDF",
+          "contractSignedOn": "Signed {date}"
         },
         "roles": {
           "B2C": "Individual",
