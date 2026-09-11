@@ -2066,6 +2066,7 @@
         "notifications": "الإشعارات والتنبيهات",
         "system_configuration": "ملف الشركة"
       },
+      "sidebarLocked": "وقّع اتفاقية خدمات الأعمال (B2B) واتفاقية معالجة البيانات (DPA) لفتح هذه الصفحة",
       "overview": {
         "package": {
           "expires": "تنتهي الباقة خلال {days} أيام!",
