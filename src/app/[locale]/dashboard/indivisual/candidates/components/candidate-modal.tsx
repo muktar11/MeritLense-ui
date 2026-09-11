@@ -296,13 +296,19 @@ export function CandidateModal({
       if (error.response?.data) {
         const backendErrors: Record<string, string> = {}
         Object.entries(error.response.data).forEach(([key, value]) => {
+          // DRF's non-field errors (e.g. PermissionDenied - "you've reached
+          // your candidate limit") come back as `detail` or
+          // `non_field_errors`, not a real form field name - route those to
+          // `form`, the only error key this modal actually renders, so they
+          // don't silently disappear.
+          const targetKey = key === 'detail' || key === 'non_field_errors' ? 'form' : key
           if (Array.isArray(value)) {
-            backendErrors[key] = value[0]
+            backendErrors[targetKey] = value[0]
           } else if (typeof value === 'string') {
-            backendErrors[key] = value
+            backendErrors[targetKey] = value
           }
         })
-        setErrors(backendErrors)
+        setErrors(Object.keys(backendErrors).length ? backendErrors : { form: t("errors.saveFailed") })
       } else {
         setErrors({ form: t("errors.saveFailed") })
       }
