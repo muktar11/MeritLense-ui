@@ -9,6 +9,7 @@ import {
   LogOut,
   Menu,
   X,
+  Lock,
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -26,6 +27,11 @@ interface SidebarItem {
   label: string;
   icon: LucideIcon;
   href: string;
+  // When true, the item renders greyed-out and non-navigable instead of a
+  // Link (e.g. the B2C sidebar before the individual employer has signed
+  // the agreement). `disabledTooltip` explains why, shown on hover.
+  disabled?: boolean;
+  disabledTooltip?: string;
 }
 
 interface DashboardLayoutProps {
@@ -99,6 +105,28 @@ function SidebarContent({
           const normalize = (path: string) => path.replace(/\/+$/, "") || "/";
           const isActive = normalize(pathname) === normalize(item.href);
           const Icon = item.icon;
+
+          if (item.disabled) {
+            return (
+              <div
+                key={item.href}
+                aria-disabled="true"
+                title={collapsed ? item.label : item.disabledTooltip}
+                className={cn(
+                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 cursor-not-allowed select-none",
+                  collapsed && "justify-center"
+                )}
+              >
+                <Icon className="h-5 w-5 shrink-0" />
+                {!collapsed && (
+                  <>
+                    <span className="font-medium flex-1">{item.label}</span>
+                    <Lock className="h-3.5 w-3.5 shrink-0" />
+                  </>
+                )}
+              </div>
+            );
+          }
 
           return (
             <Link

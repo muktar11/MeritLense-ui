@@ -3,7 +3,7 @@
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Breadcrumb } from "@/components/app/Breadcrumb";
 import AuthGuard from "@/components/auth/AuthGuard";
-import { AgreementGuard } from "./components/agreement-guard";
+import { AgreementGuard, useB2CAgreementStatus } from "./components/agreement-guard";
 
 import {
   LayoutDashboard,
@@ -33,12 +33,20 @@ export default function AdminLayout({
 
   const locale = useLocale(); // ✅ get current locale
 
+  const agreementStatus = useB2CAgreementStatus();
+  // Profile stays reachable while unsigned - it hosts the "Sign Agreement"
+  // entry point. Every other page is gated until the B2C Agreement is signed.
+  const lockedUntilSigned = agreementStatus !== "signed";
+  const disabledTooltip = t("sidebarLocked");
+
   const BUSINESS_SIDEBAR_ITEMS = useMemo(
     () => [
       {
         label: t("pages_list.overview"),
         icon: LayoutDashboard,
         href: `/${locale}/dashboard/indivisual`,
+        disabled: lockedUntilSigned,
+        disabledTooltip,
       },
       {
         label: t("pages_list.profile_management"),
@@ -49,31 +57,39 @@ export default function AdminLayout({
         label: t("pages_list.candidate_management"),
         icon: Users,
         href: `/${locale}/dashboard/indivisual/candidates`,
+        disabled: lockedUntilSigned,
+        disabledTooltip,
       },
       {
         label: t("pages_list.evaluation_setup"),
         icon: ClipboardList,
         href: `/${locale}/dashboard/indivisual/evaluations`,
+        disabled: lockedUntilSigned,
+        disabledTooltip,
       },
       {
         label: t("pages_list.assessments_monitor"),
         icon: Building2,
         href: `/${locale}/dashboard/indivisual/score-management`,
+        disabled: lockedUntilSigned,
+        disabledTooltip,
       },
-      
+
     {
         label: t("pages_list.packages_subscription"),
         icon: Package,
         href: `/${locale}/dashboard/indivisual/payment`,
+        disabled: lockedUntilSigned,
+        disabledTooltip,
       },
-     
+
     ],
-    [t, locale]
+    [t, locale, lockedUntilSigned, disabledTooltip]
   );
 
   return (
     <AuthGuard allowedRoles={["B2C"]}>
-      <AgreementGuard>
+      <AgreementGuard status={agreementStatus}>
         <DashboardLayout
           sidebarItems={BUSINESS_SIDEBAR_ITEMS}
           userType={t("user_type")}
