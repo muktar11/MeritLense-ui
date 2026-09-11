@@ -3,7 +3,7 @@
 import type React from "react"
 import { Suspense, useState } from "react"
 import { useRouter, usePathname } from "next/navigation"
-import { Upload, Loader2, CheckCircle } from "lucide-react"
+import { Upload, Loader2, CheckCircle, Eye, EyeOff } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -30,6 +30,8 @@ function EmployerRegistrationContent() {
   const pathname = usePathname()
   const locale = pathname.split("/")[1]
   const { registerB2B, loading, error } = useAuth()
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const [formData, setFormData] = useState({
     email: "",
@@ -249,28 +251,48 @@ function EmployerRegistrationContent() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="password">Password *</Label>
-                  <Input
-                    id="password"
-                    name="password"
-                    type="password"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    placeholder="Min. 8 characters"
-                    className={`h-11 ${formErrors.password ? "border-destructive" : ""}`}
-                  />
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      placeholder="Min. 8 characters"
+                      className={`h-11 pr-10 ${formErrors.password ? "border-destructive" : ""}`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      tabIndex={-1}
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
                   <FieldError field="password" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="confirm_password">Confirm Password *</Label>
-                  <Input
-                    id="confirm_password"
-                    name="confirm_password"
-                    type="password"
-                    value={formData.confirm_password}
-                    onChange={handleInputChange}
-                    placeholder="Confirm password"
-                    className={`h-11 ${formErrors.confirm_password ? "border-destructive" : ""}`}
-                  />
+                  <div className="relative">
+                    <Input
+                      id="confirm_password"
+                      name="confirm_password"
+                      type={showConfirmPassword ? "text" : "password"}
+                      value={formData.confirm_password}
+                      onChange={handleInputChange}
+                      placeholder="Confirm password"
+                      className={`h-11 pr-10 ${formErrors.confirm_password ? "border-destructive" : ""}`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      tabIndex={-1}
+                    >
+                      {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
                   <FieldError field="confirm_password" />
                 </div>
               </div>
