@@ -42,6 +42,11 @@ export default function AdminLayout({
         disabledTooltip,
       },
       {
+        label: t("pages_list.system_configuration"),
+        icon: Settings,
+        href: `/${locale}/dashboard/business/company-profile`,
+      },
+      {
         label: t("pages_list.candidate_management"),
         icon: Users,
         href: `/${locale}/dashboard/business/candidates`,
@@ -55,11 +60,6 @@ export default function AdminLayout({
         href: `/${locale}/dashboard/business/score-management`,
         disabled: lockedUntilSigned,
         disabledTooltip,
-      },
-      {
-        label: t("pages_list.system_configuration"),
-        icon: Settings,
-        href: `/${locale}/dashboard/business/company-profile`,
       },
       {
         label: t("pages_list.audit_logs"),
