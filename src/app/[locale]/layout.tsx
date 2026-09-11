@@ -2,6 +2,7 @@
 import { NextIntlClientProvider } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
+import { Toaster } from "sonner";
 import { locales, rtlLocales, type Locale } from "@/config/locales";
 
 
@@ -46,6 +47,7 @@ export default async function LocaleLayout({
     <div lang={locale} dir={isRtl ? "rtl" : "ltr"}>
       <NextIntlClientProvider locale={locale} messages={messages}>
         {children}
+        <Toaster richColors position={isRtl ? "top-left" : "top-right"} dir={isRtl ? "rtl" : "ltr"} />
       </NextIntlClientProvider>
     </div>
   );
