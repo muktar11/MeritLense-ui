@@ -2781,7 +2781,10 @@
           "passportMismatch": "This passport doesn't appear to match the uploaded photo ({score}% match). Please upload a different passport document.",
           "saveFailed": "Failed to save candidate. Please try again.",
           "deleteFailed": "Failed to delete candidate. Please try again.",
-          "confirmDelete": "Are you sure you want to delete this candidate?"
+          "confirmDelete": "Are you sure you want to delete this candidate?",
+          "limitReachedTitle": "Candidate limit reached",
+          "limitReachedDescription": "Upgrade your plan to add more candidates. Redirecting you to packages...",
+          "upgradeButton": "View Packages"
         },
         "photo": {
           "label": "Photo",

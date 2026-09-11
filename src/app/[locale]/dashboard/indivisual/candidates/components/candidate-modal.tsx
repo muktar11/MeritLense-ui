@@ -1,7 +1,9 @@
 "use client"
 
 import { useState, useEffect, Fragment } from "react"
-import { useTranslations } from "next-intl"
+import { useRouter } from "next/navigation"
+import { useTranslations, useLocale } from "next-intl"
+import { toast } from "sonner"
 import {
   X,
   Upload,
@@ -46,6 +48,8 @@ export function CandidateModal({
   const t = useTranslations("dashboard.candidates.modal")
   const tRoles = useTranslations("dashboard.candidates.table.candidateRoles")
   const tLanguages = useTranslations("dashboard.indivisual.settings.edit-profile-tab.languages")
+  const router = useRouter()
+  const locale = useLocale()
   
   const [formData, setFormData] = useState<CandidateFormData>({
     first_name: "",
@@ -293,6 +297,14 @@ export function CandidateModal({
       onClose()
     } catch (error: any) {
       console.error('Failed to save candidate:', error)
+      if (error.response?.data?.code === 'candidate_limit_reached') {
+        toast.error(t("errors.limitReachedTitle"), {
+          description: t("errors.limitReachedDescription"),
+        })
+        onClose()
+        router.push(`/${locale}/dashboard/indivisual/payment`)
+        return
+      }
       if (error.response?.data) {
         const backendErrors: Record<string, string> = {}
         Object.entries(error.response.data).forEach(([key, value]) => {
