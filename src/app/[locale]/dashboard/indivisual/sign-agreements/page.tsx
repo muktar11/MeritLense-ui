@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { CheckCircle2, Loader2, ShieldCheck, FileText } from "lucide-react";
 import agreementService from "@/app/api/agreements/endpoints";
@@ -13,6 +13,12 @@ export default function SignAgreementPage() {
   const t = useTranslations("dashboard.indivisual.signAgreements");
   const router = useRouter();
   const locale = useLocale();
+  const pathname = usePathname();
+  // Read directly off the URL rather than next-intl's locale context: the
+  // language sent to the backend determines which document the user
+  // actually reviews and legally signs, so it must never lag a language
+  // switch or a stale client render - the URL segment is always current.
+  const docLang: "en" | "ar" = pathname?.split("/")[1] === "ar" ? "ar" : "en";
 
   const [step, setStep] = useState<Step>("loading");
   const [previewHtml, setPreviewHtml] = useState("");
@@ -47,7 +53,7 @@ export default function SignAgreementPage() {
           return;
         }
 
-        const preview = await agreementService.getPreview("B2C_AGREEMENT", locale === "ar" ? "ar" : "en");
+        const preview = await agreementService.getPreview("B2C_AGREEMENT", docLang);
         if (!active) return;
         setPreviewHtml(preview.html);
         setStep("review");
@@ -59,7 +65,7 @@ export default function SignAgreementPage() {
     return () => {
       active = false;
     };
-  }, [locale]);
+  }, [docLang]);
 
   useEffect(() => {
     if (secondsLeft <= 0) return;
@@ -106,7 +112,7 @@ export default function SignAgreementPage() {
       const res = await agreementService.signInitiate({
         agreement_types: ["B2C_AGREEMENT"],
         signatory_name: signatoryName.trim(),
-        language: locale === "ar" ? "ar" : "en",
+        language: docLang,
       });
       setOtpReference(res.otp_reference);
       setSentTo(res.sent_to);
