@@ -47,7 +47,7 @@ export default function SignAgreementPage() {
           return;
         }
 
-        const preview = await agreementService.getPreview("B2C_AGREEMENT");
+        const preview = await agreementService.getPreview("B2C_AGREEMENT", locale === "ar" ? "ar" : "en");
         if (!active) return;
         setPreviewHtml(preview.html);
         setStep("review");
@@ -59,7 +59,7 @@ export default function SignAgreementPage() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [locale]);
 
   useEffect(() => {
     if (secondsLeft <= 0) return;
@@ -106,6 +106,7 @@ export default function SignAgreementPage() {
       const res = await agreementService.signInitiate({
         agreement_types: ["B2C_AGREEMENT"],
         signatory_name: signatoryName.trim(),
+        language: locale === "ar" ? "ar" : "en",
       });
       setOtpReference(res.otp_reference);
       setSentTo(res.sent_to);
