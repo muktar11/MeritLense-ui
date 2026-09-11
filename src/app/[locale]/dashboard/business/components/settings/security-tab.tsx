@@ -4,11 +4,13 @@ import type React from "react"
 import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { useProfile } from "../../../../../hooks/useProfile"
+import { useAuth } from "../../../../../hooks/useAuth"
 import { Loader2, CheckCircle, AlertCircle } from "lucide-react"
 
 export default function SecurityTab() {
   const t = useTranslations("dashboard.indivisual.settings.security-tab")
   const { changePassword, loading, error } = useProfile()
+  const { logout } = useAuth()
 
   const [formData, setFormData] = useState({
     current_password: "",
@@ -48,7 +50,11 @@ export default function SecurityTab() {
         new_password: "",
         confirm_new_password: "",
       })
-      setTimeout(() => setSuccess(false), 5000)
+      // The backend invalidates every session on a successful password
+      // change (including this one) - sign out here rather than leaving
+      // the user in a session that's about to 401 on its next request.
+      // AuthGuard picks up the cleared auth state and redirects to login.
+      setTimeout(() => logout(), 2500)
     }
   }
 

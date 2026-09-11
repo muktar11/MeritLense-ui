@@ -3396,7 +3396,7 @@
           "buttonChanging": "Changing...",
           "success": {
             "title": "Password Changed Successfully",
-            "message": "Your password has been updated. Please use your new password next time you log in."
+            "message": "Your password has been updated. For your security, you'll be signed out now - log back in with your new password."
           },
           "deleteAccountTitle": "Delete Account",
           "deleteAccountSubtitle": "Deleting your account is permanent and will remove all associated data. This action cannot be undone.",

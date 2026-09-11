@@ -60,7 +60,11 @@ export default function SecurityTab() {
         new_password: "",
         confirm_new_password: "",
       })
-      setTimeout(() => setSuccess(false), 5000)
+      // The backend invalidates every session on a successful password
+      // change (including this one) - sign out here rather than leaving
+      // the user in a session that's about to 401 on its next request.
+      // AuthGuard picks up the cleared auth state and redirects to login.
+      setTimeout(() => logout(), 2500)
     }
   }
 
