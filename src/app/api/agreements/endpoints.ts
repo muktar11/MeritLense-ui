@@ -27,8 +27,9 @@ class AgreementService {
     return response.data;
   }
 
-  async getPreview(agreementType: AgreementType): Promise<AgreementPreview> {
-    const response = await apiClient.get(`${this.baseURL}preview/${agreementType}`);
+  async getPreview(agreementType: AgreementType, lang?: 'en' | 'ar'): Promise<AgreementPreview> {
+    const query = lang ? `?lang=${lang}` : '';
+    const response = await apiClient.get(`${this.baseURL}preview/${agreementType}${query}`);
     return response.data;
   }
 

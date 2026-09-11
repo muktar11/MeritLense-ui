@@ -8,6 +8,7 @@ export type AgreementType =
 
 export type AgreementMethod = 'CHECKBOX' | 'OTP_SIGNATURE';
 export type AgreementStatus = 'PENDING' | 'SIGNED' | 'SUPERSEDED';
+export type AgreementLanguage = 'en' | 'ar';
 
 export interface Agreement {
   id: string;
@@ -18,6 +19,7 @@ export interface Agreement {
   status: AgreementStatus;
   status_display: string;
   signatory_name: string;
+  language: AgreementLanguage;
   accepted_at: string | null;
   contract_id: string;
   signed_pdf_url: string | null;
@@ -36,6 +38,7 @@ export interface SignInitiateRequest {
   agreement_types: AgreementType[];
   signatory_name: string;
   authorized_signatory_confirmed?: boolean;
+  language?: AgreementLanguage;
 }
 
 export interface SignInitiateResponse {
