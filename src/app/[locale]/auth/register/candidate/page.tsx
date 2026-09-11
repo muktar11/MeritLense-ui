@@ -4,7 +4,7 @@ import type React from "react"
 import { useState } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import { useTranslations } from "next-intl"
-import { Upload, Loader2, FileText, CheckCircle } from "lucide-react"
+import { Upload, Loader2, FileText, CheckCircle, Eye, EyeOff } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -24,6 +24,8 @@ export default function CandidateRegistrationPage() {
   const pathname = usePathname()
   const locale = pathname.split("/")[1]
   const { registerB2C, loading, error } = useAuth()
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const [formData, setFormData] = useState({
     email: "",
@@ -192,28 +194,48 @@ export default function CandidateRegistrationPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="password">{t("fields.password")} *</Label>
-                  <Input
-                    id="password"
-                    name="password"
-                    type="password"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    placeholder={t("placeholders.password")}
-                    className={`h-11 ${formErrors.password ? "border-destructive" : ""}`}
-                  />
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      placeholder={t("placeholders.password")}
+                      className={`h-11 pr-10 ${formErrors.password ? "border-destructive" : ""}`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      tabIndex={-1}
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
                   <FieldError field="password" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="confirm_password">{t("fields.confirmPassword")} *</Label>
-                  <Input
-                    id="confirm_password"
-                    name="confirm_password"
-                    type="password"
-                    value={formData.confirm_password}
-                    onChange={handleInputChange}
-                    placeholder={t("placeholders.confirmPassword")}
-                    className={`h-11 ${formErrors.confirm_password ? "border-destructive" : ""}`}
-                  />
+                  <div className="relative">
+                    <Input
+                      id="confirm_password"
+                      name="confirm_password"
+                      type={showConfirmPassword ? "text" : "password"}
+                      value={formData.confirm_password}
+                      onChange={handleInputChange}
+                      placeholder={t("placeholders.confirmPassword")}
+                      className={`h-11 pr-10 ${formErrors.confirm_password ? "border-destructive" : ""}`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      tabIndex={-1}
+                    >
+                      {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
                   <FieldError field="confirm_password" />
                 </div>
               </div>
