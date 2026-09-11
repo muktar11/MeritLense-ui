@@ -2058,6 +2058,7 @@
         "notifications": "Notifications & Alerts",
         "system_configuration": "Company Profile"
       },
+      "sidebarLocked": "Sign the B2B Services Agreement and DPA to unlock this page",
       "overview": {
         "package": {
           "expires": "Package expires in {days} days!",
