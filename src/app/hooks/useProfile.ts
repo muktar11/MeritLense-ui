@@ -1,6 +1,14 @@
 import { useState, useEffect } from 'react'
 import { profileAPI, B2CProfileData, B2BProfileData, AdminProfileData, ChangePasswordData } from './../api/profile/endpoints'
 
+// profileClient's interceptor (lib/auth-session.ts) rejects with the raw
+// Axios error, not the parsed response body - the backend's actual
+// validation message (e.g. "Current password is incorrect") lives at
+// err.response.data, not directly on err. Every catch block below reads
+// through this so those real messages surface instead of always falling
+// back to the generic string.
+const errorData = (err: any): any => err?.response?.data ?? err ?? {}
+
 interface UseProfileReturn {
   profile: any
   loading: boolean
@@ -26,7 +34,7 @@ export const useProfile = (): UseProfileReturn => {
       const data = await profileAPI.getProfile()
       setProfile(data)
     } catch (err: any) {
-      setError(err.error || 'Failed to fetch profile')
+      setError(errorData(err).error || 'Failed to fetch profile')
     } finally {
       setLoading(false)
     }
@@ -44,9 +52,10 @@ export const useProfile = (): UseProfileReturn => {
       setProfile(updatedProfile)
       return true
     } catch (err: any) {
-      if (typeof err === 'object') {
-        const errorMessages = Object.entries(err)
-          .map(([key, value]) => `${key}: ${value}`)
+      const data = errorData(err)
+      if (typeof data === 'object' && data !== null && Object.keys(data).length > 0) {
+        const errorMessages = Object.entries(data)
+          .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`)
           .join(', ')
         setError(errorMessages || 'Failed to update profile')
       } else {
@@ -65,14 +74,17 @@ export const useProfile = (): UseProfileReturn => {
       await profileAPI.changePassword(data)
       return true
     } catch (err: any) {
-      if (err.current_password) {
-        setError(err.current_password[0])
-      } else if (err.new_password) {
-        setError(err.new_password[0])
-      } else if (err.confirm_new_password) {
-        setError(err.confirm_new_password[0])
-      } else if (err.error) {
-        setError(err.error)
+      const data = errorData(err)
+      if (data.current_password) {
+        setError(data.current_password[0])
+      } else if (data.new_password) {
+        setError(data.new_password[0])
+      } else if (data.confirm_new_password) {
+        setError(data.confirm_new_password[0])
+      } else if (data.error) {
+        setError(data.error)
+      } else if (data.detail) {
+        setError(data.detail)
       } else {
         setError('Failed to change password')
       }
@@ -90,7 +102,7 @@ export const useProfile = (): UseProfileReturn => {
       setProfile(response.profile)
       return true
     } catch (err: any) {
-      setError(err.error || 'Failed to upload document')
+      setError(errorData(err).error || 'Failed to upload document')
       return false
     } finally {
       setLoading(false)
@@ -105,7 +117,7 @@ export const useProfile = (): UseProfileReturn => {
       setProfile((prev: any) => (prev ? { ...prev, profile_picture: response.profile_picture } : prev))
       return true
     } catch (err: any) {
-      setError(err.error || 'Failed to upload profile picture')
+      setError(errorData(err).error || 'Failed to upload profile picture')
       return false
     } finally {
       setLoading(false)
@@ -120,7 +132,7 @@ export const useProfile = (): UseProfileReturn => {
       setProfile((prev: any) => (prev ? { ...prev, profile_picture: null } : prev))
       return true
     } catch (err: any) {
-      setError(err.error || 'Failed to remove profile picture')
+      setError(errorData(err).error || 'Failed to remove profile picture')
       return false
     } finally {
       setLoading(false)
@@ -134,7 +146,7 @@ export const useProfile = (): UseProfileReturn => {
       await profileAPI.deleteAccount(password)
       return true
     } catch (err: any) {
-      setError(err.error || 'Failed to delete account')
+      setError(errorData(err).error || 'Failed to delete account')
       return false
     } finally {
       setLoading(false)
