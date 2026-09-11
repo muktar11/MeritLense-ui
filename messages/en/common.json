@@ -2846,6 +2846,7 @@
         "packages_subscription": "Packages & Subscription",
         "notifications": "Notifications"
       },
+      "sidebarLocked": "Sign the B2C Individual Services Agreement to unlock this page",
       "payment": {
         "title": "The Right Plan for Your Business",
         "subtitle": "Based on your selected job roles, key job focus areas, and evaluation metrics, choose the right subscription plan.",
