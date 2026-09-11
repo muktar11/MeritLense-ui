@@ -5,7 +5,7 @@ import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { useProfile } from "../../../../../hooks/useProfile"
 import { useAuth } from "../../../../../hooks/useAuth"
-import { Loader2, CheckCircle, AlertCircle } from "lucide-react"
+import { Loader2, CheckCircle, AlertCircle, Eye, EyeOff } from "lucide-react"
 
 export default function SecurityTab() {
   const t = useTranslations("dashboard.indivisual.settings.security-tab")
@@ -19,6 +19,11 @@ export default function SecurityTab() {
   })
 
   const [success, setSuccess] = useState(false)
+
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
+  const [showNewPassword, setShowNewPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [showDeletePassword, setShowDeletePassword] = useState(false)
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [deletePassword, setDeletePassword] = useState("")
@@ -106,15 +111,25 @@ export default function SecurityTab() {
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
                 {t("currentPassword")} *
               </label>
-              <input
-                type="password"
-                name="current_password"
-                value={formData.current_password}
-                onChange={handleChange}
-                placeholder={t("currentPasswordPlaceholder")}
-                required
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+              <div className="relative">
+                <input
+                  type={showCurrentPassword ? "text" : "password"}
+                  name="current_password"
+                  value={formData.current_password}
+                  onChange={handleChange}
+                  placeholder={t("currentPasswordPlaceholder")}
+                  required
+                  className="w-full px-4 py-2.5 pr-11 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  tabIndex={-1}
+                >
+                  {showCurrentPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
 
             {/* New Password */}
@@ -122,16 +137,26 @@ export default function SecurityTab() {
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
                 {t("newPassword")} *
               </label>
-              <input
-                type="password"
-                name="new_password"
-                value={formData.new_password}
-                onChange={handleChange}
-                placeholder={t("newPasswordPlaceholder")}
-                required
-                minLength={8}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+              <div className="relative">
+                <input
+                  type={showNewPassword ? "text" : "password"}
+                  name="new_password"
+                  value={formData.new_password}
+                  onChange={handleChange}
+                  placeholder={t("newPasswordPlaceholder")}
+                  required
+                  minLength={8}
+                  className="w-full px-4 py-2.5 pr-11 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  tabIndex={-1}
+                >
+                  {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
 
               {/* Password strength indicator */}
               <div className="mt-2 h-1 bg-gray-200 rounded-full overflow-hidden">
@@ -181,20 +206,30 @@ export default function SecurityTab() {
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
                 {t("confirmNewPassword")} *
               </label>
-              <input
-                type="password"
-                name="confirm_new_password"
-                value={formData.confirm_new_password}
-                onChange={handleChange}
-                placeholder={t("confirmNewPasswordPlaceholder")}
-                required
-                className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  formData.new_password && formData.confirm_new_password &&
-                  formData.new_password !== formData.confirm_new_password
-                    ? 'border-red-500'
-                    : 'border-gray-300'
-                }`}
-              />
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  name="confirm_new_password"
+                  value={formData.confirm_new_password}
+                  onChange={handleChange}
+                  placeholder={t("confirmNewPasswordPlaceholder")}
+                  required
+                  className={`w-full px-4 py-2.5 pr-11 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    formData.new_password && formData.confirm_new_password &&
+                    formData.new_password !== formData.confirm_new_password
+                      ? 'border-red-500'
+                      : 'border-gray-300'
+                  }`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  tabIndex={-1}
+                >
+                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
               {formData.new_password && formData.confirm_new_password &&
                formData.new_password !== formData.confirm_new_password && (
                 <p className="mt-1 text-xs text-red-600">{t("passwordMismatch")}</p>
@@ -268,14 +303,24 @@ export default function SecurityTab() {
                   </div>
                 )}
 
-                <input
-                  type="password"
-                  value={deletePassword}
-                  onChange={(e) => setDeletePassword(e.target.value)}
-                  placeholder={t("deleteModal.passwordPlaceholder")}
-                  autoFocus
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent mb-4"
-                />
+                <div className="relative mb-4">
+                  <input
+                    type={showDeletePassword ? "text" : "password"}
+                    value={deletePassword}
+                    onChange={(e) => setDeletePassword(e.target.value)}
+                    placeholder={t("deleteModal.passwordPlaceholder")}
+                    autoFocus
+                    className="w-full px-4 py-2.5 pr-11 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowDeletePassword(!showDeletePassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    tabIndex={-1}
+                  >
+                    {showDeletePassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
 
                 <div className="flex justify-end gap-3">
                   <button
