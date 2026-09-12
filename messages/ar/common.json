@@ -761,10 +761,10 @@
       "page_type": "مدير",
       "pages_list": {
         "overview": "لوحة القيادة",
-        "user_management": "ملفات المستخدمين",
+        "user_management": "فريق الإدارة",
         "business_candidate_management": "إدارة المرشحين",
         "candidate_management": "إدارة المرشحين",
-        "business_management": "إدارة الشركات",
+        "business_management": "إدارة المستخدمين",
         "system_configuration": "إعدادات النظام",
         "audit_logs": "سجلات التدقيق",
         "settings": "الإعدادات",
