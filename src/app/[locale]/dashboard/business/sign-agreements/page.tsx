@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { CheckCircle2, Circle, Loader2, ShieldCheck, Upload, FileText } from "lucide-react";
 import agreementService from "@/app/api/agreements/endpoints";
@@ -19,6 +19,12 @@ export default function SignAgreementsPage() {
   const t = useTranslations("dashboard.business.signAgreements");
   const router = useRouter();
   const locale = useLocale();
+  const pathname = usePathname();
+  // Read directly off the URL rather than next-intl's locale context: the
+  // language sent to the backend determines which document the signer
+  // actually reviews, so it must never lag a language switch - the URL
+  // segment is always current (see the same fix on the B2C flow).
+  const docLang: "en" | "ar" = pathname?.split("/")[1] === "ar" ? "ar" : "en";
   const DOC_ORDER = DOC_TYPES.map((d) => ({ type: d.type, label: t(`docLabels.${d.labelKey}`) }));
 
   const [step, setStep] = useState<Step>("loading");
@@ -60,8 +66,8 @@ export default function SignAgreementsPage() {
         }
 
         const [b2b, dpa] = await Promise.all([
-          agreementService.getPreview("B2B_AGREEMENT"),
-          agreementService.getPreview("DPA"),
+          agreementService.getPreview("B2B_AGREEMENT", docLang),
+          agreementService.getPreview("DPA", docLang),
         ]);
         if (!active) return;
         setPreviews({ B2B_AGREEMENT: b2b.html, DPA: dpa.html });
@@ -74,7 +80,7 @@ export default function SignAgreementsPage() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [docLang]);
 
   useEffect(() => {
     if (secondsLeft <= 0) return;
@@ -149,6 +155,7 @@ export default function SignAgreementsPage() {
         agreement_types: ["B2B_AGREEMENT", "DPA"],
         signatory_name: signatoryName.trim(),
         authorized_signatory_confirmed: true,
+        language: docLang,
       });
       setOtpReference(res.otp_reference);
       setSentTo(res.sent_to);
