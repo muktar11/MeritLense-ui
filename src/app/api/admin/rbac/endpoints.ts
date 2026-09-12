@@ -36,64 +36,72 @@ class RBACService {
   async getAllUsersWithPermissions(): Promise<UserPermission[]> {
     this.ensureAuthToken();
 
-    try {
-      const [adminResults, employerResults] = await Promise.all([
-        this.fetchAllPages(page => adminUserService.getAdminUsers({ page, page_size: PAGE_SIZE })),
-        this.fetchAllPages(page => employerService.getEmployers({ page, page_size: PAGE_SIZE }))
-      ]);
-      const adminResponse = { results: adminResults };
-      const employerResponse = { results: employerResults };
+    // Settled, not all: the admin-roster endpoint is SuperAdmin-only, so a
+    // plain Admin viewer gets a 403 on that half alone. Promise.all would
+    // let that single rejection wipe out the employer/user results too -
+    // which did succeed - silently emptying the whole page for every
+    // non-SuperAdmin admin. Each side degrades independently instead.
+    const [adminOutcome, employerOutcome] = await Promise.allSettled([
+      this.fetchAllPages(page => adminUserService.getAdminUsers({ page, page_size: PAGE_SIZE })),
+      this.fetchAllPages(page => employerService.getEmployers({ page, page_size: PAGE_SIZE }))
+    ]);
 
-      const allUsers: UserPermission[] = [];
-
-      // Add admin users
-      adminResponse.results.forEach(admin => {
-        allUsers.push({
-          id: admin.id,
-          name: admin.full_name,
-          email: admin.email,
-          type: 'admin',
-          role: admin.role === 'SUPERADMIN' ? 'Super Admin' : 'Admin',
-          permissions: admin.admin_permissions || [],
-          // Platform staff (both roles) are listed under "b2b-enterprise" in
-          // the role-filter dropdown (see rolesBySystem in page.tsx) - they
-          // aren't part of any B2C segment.
-          system: 'b2b-enterprise',
-          last_active: admin.last_login || undefined
-        });
-      });
-
-      // Add employers (B2C, B2B users)
-      employerResponse.results.forEach(emp => {
-        let system: 'b2b-enterprise' | 'b2b-basic' | 'b2c-admin' = 'b2c-admin';
-        let role = 'User';
-        
-        if (emp.role === 'B2B') {
-          system = 'b2b-enterprise';
-          role = 'Company Admin';
-        } else if (emp.role === 'B2B_TEAM_MEMBER') {
-          system = 'b2b-basic';
-          role = 'Team Member';
-        }
-
-        allUsers.push({
-          id: emp.id,
-          name: emp.full_name,
-          email: emp.email,
-          type: 'employer',
-          role: role,
-          permissions: emp.documents_verified ? ['view_candidates'] : [],
-          system: system,
-          phone: emp.profile_details && 'phone_number' in emp.profile_details ? (emp.profile_details as any).phone_number : undefined,
-          last_active: emp.created_at
-        });
-      });
-
-      return allUsers;
-    } catch (error) {
-      console.error('Failed to fetch users with permissions:', error);
-      return [];
+    if (adminOutcome.status === 'rejected') {
+      console.warn('Skipping admin roster (likely not authorized for this account):', adminOutcome.reason);
     }
+    if (employerOutcome.status === 'rejected') {
+      console.error('Failed to fetch employer users:', employerOutcome.reason);
+    }
+
+    const adminResponse = { results: adminOutcome.status === 'fulfilled' ? adminOutcome.value : [] };
+    const employerResponse = { results: employerOutcome.status === 'fulfilled' ? employerOutcome.value : [] };
+
+    const allUsers: UserPermission[] = [];
+
+    // Add admin users
+    adminResponse.results.forEach(admin => {
+      allUsers.push({
+        id: admin.id,
+        name: admin.full_name,
+        email: admin.email,
+        type: 'admin',
+        role: admin.role === 'SUPERADMIN' ? 'Super Admin' : 'Admin',
+        permissions: admin.admin_permissions || [],
+        // Platform staff (both roles) are listed under "b2b-enterprise" in
+        // the role-filter dropdown (see rolesBySystem in page.tsx) - they
+        // aren't part of any B2C segment.
+        system: 'b2b-enterprise',
+        last_active: admin.last_login || undefined
+      });
+    });
+
+    // Add employers (B2C, B2B users)
+    employerResponse.results.forEach(emp => {
+      let system: 'b2b-enterprise' | 'b2b-basic' | 'b2c-admin' = 'b2c-admin';
+      let role = 'User';
+
+      if (emp.role === 'B2B') {
+        system = 'b2b-enterprise';
+        role = 'Company Admin';
+      } else if (emp.role === 'B2B_TEAM_MEMBER') {
+        system = 'b2b-basic';
+        role = 'Team Member';
+      }
+
+      allUsers.push({
+        id: emp.id,
+        name: emp.full_name,
+        email: emp.email,
+        type: 'employer',
+        role: role,
+        permissions: emp.documents_verified ? ['view_candidates'] : [],
+        system: system,
+        phone: emp.profile_details && 'phone_number' in emp.profile_details ? (emp.profile_details as any).phone_number : undefined,
+        last_active: emp.created_at
+      });
+    });
+
+    return allUsers;
   }
 
   async getUserPermissions(userId: number, userType: string): Promise<string[]> {
