@@ -28,7 +28,7 @@ interface PrecheckFlowProps {
   isLiveCall?: boolean;
 }
 
-type Step = "loading" | "privacy" | "device-check" | "verbal-confirmation" | "identity";
+type Step = "loading" | "consent" | "privacy" | "device-check" | "verbal-confirmation" | "identity";
 
 const VERBAL_CONFIRMATION_PHRASE =
   "I confirm that I am the person completing this interview and that my answers are my own.";
@@ -50,7 +50,7 @@ export function PrecheckFlow({ sessionId, token, onContinue, isLiveCall }: Prech
         // Status couldn't be read - start from the beginning rather than
         // blocking the candidate entirely; each step's own submit call
         // will surface a real error if something is still wrong.
-        if (active) setStep("privacy");
+        if (active) setStep("consent");
       }
     })();
     return () => {
@@ -66,6 +66,18 @@ export function PrecheckFlow({ sessionId, token, onContinue, isLiveCall }: Prech
         <Loader2 className="w-10 h-10 animate-spin text-purple-500 mx-auto mb-4" />
         <p className="text-gray-600">Preparing your interview…</p>
       </CenteredCard>
+    );
+  } else if (step === "consent") {
+    content = (
+      <ConsentStep
+        error={error}
+        onError={setError}
+        onSubmit={async (signatoryName) => {
+          await interviewSessionService.captureConsent(sessionId, token, signatoryName);
+          setError(null);
+          setStep("privacy");
+        }}
+      />
     );
   } else if (step === "privacy") {
     content = (
@@ -125,10 +137,98 @@ export function PrecheckFlow({ sessionId, token, onContinue, isLiveCall }: Prech
 }
 
 function nextIncompleteStep(status: PrecheckStatus): Step {
+  if (!status.candidate_consent_completed) return "consent";
   if (!status.privacy_notice_acknowledged) return "privacy";
   if (!status.device_check_completed) return "device-check";
   if (!status.verbal_confirmation_completed) return "verbal-confirmation";
   return "identity";
+}
+
+function ConsentStep({
+  error,
+  onError,
+  onSubmit,
+}: {
+  error: string | null;
+  onError: (message: string | null) => void;
+  onSubmit: (signatoryName: string) => Promise<void>;
+}) {
+  const [fullName, setFullName] = useState("");
+  const [agreed, setAgreed] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  const canSubmit = agreed && fullName.trim().length > 1 && !submitting;
+
+  const handleSubmit = async () => {
+    if (!canSubmit) return;
+    setSubmitting(true);
+    try {
+      await onSubmit(fullName.trim());
+    } catch {
+      onError("Something went wrong saving your consent. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <CenteredCard wide>
+      <ShieldCheck className="w-12 h-12 text-purple-500 mx-auto mb-3" />
+      <h1 className="text-xl font-bold text-gray-900 mb-2">Your Consent</h1>
+
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded-lg text-sm mb-4 text-left">
+          {error}
+        </div>
+      )}
+
+      <div className="text-left bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4 text-sm text-gray-700 space-y-3">
+        <p>
+          You have been invited to complete a workforce-readiness assessment through MeritLense. Taking part is
+          voluntary, and by continuing you confirm that you choose to participate of your own free will.
+        </p>
+        <p>
+          Your responses, audio, and identity-verification data will be processed to conduct this assessment, and
+          the resulting report will be shared with the employer or organization that requested it. MeritLense does
+          not make the hiring decision &mdash; the employer does.
+        </p>
+      </div>
+
+      <div className="text-left mb-4">
+        <label htmlFor="consent-full-name" className="block text-sm font-medium text-gray-700 mb-1">
+          Type your full name to sign
+        </label>
+        <input
+          id="consent-full-name"
+          type="text"
+          value={fullName}
+          onChange={(e) => setFullName(e.target.value)}
+          placeholder="Your full name"
+          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+        />
+      </div>
+
+      <label className="flex items-start gap-2 text-left text-sm text-gray-700 mb-4 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={agreed}
+          onChange={(e) => setAgreed(e.target.checked)}
+          className="mt-0.5"
+        />
+        <span>I consent to participate in this assessment and to my data being processed as described above.</span>
+      </label>
+
+      <button
+        type="button"
+        disabled={!canSubmit}
+        onClick={handleSubmit}
+        className="w-full flex items-center justify-center gap-2 py-3 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-lg text-sm font-medium"
+      >
+        {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+        Sign & Continue
+      </button>
+    </CenteredCard>
+  );
 }
 
 function PrivacyStep({
