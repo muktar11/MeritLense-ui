@@ -760,10 +760,10 @@
       "page_type": "Admin",
       "pages_list": {
         "overview": "Dashboard ",
-        "user_management": "User Profiles",
+        "user_management": "Admin Team",
         "business_candidate_management": "Candidate Management",
         "candidate_management": "Candidate Management",
-        "business_management": "Business Management",
+        "business_management": "User Management",
         "system_configuration": "System Configuration",
         "audit_logs": "Audit Logs",
         "settings": "Settings",
