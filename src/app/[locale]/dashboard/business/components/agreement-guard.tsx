@@ -18,9 +18,14 @@ export type AgreementSignedState = "checking" | "signed" | "unsigned";
 /** Single source of truth for whether the company has signed both the B2B
  * Agreement and DPA - shared by AgreementGuard (routing) and the sidebar
  * (disabling links), so both agree and only one status call is made per
- * layout mount. */
+ * route. Re-checks on every pathname change, not just once on mount: this
+ * layout stays mounted across the sign-agreements -> dashboard transition
+ * (both are children of the same layout), so a mount-only fetch would keep
+ * reporting "unsigned" forever after a successful sign and bounce the user
+ * straight back to Sign Agreements. */
 export function useB2BAgreementStatus(): AgreementSignedState {
   const [state, setState] = useState<AgreementSignedState>("checking");
+  const pathname = usePathname();
 
   useEffect(() => {
     let active = true;
@@ -42,7 +47,7 @@ export function useB2BAgreementStatus(): AgreementSignedState {
     return () => {
       active = false;
     };
-  }, []);
+  }, [pathname]);
 
   return state;
 }
