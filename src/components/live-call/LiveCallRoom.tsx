@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
   Loader2,
@@ -13,6 +14,7 @@ import {
   Square,
   RotateCcw,
   Send,
+  LayoutDashboard,
 } from "lucide-react";
 import { useLiveCall } from "./useLiveCall";
 import { LANGUAGES } from "@/lib/languages";
@@ -38,6 +40,14 @@ interface LiveCallRoomProps {
 export function LiveCallRoom({ sessionId, candidateToken, onEnded, embedded = false }: LiveCallRoomProps) {
   const t = useTranslations("shared.liveCallRoom");
   const tLanguages = useTranslations("dashboard.indivisual.settings.edit-profile-tab.languages");
+  const router = useRouter();
+  const pathname = usePathname();
+  // Embedded = rendered inside the evaluator's dashboard shell at a
+  // ".../live-call" route, so once the call ends there's a real page to
+  // step back to. The standalone candidate /interview page isn't part of
+  // any dashboard, so it gets no such link - closing the tab is the
+  // expected end state there.
+  const dashboardHref = pathname.replace(/\/live-call(\/.*)?$/, "");
   const roomHeightClass = embedded ? "h-[calc(100vh-4rem)]" : "h-screen";
   const {
     status,
@@ -106,6 +116,18 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded, embedded = fa
             <div className="mt-6 text-left">
               <EvaluatorRatingCard evaluationId={evaluationId} />
             </div>
+          )}
+          {embedded && (
+            <button
+              type="button"
+              onClick={() => {
+                onEnded?.();
+                router.push(dashboardHref);
+              }}
+              className="mt-6 w-full flex items-center justify-center gap-2 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium"
+            >
+              <LayoutDashboard className="w-4 h-4" /> {t("returnToDashboard")}
+            </button>
           )}
         </div>
       </div>

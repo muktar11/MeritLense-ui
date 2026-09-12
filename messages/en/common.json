@@ -178,6 +178,7 @@
       "missingSessionId": "Missing session ID.",
       "callEnded": "Call ended",
       "callEndedMessage": "This live interview call has ended.",
+      "returnToDashboard": "Return to dashboard",
       "couldntJoin": "Couldn't join the call",
       "refreshAndTryAgain": "Please refresh and try again.",
       "opensAt": "This call opens 15 minutes before its scheduled time:",
