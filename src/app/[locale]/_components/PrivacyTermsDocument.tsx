@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
-import { useTranslations } from "next-intl";
+import { useEffect, type ReactNode } from "react";
+import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
 import { Navbar, Footer } from "./index";
 
 interface Section {
@@ -12,7 +13,31 @@ interface Section {
   body: string;
 }
 
-function SectionBody({ body }: { body: string }) {
+// Lets a section's body reference another page inline, e.g. "...set out in
+// MeritLense's [Refunds Policy (Section 12.1)](/refunds-policy)..." -
+// content stays in one plain-text JSON string per locale instead of the
+// component needing to know which sections contain links.
+function renderInlineLinks(text: string, locale: string): ReactNode[] {
+  const parts: ReactNode[] = [];
+  const linkPattern = /\[([^\]]+)\]\(([^)]+)\)/g;
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+  let key = 0;
+  while ((match = linkPattern.exec(text)) !== null) {
+    if (match.index > lastIndex) parts.push(text.slice(lastIndex, match.index));
+    const [, label, href] = match;
+    parts.push(
+      <Link key={key++} href={`/${locale}${href}`} className="text-primary underline hover:text-primary-600">
+        {label}
+      </Link>
+    );
+    lastIndex = match.index + match[0].length;
+  }
+  if (lastIndex < text.length) parts.push(text.slice(lastIndex));
+  return parts;
+}
+
+function SectionBody({ body, locale }: { body: string; locale: string }) {
   const blocks = body.split("\n\n").filter(Boolean);
   return (
     <div className="space-y-4">
@@ -25,7 +50,7 @@ function SectionBody({ body }: { body: string }) {
               {lines.map((line, j) => (
                 <li key={j} className="flex gap-2 text-foreground-muted leading-relaxed">
                   <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary/50" />
-                  <span>{line.replace(/^- /, "")}</span>
+                  <span>{renderInlineLinks(line.replace(/^- /, ""), locale)}</span>
                 </li>
               ))}
             </ul>
@@ -41,7 +66,7 @@ function SectionBody({ body }: { body: string }) {
                 : "text-foreground-muted leading-relaxed"
             }
           >
-            {block}
+            {renderInlineLinks(block, locale)}
           </p>
         );
       })}
@@ -51,6 +76,7 @@ function SectionBody({ body }: { body: string }) {
 
 export function PrivacyTermsDocument({ focus }: { focus: "privacy" | "terms" }) {
   const t = useTranslations("legal.privacy_terms");
+  const locale = useLocale();
   const sections = t.raw("sections") as Section[];
 
   useEffect(() => {
@@ -151,7 +177,7 @@ export function PrivacyTermsDocument({ focus }: { focus: "privacy" | "terms" }) 
                         </span>
                       )}
                     </div>
-                    <SectionBody body={section.body} />
+                    <SectionBody body={section.body} locale={locale} />
                   </div>
                 </div>
               );

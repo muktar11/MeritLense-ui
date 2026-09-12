@@ -107,7 +107,7 @@
           "title": "Payments, Fees & Refunds",
           "part": "b",
           "updated": false,
-          "body": "- MeritLense accepts electronic payment via credit and debit cards (Visa, MasterCard) in multiple currencies, as agreed\n- Payment card data will not be stored, sold, or shared with any third party for non-operational purposes\n- MeritLense reserves the right to modify prices and fees, provided that users are notified via email or platform notice 30 days prior to implementation\n\nRefunds: unused Assessment Slots and Points are non-refundable once any consumption has occurred on the applicable purchase or billing period. Full details are set out in MeritLense's Refunds Policy (Section 12.1), which forms part of these Terms. Custom Enterprise refund terms are governed exclusively by the signed Pricing Addendum."
+          "body": "- MeritLense accepts electronic payment via credit and debit cards (Visa, MasterCard) in multiple currencies, as agreed\n- Payment card data will not be stored, sold, or shared with any third party for non-operational purposes\n- MeritLense reserves the right to modify prices and fees, provided that users are notified via email or platform notice 30 days prior to implementation\n\nRefunds: unused Assessment Slots and Points are non-refundable once any consumption has occurred on the applicable purchase or billing period. Full details are set out in MeritLense's [Refunds Policy (Section 12.1)](/refunds-policy), which forms part of these Terms. Custom Enterprise refund terms are governed exclusively by the signed Pricing Addendum."
         },
         {
           "id": "13",
@@ -138,6 +138,77 @@
           "body": "You may contact the MeritLense team to report any problems or inquiries relating to this Policy or to data use via:\n\n- Email: info@meritlense.com\n- Certificate verification: meritlense.com/en/verify-certificate\n- Official communication channels announced on the platform\n- MeritLense sends its official notifications via email, SMS, or app notifications for confirmation purposes or material updates"
         }
       ]
+    },
+    "refunds_policy": {
+      "eyebrow": "Public Document — Part of the Terms of Use",
+      "title": "Refunds Policy — Section 12.1",
+      "subtitle": "Workforce Readiness Assessment Platform.",
+      "last_updated_label": "Last Updated",
+      "last_updated": "2026-09-12",
+      "version_label": "Version",
+      "version": "v1.0",
+      "jurisdiction_label": "Jurisdiction",
+      "jurisdiction": "Estonia",
+      "intro": "This Refunds Policy forms part of MeritLense's Terms of Use and applies to all purchases made on the MeritLense platform. Please read it before making a purchase.",
+      "toc_label": "On this page",
+      "sections": [
+        {
+          "id": "1",
+          "title": "Individual Packages (B2C)",
+          "part": null,
+          "updated": false,
+          "body": "This applies to Basic, Essential, Advanced, and Premium packages, which are one-time purchases.\n\nYou are entitled to a full refund only if you have not used any part of your package — that is, no candidate assessment has been started and no add-on service has been delivered.\n\nOnce any part of the package has been used (even a single assessment or a single add-on), the entire package becomes non-refundable. This applies even if some Assessment Slots or Points remain unused.\n\nThere is no time limit for requesting a refund based on how long ago you purchased the package. As long as your account remains active, your unused balance does not expire, and eligibility depends only on whether you have used any part of it, not on how much time has passed. See our Terms of Use for what happens to any unused balance if your account is cancelled, deleted, or inactive for an extended period.\n\nWe do not offer partial refunds (for example, refunding only the value of remaining unused Slots). A package is either fully refundable or not refundable at all."
+        },
+        {
+          "id": "2",
+          "title": "Subscription Plans (B2B)",
+          "part": null,
+          "updated": false,
+          "body": "This applies to Growth and Business subscription plans, which are billed on a recurring monthly basis.\n\nOnce a monthly payment is confirmed, that billing period is not refundable, regardless of how much of your monthly allocation you actually use.\n\nIf you wish to stop being billed in the future, you may cancel your subscription at any time. Cancelling does not refund the current period you have already paid for — you may continue using your existing allocation until the end of that period, and you will not be billed again afterward."
+        },
+        {
+          "id": "3",
+          "title": "Custom Enterprise Plans",
+          "part": null,
+          "updated": false,
+          "body": "Refund terms for Custom Enterprise accounts are not covered by this general policy. They are governed exclusively by the specific Pricing Addendum signed between you and MeritLense."
+        },
+        {
+          "id": "4",
+          "title": "Billing Errors",
+          "part": null,
+          "updated": false,
+          "body": "If you believe you were charged incorrectly (for example, a duplicate charge or an incorrect amount) due to an error on MeritLense's part, this is treated as a billing correction rather than a standard refund request, and is not subject to the consumption-based rules above. Please contact us immediately using the details below."
+        },
+        {
+          "id": "5",
+          "title": "How to Request a Refund",
+          "part": null,
+          "updated": false,
+          "body": "To request a refund, please contact our support team at info@meritlense.com, including your account details and the reason for your request. Eligible refunds are reviewed and processed manually; we do not currently offer instant, automatic refunds through the platform."
+        },
+        {
+          "id": "6",
+          "title": "Your Legal Rights",
+          "part": null,
+          "updated": false,
+          "body": "Nothing in this Refunds Policy limits or excludes any mandatory rights or remedies available to consumers under applicable law."
+        }
+      ]
+    },
+    "b2c_agreement": {
+      "eyebrow": "Public Document — Individual Customers",
+      "title": "B2C / Individual Customer Agreement",
+      "subtitle": "The commercial agreement for individual employers, signed electronically at registration.",
+      "version_label": "Version",
+      "load_error": "This document couldn't be loaded. Please try again shortly."
+    },
+    "b2b_agreement": {
+      "eyebrow": "Public Document — Business Customers",
+      "title": "B2B / Business Customer Agreement",
+      "subtitle": "The commercial agreement for business and agency employers, signed electronically at registration.",
+      "version_label": "Version",
+      "load_error": "This document couldn't be loaded. Please try again shortly."
     }
   }
 }
