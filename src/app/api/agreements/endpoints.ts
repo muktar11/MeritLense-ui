@@ -33,6 +33,14 @@ class AgreementService {
     return response.data;
   }
 
+  // No auth required - for the public B2C/B2B Agreement pages linked from
+  // the marketing site footer, before a visitor has an account.
+  async getPublicPreview(agreementType: AgreementType, lang?: 'en' | 'ar'): Promise<AgreementPreview> {
+    const query = lang ? `?lang=${lang}` : '';
+    const response = await apiClient.get(`${this.baseURL}public-preview/${agreementType}${query}`);
+    return response.data;
+  }
+
   async accept(data: AcceptAgreementRequest): Promise<Agreement> {
     const response = await apiClient.post(`${this.baseURL}accept`, data);
     return response.data;

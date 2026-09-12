@@ -3,15 +3,16 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Instagram, Twitter, Linkedin, Mail } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 export function Footer() {
   const t = useTranslations("landing-page.footer");
+  const locale = useLocale();
 
   return (
     <footer className="bg-gray-50 border-t border-gray-100 py-16">
       <div className="container mx-auto px-6 lg:px-12">
-        <div className="grid gap-12 lg:grid-cols-3">
+        <div className="grid gap-12 lg:grid-cols-4">
           <div>
             <Link href="/" className="flex items-center space-x-3 mb-6">
               <Image
@@ -83,6 +84,46 @@ export function Footer() {
                   className="text-foreground-muted hover:text-foreground transition-colors"
                 >
                   {t("link_pricing")}
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-lg font-semibold text-foreground mb-6">
+              {t("legal_section_title")}
+            </h4>
+            <ul className="space-y-3">
+              <li>
+                <Link
+                  href={`/${locale}/b2c-agreement`}
+                  className="text-foreground-muted hover:text-foreground transition-colors"
+                >
+                  {t("link_b2c_agreement")}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={`/${locale}/b2b-agreement`}
+                  className="text-foreground-muted hover:text-foreground transition-colors"
+                >
+                  {t("link_b2b_agreement")}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={`/${locale}/refunds-policy`}
+                  className="text-foreground-muted hover:text-foreground transition-colors"
+                >
+                  {t("link_refunds_policy")}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={`/${locale}/privacy`}
+                  className="text-foreground-muted hover:text-foreground transition-colors"
+                >
+                  {t("link_privacy_terms")}
                 </Link>
               </li>
             </ul>
