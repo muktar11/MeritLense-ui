@@ -22,7 +22,7 @@ import {
   JOB_ROLES,
   LANGUAGES
 } from "../../../../../api/candidates/types"
-import { checkPassportPhotoQuality, matchFaces, passportQualityMessage, FaceMatchResult, PassportPhotoQualityResult, PASSPORT_PHOTO_MATCH_THRESHOLD } from "@/lib/face-detection"
+import { checkPassportPhotoQuality, matchFaces, passportQualityMessage, isBlockingQualityStatus, FaceMatchResult, PassportPhotoQualityResult, PASSPORT_PHOTO_MATCH_THRESHOLD } from "@/lib/face-detection"
 import { PASSPORT_PHOTO_GUIDELINES } from "@/lib/photo-guidelines"
 
 type PhotoField = 'passport_document' | 'profile_photo'
@@ -253,7 +253,12 @@ export function CandidateModal({
       newErrors.passport_document = t("errors.documentRequired")
     } else if (formData.passport_document && photoQualityChecking.passport_document) {
       newErrors.passport_document = t("errors.photoQualityChecking")
-    } else if (formData.passport_document && photoQuality.passport_document && passportQualityMessage(photoQuality.passport_document.status, 'document')) {
+    } else if (
+      formData.passport_document &&
+      photoQuality.passport_document &&
+      isBlockingQualityStatus(photoQuality.passport_document.status) &&
+      passportQualityMessage(photoQuality.passport_document.status, 'document')
+    ) {
       newErrors.passport_document = passportQualityMessage(photoQuality.passport_document.status, 'document')!
     }
 
@@ -261,7 +266,12 @@ export function CandidateModal({
       newErrors.profile_photo = t("errors.photoRequired")
     } else if (formData.profile_photo && photoQualityChecking.profile_photo) {
       newErrors.profile_photo = t("errors.photoQualityChecking")
-    } else if (formData.profile_photo && photoQuality.profile_photo && passportQualityMessage(photoQuality.profile_photo.status, 'photo')) {
+    } else if (
+      formData.profile_photo &&
+      photoQuality.profile_photo &&
+      isBlockingQualityStatus(photoQuality.profile_photo.status) &&
+      passportQualityMessage(photoQuality.profile_photo.status, 'photo')
+    ) {
       newErrors.profile_photo = passportQualityMessage(photoQuality.profile_photo.status, 'photo')!
     }
 
@@ -473,7 +483,9 @@ export function CandidateModal({
                           </p>
                         )}
                         {!photoQualityChecking.profile_photo && profilePhotoQualityIssue && (
-                          <p className="mt-1 text-xs text-red-600">{profilePhotoQualityIssue}</p>
+                          <p className={`mt-1 text-xs ${isBlockingQualityStatus(photoQuality.profile_photo!.status) ? "text-red-600" : "text-amber-600"}`}>
+                            {profilePhotoQualityIssue}
+                          </p>
                         )}
                         {touchedFields.profile_photo && errors.profile_photo && !profilePhotoQualityIssue && (
                           <p className="mt-1 text-xs text-red-600">{errors.profile_photo}</p>
@@ -754,7 +766,9 @@ export function CandidateModal({
                             </p>
                           )}
                           {!photoQualityChecking.passport_document && passportQualityIssue && (
-                            <p className="mt-1 text-xs text-red-600">{passportQualityIssue}</p>
+                            <p className={`mt-1 text-xs ${isBlockingQualityStatus(photoQuality.passport_document!.status) ? "text-red-600" : "text-amber-600"}`}>
+                              {passportQualityIssue}
+                            </p>
                           )}
                           <div className="mt-2 rounded-lg bg-blue-50 border border-blue-100 p-2">
                             <p className="text-xs font-medium text-blue-800 mb-1">{t("photo.guidelinesTitle")}</p>
