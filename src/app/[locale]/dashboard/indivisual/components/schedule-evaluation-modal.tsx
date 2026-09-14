@@ -3,7 +3,7 @@
 import type React from "react"
 import { useState, useEffect, useRef } from "react"
 import { useLocale, useTranslations } from "next-intl"
-import { X, Loader2, Calendar, MapPin, Video, FileText, AlertCircle } from "lucide-react"
+import { X, Loader2, Calendar, MapPin, Video, FileText, AlertCircle, Check } from "lucide-react"
 import { EVALUATION_TYPES, EVALUATION_STATUS, type Evaluation, type CreateEvaluationData } from "@/app/api/evaluations/types"
 import { format } from "date-fns"
 import { ar } from "date-fns/locale"
@@ -52,15 +52,6 @@ function splitDateTimeLocalValue(value: string): { date: string; time: string } 
 function combineDateTimeLocalValue(date: string, time: string): string {
   return date && time ? `${date}T${time}` : "";
 }
-
-// The native time picker (unlike the date picker, which closes itself the
-// moment you tap a day) has no built-in "done" action on several
-// browsers/OSes - it can sit open through several wheel/segment selections.
-// Auto-dismiss it a moment after the user stops changing the value, so it
-// doesn't look stuck open ("the timer does not shut down after time
-// selection"). The delay lets an in-progress picker interaction (hour, then
-// minute) settle before we close it.
-const TIME_PICKER_AUTO_DISMISS_MS = 400;
 
 interface EvaluationModalProps {
   isOpen: boolean
@@ -114,18 +105,11 @@ export default function EvaluationModal({
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [meetingType, setMeetingType] = useState<'online' | 'inperson'>('online');
-  const timePickerDismissTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  const scheduleTimePickerAutoDismiss = (el: HTMLInputElement) => {
-    if (timePickerDismissTimeout.current) clearTimeout(timePickerDismissTimeout.current)
-    timePickerDismissTimeout.current = setTimeout(() => el.blur(), TIME_PICKER_AUTO_DISMISS_MS)
-  }
-
-  useEffect(() => {
-    return () => {
-      if (timePickerDismissTimeout.current) clearTimeout(timePickerDismissTimeout.current)
-    }
-  }, [])
+  // A fixed auto-close delay can't tell "done picking" from "still
+  // deciding" - it either closes too quickly mid-interaction or lingers.
+  // Give the user an explicit close/confirm action instead of guessing.
+  const timeInputRef = useRef<HTMLInputElement | null>(null)
+  const rescheduleTimeInputRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
     if (isOpen) {
@@ -571,20 +555,26 @@ export default function EvaluationModal({
                   }`}
                 />
                 <input
+                  ref={timeInputRef}
                   type="time"
                   value={splitDateTimeLocalValue(formData.scheduled_date).time}
-                  onChange={(e) => {
-                    setFormData({
-                      ...formData,
-                      scheduled_date: combineDateTimeLocalValue(splitDateTimeLocalValue(formData.scheduled_date).date, e.target.value),
-                    })
-                    scheduleTimePickerAutoDismiss(e.target)
-                  }}
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    scheduled_date: combineDateTimeLocalValue(splitDateTimeLocalValue(formData.scheduled_date).date, e.target.value),
+                  })}
                   className={`w-full px-4 py-2 border rounded-lg text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${
                     errors.scheduled_date ? 'border-red-500' : 'border-gray-300'
                   }`}
                 />
               </div>
+              <button
+                type="button"
+                onClick={() => timeInputRef.current?.blur()}
+                className="mt-2 text-xs font-medium text-purple-600 hover:text-purple-700 flex items-center gap-1"
+              >
+                <Check className="w-3.5 h-3.5" />
+                {t("closeTimePicker")}
+              </button>
               {errors.scheduled_date && (
                 <p className="mt-1 text-xs text-red-600">{errors.scheduled_date}</p>
               )}
@@ -727,20 +717,26 @@ export default function EvaluationModal({
                   }`}
                 />
                 <input
+                  ref={rescheduleTimeInputRef}
                   type="time"
                   value={splitDateTimeLocalValue(rescheduleData.new_date).time}
-                  onChange={(e) => {
-                    setRescheduleData({
-                      ...rescheduleData,
-                      new_date: combineDateTimeLocalValue(splitDateTimeLocalValue(rescheduleData.new_date).date, e.target.value),
-                    })
-                    scheduleTimePickerAutoDismiss(e.target)
-                  }}
+                  onChange={(e) => setRescheduleData({
+                    ...rescheduleData,
+                    new_date: combineDateTimeLocalValue(splitDateTimeLocalValue(rescheduleData.new_date).date, e.target.value),
+                  })}
                   className={`w-full px-4 py-2 border rounded-lg text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${
                     errors.new_date ? 'border-red-500' : 'border-gray-300'
                   }`}
                 />
               </div>
+              <button
+                type="button"
+                onClick={() => rescheduleTimeInputRef.current?.blur()}
+                className="mt-2 text-xs font-medium text-purple-600 hover:text-purple-700 flex items-center gap-1"
+              >
+                <Check className="w-3.5 h-3.5" />
+                {t("closeTimePicker")}
+              </button>
               {errors.new_date && (
                 <p className="mt-1 text-xs text-red-600">{errors.new_date}</p>
               )}

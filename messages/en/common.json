@@ -3142,6 +3142,7 @@
           "candidateLabel": "Candidate:",
           "durationLabel": "Duration (minutes)",
           "scheduledDateTimeLabel": "Scheduled Date & Time",
+          "closeTimePicker": "Done",
           "aiLinkNote": "An AI interview link will be generated automatically once this is scheduled, and emailed to the candidate along with the date and time.",
           "online": "Online",
           "inPersonOption": "In-Person",
