@@ -38,6 +38,21 @@ function toDateTimeLocalValue(date: Date): string {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
+// A single native <input type="datetime-local"> combines its own date and
+// time pickers into one control with no visible confirm step for the time
+// portion - confusing enough on mobile that it read as "there's no submit
+// button for the time" to a candidate trying to use it. Split into a plain
+// <input type="date"> and <input type="time"> instead (each with its own
+// unambiguous native picker), while keeping the same combined
+// "YYYY-MM-DDTHH:mm" string as the single source of truth everywhere else.
+function splitDateTimeLocalValue(value: string): { date: string; time: string } {
+  const [date = "", time = ""] = value.split("T");
+  return { date, time };
+}
+function combineDateTimeLocalValue(date: string, time: string): string {
+  return date && time ? `${date}T${time}` : "";
+}
+
 interface EvaluationModalProps {
   isOpen: boolean
   onClose: () => void
@@ -523,14 +538,30 @@ export default function EvaluationModal({
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 {t("scheduledDateTimeLabel")} *
               </label>
-              <input
-                type="datetime-local"
-                value={formData.scheduled_date}
-                onChange={(e) => setFormData({ ...formData, scheduled_date: e.target.value })}
-                className={`w-full px-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${
-                  errors.scheduled_date ? 'border-red-500' : 'border-gray-300'
-                }`}
-              />
+              <div className="grid grid-cols-2 gap-3">
+                <input
+                  type="date"
+                  value={splitDateTimeLocalValue(formData.scheduled_date).date}
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    scheduled_date: combineDateTimeLocalValue(e.target.value, splitDateTimeLocalValue(formData.scheduled_date).time),
+                  })}
+                  className={`w-full px-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                    errors.scheduled_date ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                />
+                <input
+                  type="time"
+                  value={splitDateTimeLocalValue(formData.scheduled_date).time}
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    scheduled_date: combineDateTimeLocalValue(splitDateTimeLocalValue(formData.scheduled_date).date, e.target.value),
+                  })}
+                  className={`w-full px-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                    errors.scheduled_date ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                />
+              </div>
               {errors.scheduled_date && (
                 <p className="mt-1 text-xs text-red-600">{errors.scheduled_date}</p>
               )}
@@ -660,14 +691,30 @@ export default function EvaluationModal({
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 {t("newDateTimeLabel")} *
               </label>
-              <input
-                type="datetime-local"
-                value={rescheduleData.new_date}
-                onChange={(e) => setRescheduleData({ ...rescheduleData, new_date: e.target.value })}
-                className={`w-full px-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${
-                  errors.new_date ? 'border-red-500' : 'border-gray-300'
-                }`}
-              />
+              <div className="grid grid-cols-2 gap-3">
+                <input
+                  type="date"
+                  value={splitDateTimeLocalValue(rescheduleData.new_date).date}
+                  onChange={(e) => setRescheduleData({
+                    ...rescheduleData,
+                    new_date: combineDateTimeLocalValue(e.target.value, splitDateTimeLocalValue(rescheduleData.new_date).time),
+                  })}
+                  className={`w-full px-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                    errors.new_date ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                />
+                <input
+                  type="time"
+                  value={splitDateTimeLocalValue(rescheduleData.new_date).time}
+                  onChange={(e) => setRescheduleData({
+                    ...rescheduleData,
+                    new_date: combineDateTimeLocalValue(splitDateTimeLocalValue(rescheduleData.new_date).date, e.target.value),
+                  })}
+                  className={`w-full px-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                    errors.new_date ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                />
+              </div>
               {errors.new_date && (
                 <p className="mt-1 text-xs text-red-600">{errors.new_date}</p>
               )}
