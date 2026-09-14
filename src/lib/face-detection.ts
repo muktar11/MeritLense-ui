@@ -205,9 +205,22 @@ export async function checkPassportPhotoQuality(file: File): Promise<PassportPho
     );
 
     if (detections.length === 0) return { status: "no-face", faceCount: 0 };
-    if (detections.length > 1) return { status: "multiple-faces", faceCount: detections.length };
 
-    const detection = detections[0];
+    // IDENTITY_DETECTOR_TUNING's 0.3 threshold is deliberately lenient so a
+    // real face under bad lighting still gets detected - but that means a
+    // passport's own security-pattern overlay, hologram, MRZ text block, or
+    // printed seal can also clear 0.3 as a weak face-shaped blob and get
+    // counted as a second "face" here, incorrectly blocking a genuinely
+    // single-person photo. Only count detections confident enough to trust
+    // as a real face (the same bar already used below to judge the
+    // accepted face) toward "multiple faces" - a low-confidence stray
+    // blob shouldn't override a real, clearly-detected face.
+    const confidentDetections = detections.filter((d) => d.score >= LOW_CONFIDENCE_SCORE_THRESHOLD);
+    if (confidentDetections.length > 1) {
+      return { status: "multiple-faces", faceCount: confidentDetections.length };
+    }
+
+    const detection = detections.reduce((best, d) => (d.score > best.score ? d : best));
     const box: FaceBox = detection.box;
     const tooSmall =
       box.width / image.naturalWidth < MIN_FACE_WIDTH_RATIO ||
