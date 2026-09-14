@@ -113,6 +113,15 @@ async getAuditLogs(filters?: AuditLogFilter): Promise<{
     return response.data;
   }
 
+  // Flag an issue with an applicant's documents without rejecting the
+  // account - a lighter alternative to verifyDocuments/rejectDocuments for
+  // something that just needs clarifying (e.g. a blurry scan).
+  async contactApplicant(data: { user_id: string; message: string }): Promise<{ message: string }> {
+    this.ensureAuthToken();
+    const response = await apiClient.post(`${API_BASE_URL}/auth/admin/employers/contact-applicant`, data);
+    return response.data;
+  }
+
   formatTimestamp(timestamp: string): string {
     const date = new Date(timestamp);
     const now = new Date();

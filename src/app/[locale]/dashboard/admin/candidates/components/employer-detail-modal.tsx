@@ -23,8 +23,9 @@ interface EmployerDetailModalProps {
 export function EmployerDetailModal({ isOpen, onClose, employer, onVerified }: EmployerDetailModalProps) {
   const t = useTranslations("dashboard.admin.candidateManagement");
   const locale = useLocale();
-  const [actionLoading, setActionLoading] = useState<'approve' | 'reject' | null>(null);
+  const [actionLoading, setActionLoading] = useState<'approve' | 'reject' | 'contact' | null>(null);
   const [actionError, setActionError] = useState("");
+  const [actionSuccess, setActionSuccess] = useState("");
   const [contracts, setContracts] = useState<Agreement[]>([]);
   const [contractsLoading, setContractsLoading] = useState(false);
 
@@ -77,6 +78,26 @@ export function EmployerDetailModal({ isOpen, onClose, employer, onVerified }: E
       onClose();
     } catch (error: any) {
       setActionError(error?.response?.data?.error || t("detailModal.rejectError"));
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  // Lighter alternative to reject: flags an issue with the submitted
+  // documents without touching the account's verification status at all,
+  // for something that just needs clarifying rather than a full rejection.
+  const handleContact = async () => {
+    const message = window.prompt(t("detailModal.contactPrompt"));
+    if (!message || !message.trim()) return;
+
+    setActionError("");
+    setActionSuccess("");
+    setActionLoading('contact');
+    try {
+      await employerService.contactApplicant(employer.id, message.trim());
+      setActionSuccess(t("detailModal.contactSuccess"));
+    } catch (error: any) {
+      setActionError(error?.response?.data?.error || t("detailModal.contactError"));
     } finally {
       setActionLoading(null);
     }
@@ -347,8 +368,21 @@ export function EmployerDetailModal({ isOpen, onClose, employer, onVerified }: E
                       {actionError}
                     </div>
                   )}
+                  {actionSuccess && (
+                    <div className="p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm">
+                      {actionSuccess}
+                    </div>
+                  )}
                   <div className="flex justify-between items-center pt-4 border-t">
                     <div className="flex gap-2">
+                      <button
+                        onClick={handleContact}
+                        disabled={actionLoading !== null}
+                        className="px-4 py-2 bg-amber-50 text-amber-700 border border-amber-200 rounded-lg text-sm hover:bg-amber-100 disabled:opacity-50 flex items-center gap-2"
+                      >
+                        {actionLoading === 'contact' && <Loader2 className="w-4 h-4 animate-spin" />}
+                        {t("detailModal.contactApplicant")}
+                      </button>
                       {employer.documents_verification_status !== 'REJECTED' && (
                         <button
                           onClick={handleReject}

@@ -169,6 +169,13 @@ export default function AuditLog() {
     await fetchAuditLogs()
   }
 
+  // Doesn't touch verification status, so no need to refetch pending
+  // verifications - just the audit log, for the new entry.
+  const handleContactApplicant = async (userId: string, message: string) => {
+    await auditService.contactApplicant({ user_id: userId, message })
+    await fetchAuditLogs()
+  }
+
   const getSeverityIcon = (severity: string) => {
     switch (severity) {
       case 'INFO':
@@ -516,6 +523,7 @@ export default function AuditLog() {
         user={selectedUser}
         onVerify={handleVerifyDocuments}
         onReject={handleRejectDocuments}
+        onContact={handleContactApplicant}
       />
     </div>
   )

@@ -59,6 +59,16 @@ class EmployerService {
     return response.data;
   }
 
+  // Flag an issue with an applicant's documents without rejecting the
+  // account - a lighter alternative to verifyDocuments' REJECTED path for
+  // something that just needs clarifying (e.g. a blurry scan) rather than
+  // a full rejection.
+  async contactApplicant(userId: string, message: string): Promise<{ message: string }> {
+    this.ensureAuthToken();
+    const response = await apiClient.post(`${this.baseURL}/contact-applicant`, { user_id: userId, message });
+    return response.data;
+  }
+
   // Admin: create a new individual (B2C) employer account
   async createEmployerB2C(data: B2CRegistrationData): Promise<{ message: string; employer: Employer }> {
     this.ensureAuthToken();

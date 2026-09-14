@@ -3,7 +3,7 @@
 
 import { useState, Fragment } from "react";
 import { Dialog, Transition } from '@headlessui/react';
-import { X, Loader2, CheckCircle, XCircle, Eye } from "lucide-react";
+import { X, Loader2, CheckCircle, XCircle, Eye, MessageCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Textarea } from "@/components/ui/textarea";
 import type { PendingVerificationUser } from "@/app/api/admin/audit/types";
@@ -14,20 +14,24 @@ interface VerifyDocumentsModalProps {
   user: PendingVerificationUser | null;
   onVerify: (userId: string, notes: string) => Promise<void>;
   onReject: (userId: string, reason: string, notes: string) => Promise<void>;
+  onContact: (userId: string, message: string) => Promise<void>;
 }
 
-export function VerifyDocumentsModal({ 
-  isOpen, 
-  onClose, 
-  user, 
-  onVerify, 
-  onReject 
+export function VerifyDocumentsModal({
+  isOpen,
+  onClose,
+  user,
+  onVerify,
+  onReject,
+  onContact
 }: VerifyDocumentsModalProps) {
   const t = useTranslations("dashboard.admin.auditLog");
   const [loading, setLoading] = useState(false);
-  const [action, setAction] = useState<'verify' | 'reject' | null>(null);
+  const [action, setAction] = useState<'verify' | 'reject' | 'contact' | null>(null);
   const [notes, setNotes] = useState("");
   const [rejectionReason, setRejectionReason] = useState("");
+  const [contactMessage, setContactMessage] = useState("");
+  const [contactSent, setContactSent] = useState(false);
 
   if (!user) return null;
 
@@ -47,7 +51,7 @@ export function VerifyDocumentsModal({
 
   const handleReject = async () => {
     if (!rejectionReason.trim()) return;
-    
+
     setLoading(true);
     setAction('reject');
     try {
@@ -58,6 +62,25 @@ export function VerifyDocumentsModal({
     } finally {
       setLoading(false);
       setAction(null);
+    }
+  };
+
+  // Unlike verify/reject, contacting the applicant doesn't resolve the
+  // review - it's just a message, so stay open afterward (with a brief
+  // confirmation) rather than closing the modal.
+  const handleContact = async () => {
+    if (!contactMessage.trim()) return;
+
+    setLoading(true);
+    try {
+      await onContact(user.id, contactMessage);
+      setContactMessage("");
+      setContactSent(true);
+      setAction(null);
+    } catch (error) {
+      console.error('Failed to contact applicant:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -219,6 +242,27 @@ export function VerifyDocumentsModal({
                     </div>
                   )}
 
+                  {/* Contact Message (shown only when contacting) */}
+                  {action === 'contact' && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        {t("verifyDocuments.contactMessage")} *
+                      </label>
+                      <Textarea
+                        value={contactMessage}
+                        onChange={(e) => setContactMessage(e.target.value)}
+                        placeholder={t("verifyDocuments.contactPlaceholder")}
+                        rows={2}
+                      />
+                    </div>
+                  )}
+
+                  {contactSent && !action && (
+                    <div className="p-3 bg-amber-50 border border-amber-200 text-amber-700 rounded-lg text-sm">
+                      {t("verifyDocuments.contactSentMessage")}
+                    </div>
+                  )}
+
                   {/* Actions */}
                   <div className="flex justify-end gap-3 pt-4 border-t">
                     <button
@@ -232,6 +276,13 @@ export function VerifyDocumentsModal({
                     {!action && (
                       <>
                         <button
+                          onClick={() => { setContactSent(false); setAction('contact'); }}
+                          className="px-4 py-2 bg-amber-100 text-amber-800 rounded-lg hover:bg-amber-200 flex items-center gap-2"
+                        >
+                          <MessageCircle size={16} />
+                          {t("verifyDocuments.contact")}
+                        </button>
+                        <button
                           onClick={() => setAction('reject')}
                           className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 flex items-center gap-2"
                         >
@@ -244,6 +295,32 @@ export function VerifyDocumentsModal({
                         >
                           <CheckCircle size={16} />
                           {t("verifyDocuments.verify")}
+                        </button>
+                      </>
+                    )}
+
+                    {action === 'contact' && (
+                      <>
+                        <button
+                          onClick={() => setAction(null)}
+                          className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+                          disabled={loading}
+                        >
+                          {t("verifyDocuments.back")}
+                        </button>
+                        <button
+                          onClick={handleContact}
+                          disabled={loading || !contactMessage.trim()}
+                          className="px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 disabled:opacity-50 flex items-center gap-2"
+                        >
+                          {loading ? (
+                            <>
+                              <Loader2 size={16} className="animate-spin" />
+                              {t("verifyDocuments.processing")}
+                            </>
+                          ) : (
+                            t("verifyDocuments.confirmContact")
+                          )}
                         </button>
                       </>
                     )}
