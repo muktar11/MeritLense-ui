@@ -3150,7 +3150,7 @@
           "candidateLabel": "المرشح:",
           "durationLabel": "المدة (بالدقائق)",
           "scheduledDateTimeLabel": "تاريخ ووقت الجدولة",
-          "closeTimePicker": "تم",
+          "closeTimePicker": "إغلاق",
           "aiLinkNote": "سيتم إنشاء رابط مقابلة بالذكاء الاصطناعي تلقائيًا بمجرد جدولة هذا التقييم، وإرساله بالبريد الإلكتروني إلى المرشح مع التاريخ والوقت.",
           "online": "عبر الإنترنت",
           "inPersonOption": "حضوري",
