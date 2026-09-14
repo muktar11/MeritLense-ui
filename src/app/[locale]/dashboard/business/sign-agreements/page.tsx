@@ -65,12 +65,18 @@ export default function SignAgreementsPage() {
           return;
         }
 
-        const [b2b, dpa] = await Promise.all([
+        const [b2b, dpa, profile] = await Promise.all([
           agreementService.getPreview("B2B_AGREEMENT", docLang),
           agreementService.getPreview("DPA", docLang),
+          // The stamp is embedded in the signed PDF at sign time and never
+          // added afterward, so it must exist before signing is allowed -
+          // check whether one was already uploaded (e.g. from Company
+          // Profile) rather than assuming this page starts from zero.
+          companyService.getProfile().catch(() => null),
         ]);
         if (!active) return;
         setPreviews({ B2B_AGREEMENT: b2b.html, DPA: dpa.html });
+        setStampUploaded(!!profile?.stamp_image);
         setStep("review");
       } catch (err) {
         console.error("Failed to load agreements:", err);
@@ -148,6 +154,10 @@ export default function SignAgreementsPage() {
       setError(t("errors.authRequired"));
       return;
     }
+    if (!stampUploaded) {
+      setError(t("errors.stampRequired"));
+      return;
+    }
     setSending(true);
     setError(null);
     try {
@@ -165,7 +175,9 @@ export default function SignAgreementsPage() {
       setResendsRemaining(5);
       setStep("otp");
     } catch (err: any) {
-      setError(err?.response?.data?.error || err?.error || t("errors.sendCodeFailed"));
+      const data = err?.response?.data;
+      if (data?.stamp_missing) setStampUploaded(false);
+      setError(data?.error || err?.error || t("errors.sendCodeFailed"));
     } finally {
       setSending(false);
     }
@@ -414,7 +426,12 @@ export default function SignAgreementsPage() {
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-1">
+              {stampUploaded ? (
+                <CheckCircle2 className="w-4 h-4 text-green-600 shrink-0" />
+              ) : (
+                <Circle className="w-4 h-4 text-amber-400 shrink-0" />
+              )}
               {t("review.companyStampLabel")} <span className="text-gray-400 font-normal">{t("review.companyStampHint")}</span>
             </label>
             <div className="flex items-center gap-3">
@@ -494,7 +511,7 @@ export default function SignAgreementsPage() {
 
           <button
             onClick={handleSendCode}
-            disabled={sending || !allDocsReviewed || !authConfirmed}
+            disabled={sending || !allDocsReviewed || !authConfirmed || !stampUploaded}
             className="w-full bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-2.5 rounded-lg flex items-center justify-center gap-2"
           >
             {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : null}

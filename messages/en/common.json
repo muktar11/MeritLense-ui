@@ -2563,7 +2563,7 @@
           "title": "Sign Your Agreements",
           "subtitle": "Review and sign the B2B Agreement and Data Processing Agreement (DPA) to activate your MeritLense dashboard.",
           "companyStampLabel": "Company stamp",
-          "companyStampHint": "(optional, applied automatically to your PDFs)",
+          "companyStampHint": "(required, applied automatically to your PDFs)",
           "uploadButton": "Upload",
           "uploadedButton": "Uploaded",
           "nameLabel": "Your full legal name",
@@ -2581,7 +2581,8 @@
           "codeIncomplete": "Please enter the full 6-digit code.",
           "incorrectCode": "Incorrect or expired code.",
           "restartingReview": "{message} Restarting from document review.",
-          "stampUploadFailed": "Failed to upload company stamp. You can add it later from Company Profile."
+          "stampUploadFailed": "Failed to upload company stamp. Please try again.",
+          "stampRequired": "Please upload your company stamp before signing — it's embedded in the signed PDF and can't be added afterward."
         }
       },
       "payment": {
