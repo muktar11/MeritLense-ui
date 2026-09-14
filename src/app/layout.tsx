@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+
+export const metadata: Metadata = {
+  metadataBase: new URL("https://meritlense.com"),
+};
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
