@@ -143,6 +143,21 @@ export type PassportPhotoQualityStatus =
   | "low-quality"
   | "skipped";
 
+// "no-face" and "multiple-faces" mean the photo is unambiguously wrong for
+// its purpose (nothing to verify against, or a different/extra person) -
+// those block submission. "face-too-small" and "low-quality" are quality
+// *heuristics*, not correctness checks: a real-world photo forwarded
+// through WhatsApp (the dominant way candidates actually exchange images)
+// gets visibly recompressed and can trip these even when it's perfectly
+// usable for a human to verify. This function was already documented as a
+// "best-effort... hint", not a gate - treat only the unambiguous cases as
+// blocking; quality concerns are surfaced as a warning so a genuinely
+// low-quality photo can still be caught (and re-verified) at interview
+// time rather than locking a candidate out of registration entirely.
+export function isBlockingQualityStatus(status: PassportPhotoQualityStatus): boolean {
+  return status === "no-face" || status === "multiple-faces";
+}
+
 export interface FaceBox {
   x: number;
   y: number;
