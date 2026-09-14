@@ -572,7 +572,7 @@ export default function EvaluationModal({
                 <button
                   type="button"
                   onClick={() => timeInputRef.current?.blur()}
-                  className="mt-1 text-xs font-medium text-purple-600 hover:text-purple-700 flex items-center gap-1"
+                  className="mt-1 justify-self-end text-xs font-medium text-purple-600 hover:text-purple-700 flex items-center gap-1"
                 >
                   <Check className="w-3.5 h-3.5" />
                   {t("closeTimePicker")}
@@ -737,7 +737,7 @@ export default function EvaluationModal({
                 <button
                   type="button"
                   onClick={() => rescheduleTimeInputRef.current?.blur()}
-                  className="mt-1 text-xs font-medium text-purple-600 hover:text-purple-700 flex items-center gap-1"
+                  className="mt-1 justify-self-end text-xs font-medium text-purple-600 hover:text-purple-700 flex items-center gap-1"
                 >
                   <Check className="w-3.5 h-3.5" />
                   {t("closeTimePicker")}
