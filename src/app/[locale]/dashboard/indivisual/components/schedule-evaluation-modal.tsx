@@ -471,7 +471,7 @@ export default function EvaluationModal({
                 <select
                   value={formData.candidate}
                   onChange={(e) => setFormData({ ...formData, candidate: e.target.value })}
-                  className={`w-full px-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                  className={`w-full px-4 py-2 border rounded-lg text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${
                     errors.candidate ? 'border-red-500' : 'border-gray-300'
                   }`}
                 >
@@ -503,7 +503,7 @@ export default function EvaluationModal({
                 <select
                   value={formData.evaluation_type}
                   onChange={(e) => setFormData({ ...formData, evaluation_type: e.target.value as any })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
                 >
                   {EVALUATION_TYPES.map((type) => (
                     <option key={type.value} value={type.value}>
@@ -524,7 +524,7 @@ export default function EvaluationModal({
                   step="15"
                   value={formData.duration_minutes}
                   onChange={(e) => setFormData({ ...formData, duration_minutes: parseInt(e.target.value) || 60 })}
-                  className={`w-full px-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                  className={`w-full px-4 py-2 border rounded-lg text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${
                     errors.duration_minutes ? 'border-red-500' : 'border-gray-300'
                   }`}
                 />
@@ -546,7 +546,7 @@ export default function EvaluationModal({
                     ...formData,
                     scheduled_date: combineDateTimeLocalValue(e.target.value, splitDateTimeLocalValue(formData.scheduled_date).time),
                   })}
-                  className={`w-full px-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                  className={`w-full px-4 py-2 border rounded-lg text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${
                     errors.scheduled_date ? 'border-red-500' : 'border-gray-300'
                   }`}
                 />
@@ -557,7 +557,7 @@ export default function EvaluationModal({
                     ...formData,
                     scheduled_date: combineDateTimeLocalValue(splitDateTimeLocalValue(formData.scheduled_date).date, e.target.value),
                   })}
-                  className={`w-full px-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                  className={`w-full px-4 py-2 border rounded-lg text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${
                     errors.scheduled_date ? 'border-red-500' : 'border-gray-300'
                   }`}
                 />
@@ -630,7 +630,7 @@ export default function EvaluationModal({
                           value={formData.meeting_link || ""}
                           onChange={(e) => setFormData({ ...formData, meeting_link: e.target.value })}
                           placeholder={t("meetingLinkPlaceholder")}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
                       </div>
                       <div className="grid grid-cols-2 gap-3">
@@ -642,7 +642,7 @@ export default function EvaluationModal({
                             type="text"
                             value={formData.meeting_id || ""}
                             onChange={(e) => setFormData({ ...formData, meeting_id: e.target.value })}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
                           />
                         </div>
                         <div>
@@ -653,7 +653,7 @@ export default function EvaluationModal({
                             type="text"
                             value={formData.meeting_password || ""}
                             onChange={(e) => setFormData({ ...formData, meeting_password: e.target.value })}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
                           />
                         </div>
                       </div>
@@ -668,7 +668,7 @@ export default function EvaluationModal({
                         value={formData.location}
                         onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                         placeholder={t("locationPlaceholder")}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
                       />
                     </div>
                   )}
@@ -699,7 +699,7 @@ export default function EvaluationModal({
                     ...rescheduleData,
                     new_date: combineDateTimeLocalValue(e.target.value, splitDateTimeLocalValue(rescheduleData.new_date).time),
                   })}
-                  className={`w-full px-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                  className={`w-full px-4 py-2 border rounded-lg text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${
                     errors.new_date ? 'border-red-500' : 'border-gray-300'
                   }`}
                 />
@@ -710,7 +710,7 @@ export default function EvaluationModal({
                     ...rescheduleData,
                     new_date: combineDateTimeLocalValue(splitDateTimeLocalValue(rescheduleData.new_date).date, e.target.value),
                   })}
-                  className={`w-full px-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                  className={`w-full px-4 py-2 border rounded-lg text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${
                     errors.new_date ? 'border-red-500' : 'border-gray-300'
                   }`}
                 />
@@ -728,7 +728,7 @@ export default function EvaluationModal({
                 value={rescheduleData.reason}
                 onChange={(e) => setRescheduleData({ ...rescheduleData, reason: e.target.value })}
                 rows={3}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
                 placeholder={t("reasonPlaceholder")}
               />
             </div>
