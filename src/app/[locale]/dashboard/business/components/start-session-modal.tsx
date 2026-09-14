@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { useLocale, useTranslations } from "next-intl"
 import { X, Loader2, ArrowRight, AlertCircle, CheckCircle2, Copy, Check } from "lucide-react"
@@ -46,6 +46,7 @@ export default function StartSessionModal({
   const [error, setError] = useState("")
   const [createdSession, setCreatedSession] = useState<InterviewSession | null>(null)
   const [linkCopied, setLinkCopied] = useState(false)
+  const roleDetailRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     if (isOpen) {
@@ -125,6 +126,18 @@ export default function StartSessionModal({
     // straight past a step the user never actually got to answer.
     setSelectedConfigId(roleConfigs.length === 1 ? roleConfigs[0].id : "")
   }
+
+  // Selecting a role can reveal a Package Details panel much taller than
+  // the modal's visible area (verified: up to ~4x, e.g. Basic Patient
+  // Support's 4 configs) with zero indication it's there, leaving a
+  // candidate to discover it only by scrolling blind. Deliberately guide
+  // them to it instead - smooth, and only the one time it newly appears
+  // (not on every re-render while it's already in view).
+  useEffect(() => {
+    if (selectedRoleCode) {
+      roleDetailRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
+    }
+  }, [selectedRoleCode])
 
   // Distinguishes configs that would otherwise show the identical tier
   // label (e.g. two FULL-tier configs in different languages) so the
@@ -339,7 +352,7 @@ export default function StartSessionModal({
 
             {/* Selected role detail + tier chooser */}
             {selectedRole && selectedRole.configs.length > 0 && (
-              <div className="border border-gray-200 rounded-lg p-4 space-y-4">
+              <div ref={roleDetailRef} className="border border-gray-200 rounded-lg p-4 space-y-4 scroll-mt-4">
                 <div className="flex items-center justify-between">
                   <h4 className="text-sm font-medium text-gray-900">
                     {t("packageDetailsHeading", { role: selectedRole.role_name })}
