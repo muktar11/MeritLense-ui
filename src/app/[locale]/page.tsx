@@ -33,6 +33,15 @@ function organizationJsonLd(locale: Locale, title: string, description: string) 
         "url": "https://meritlense.com",
         "logo": "https://meritlense.com/logo.png",
         "description": description,
+        // The platform's actual official profiles (from Footer.tsx) - this
+        // is one of the real signals Google's Knowledge Graph uses to
+        // recognize an entity; it doesn't by itself produce a Knowledge
+        // Panel (that also needs independent third-party verification).
+        "sameAs": [
+          "https://www.linkedin.com/company/meritlense/",
+          "https://x.com/LensMerit",
+          "https://www.instagram.com/meritlense/",
+        ],
       },
       {
         "@type": "SoftwareApplication",
