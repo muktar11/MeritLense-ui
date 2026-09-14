@@ -108,6 +108,16 @@ const BLUR_VARIANCE_THRESHOLD = 100;
 const MIN_FACE_WIDTH_RATIO = 0.08;
 const MIN_FACE_HEIGHT_RATIO = 0.08;
 
+// Many government ID cards embed a small secondary "ghost"/security photo
+// next to the main ID photo as an anti-counterfeiting feature (confirmed on
+// an Ethiopian Digital ID sample) - the same person's photo printed twice,
+// not a second person in frame, but it's a real face photo so it can clear
+// even LOW_CONFIDENCE_SCORE_THRESHOLD. Only treat multiple confident
+// detections as genuinely multiple people when another face is a
+// substantial fraction of the primary (largest) face's area - a security
+// ghost photo is consistently much smaller than the main photo.
+const GHOST_PHOTO_AREA_RATIO = 0.35;
+
 // Confidence and blur-variance are both blind to one real failure mode: a
 // passport photo printed under a fine repeating security-pattern overlay.
 // The overlay's own fine lines register as high-frequency detail, which
@@ -216,11 +226,26 @@ export async function checkPassportPhotoQuality(file: File): Promise<PassportPho
     // accepted face) toward "multiple faces" - a low-confidence stray
     // blob shouldn't override a real, clearly-detected face.
     const confidentDetections = detections.filter((d) => d.score >= LOW_CONFIDENCE_SCORE_THRESHOLD);
+
+    let detection = detections.reduce((best, d) => (d.score > best.score ? d : best));
+
     if (confidentDetections.length > 1) {
-      return { status: "multiple-faces", faceCount: confidentDetections.length };
+      const byArea = [...confidentDetections].sort(
+        (a, b) => b.box.width * b.box.height - a.box.width * a.box.height
+      );
+      const largestArea = byArea[0].box.width * byArea[0].box.height;
+      const additionalRealFaces = byArea
+        .slice(1)
+        .filter((d) => (d.box.width * d.box.height) / largestArea >= GHOST_PHOTO_AREA_RATIO);
+      if (additionalRealFaces.length > 0) {
+        return { status: "multiple-faces", faceCount: confidentDetections.length };
+      }
+      // Not a genuine multi-person photo - evaluate the main/largest
+      // photo (the actual ID photo), not whichever detection happened to
+      // score highest.
+      detection = byArea[0];
     }
 
-    const detection = detections.reduce((best, d) => (d.score > best.score ? d : best));
     const box: FaceBox = detection.box;
     const tooSmall =
       box.width / image.naturalWidth < MIN_FACE_WIDTH_RATIO ||
