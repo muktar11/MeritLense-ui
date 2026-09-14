@@ -3167,6 +3167,7 @@
             "dateRequired": "Please select a date and time",
             "dateMustBeFuture": "Scheduled date must be in the future",
             "durationMin": "Duration must be at least 15 minutes",
+            "durationMax": "Duration cannot exceed 1 hour",
             "newDateRequired": "Please select a new date and time",
             "newDateMustBeFuture": "New date must be in the future"
           }

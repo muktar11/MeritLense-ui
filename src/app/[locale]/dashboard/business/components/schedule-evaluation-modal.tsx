@@ -151,6 +151,8 @@ export default function EvaluationModal({
     }
     if (!formData.duration_minutes || formData.duration_minutes < 15) {
       newErrors.duration_minutes = t("errors.durationMin")
+    } else if (formData.duration_minutes > 60) {
+      newErrors.duration_minutes = t("errors.durationMax")
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -503,6 +505,7 @@ export default function EvaluationModal({
                 <input
                   type="number"
                   min="15"
+                  max="60"
                   step="15"
                   value={formData.duration_minutes}
                   onChange={(e) => setFormData({ ...formData, duration_minutes: parseInt(e.target.value) || 60 })}
