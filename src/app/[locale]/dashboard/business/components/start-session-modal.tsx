@@ -7,11 +7,9 @@ import { X, Loader2, ArrowRight, AlertCircle, CheckCircle2, Copy, Check } from "
 import type { Candidate } from "@/app/api/candidates/types"
 import interviewService from "@/app/api/interviews/endpoints"
 import paymentService from "@/app/api/payments/endpoints"
-import type { InterviewConfig, InterviewSession, RolePackage, RolePackageCoverageEntry } from "@/app/api/interviews/types"
+import type { CoverageLevel, InterviewConfig, InterviewSession, RolePackage, RolePackageCoverageEntry } from "@/app/api/interviews/types"
 import {
-  getCoverageFromTier,
   getCoverageColor,
-  getCoverageLabel,
   buildRolePackages,
   recommendPackageForFullCoverage,
   PACKAGE_ORDER_B2B,
@@ -118,8 +116,35 @@ export default function StartSessionModal({
     setSelectedRoleCode(roleCode)
     setError("")
     const roleConfigs = configs.filter(c => c.role_code === roleCode)
-    const fullConfig = roleConfigs.find(c => c.evaluation_tier === 'FULL')
-    setSelectedConfigId((fullConfig ?? roleConfigs[0])?.id ?? "")
+    // Only auto-select when there's exactly one real option. Silently
+    // pre-picking a tier (previously always preferring FULL) when there
+    // were multiple configs to choose from short-circuited the Interview
+    // Depth step the user should make explicitly - and since that step's
+    // button group only renders when there's more than one config, it
+    // could vanish entirely, making role selection feel like it skipped
+    // straight past a step the user never actually got to answer.
+    setSelectedConfigId(roleConfigs.length === 1 ? roleConfigs[0].id : "")
+  }
+
+  // Distinguishes configs that would otherwise show the identical tier
+  // label (e.g. two FULL-tier configs in different languages) so the
+  // Interview Depth buttons never look like repeated/duplicate options.
+  const depthTierLabel = (cfg: InterviewConfig, siblings: InterviewConfig[]) => {
+    const tier =
+      cfg.evaluation_tier === 'FULL' ? t("depthTierFull")
+      : cfg.evaluation_tier === 'BOTH' ? t("depthTierBoth")
+      : t("depthTierScreening")
+    const sameTierCount = siblings.filter(c => c.evaluation_tier === cfg.evaluation_tier).length
+    return sameTierCount > 1 ? t("depthTierWithLanguage", { tier, language: cfg.language }) : tier
+  }
+
+  const coverageLabel = (coverage: CoverageLevel | null) => {
+    switch (coverage) {
+      case 'FULL': return t("coverageFull")
+      case 'PARTIAL': return t("coveragePartial")
+      case 'SCREENING': return t("coverageScreening")
+      default: return t("coverageUnknown")
+    }
   }
 
   const handleSubmit = async () => {
@@ -196,7 +221,7 @@ export default function StartSessionModal({
                   getCoverageColor(selectedRole?.coverage ?? null)
                 }`}
               >
-                {getCoverageLabel(selectedRole?.coverage ?? null)}
+                {coverageLabel(selectedRole?.coverage ?? null)}
               </span>
             </p>
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 text-xs text-gray-600 mb-6 text-left">
@@ -303,7 +328,7 @@ export default function StartSessionModal({
                         <span
                           className={`text-xs font-semibold px-2 py-1 rounded-full ${getCoverageColor(pkg.coverage)}`}
                         >
-                          {getCoverageLabel(pkg.coverage)}
+                          {coverageLabel(pkg.coverage)}
                         </span>
                       </button>
                     )
@@ -322,7 +347,7 @@ export default function StartSessionModal({
                   <span
                     className={`text-xs font-semibold px-2 py-1 rounded-full ${getCoverageColor(selectedRole.coverage)}`}
                   >
-                    {getCoverageLabel(selectedRole.coverage)}
+                    {coverageLabel(selectedRole.coverage)}
                   </span>
                 </div>
 
@@ -351,7 +376,7 @@ export default function StartSessionModal({
                     </label>
                     <div className="flex gap-2">
                       {selectedRole.configs.map(cfg => {
-                        const tierLabel = getCoverageFromTier(cfg.evaluation_tier)
+                        const tierLabel = depthTierLabel(cfg, selectedRole.configs)
                         return (
                           <button
                             key={cfg.id}
