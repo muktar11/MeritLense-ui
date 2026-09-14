@@ -20,6 +20,18 @@
       "b2bCompanyProfile": {
         "title": "Company Profile - B2B Dashboard",
         "description": "Manage company details, users, and partnerships"
+      },
+      "siteDefault": {
+        "title": "MeritLense - Workforce Readiness Assessment Platform",
+        "description": "Assess workforce readiness objectively with 21 role packages across 11 sectors. AI-assisted, multilingual voice assessment generates structured readiness reports to support employer hiring decisions across the GCC."
+      },
+      "privacyPolicy": {
+        "title": "Privacy Policy",
+        "description": "How MeritLense collects, uses, and protects the data of candidates, individuals, and business employers on the platform."
+      },
+      "termsOfService": {
+        "title": "Terms of Service",
+        "description": "The terms and conditions that apply to all users of the MeritLense platform, services, and applications."
       }
     },
     "tablePagination": {

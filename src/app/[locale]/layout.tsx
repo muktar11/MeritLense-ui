@@ -1,13 +1,35 @@
 // src/app/[locale]/layout.tsx
+import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { Toaster } from "sonner";
 import { locales, rtlLocales, type Locale } from "@/config/locales";
+import { buildPageMetadata } from "@/lib/buildPageMetadata";
 
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "shared.pageMeta.siteDefault" });
+  const title = t("title");
+  const description = t("description");
+
+  return {
+    ...buildPageMetadata({ locale, title, description }),
+    // Only the layout sets a template - a child page's plain string title
+    // (e.g. "Privacy Policy") gets wrapped into it automatically, while the
+    // homepage keeps this exact default title as-is.
+    title: { default: title, template: "%s | MeritLense" },
+    applicationName: "MeritLense",
+  };
 }
 
 
