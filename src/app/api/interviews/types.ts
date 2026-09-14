@@ -1,6 +1,6 @@
 export type EvaluationTier = 'FULL' | 'SCREENING' | 'BOTH';
 
-export type PackageCoverage = 'Full' | 'Screening' | 'Partial';
+export type PackageCoverage = 'Full' | 'Screening' | 'Both';
 
 export type QuestionDifficulty = 'EASY' | 'MEDIUM' | 'HARD';
 export type QuestionType = 'safety' | 'integrity' | 'behavioral' | 'communication' | 'situational' | 'scenario' | 'knowledge';
@@ -253,7 +253,13 @@ export const CANDIDATE_JOB_ROLES: { code: string; name: string; icon: string }[]
 ];
 
 export function getCoverageFromTier(tier: EvaluationTier): PackageCoverage {
+  // Previously collapsed BOTH into 'Screening', which is actively
+  // misleading (a BOTH-tier config covers full evaluation *and*
+  // screening) and, combined with multiple same-tier configs (e.g. one
+  // per language) never being disambiguated, made the Interview Depth
+  // buttons look like duplicate/repeated options.
   if (tier === 'FULL') return 'Full';
+  if (tier === 'BOTH') return 'Both';
   return 'Screening';
 }
 
@@ -263,15 +269,6 @@ export function getCoverageColor(coverage: CoverageLevel | null): string {
     case 'PARTIAL': return 'bg-yellow-100 text-yellow-700';
     case 'SCREENING': return 'bg-orange-100 text-orange-700';
     default: return 'bg-gray-100 text-gray-500';
-  }
-}
-
-export function getCoverageLabel(coverage: CoverageLevel | null): string {
-  switch (coverage) {
-    case 'FULL': return 'Full';
-    case 'PARTIAL': return 'Partial';
-    case 'SCREENING': return 'Screening';
-    default: return 'Unknown';
   }
 }
 
