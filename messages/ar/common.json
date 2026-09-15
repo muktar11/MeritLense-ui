@@ -2089,14 +2089,14 @@
       "pages_list": {
         "overview": "لوحة القيادة",
         "profile_management": "الملف الشخصي للمستخدم",
-        "candidate_management": "مقارنة المرشحين",
-        "multi_agency_panel": "إدارة التقييمات",
+        "candidate_management": "المرشحون",
+        "multi_agency_panel": "التقييمات",
         "assessments_monitor": "متابعة التقييمات",
         "reports_certificates": "التقارير والشهادات",
         "analytics_insights": "التحليلات والرؤى",
         "performance_scorecard": "بطاقة الأداء",
         "user_management": "إدارة المستخدمين",
-        "business_management": "إدارة الدرجات",
+        "business_management": "الدرجات",
         "audit_logs": "الدفع",
         "notifications": "الإشعارات والتنبيهات",
         "system_configuration": "ملف الشركة"

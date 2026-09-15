@@ -11,7 +11,7 @@ import {
   Settings,
   FileText,
   Key,
-  Network,
+  ClipboardList,
 } from "lucide-react";
 import { LanguageSelector } from "@/components/app/LanguageSelector";
 import { useTranslations, useLocale } from "next-intl";
@@ -53,7 +53,13 @@ export default function AdminLayout({
         disabled: lockedUntilSigned,
         disabledTooltip,
       },
-
+      {
+        label: t("pages_list.multi_agency_panel"),
+        icon: ClipboardList,
+        href: `/${locale}/dashboard/business/candidate-evaluation`,
+        disabled: lockedUntilSigned,
+        disabledTooltip,
+      },
       {
         label: t("pages_list.business_management"),
         icon: Building2,
@@ -65,14 +71,6 @@ export default function AdminLayout({
         label: t("pages_list.audit_logs"),
         icon: FileText,
         href: `/${locale}/dashboard/business/payment`,
-        disabled: lockedUntilSigned,
-        disabledTooltip,
-      },
-
-      {
-        label: t("pages_list.multi_agency_panel"),
-        icon: Network,
-        href: `/${locale}/dashboard/business/candidate-evaluation`,
         disabled: lockedUntilSigned,
         disabledTooltip,
       },
