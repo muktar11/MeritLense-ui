@@ -2081,14 +2081,14 @@
       "pages_list": {
         "overview": "Dashboard ",
         "profile_management": "User Profile ",
-        "candidate_management": "Candidate Comparison",
-        "multi_agency_panel": "Evaluation Management",
+        "candidate_management": "Candidates",
+        "multi_agency_panel": "Evaluations",
         "assessments_monitor": "Assessments Monitor",
         "reports_certificates": "Reports & Certificates",
         "analytics_insights": "Analytics & Insights",
         "performance_scorecard": "Performance Scorecard",
         "user_management": "User Management",
-        "business_management": "Score Management",
+        "business_management": "Scores",
         "audit_logs": "Payment",
         "notifications": "Notifications & Alerts",
         "system_configuration": "Company Profile"
