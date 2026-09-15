@@ -18,6 +18,9 @@ import { LanguageDistributionChart } from "./language-distribution-chart";
 import { RecentActivityTable } from "./recent-activity-table";
 import { EvaluationTrendChart } from "./evaluation-trend-chart";
 import { StatusDistributionChart } from "./status-distribution-chart";
+import { CandidateComparison } from "./candidate-comparison";
+import { JobRoleDistributionChart } from "./job-role-distribution-chart";
+import { TimeRangeChart } from "./time-range-chart";
 import b2bDashboardService from "@/app/api/dashboard/b2b/endpoints";
 import paymentService from "@/app/api/payments/endpoints";
 import type {
@@ -28,7 +31,9 @@ import type {
   LanguageDistribution,
   PerformanceMetric,
   EvaluationStatusDistribution,
-  MonthlyActivity
+  MonthlyActivity,
+  JobRoleDistribution,
+  EvaluationTimeRange
 } from "@/app/api/dashboard/b2b/types";
 import type { Subscription } from "@/app/api/payments/types";
 import { Loader2 } from "lucide-react";
@@ -46,6 +51,8 @@ export function Dashboard() {
   const [performanceMetrics, setPerformanceMetrics] = useState<PerformanceMetric[]>([]);
   const [statusDistribution, setStatusDistribution] = useState<EvaluationStatusDistribution[]>([]);
   const [monthlyActivity, setMonthlyActivity] = useState<MonthlyActivity[]>([]);
+  const [jobRoleDistribution, setJobRoleDistribution] = useState<JobRoleDistribution[]>([]);
+  const [evaluationTimeRange, setEvaluationTimeRange] = useState<EvaluationTimeRange[]>([]);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -64,7 +71,9 @@ export function Dashboard() {
         langDistData,
         metricsData,
         statusDistData,
-        monthlyData
+        monthlyData,
+        jobRoleDistData,
+        timeRangeData
       ] = await Promise.all([
         b2bDashboardService.getStats(),
         b2bDashboardService.getRecentEvaluations(10),
@@ -73,7 +82,9 @@ export function Dashboard() {
         b2bDashboardService.getLanguageDistribution(),
         b2bDashboardService.getPerformanceMetrics(6),
         b2bDashboardService.getStatusDistribution(),
-        b2bDashboardService.getMonthlyActivity(6)
+        b2bDashboardService.getMonthlyActivity(6),
+        b2bDashboardService.getJobRoleDistribution(),
+        b2bDashboardService.getEvaluationTimeRange()
       ]);
 
       setStats(statsData);
@@ -84,6 +95,8 @@ export function Dashboard() {
       setPerformanceMetrics(metricsData);
       setStatusDistribution(statusDistData);
       setMonthlyActivity(monthlyData);
+      setJobRoleDistribution(jobRoleDistData);
+      setEvaluationTimeRange(timeRangeData);
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
     } finally {
@@ -267,12 +280,19 @@ export function Dashboard() {
           </div>
         </div>
 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <JobRoleDistributionChart data={jobRoleDistribution} />
+          <TimeRangeChart data={evaluationTimeRange} />
+        </div>
+
         {/* Monthly Activity */}
         {monthlyActivity.length > 0 && (
           <div className="mt-6">
             <RecentActivityTable activities={monthlyActivity} />
           </div>
         )}
+
+        <CandidateComparison />
       </main>
     </div>
   );

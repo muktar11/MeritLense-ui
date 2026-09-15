@@ -67,3 +67,24 @@ export interface ScoreTrend {
   date: string;
   avg_score: number;
 }
+
+export interface LanguageDistribution {
+  language: string;
+  language_display: string;
+  count: number;
+  percentage: number;
+}
+
+export interface EvaluationTrend {
+  date: string;
+  scheduled_count: number;
+  completed_count: number;
+  cancelled_count: number;
+}
+
+export interface MonthlyActivity {
+  month: string;
+  candidates_added: number;
+  evaluations_completed: number;
+  certificates_issued: number;
+}

@@ -2267,6 +2267,26 @@
           "spanish": "Spanish"
         }
       },
+      "candidateComparison": {
+        "title": "Candidate Comparison",
+        "averageScore": "Average Score",
+        "loading": "Loading comparison data...",
+        "noData": "No candidate comparison data available",
+        "showingTop": "Showing top {count, plural, one {# candidate} other {# candidates}} by average score"
+      },
+      "jobRoleDistributionChart": {
+        "title": "Candidates by Job Role",
+        "noData": "No job role data available"
+      },
+      "timeRangeChart": {
+        "title": "Evaluations by Time of Day",
+        "buckets": {
+          "morning": "Morning (6am-12pm)",
+          "afternoon": "Afternoon (12pm-6pm)",
+          "evening": "Evening (6pm-12am)",
+          "night": "Night (12am-6am)"
+        }
+      },
       "ageDistributionChart": {
         "tabs": {
           "age": "Age",
@@ -3614,6 +3634,37 @@
           "RESCHEDULED": "Rescheduled",
           "CANCELLED": "Cancelled",
           "NO_SHOW": "No Show"
+        }
+      },
+      "readinessIndexChart": {
+        "title": "Overall Readiness Index",
+        "levels": {
+          "ready": "Ready",
+          "nearReady": "Near-Ready",
+          "lowReadiness": "Low Readiness"
+        }
+      },
+      "languageDistributionChart": {
+        "title": "Evaluation Language Distribution",
+        "tooltip": {
+          "usage": "Usage"
+        }
+      },
+      "evaluationTrendChart": {
+        "title": "Evaluation Trends",
+        "legend": {
+          "completed": "Completed",
+          "scheduled": "Scheduled",
+          "cancelled": "Cancelled"
+        }
+      },
+      "recentActivityTable": {
+        "title": "Monthly Activity",
+        "columns": {
+          "month": "Month",
+          "candidatesAdded": "Candidates Added",
+          "evaluationsCompleted": "Evaluations Completed",
+          "certificatesIssued": "Certificates Issued"
         }
       },
       "timeRange": {

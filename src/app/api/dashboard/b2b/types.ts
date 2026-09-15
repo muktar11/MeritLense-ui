@@ -81,3 +81,15 @@ export interface CandidateComparison {
   average_score: number;
   scores_by_area: Record<string, number>;
 }
+
+export interface JobRoleDistribution {
+  job_role: string;
+  job_role_display: string;
+  count: number;
+  percentage: number;
+}
+
+export interface EvaluationTimeRange {
+  range: string;
+  count: number;
+}

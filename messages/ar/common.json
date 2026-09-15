@@ -2275,6 +2275,26 @@
           "spanish": "الإسبانية"
         }
       },
+      "candidateComparison": {
+        "title": "مقارنة المرشحين",
+        "averageScore": "متوسط النتيجة",
+        "loading": "جارٍ تحميل بيانات المقارنة...",
+        "noData": "لا تتوفر بيانات لمقارنة المرشحين",
+        "showingTop": "عرض أفضل {count, plural, one {مرشح واحد} two {مرشحان} few {# مرشحين} many {# مرشحًا} other {# مرشح}} حسب متوسط النتيجة"
+      },
+      "jobRoleDistributionChart": {
+        "title": "المرشحون حسب المسمى الوظيفي",
+        "noData": "لا تتوفر بيانات للمسميات الوظيفية"
+      },
+      "timeRangeChart": {
+        "title": "التقييمات حسب وقت اليوم",
+        "buckets": {
+          "morning": "صباحًا (6ص-12م)",
+          "afternoon": "بعد الظهر (12م-6م)",
+          "evening": "مساءً (6م-12ص)",
+          "night": "ليلاً (12ص-6ص)"
+        }
+      },
       "ageDistributionChart": {
         "tabs": {
           "age": "العمر",
@@ -3622,6 +3642,37 @@
           "RESCHEDULED": "أعيدت جدولته",
           "CANCELLED": "ملغى",
           "NO_SHOW": "لم يحضر"
+        }
+      },
+      "readinessIndexChart": {
+        "title": "مؤشر الجاهزية العام",
+        "levels": {
+          "ready": "جاهز",
+          "nearReady": "قريب من الجاهزية",
+          "lowReadiness": "جاهزية منخفضة"
+        }
+      },
+      "languageDistributionChart": {
+        "title": "توزيع اللغات",
+        "tooltip": {
+          "usage": "نسبة الاستخدام٪"
+        }
+      },
+      "evaluationTrendChart": {
+        "title": "اتجاهات التقييم",
+        "legend": {
+          "completed": "مكتمل",
+          "scheduled": "مجدول",
+          "cancelled": "ملغى"
+        }
+      },
+      "recentActivityTable": {
+        "title": "النشاط الشهري",
+        "columns": {
+          "month": "الشهر",
+          "candidatesAdded": "المرشحون المضافون",
+          "evaluationsCompleted": "التقييمات المكتملة",
+          "certificatesIssued": "الشهادات الصادرة"
         }
       },
       "timeRange": {
