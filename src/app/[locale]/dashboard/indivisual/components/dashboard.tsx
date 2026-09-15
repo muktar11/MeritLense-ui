@@ -14,6 +14,10 @@ import { TimeRangeChart } from "./time-range-chart"
 import { EvaluationManagement } from "./evaluation-management"
 import { CandidateComparison } from "./candidate-comparison"
 import { StatusDistributionChart } from "./status-distribution-chart"
+import { ReadinessIndexChart } from "./readiness-index-chart"
+import { LanguageDistributionChart } from "./language-distribution-chart"
+import { EvaluationTrendChart } from "./evaluation-trend-chart"
+import { RecentActivityTable } from "./recent-activity-table"
 import { useTranslations } from "next-intl"
 import b2cDashboardService from "@/app/api/dashboard/b2c/endpoints"
 import paymentService from "@/app/api/payments/endpoints"
@@ -24,7 +28,10 @@ import type {
   EvaluationTimeRange,
   EvaluationStatusDistribution,
   JobRoleDistribution,
-  ScoreTrend
+  ScoreTrend,
+  LanguageDistribution,
+  EvaluationTrend,
+  MonthlyActivity
 } from "@/app/api/dashboard/b2c/types"
 import type { Subscription } from "@/app/api/payments/types"
 import { ScoreTrendChart } from "./score-trend-chart"
@@ -43,6 +50,9 @@ export function Dashboard() {
   const [statusDistribution, setStatusDistribution] = useState<EvaluationStatusDistribution[]>([])
   const [jobRoleDistribution, setJobRoleDistribution] = useState<JobRoleDistribution[]>([])
   const [scoreTrend, setScoreTrend] = useState<ScoreTrend[]>([])
+  const [languageDistribution, setLanguageDistribution] = useState<LanguageDistribution[]>([])
+  const [evaluationTrend, setEvaluationTrend] = useState<EvaluationTrend[]>([])
+  const [monthlyActivity, setMonthlyActivity] = useState<MonthlyActivity[]>([])
   const [subscription, setSubscription] = useState<Subscription | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [activeTab, setActiveTab] = useState<"scheduled" | "inProgress" | "completed">("inProgress")
@@ -66,14 +76,20 @@ export function Dashboard() {
         timeRangeData,
         statusData,
         jobRoleData,
-        scoreTrendData
+        scoreTrendData,
+        langDistData,
+        trendData,
+        monthlyData
       ] = await Promise.all([
         b2cDashboardService.getStats(),
         b2cDashboardService.getRecentCandidates(10),
         b2cDashboardService.getEvaluationTimeRange(),
         b2cDashboardService.getStatusDistribution(),
         b2cDashboardService.getJobRoleDistribution(),
-        b2cDashboardService.getScoreTrend(30)
+        b2cDashboardService.getScoreTrend(30),
+        b2cDashboardService.getLanguageDistribution(),
+        b2cDashboardService.getEvaluationTrend(30),
+        b2cDashboardService.getMonthlyActivity(6)
       ])
 
       setStats(statsData)
@@ -82,6 +98,9 @@ export function Dashboard() {
       setStatusDistribution(statusData)
       setJobRoleDistribution(jobRoleData)
       setScoreTrend(scoreTrendData)
+      setLanguageDistribution(langDistData)
+      setEvaluationTrend(trendData)
+      setMonthlyActivity(monthlyData)
 
       // Fetch initial evaluations
       await fetchEvaluationsByStatus()
@@ -144,6 +163,14 @@ export function Dashboard() {
     pointsLimit && pointsLimit > 0 && remainingPoints !== null
       ? Math.round(((pointsLimit - remainingPoints) / pointsLimit) * 100)
       : null
+
+  // Format language distribution for the chart - same shape the business
+  // dashboard's identical chart component expects.
+  const languageChartData = languageDistribution.map(item => ({
+    key: item.language.toLowerCase(),
+    language: item.language_display,
+    value: item.percentage
+  }))
 
   return (
     <div className="min-h-screen bg-background">
@@ -282,10 +309,19 @@ export function Dashboard() {
               </CardContent>
             </Card>
 
+            <ReadinessIndexChart data={statusDistribution} />
             <PointConsumptionChart data={jobRoleDistribution} />
             <TimeRangeChart data={timeRange} />
+            <LanguageDistributionChart data={languageChartData} />
           </div>
         </div>
+
+        <EvaluationTrendChart data={evaluationTrend} />
+
+        {/* Monthly Activity */}
+        {monthlyActivity.length > 0 && (
+          <RecentActivityTable activities={monthlyActivity} />
+        )}
 
         {/* Comparison */}
         <CandidateComparison />

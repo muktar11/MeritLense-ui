@@ -9,7 +9,9 @@ import {
   PerformanceMetric,
   EvaluationStatusDistribution,
   MonthlyActivity,
-  CandidateComparison
+  CandidateComparison,
+  JobRoleDistribution,
+  EvaluationTimeRange
 } from './types';
 import { API_BASE_URL } from '@/lib/config/env';
 
@@ -93,6 +95,18 @@ class B2BDashboardService {
     const response = await apiClient.get(`${this.baseURL}candidate-comparison`, {
       params: candidateIds?.length ? { candidate_ids: candidateIds.join(',') } : undefined,
     });
+    return response.data;
+  }
+
+  async getJobRoleDistribution(): Promise<JobRoleDistribution[]> {
+    this.ensureAuthToken();
+    const response = await apiClient.get(`${this.baseURL}job-role-distribution`);
+    return response.data;
+  }
+
+  async getEvaluationTimeRange(): Promise<EvaluationTimeRange[]> {
+    this.ensureAuthToken();
+    const response = await apiClient.get(`${this.baseURL}evaluation-time-range`);
     return response.data;
   }
 }

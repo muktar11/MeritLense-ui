@@ -8,7 +8,10 @@ import {
   EvaluationTimeRange,
   EvaluationStatusDistribution,
   JobRoleDistribution,
-  ScoreTrend
+  ScoreTrend,
+  LanguageDistribution,
+  EvaluationTrend,
+  MonthlyActivity
 } from './types';
 import { API_BASE_URL } from '@/lib/config/env';
 
@@ -75,6 +78,28 @@ class B2CDashboardService {
     this.ensureAuthToken();
     const response = await apiClient.get(`${this.baseURL}score-trend`, {
       params: { days }
+    });
+    return response.data;
+  }
+
+  async getLanguageDistribution(): Promise<LanguageDistribution[]> {
+    this.ensureAuthToken();
+    const response = await apiClient.get(`${this.baseURL}language-distribution`);
+    return response.data;
+  }
+
+  async getEvaluationTrend(days: number = 30): Promise<EvaluationTrend[]> {
+    this.ensureAuthToken();
+    const response = await apiClient.get(`${this.baseURL}evaluation-trend`, {
+      params: { days }
+    });
+    return response.data;
+  }
+
+  async getMonthlyActivity(months: number = 6): Promise<MonthlyActivity[]> {
+    this.ensureAuthToken();
+    const response = await apiClient.get(`${this.baseURL}monthly-activity`, {
+      params: { months }
     });
     return response.data;
   }
