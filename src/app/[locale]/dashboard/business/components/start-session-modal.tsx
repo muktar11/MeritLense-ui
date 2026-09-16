@@ -106,6 +106,11 @@ export default function StartSessionModal({
 
   const rolePackages: RolePackage[] = buildRolePackages(configs, coverageRows, packageCode).filter(p => p.available)
 
+  // role_name comes straight from the backend's role-coverage table in
+  // English only (no i18n on that config data) - translate known role_codes
+  // here, falling back to the raw name for anything not yet in the dict.
+  const roleLabel = (role: RolePackage) => t.has(`roles.${role.role_code}`) ? t(`roles.${role.role_code}`) : role.role_name
+
   const selectedRole = rolePackages.find(r => r.role_code === selectedRoleCode)
   const selectedConfig = configs.find(c => c.id === selectedConfigId)
   const showUpgradePrompt = selectedRole && selectedRole.coverage !== null && selectedRole.coverage !== 'FULL'
@@ -228,7 +233,7 @@ export default function StartSessionModal({
               <span className="font-medium">{activeCandidateObj?.full_name}</span> {t("successMessageSuffix")}
             </p>
             <p className="text-xs text-gray-500 mb-6">
-              {t("roleCoverageLabel", { role: selectedRole?.role_name ?? "" })}{" "}
+              {t("roleCoverageLabel", { role: selectedRole ? roleLabel(selectedRole) : "" })}{" "}
               <span
                 className={`px-1.5 py-0.5 rounded-full text-xs font-semibold ${
                   getCoverageColor(selectedRole?.coverage ?? null)
@@ -332,7 +337,7 @@ export default function StartSessionModal({
                             {pkg.icon}
                           </span>
                           <div>
-                            <p className="text-sm font-medium text-gray-900">{pkg.role_name}</p>
+                            <p className="text-sm font-medium text-gray-900">{roleLabel(pkg)}</p>
                             <p className="text-xs text-gray-400">
                               {t("configCount", { count: pkg.configs.length })}
                             </p>
@@ -355,7 +360,7 @@ export default function StartSessionModal({
               <div ref={roleDetailRef} className="border border-gray-200 rounded-lg p-4 space-y-4 scroll-mt-4">
                 <div className="flex items-center justify-between">
                   <h4 className="text-sm font-medium text-gray-900">
-                    {t("packageDetailsHeading", { role: selectedRole.role_name })}
+                    {t("packageDetailsHeading", { role: roleLabel(selectedRole) })}
                   </h4>
                   <span
                     className={`text-xs font-semibold px-2 py-1 rounded-full ${getCoverageColor(selectedRole.coverage)}`}

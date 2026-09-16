@@ -116,7 +116,30 @@
       "creating": "جارٍ الإنشاء…",
       "createAssessmentLink": "إنشاء رابط التقييم",
       "selectCandidateAndPackageError": "يرجى اختيار مرشح وباقة دور.",
-      "createSessionFailedError": "فشل إنشاء جلسة التقييم. يرجى المحاولة مرة أخرى."
+      "createSessionFailedError": "فشل إنشاء جلسة التقييم. يرجى المحاولة مرة أخرى.",
+      "roles": {
+        "domestic_worker": "عامل منزلي (مدبرة منزل)",
+        "child_caregiver": "مربية أطفال",
+        "elderly_caregiver": "مرافق كبار السن",
+        "special_needs_caregiver": "مرافق ذوي الاحتياجات الخاصة",
+        "nursing_assistant": "مساعد تمريض",
+        "home_care_assistant": "مساعد رعاية منزلية",
+        "elderly_medical_support": "الدعم الطبي لكبار السن",
+        "basic_patient_support": "الدعم الأساسي للمرضى",
+        "hotel_housekeeper": "عاملة نظافة فندقية",
+        "front_desk_agent": "موظف استقبال وخدمة الضيوف",
+        "restaurant_staff": "طاقم مطعم",
+        "security_guard": "حارس أمن",
+        "event_security": "أمن الفعاليات",
+        "commercial_cleaner": "عامل نظافة تجارية",
+        "industrial_cleaner": "عامل نظافة صناعية",
+        "warehouse_staff": "طاقم المستودع",
+        "driver": "سائق",
+        "general_labor": "عامل عام",
+        "skilled_trades": "الحرف المهنية والصيانة",
+        "farm_worker": "عامل مزرعة",
+        "livestock_support": "دعم تربية الماشية"
+      }
     },
     "evaluationResultsModal": {
       "title": "نتائج تقييم جاهزية القوى العاملة",

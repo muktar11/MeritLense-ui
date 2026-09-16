@@ -116,7 +116,30 @@
       "creating": "Creating…",
       "createAssessmentLink": "Create Assessment Link",
       "selectCandidateAndPackageError": "Please select a candidate and a role package.",
-      "createSessionFailedError": "Failed to create the assessment session. Please try again."
+      "createSessionFailedError": "Failed to create the assessment session. Please try again.",
+      "roles": {
+        "domestic_worker": "Domestic Worker (Housekeeper)",
+        "child_caregiver": "Child Caregiver",
+        "elderly_caregiver": "Elderly Caregiver",
+        "special_needs_caregiver": "Special Needs Caregiver",
+        "nursing_assistant": "Nursing Assistant",
+        "home_care_assistant": "Home Care Assistant",
+        "elderly_medical_support": "Elderly Medical Support",
+        "basic_patient_support": "Basic Patient Support",
+        "hotel_housekeeper": "Hotel Housekeeper",
+        "front_desk_agent": "Front Desk & Guest Service",
+        "restaurant_staff": "Restaurant Staff",
+        "security_guard": "Security Guard",
+        "event_security": "Event Security",
+        "commercial_cleaner": "Commercial Cleaner",
+        "industrial_cleaner": "Industrial Cleaner",
+        "warehouse_staff": "Warehouse Staff",
+        "driver": "Driver",
+        "general_labor": "General Labor",
+        "skilled_trades": "Skilled Trades & Maintenance",
+        "farm_worker": "Farm Worker",
+        "livestock_support": "Livestock Support"
+      }
     },
     "evaluationResultsModal": {
       "title": "Workforce Readiness Assessment Results",
