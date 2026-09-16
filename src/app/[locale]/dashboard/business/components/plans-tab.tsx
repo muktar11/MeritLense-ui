@@ -11,6 +11,7 @@ import { useAuth } from "@/app/hooks/useAuth";
 import paymentService from "@/app/api/payments/endpoints";
 import type { Price } from "@/app/api/payments/types";
 import { SubscriptionForm } from "./subscription-form";
+import { useSubscription } from "@/app/context/SubscriptionContext";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -18,7 +19,8 @@ export function PlansTab() {
   const t = useTranslations("dashboard.indivisual.payment");
   const router = useRouter();
   const { userRole, isAuthenticated } = useAuth();
-  
+  const { subscription: currentSubscription } = useSubscription();
+
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "annual">("monthly");
   const [plans, setPlans] = useState<Price[]>([]);
   const [loading, setLoading] = useState(true);
@@ -205,15 +207,24 @@ export function PlansTab() {
                 </p>
               </div>
             ) : (
-              plans.map((plan) => (
+              plans.map((plan) => {
+                const isCurrentPlan = currentSubscription?.price_details?.id === plan.id;
+                return (
                 <div
                   key={plan.id}
-                  className={`relative rounded-2xl border-2 transition-all p-6 sm:p-8 overflow-hidden ${
+                  className={`relative rounded-2xl border-2 transition-all p-6 sm:p-8 ${
                     selectedPlan?.id === plan.id
                       ? "border-purple-500 bg-white shadow-xl scale-105"
+                      : isCurrentPlan
+                      ? "border-green-500 bg-green-50/40 shadow-md"
                       : "border-gray-200 bg-white hover:border-purple-200 hover:shadow-lg"
                   }`}
                 >
+                  {isCurrentPlan && (
+                    <span className="absolute -top-3 right-4 sm:right-6 px-3 py-1 bg-green-100 text-green-800 text-xs font-bold rounded-full border border-green-200">
+                      {t('plansGrid.currentPlanBadge')}
+                    </span>
+                  )}
                   <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4">
                     {plan.name}
                   </h3>
@@ -302,13 +313,22 @@ export function PlansTab() {
 
                   <button
                     onClick={() => handleSelectPlan(plan)}
-                    disabled={processing}
-                    className="w-full bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 sm:py-3 px-3 sm:px-4 rounded-lg transition text-sm sm:text-base disabled:opacity-50"
+                    disabled={processing || isCurrentPlan}
+                    className={`w-full font-semibold py-2 sm:py-3 px-3 sm:px-4 rounded-lg transition text-sm sm:text-base disabled:opacity-50 ${
+                      isCurrentPlan
+                        ? "bg-green-100 text-green-800"
+                        : "bg-purple-500 hover:bg-purple-600 text-white"
+                    }`}
                   >
-                    {processing && selectedPlan?.id === plan.id ? t('plansGrid.processing') : t('plansGrid.subscribeButton')}
+                    {processing && selectedPlan?.id === plan.id
+                      ? t('plansGrid.processing')
+                      : isCurrentPlan
+                      ? t('plansGrid.currentPlanButton')
+                      : t('plansGrid.subscribeButton')}
                   </button>
                 </div>
-              ))
+                );
+              })
             )}
           </div>
         )}

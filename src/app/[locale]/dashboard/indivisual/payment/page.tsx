@@ -405,15 +405,24 @@ export default function PaymentPage() {
             {recurringPlans.length > 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
               {
-                recurringPlans.map((plan) => (
+                recurringPlans.map((plan) => {
+                  const isCurrentPlan = currentSubscription?.price_details?.id === plan.id;
+                  return (
                   <div
                     key={plan.id}
                     className={`relative rounded-2xl border-2 transition-all p-6 sm:p-8 ${
                       selectedPlan?.id === plan.id
                         ? "border-purple-500 bg-white shadow-xl scale-105"
+                        : isCurrentPlan
+                        ? "border-green-500 bg-green-50/40 shadow-md"
                         : "border-gray-200 bg-white hover:border-purple-200 hover:shadow-lg"
                     }`}
                   >
+                    {isCurrentPlan && (
+                      <span className="absolute -top-3 right-4 sm:right-6 px-3 py-1 bg-green-100 text-green-800 text-xs font-bold rounded-full border border-green-200">
+                        {t('plansGrid.currentPlanBadge')}
+                      </span>
+                    )}
                     <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4">
                       {plan.name}
                     </h3>
@@ -479,19 +488,24 @@ export default function PaymentPage() {
 
                     <button
                       onClick={() => (currentSubscription ? handleUpgradePlan(plan) : handleSelectPlan(plan))}
-                      disabled={processing || upgrading || currentSubscription?.price_details?.id === plan.id}
-                      className="w-full bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 sm:py-3 px-3 sm:px-4 rounded-lg transition text-sm sm:text-base disabled:opacity-50"
+                      disabled={processing || upgrading || isCurrentPlan}
+                      className={`w-full font-semibold py-2 sm:py-3 px-3 sm:px-4 rounded-lg transition text-sm sm:text-base disabled:opacity-50 ${
+                        isCurrentPlan
+                          ? "bg-green-100 text-green-800"
+                          : "bg-purple-500 hover:bg-purple-600 text-white"
+                      }`}
                     >
                       {(processing || upgrading) && selectedPlan?.id === plan.id
                         ? t('plansGrid.processing')
-                        : currentSubscription?.price_details?.id === plan.id
+                        : isCurrentPlan
                         ? t('plansGrid.currentPlanButton')
                         : currentSubscription
                         ? t('plansGrid.upgradeButton')
                         : t('plansGrid.subscribeButton')}
                     </button>
                   </div>
-                ))
+                  );
+                })
               }
             </div>
             )}
