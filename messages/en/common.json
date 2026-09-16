@@ -2978,6 +2978,7 @@
           "pointsPerPeriod": "{count} Points / month",
           "processing": "Processing...",
           "currentPlanButton": "Current Plan",
+          "currentPlanBadge": "Your Plan",
           "upgradeButton": "Upgrade",
           "subscribeButton": "Subscribe"
         },

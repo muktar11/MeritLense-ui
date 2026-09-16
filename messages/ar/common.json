@@ -2986,6 +2986,7 @@
           "pointsPerPeriod": "{count} نقطة / شهريًا",
           "processing": "جارٍ المعالجة...",
           "currentPlanButton": "الخطة الحالية",
+          "currentPlanBadge": "خطتك",
           "upgradeButton": "ترقية",
           "subscribeButton": "اشتراك"
         },

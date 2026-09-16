@@ -72,8 +72,11 @@ function PaymentPageContent() {
           </div>
 
           <div className="p-6">
-            {activeTab === 'plans' && <PlansTab />}
-            {activeTab === 'billing' && 
+            {activeTab === 'plans' &&
+                    <SubscriptionProvider>
+                          <PlansTab />
+                        </SubscriptionProvider>}
+            {activeTab === 'billing' &&
                     <SubscriptionProvider>
                           <BillingTab />
                         </SubscriptionProvider>}
