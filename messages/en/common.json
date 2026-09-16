@@ -2989,7 +2989,8 @@
           "screeningEvaluation": "Screening evaluation",
           "fullEvaluation": "Full evaluation",
           "oneTimeLabel": "one-time",
-          "buyNow": "Buy Now"
+          "buyNow": "Buy Now",
+          "purchasedBadge": "Purchased"
         },
         "subscriptionForm": {
           "stripeNotInitialized": "Stripe not initialized",

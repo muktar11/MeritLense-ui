@@ -2997,7 +2997,8 @@
           "screeningEvaluation": "تقييم فحص أولي",
           "fullEvaluation": "تقييم كامل",
           "oneTimeLabel": "لمرة واحدة",
-          "buyNow": "اشترِ الآن"
+          "buyNow": "اشترِ الآن",
+          "purchasedBadge": "تم الشراء"
         },
         "subscriptionForm": {
           "stripeNotInitialized": "لم يتم تهيئة Stripe",
