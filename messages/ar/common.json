@@ -2392,26 +2392,9 @@
         "loadingCandidatesAndScores": "جارٍ تحميل المرشحين والدرجات...",
         "noCandidatesForRole": "لم يتم العثور على مرشحين لهذا الدور",
         "candidatesHeading": "مرشحو {role}",
-        "roleNames": {
-          "HK": "مدبر/مدبرة منزل",
-          "EC": "مرافق كبار السن",
-          "NA": "مربية أطفال",
-          "DR": "سائق",
-          "KA": "مساعد مطبخ",
-          "MW": "عامل صيانة",
-          "OT": "أخرى"
-        },
         "jobRoleTabs": {
           "selectPlaceholder": "اختر مسمى وظيفيًا",
-          "roles": {
-            "HK": "مدبرو/مدبرات المنزل",
-            "EC": "مرافقو كبار السن",
-            "NA": "مربيات الأطفال",
-            "DR": "السائقون",
-            "KA": "مساعدو المطبخ",
-            "MW": "عمال الصيانة",
-            "OT": "أخرى"
-          }
+          "unassessed": "لم يُقيَّم بعد"
         },
         "viewModal": {
           "title": "تفاصيل الدرجات",
@@ -2422,7 +2405,9 @@
           "overallAverageScore": "متوسط الدرجة الإجمالية",
           "skillScoresBreakdown": "تفصيل درجات المهارات",
           "noScoresYet": "لا تتوفر درجات لهذا المرشح بعد.",
-          "close": "إغلاق"
+          "close": "إغلاق",
+          "evaluationSelectorLabel": "التقييم",
+          "evaluationOption": "{role} — {date} ({score}%)"
         },
         "table": {
           "headers": {
@@ -2443,7 +2428,8 @@
           "downloading": "جارٍ التحميل...",
           "download": "تحميل",
           "copied": "تم النسخ!",
-          "itemLabelPlural": "مرشحين"
+          "itemLabelPlural": "مرشحين",
+          "moreEvaluations": "{count, plural, one {+# سابق} other {+# سابقة}}"
         }
       },
       "company-profile": {
