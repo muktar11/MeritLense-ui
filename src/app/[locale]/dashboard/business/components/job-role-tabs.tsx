@@ -9,26 +9,51 @@ interface JobRoleTabsProps {
   roleCounts: Record<string, number>;
 }
 
-// These are Candidate.job_role categories (a short, 7-value broad
-// classification - see api/candidates/models.py, max_length=2), a distinct,
-// coarser taxonomy from the 21-role_code system used for interview
-// configuration/scoring (api/interviews - domestic_worker, elderly_caregiver,
-// etc.). There's no defined mapping from these broad categories to that
-// granular system, so no "coverage" badge is shown here - a previous version
-// tried to look one up via InterviewConfig.role_code using these same short
-// codes, which never matched and always rendered wrong/missing coverage.
-const JOB_ROLES = [
-  { id: "HK", icon: "🧹" },
-  { id: "EC", icon: "👴" },
-  { id: "NA", icon: "🏥" },
-  { id: "DR", icon: "🚗" },
-  { id: "KA", icon: "🍳" },
-  { id: "MW", icon: "🔧" },
-  { id: "OT", icon: "📋" },
+export const UNASSESSED_ROLE_BUCKET = "unassessed";
+
+// The 21 granular role_code values interviews are actually scored against
+// (api/interviews - ROLE_NAMES in seed_package_architecture.py), same set
+// the "Create Workforce Readiness Assessment" role package picker offers -
+// this dropdown used to be hardcoded to a separate, coarser 7-value
+// Candidate.job_role classification, so most of a company's real roles (e.g.
+// Security Guard, Farm Worker) never appeared as filter options here at all.
+const ROLE_CODES = [
+  "domestic_worker",
+  "child_caregiver",
+  "elderly_caregiver",
+  "special_needs_caregiver",
+  "nursing_assistant",
+  "home_care_assistant",
+  "elderly_medical_support",
+  "basic_patient_support",
+  "hotel_housekeeper",
+  "front_desk_agent",
+  "restaurant_staff",
+  "security_guard",
+  "event_security",
+  "commercial_cleaner",
+  "industrial_cleaner",
+  "warehouse_staff",
+  "driver",
+  "general_labor",
+  "skilled_trades",
+  "farm_worker",
+  "livestock_support",
 ];
 
 export function JobRoleTabs({ selectedRole, onRoleChange, roleCounts }: JobRoleTabsProps) {
   const t = useTranslations("dashboard.business.score-management.jobRoleTabs");
+  const tRoles = useTranslations("shared.startSessionModal.roles");
+
+  // Older sessions can still carry a role_code from a previous taxonomy
+  // (e.g. a legacy 2-letter code) that isn't one of the current 21 - rather
+  // than hide those candidates' scores from every dropdown option, any such
+  // code that actually shows up in the data gets its own entry too, labeled
+  // with the raw code since there's no translation for it.
+  const knownCodes = new Set(ROLE_CODES);
+  const extraCodes = Object.keys(roleCounts).filter(
+    (code) => code !== UNASSESSED_ROLE_BUCKET && !knownCodes.has(code)
+  );
 
   return (
     <div className="mb-6">
@@ -37,17 +62,34 @@ export function JobRoleTabs({ selectedRole, onRoleChange, roleCounts }: JobRoleT
           <SelectValue placeholder={t("selectPlaceholder")} />
         </SelectTrigger>
         <SelectContent>
-          {JOB_ROLES.map((role) => (
-            <SelectItem key={role.id} value={role.id}>
-              <span aria-hidden="true">{role.icon}</span>
-              {t(`roles.${role.id}`)}
-              {roleCounts[role.id] > 0 && (
+          {ROLE_CODES.map((roleCode) => (
+            <SelectItem key={roleCode} value={roleCode}>
+              {tRoles(roleCode)}
+              {roleCounts[roleCode] > 0 && (
                 <span className="ml-auto px-2 py-0.5 text-xs bg-gray-100 rounded-full text-gray-600">
-                  {roleCounts[role.id]}
+                  {roleCounts[roleCode]}
                 </span>
               )}
             </SelectItem>
           ))}
+          {extraCodes.map((roleCode) => (
+            <SelectItem key={roleCode} value={roleCode}>
+              {roleCode}
+              {roleCounts[roleCode] > 0 && (
+                <span className="ml-auto px-2 py-0.5 text-xs bg-gray-100 rounded-full text-gray-600">
+                  {roleCounts[roleCode]}
+                </span>
+              )}
+            </SelectItem>
+          ))}
+          <SelectItem value={UNASSESSED_ROLE_BUCKET}>
+            {t("unassessed")}
+            {roleCounts[UNASSESSED_ROLE_BUCKET] > 0 && (
+              <span className="ml-auto px-2 py-0.5 text-xs bg-gray-100 rounded-full text-gray-600">
+                {roleCounts[UNASSESSED_ROLE_BUCKET]}
+              </span>
+            )}
+          </SelectItem>
         </SelectContent>
       </Select>
     </div>

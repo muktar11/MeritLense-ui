@@ -12,7 +12,9 @@ const PAGE_SIZE = 10;
 
 interface DynamicScoreTableProps {
   candidates: Candidate[];
-  scores: Record<string, CandidateScoreSummary>;
+  // Every scored evaluation per candidate, most-recent first - the table
+  // row itself always reflects the latest one.
+  scores: Record<string, CandidateScoreSummary[]>;
   onViewScores: (candidate: Candidate) => void;
 }
 
@@ -159,7 +161,8 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
         </thead>
         <tbody>
           {paginatedCandidates.map((candidate) => {
-            const summary = scores[candidate.id];
+            const evaluations = scores[candidate.id];
+            const summary = evaluations?.[0];
 
             // Clicking Download on either document downloads whatever
             // artifacts exist for this candidate together, rather than just
@@ -189,7 +192,18 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
                   </div>
                 </td>
                 <td className="px-4 sm:px-6 py-3 font-medium text-purple-600">
-                  {summary?.evaluation_id ? `${summary.overall_percentage}%` : "—"}
+                  {summary?.evaluation_id ? (
+                    <>
+                      {summary.overall_percentage}%
+                      {(evaluations?.length ?? 0) > 1 && (
+                        <span className="ml-1 text-xs font-normal text-gray-400">
+                          {t("moreEvaluations", { count: evaluations!.length - 1 })}
+                        </span>
+                      )}
+                    </>
+                  ) : (
+                    "—"
+                  )}
                 </td>
                 <td className="px-4 sm:px-6 py-3">
                   <div className="space-y-2">

@@ -7,24 +7,24 @@ import { Input } from "@/components/ui/input";
 import { Candidate } from "@/app/api/candidates/types";
 import { CandidateScoreSummary } from "@/app/api/evaluations/types";
 import { DynamicScoreTable } from "../score-management/score-tables/dynamic-score-table";
-import { JobRoleTabs } from "./job-role-tabs";
+import { JobRoleTabs, UNASSESSED_ROLE_BUCKET } from "./job-role-tabs";
 import { ScoreViewModal } from "./score-view-modal";
 import candidateService from "@/app/api/candidates/endpoints";
 import evaluationService from "@/app/api/evaluations/endpoints";
 
-
-const VALID_ROLE_CODES = ["HK", "EC", "NA", "DR", "KA", "MW", "OT"];
-
 export function ScoreManagement() {
   const t = useTranslations("dashboard.business.score-management");
+  const tRoles = useTranslations("shared.startSessionModal.roles");
   const locale = useLocale();
 
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [candidatesByRole, setCandidatesByRole] = useState<Record<string, Candidate[]>>({});
-  const [candidateScores, setCandidateScores] = useState<Record<string, CandidateScoreSummary>>({});
+  // Every scored evaluation for a candidate, most-recent first - a candidate
+  // re-assessed (retry, or a different role) can have more than one.
+  const [candidateScores, setCandidateScores] = useState<Record<string, CandidateScoreSummary[]>>({});
   const [loading, setLoading] = useState(true);
 
-  const [selectedRole, setSelectedRole] = useState<string>("HK");
+  const [selectedRole, setSelectedRole] = useState<string>(UNASSESSED_ROLE_BUCKET);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
@@ -38,12 +38,26 @@ export function ScoreManagement() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const candidatesData = await candidateService.getCandidates();
+      const [candidatesData, summaries] = await Promise.all([
+        candidateService.getCandidates(),
+        evaluationService.getCandidateScores(),
+      ]);
       setCandidates(candidatesData);
 
+      const scoresMap: Record<string, CandidateScoreSummary[]> = {};
+      summaries.forEach(summary => {
+        (scoresMap[summary.candidate_id] ??= []).push(summary);
+      });
+      setCandidateScores(scoresMap);
+
+      // Bucketed by the role_code of the candidate's most recent evaluation
+      // (the granular 21-role taxonomy scoring actually runs on), not the
+      // older Candidate.job_role field - a candidate never assessed yet has
+      // no evaluation to derive that from, so they land in a dedicated
+      // "not yet assessed" bucket instead of a misleading role guess.
       const grouped: Record<string, Candidate[]> = {};
       candidatesData.forEach(candidate => {
-        const role = candidate.job_role || "OT";
+        const role = scoresMap[candidate.id]?.[0]?.role_code || UNASSESSED_ROLE_BUCKET;
         if (!grouped[role]) {
           grouped[role] = [];
         }
@@ -55,14 +69,6 @@ export function ScoreManagement() {
       if (availableRoles.length > 0 && !grouped[selectedRole]) {
         setSelectedRole(availableRoles[0]);
       }
-
-      const summaries = await evaluationService.getCandidateScores();
-      const scoresMap: Record<string, CandidateScoreSummary> = {};
-      summaries.forEach(summary => {
-        scoresMap[summary.candidate_id] = summary;
-      });
-      setCandidateScores(scoresMap);
-
     } catch (error) {
       console.error('Failed to fetch data:', error);
     } finally {
@@ -77,11 +83,11 @@ export function ScoreManagement() {
 
   const getFilteredCandidates = () => {
     const roleCandidates = candidatesByRole[selectedRole] || [];
-    
+
     if (!searchTerm) return roleCandidates;
-    
+
     const term = searchTerm.toLowerCase();
-    return roleCandidates.filter(c => 
+    return roleCandidates.filter(c =>
       c.first_name.toLowerCase().includes(term) ||
       c.last_name.toLowerCase().includes(term) ||
       c.email.toLowerCase().includes(term)
@@ -92,6 +98,11 @@ export function ScoreManagement() {
     acc[role] = candidatesByRole[role].length;
     return acc;
   }, {} as Record<string, number>);
+
+  const roleHeading = (role: string) => {
+    if (role === UNASSESSED_ROLE_BUCKET) return t("jobRoleTabs.unassessed");
+    return tRoles.has(role) ? tRoles(role) : role;
+  };
 
   const renderTable = () => {
     const filteredCandidates = getFilteredCandidates();
@@ -153,7 +164,7 @@ export function ScoreManagement() {
       <div className="bg-white rounded-lg shadow-sm overflow-hidden">
         <div className="p-4 border-b border-gray-200 bg-gray-50">
           <h2 className="text-lg font-semibold text-gray-900">
-            {t("candidatesHeading", { role: VALID_ROLE_CODES.includes(selectedRole) ? t(`roleNames.${selectedRole}`) : selectedRole })}
+            {t("candidatesHeading", { role: roleHeading(selectedRole) })}
           </h2>
         </div>
 
@@ -173,21 +184,7 @@ export function ScoreManagement() {
           setSelectedCandidate(null);
         }}
         candidate={selectedCandidate}
-        scores={
-          selectedCandidate
-            ? Object.fromEntries(
-                (candidateScores[selectedCandidate.id]?.competencies ?? []).map((c) => [c.code, c.percentage])
-              )
-            : {}
-        }
-        labels={
-          selectedCandidate
-            ? Object.fromEntries(
-                (candidateScores[selectedCandidate.id]?.competencies ?? []).map((c) => [c.code, c.name])
-              )
-            : {}
-        }
-        averageScore={selectedCandidate ? candidateScores[selectedCandidate.id]?.overall_percentage : undefined}
+        evaluations={selectedCandidate ? candidateScores[selectedCandidate.id] ?? [] : []}
       />
     </div>
   );

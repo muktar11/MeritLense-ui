@@ -2384,26 +2384,9 @@
         "loadingCandidatesAndScores": "Loading candidates and scores...",
         "noCandidatesForRole": "No candidates found for this role",
         "candidatesHeading": "{role} Candidates",
-        "roleNames": {
-          "HK": "Housekeeper",
-          "EC": "Elder Companion",
-          "NA": "Nanny",
-          "DR": "Driver",
-          "KA": "Kitchen Assistant",
-          "MW": "Maintenance Worker",
-          "OT": "Other"
-        },
         "jobRoleTabs": {
           "selectPlaceholder": "Select a job role",
-          "roles": {
-            "HK": "Housekeepers",
-            "EC": "Elder Companions",
-            "NA": "Nannies",
-            "DR": "Drivers",
-            "KA": "Kitchen Assistants",
-            "MW": "Maintenance Workers",
-            "OT": "Other"
-          }
+          "unassessed": "Not Yet Assessed"
         },
         "viewModal": {
           "title": "Score Details",
@@ -2414,7 +2397,9 @@
           "overallAverageScore": "Overall Average Score",
           "skillScoresBreakdown": "Skill Scores Breakdown",
           "noScoresYet": "No scores available for this candidate yet.",
-          "close": "Close"
+          "close": "Close",
+          "evaluationSelectorLabel": "Evaluation",
+          "evaluationOption": "{role} — {date} ({score}%)"
         },
         "table": {
           "headers": {
@@ -2435,7 +2420,8 @@
           "downloading": "Downloading...",
           "download": "Download",
           "copied": "Copied!",
-          "itemLabelPlural": "candidates"
+          "itemLabelPlural": "candidates",
+          "moreEvaluations": "{count, plural, one {+# earlier} other {+# earlier}}"
         }
       },
       "company-profile": {
