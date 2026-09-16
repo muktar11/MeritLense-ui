@@ -8,6 +8,9 @@ export interface DashboardStats {
   remaining_slots: number | null;
   slot_limit: number | null;
   slots_unlimited: boolean;
+  reserved_slots: number | null;
+  consumed_slots: number | null;
+  pending_sessions: number | null;
   remaining_points: number | null;
   points_limit: number | null;
   points_unlimited: boolean;

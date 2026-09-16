@@ -2140,6 +2140,7 @@
           "pointsBalance": "رصيد النقاط",
           "teamMembers": "أعضاء الفريق",
           "successRate": "معدل النجاح",
+          "assessmentSlots": "فتحات التقييم",
           "changes": {
             "growth": "نمو بنسبة {value}٪",
             "increase": "زيادة بنسبة {value}٪",
@@ -2149,7 +2150,11 @@
             "evalsPerCandidate": "{value} تقييم لكل مرشح",
             "certifiedRate": "{value}٪ من المكتمل تم اعتماده",
             "activeTeam": "أعضاء الفريق النشطون",
-            "basedOnEvaluations": "بناءً على {value} تقييم"
+            "basedOnEvaluations": "بناءً على {value} تقييم",
+            "reservedForUpcoming": "{value} محجوزة لمقابلات قادمة",
+            "noneReserved": "لا يوجد محجوز",
+            "unlimitedPlan": "خطة غير محدودة",
+            "noActivePlan": "لا توجد خطة نشطة"
           },
           "actions": {
             "addPoints": "إضافة نقاط"
@@ -3616,6 +3621,7 @@
           "evaluationsCompleted": "التقييمات المكتملة",
           "certificatesIssued": "الشهادات الصادرة",
           "remainingPoints": "النقاط المتبقية",
+          "assessmentSlots": "فتحات التقييم",
           "successRate": "نسبة النجاح",
           "thisMonth": "هذا الشهر",
           "thisMonthIncrease": "+{value}% هذا الشهر",
@@ -3624,7 +3630,9 @@
           "totalEvaluations": "{value} تقييم إجمالاً",
           "basedOnEvaluations": "بناءً على {value} تقييم",
           "noActivePlan": "لا توجد خطة نشطة",
-          "unlimitedPlan": "خطة غير محدودة"
+          "unlimitedPlan": "خطة غير محدودة",
+          "reservedForUpcoming": "{value} محجوزة لمقابلات قادمة",
+          "noneReserved": "لا يوجد محجوز"
         },
         "quickAction": "إجراء سريع",
         "buyPoints": "شراء {value} نقاط",
