@@ -36,6 +36,13 @@ export default function PaymentPage() {
 
   const [currentSubscription, setCurrentSubscription] = useState<Subscription | null>(null);
   const [currentUsage, setCurrentUsage] = useState<UsageResponse | null>(null);
+  // One-time "points" packages are consumable (buying the same one again to
+  // top up is a normal, valid action) so they never become "the" current
+  // plan the way a recurring subscription does - but the price(s) the user
+  // has actually bought before are still worth marking, or B2C accounts
+  // that only ever buy one-time packages (the common case) never see any
+  // "this is what I have" indicator anywhere on this page.
+  const [purchasedOneTimePriceIds, setPurchasedOneTimePriceIds] = useState<Set<string>>(new Set());
   const [subLoading, setSubLoading] = useState(true);
   const [showPlanPicker, setShowPlanPicker] = useState(false);
   const [upgrading, setUpgrading] = useState(false);
@@ -60,13 +67,24 @@ export default function PaymentPage() {
         const sorted = [...subs].sort((a, b) =>
           new Date(b.current_period_end).getTime() - new Date(a.current_period_end).getTime()
         );
-        const full = await paymentService.getSubscription(sorted[0].id);
+        const fullSubs = await Promise.all(sorted.map((s) => paymentService.getSubscription(s.id)));
         // One-time "points" purchases are bookkeeping rows, not a real recurring
-        // subscription — nothing to display/upgrade here for those.
-        if (full.price_details?.billing_type !== 'ONE_TIME') {
-          setCurrentSubscription(full);
+        // subscription — they never drive the "Current Plan" summary/upgrade
+        // flow, but a user can have both kinds active at once, so the most
+        // recent overall row isn't necessarily the real subscription to show.
+        const recurring = fullSubs.find((s) => s.price_details && s.price_details.billing_type !== 'ONE_TIME') || null;
+        setPurchasedOneTimePriceIds(
+          new Set(
+            fullSubs
+              .filter((s) => s.price_details?.billing_type === 'ONE_TIME' && s.price_details?.id)
+              .map((s) => s.price_details!.id)
+          )
+        );
+
+        if (recurring) {
+          setCurrentSubscription(recurring);
           try {
-            const usage = await paymentService.getSubscriptionUsage(full.id);
+            const usage = await paymentService.getSubscriptionUsage(recurring.id);
             setCurrentUsage(usage);
           } catch (usageError) {
             console.error('Failed to fetch usage:', usageError);
@@ -79,11 +97,13 @@ export default function PaymentPage() {
       } else {
         setCurrentSubscription(null);
         setCurrentUsage(null);
+        setPurchasedOneTimePriceIds(new Set());
       }
     } catch (error) {
       console.error('Failed to fetch current subscription:', error);
       setCurrentSubscription(null);
       setCurrentUsage(null);
+      setPurchasedOneTimePriceIds(new Set());
     } finally {
       setSubLoading(false);
     }
@@ -519,15 +539,24 @@ export default function PaymentPage() {
                   {t('oneTimeSection.subtitle')}
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {oneTimePlans.map((plan) => (
+                  {oneTimePlans.map((plan) => {
+                    const isPurchased = purchasedOneTimePriceIds.has(plan.id);
+                    return (
                     <div
                       key={plan.id}
                       className={`relative rounded-2xl border-2 transition-all p-6 sm:p-8 ${
                         selectedPlan?.id === plan.id
                           ? "border-purple-500 bg-white shadow-xl scale-105"
+                          : isPurchased
+                          ? "border-green-500 bg-green-50/40 shadow-md"
                           : "border-gray-200 bg-white hover:border-purple-200 hover:shadow-lg"
                       }`}
                     >
+                      {isPurchased && (
+                        <span className="absolute -top-3 right-4 sm:right-6 px-3 py-1 bg-green-100 text-green-800 text-xs font-bold rounded-full border border-green-200">
+                          {t('oneTimeSection.purchasedBadge')}
+                        </span>
+                      )}
                       <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4">
                         {plan.name}
                       </h3>
@@ -566,7 +595,8 @@ export default function PaymentPage() {
                         {processing && selectedPlan?.id === plan.id ? t('plansGrid.processing') : t('oneTimeSection.buyNow')}
                       </button>
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}
