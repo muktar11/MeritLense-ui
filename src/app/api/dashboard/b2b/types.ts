@@ -5,6 +5,15 @@ export interface DashboardStats {
   certificates_issued: number;
   success_rate: number;
   team_members_count: number;
+  remaining_slots: number | null;
+  slot_limit: number | null;
+  slots_unlimited: boolean;
+  reserved_slots: number | null;
+  consumed_slots: number | null;
+  pending_sessions: number | null;
+  remaining_points: number | null;
+  points_limit: number | null;
+  points_unlimited: boolean;
 }
 
 export interface RecentCandidate {

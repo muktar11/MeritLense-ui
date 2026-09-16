@@ -2131,6 +2131,7 @@
           "certificatesIssued": "Certificates Issued",
           "teamMembers": "Team Members",
           "successRate": "Success Rate",
+          "assessmentSlots": "Assessment Slots",
           "changes": {
             "growth": "+{value}% growth",
             "negativeMonthly": "-{value}% monthly",
@@ -2140,7 +2141,11 @@
             "evalsPerCandidate": "{value} evaluations per candidate",
             "certifiedRate": "{value}% of completed certified",
             "activeTeam": "Active team members",
-            "basedOnEvaluations": "Based on {value} evaluations"
+            "basedOnEvaluations": "Based on {value} evaluations",
+            "reservedForUpcoming": "{value} reserved for upcoming interviews",
+            "noneReserved": "None reserved",
+            "unlimitedPlan": "Unlimited plan",
+            "noActivePlan": "No active plan"
           }
         },
         "alerts": {
@@ -3608,6 +3613,7 @@
           "evaluationsCompleted": "Evaluations Completed",
           "certificatesIssued": "Certificates Issued",
           "remainingPoints": "Remaining Points",
+          "assessmentSlots": "Assessment Slots",
           "successRate": "Success Rate",
           "thisMonth": "this month",
           "thisMonthIncrease": "+{value}% this month",
@@ -3616,7 +3622,9 @@
           "totalEvaluations": "{value} total evaluations",
           "basedOnEvaluations": "Based on {value} evaluations",
           "noActivePlan": "No active plan",
-          "unlimitedPlan": "Unlimited plan"
+          "unlimitedPlan": "Unlimited plan",
+          "reservedForUpcoming": "{value} reserved for upcoming interviews",
+          "noneReserved": "None reserved"
         },
         "quickAction": "Quick Action",
         "buyPoints": "Buy {value} points",

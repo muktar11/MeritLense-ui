@@ -164,6 +164,14 @@ export function Dashboard() {
       ? Math.round(((pointsLimit - remainingPoints) / pointsLimit) * 100)
       : null
 
+  // Available Slots (the headline figure) plus how many are Reserved for
+  // an upcoming interview that hasn't started yet - Available alone can't
+  // tell you that, since a Reserved slot is already deducted from it
+  // (Slot Reservation Lifecycle spec, Section 8).
+  const slotsUnlimited = stats?.slots_unlimited ?? false
+  const remainingSlots = stats?.remaining_slots ?? null
+  const reservedSlots = stats?.reserved_slots ?? null
+
   // Format language distribution for the chart - same shape the business
   // dashboard's identical chart component expects.
   const languageChartData = languageDistribution.map(item => ({
@@ -239,6 +247,20 @@ export function Dashboard() {
                     : t("metrics.noActivePlan")
               }
               icon="🎯"
+            />
+            <MetricCard
+              title={t("metrics.assessmentSlots")}
+              value={slotsUnlimited ? "∞" : remainingSlots !== null ? remainingSlots.toString() : "-"}
+              change={
+                slotsUnlimited
+                  ? t("metrics.unlimitedPlan")
+                  : reservedSlots
+                    ? t("metrics.reservedForUpcoming", { value: reservedSlots })
+                    : remainingSlots !== null
+                      ? t("metrics.noneReserved")
+                      : t("metrics.noActivePlan")
+              }
+              icon="🎟️"
             />
             <MetricCard
               title={t("metrics.successRate")}

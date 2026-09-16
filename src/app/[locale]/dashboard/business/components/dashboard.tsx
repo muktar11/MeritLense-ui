@@ -157,6 +157,14 @@ export function Dashboard() {
     ? Math.round((stats.certificates_issued / stats.completed_evaluations) * 100)
     : 0;
 
+  // Available Slots (the headline figure) plus how many are Reserved for
+  // an upcoming interview that hasn't started yet - Available alone can't
+  // tell you that, since a Reserved slot is already deducted from it
+  // (Slot Reservation Lifecycle spec, Section 8).
+  const slotsUnlimited = stats?.slots_unlimited ?? false;
+  const remainingSlots = stats?.remaining_slots ?? null;
+  const reservedSlots = stats?.reserved_slots ?? null;
+
   return (
     <div dir={locale === "ar" ? "rtl" : "ltr"} className="min-h-screen bg-[#f8f9fc]">
       {/* Package Banner */}
@@ -228,6 +236,22 @@ export function Dashboard() {
               change={t("metrics.changes.activeTeam")}
               changeType="neutral"
               icon="users"
+            />
+
+            <MetricCard
+              title={t("metrics.assessmentSlots")}
+              value={slotsUnlimited ? "∞" : remainingSlots !== null ? remainingSlots.toString() : "—"}
+              change={
+                slotsUnlimited
+                  ? t("metrics.changes.unlimitedPlan")
+                  : reservedSlots
+                    ? t("metrics.changes.reservedForUpcoming", { value: reservedSlots })
+                    : remainingSlots !== null
+                      ? t("metrics.changes.noneReserved")
+                      : t("metrics.changes.noActivePlan")
+              }
+              changeType="neutral"
+              icon="coins"
             />
 
             <MetricCard
