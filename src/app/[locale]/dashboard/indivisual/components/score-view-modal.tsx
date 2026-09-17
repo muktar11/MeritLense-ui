@@ -139,7 +139,11 @@ export function ScoreViewModal({
           )}
         </div>
 
-        <EvaluationDocumentsSection evaluation={selected} candidateName={candidate.full_name} />
+        <EvaluationDocumentsSection
+          evaluations={evaluations}
+          candidateName={candidate.full_name}
+          labelFor={evaluationOptionLabel}
+        />
 
         {sortedScores.length > 0 ? (
           <div className="space-y-4">
