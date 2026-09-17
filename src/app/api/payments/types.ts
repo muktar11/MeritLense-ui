@@ -90,6 +90,23 @@ export interface Price {
   created_at: string;
 }
 
+// What a plan's evaluation_tier actually grants the account, for display on
+// plan cards. Mirrors the backend business rule already enforced at session
+// creation (InterviewSessionService.create_session / certificate_eligibility):
+// a certificate can only ever be issued for a FULL-tier evaluation, while a
+// transcript/employer report is generated for a completed evaluation
+// regardless of tier.
+export function planCoverageFlags(plan: Pick<Price, "evaluation_tier">) {
+  const hasScreening = plan.evaluation_tier === "SCREENING" || plan.evaluation_tier === "BOTH";
+  const hasFull = plan.evaluation_tier === "FULL" || plan.evaluation_tier === "BOTH";
+  return {
+    hasScreening,
+    hasFull,
+    hasCertificate: hasFull,
+    hasTranscript: hasScreening || hasFull,
+  };
+}
+
 export interface Customer {
   id: number;
   user: number;
