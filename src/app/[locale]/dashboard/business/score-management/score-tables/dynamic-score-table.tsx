@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Check, Download, Eye, Share2 } from "lucide-react";
+import { Eye } from "lucide-react";
 import type { Candidate } from "@/app/api/candidates/types";
 import type { CandidateScoreSummary } from "@/app/api/evaluations/types";
 import reportService from "@/app/api/reports/endpoints";
 import TablePagination from "@/components/ui/table-pagination";
+import { ArtifactActions } from "@/components/evaluations/EvaluationDocumentLinks";
 
 const PAGE_SIZE = 10;
 
@@ -35,94 +36,6 @@ async function downloadFromUrl(url: string, filename: string) {
   link.click();
   link.remove();
   window.URL.revokeObjectURL(downloadUrl);
-}
-
-// Share prefers the native share sheet where available (mobile Safari/
-// Chrome) and falls back to copying the link, since the PDF is already
-// served from a public, unauthenticated URL - nothing extra to generate for
-// a "share" action.
-function ArtifactActions({
-  url,
-  candidateName,
-  artifactLabel,
-  onDownload,
-}: {
-  url: string;
-  candidateName: string;
-  artifactLabel: string;
-  onDownload?: () => Promise<void>;
-}) {
-  const t = useTranslations("dashboard.business.score-management.table");
-  const [copied, setCopied] = useState(false);
-  const [downloading, setDownloading] = useState(false);
-
-  const handleDownload = async () => {
-    if (!onDownload) {
-      return;
-    }
-    setDownloading(true);
-    try {
-      await onDownload();
-    } finally {
-      setDownloading(false);
-    }
-  };
-
-  const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: `${candidateName}'s ${artifactLabel}`, url });
-      } catch {
-        // Cancelled by the user - not an error.
-      }
-      return;
-    }
-    try {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // Clipboard unavailable (e.g. insecure context) - nothing more to do.
-    }
-  };
-
-  return (
-    <div className="flex items-center gap-3">
-      {onDownload ? (
-        <button
-          type="button"
-          onClick={handleDownload}
-          disabled={downloading}
-          className="inline-flex items-center gap-1 text-purple-600 hover:text-purple-700 disabled:opacity-50 font-medium"
-          title={t("downloadTooltip", { label: artifactLabel })}
-        >
-          <Download className="w-4 h-4" />
-          {downloading ? t("downloading") : t("download")}
-        </button>
-      ) : (
-        <a
-          href={url}
-          download
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 text-purple-600 hover:text-purple-700 font-medium"
-          title={t("downloadTooltip", { label: artifactLabel })}
-        >
-          <Download className="w-4 h-4" />
-          {t("download")}
-        </a>
-      )}
-      <button
-        type="button"
-        onClick={handleShare}
-        className="inline-flex items-center gap-1 text-gray-500 hover:text-purple-600"
-        title={t("shareTooltip", { label: artifactLabel })}
-      >
-        {copied ? <Check className="w-4 h-4 text-green-600" /> : <Share2 className="w-4 h-4" />}
-        {copied && <span className="text-green-600 text-xs">{t("copied")}</span>}
-      </button>
-    </div>
-  );
 }
 
 // Previously rendered one extra column per real competency code (built from
