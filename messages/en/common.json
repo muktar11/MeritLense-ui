@@ -215,7 +215,8 @@
         "integrityReliability": "Integrity & Reliability",
         "taskExecution": "Practical Task Execution",
         "knowledgeComprehension": "Knowledge & Comprehension"
-      }
+      },
+      "notAssessed": "Not Assessed"
     },
     "liveCallRoom": {
       "missingSessionId": "Missing session ID.",

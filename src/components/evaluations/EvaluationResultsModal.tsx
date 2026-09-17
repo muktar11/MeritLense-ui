@@ -460,7 +460,11 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
                         <div className="rounded-lg bg-gray-50 border border-gray-200 px-3 py-2">
                           <p className="text-gray-500">{t("assessmentCoverage")}</p>
                           <p className="font-medium text-gray-900">
-                            {assessmentContext?.assessment_coverage || "—"}
+                            {assessmentContext?.assessment_coverage?.length
+                              ? assessmentContext.assessment_coverage
+                                  .map((item) => (item.covered ? item.label : `${item.label} (${t("notAssessed")})`))
+                                  .join(", ")
+                              : "—"}
                           </p>
                         </div>
                         <div className="rounded-lg bg-gray-50 border border-gray-200 px-3 py-2">
