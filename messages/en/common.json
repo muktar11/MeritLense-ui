@@ -3001,7 +3001,7 @@
           "fullEvaluation": "Full evaluation",
           "oneTimeLabel": "one-time",
           "buyNow": "Buy Now",
-          "purchasedBadge": "Purchased",
+          "purchasedBadge": "Current Package",
           "slotsLabel": "{count} assessment slots"
         },
         "subscriptionForm": {
