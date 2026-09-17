@@ -20,6 +20,7 @@ import { useLiveCall } from "./useLiveCall";
 import { LANGUAGES } from "@/lib/languages";
 import { EvaluatorRatingCard } from "@/components/evaluations/EvaluatorRatingCard";
 import { CallControlsIntro } from "./CallControlsIntro";
+import { candidateDir, getCandidateStrings, resolveCandidateLanguage } from "@/app/[locale]/interview/candidate-lang";
 
 interface LiveCallRoomProps {
   sessionId: string;
@@ -27,6 +28,12 @@ interface LiveCallRoomProps {
   // token query param); omitted for the evaluator, who's a logged-in
   // staff user instead.
   candidateToken?: string;
+  // The interview's configured language (session.ui_language) - only
+  // meaningful (and only ever passed) for the candidate flow. The
+  // evaluator's copy of this room stays on next-intl's site locale, same
+  // as the rest of their dashboard - see candidate-lang.ts for why the
+  // candidate side can't just reuse that.
+  uiLanguage?: string | null;
   onEnded?: () => void;
   // True when rendered inside a dashboard shell (DashboardLayout's h-16
   // breadcrumb bar sits above this component) rather than as its own
@@ -37,9 +44,57 @@ interface LiveCallRoomProps {
   embedded?: boolean;
 }
 
-export function LiveCallRoom({ sessionId, candidateToken, onEnded, embedded = false }: LiveCallRoomProps) {
-  const t = useTranslations("shared.liveCallRoom");
+export function LiveCallRoom({ sessionId, candidateToken, uiLanguage, onEnded, embedded = false }: LiveCallRoomProps) {
+  const tIntl = useTranslations("shared.liveCallRoom");
   const tLanguages = useTranslations("dashboard.indivisual.settings.edit-profile-tab.languages");
+  // Candidate flow renders from the interview's own configured language
+  // (independent of the site's [locale] URL, which the candidate never
+  // chose); the evaluator flow keeps next-intl, driven by their own
+  // dashboard locale preference.
+  const candidateAllStrings = candidateToken ? getCandidateStrings(uiLanguage) : null;
+  const dir = candidateToken ? candidateDir(resolveCandidateLanguage(uiLanguage)) : undefined;
+  const t = candidateAllStrings?.liveCallRoom ?? {
+    missingSessionId: tIntl("missingSessionId"),
+    callEnded: tIntl("callEnded"),
+    callEndedMessage: tIntl("callEndedMessage"),
+    returnToDashboard: tIntl("returnToDashboard"),
+    couldntJoin: tIntl("couldntJoin"),
+    refreshAndTryAgain: tIntl("refreshAndTryAgain"),
+    opensAt: tIntl("opensAt"),
+    yourLocalTime: tIntl("yourLocalTime"),
+    statusJoining: tIntl("statusJoining"),
+    statusWaiting: tIntl("statusWaiting"),
+    statusPendingAdmission: tIntl("statusPendingAdmission"),
+    statusReconnecting: tIntl("statusReconnecting"),
+    statusConnecting: tIntl("statusConnecting"),
+    candidateWantsToJoin: tIntl("candidateWantsToJoin"),
+    letThemIn: tIntl("letThemIn"),
+    deny: tIntl("deny"),
+    admit: tIntl("admit"),
+    manualTranslationActive: tIntl("manualTranslationActive"),
+    youreEvaluator: tIntl("youreEvaluator"),
+    youreCandidate: tIntl("youreCandidate"),
+    manualTranslationLabel: tIntl("manualTranslationLabel"),
+    messageFeed: tIntl("messageFeed"),
+    isSpeaking: (role: string) => tIntl("isSpeaking", { role }),
+    waitingToFinish: (role: string) => tIntl("waitingToFinish", { role }),
+    tapToRecord: tIntl("tapToRecord"),
+    recording: (time: string) => tIntl("recording", { time }),
+    stop: tIntl("stop"),
+    reRecord: tIntl("reRecord"),
+    sending: tIntl("sending"),
+    send: tIntl("send"),
+    noSegmentsYet: tIntl("noSegmentsYet"),
+    you: tIntl("you"),
+    otherParticipant: tIntl("otherParticipant"),
+    original: tIntl("original"),
+    translated: tIntl("translated"),
+    iSpeak: tIntl("iSpeak"),
+    iWantToHear: tIntl("iWantToHear"),
+    endCall: tIntl("endCall"),
+    candidateLabel: tIntl("candidateLabel"),
+    evaluatorLabel: tIntl("evaluatorLabel"),
+  };
   const router = useRouter();
   const pathname = usePathname();
   // Embedded = rendered inside the evaluator's dashboard shell at a
@@ -78,7 +133,7 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded, embedded = fa
   } = useLiveCall({ sessionId, candidateToken });
 
   const [savingLanguage, setSavingLanguage] = useState(false);
-  const otherRoleLabel = role === "EVALUATOR" ? t("candidateLabel") : t("evaluatorLabel");
+  const otherRoleLabel = role === "EVALUATOR" ? t.candidateLabel : t.evaluatorLabel;
   // State, not a plain ref: CallControlsIntro needs to know as soon as
   // these DOM nodes exist so it can measure and spotlight them, and a
   // plain ref's .current wouldn't trigger the re-render that requires. The
@@ -107,11 +162,11 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded, embedded = fa
   if (status === "ended") {
     const showRatingCard = role === "EVALUATOR" && evaluationId;
     return (
-      <div className={`${roomHeightClass} bg-gray-900 flex items-center justify-center p-4 overflow-y-auto`}>
+      <div dir={dir} className={`${roomHeightClass} bg-gray-900 flex items-center justify-center p-4 overflow-y-auto`}>
         <div className={`bg-white rounded-2xl p-8 text-center w-full ${showRatingCard ? "max-w-lg" : "max-w-md"}`}>
           <PhoneOff className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <h1 className="text-xl font-bold text-gray-900 mb-2">{t("callEnded")}</h1>
-          <p className="text-gray-600">{t("callEndedMessage")}</p>
+          <h1 className="text-xl font-bold text-gray-900 mb-2">{t.callEnded}</h1>
+          <p className="text-gray-600">{t.callEndedMessage}</p>
           {showRatingCard && (
             <div className="mt-6 text-left">
               <EvaluatorRatingCard evaluationId={evaluationId} />
@@ -126,7 +181,7 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded, embedded = fa
               }}
               className="mt-6 w-full flex items-center justify-center gap-2 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium"
             >
-              <LayoutDashboard className="w-4 h-4" /> {t("returnToDashboard")}
+              <LayoutDashboard className="w-4 h-4" /> {t.returnToDashboard}
             </button>
           )}
         </div>
@@ -136,14 +191,14 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded, embedded = fa
 
   if (status === "error") {
     return (
-      <div className={`${roomHeightClass} bg-gray-900 flex items-center justify-center p-4 overflow-y-auto`}>
+      <div dir={dir} className={`${roomHeightClass} bg-gray-900 flex items-center justify-center p-4 overflow-y-auto`}>
         <div className="bg-white rounded-2xl p-8 text-center max-w-md w-full">
           <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <h1 className="text-xl font-bold text-gray-900 mb-2">{t("couldntJoin")}</h1>
-          <p className="text-gray-600">{error ?? t("refreshAndTryAgain")}</p>
+          <h1 className="text-xl font-bold text-gray-900 mb-2">{t.couldntJoin}</h1>
+          <p className="text-gray-600">{error ?? t.refreshAndTryAgain}</p>
           {notOpenUntil && (
             <p className="text-gray-500 text-sm mt-3">
-              {t("opensAt")}{" "}
+              {t.opensAt}{" "}
               <span className="font-medium text-gray-700">
                 {new Date(notOpenUntil).toLocaleString(undefined, {
                   weekday: "long",
@@ -153,7 +208,7 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded, embedded = fa
                   minute: "2-digit",
                 })}
               </span>{" "}
-              {t("yourLocalTime")}
+              {t.yourLocalTime}
             </p>
           )}
         </div>
@@ -162,7 +217,7 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded, embedded = fa
   }
 
   return (
-    <div className={`${roomHeightClass} overflow-hidden bg-gray-900 flex flex-col`}>
+    <div dir={dir} className={`${roomHeightClass} overflow-hidden bg-gray-900 flex flex-col`}>
       <div className="flex-1 flex flex-col xl:flex-row min-h-0">
         <div className="relative flex-1 min-h-[240px] xl:min-h-[420px]">
           <video ref={remoteVideoRef} autoPlay playsInline className="w-full h-full object-cover bg-black" />
@@ -172,11 +227,11 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded, embedded = fa
               <div className="text-center text-white">
                 <Loader2 className="w-10 h-10 animate-spin mx-auto mb-3" />
                 <p className="text-sm">
-                  {status === "joining" && t("statusJoining")}
-                  {status === "waiting" && t("statusWaiting")}
-                  {status === "pending_admission" && t("statusPendingAdmission")}
-                  {status === "reconnecting" && t("statusReconnecting")}
-                  {status === "connecting" && t("statusConnecting")}
+                  {status === "joining" && t.statusJoining}
+                  {status === "waiting" && t.statusWaiting}
+                  {status === "pending_admission" && t.statusPendingAdmission}
+                  {status === "reconnecting" && t.statusReconnecting}
+                  {status === "connecting" && t.statusConnecting}
                 </p>
               </div>
             </div>
@@ -186,22 +241,22 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded, embedded = fa
             <div className="absolute inset-0 flex items-center justify-center bg-black/70 z-10">
               <div className="bg-white rounded-2xl p-6 text-center max-w-xs w-full mx-4">
                 <UserCheck className="w-10 h-10 text-purple-600 mx-auto mb-3" />
-                <h2 className="text-base font-semibold text-gray-900 mb-1">{t("candidateWantsToJoin")}</h2>
-                <p className="text-sm text-gray-600 mb-5">{t("letThemIn")}</p>
+                <h2 className="text-base font-semibold text-gray-900 mb-1">{t.candidateWantsToJoin}</h2>
+                <p className="text-sm text-gray-600 mb-5">{t.letThemIn}</p>
                 <div className="flex gap-3">
                   <button
                     type="button"
                     onClick={denyCandidate}
                     className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium"
                   >
-                    <UserX className="w-4 h-4" /> {t("deny")}
+                    <UserX className="w-4 h-4" /> {t.deny}
                   </button>
                   <button
                     type="button"
                     onClick={admitCandidate}
                     className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium"
                   >
-                    <UserCheck className="w-4 h-4" /> {t("admit")}
+                    <UserCheck className="w-4 h-4" /> {t.admit}
                   </button>
                 </div>
               </div>
@@ -215,14 +270,14 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded, embedded = fa
           {translationUnavailable && (
             <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-amber-500 text-white text-xs font-medium px-3 py-1.5 rounded-full flex items-center gap-1.5">
               <AlertTriangle className="w-3.5 h-3.5" />
-              {t("manualTranslationActive")}
+              {t.manualTranslationActive}
             </div>
           )}
 
           {role && (
             <div className="absolute top-4 left-4 bg-black/50 text-white text-xs px-2.5 py-1 rounded-full flex items-center gap-1.5">
               <Video className="w-3 h-3" />
-              {role === "EVALUATOR" ? t("youreEvaluator") : t("youreCandidate")}
+              {role === "EVALUATOR" ? t.youreEvaluator : t.youreCandidate}
             </div>
           )}
         </div>
@@ -230,8 +285,8 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded, embedded = fa
         <aside className="w-full xl:w-[380px] bg-slate-900 border-t xl:border-t-0 xl:border-l border-slate-700 flex flex-col min-h-[180px] max-h-[40vh] xl:max-h-none xl:min-h-[260px]">
           <div className="p-4 border-b border-slate-700 space-y-3">
             <div>
-              <p className="text-xs uppercase tracking-wide text-slate-400">{t("manualTranslationLabel")}</p>
-              <h2 className="text-lg font-semibold text-white">{t("messageFeed")}</h2>
+              <p className="text-xs uppercase tracking-wide text-slate-400">{t.manualTranslationLabel}</p>
+              <h2 className="text-lg font-semibold text-white">{t.messageFeed}</h2>
             </div>
 
             {remoteTurnActive && (
@@ -240,7 +295,7 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded, embedded = fa
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-purple-400" />
                 </span>
-                {t("isSpeaking", { role: otherRoleLabel })}
+                {t.isSpeaking(otherRoleLabel)}
               </div>
             )}
 
@@ -265,7 +320,7 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded, embedded = fa
                   className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-slate-600 rounded-lg text-slate-400 text-sm font-medium cursor-not-allowed"
                 >
                   <Mic className="w-4 h-4" />
-                  {t("waitingToFinish", { role: otherRoleLabel })}
+                  {t.waitingToFinish(otherRoleLabel)}
                 </div>
               ) : (
                 <button
@@ -275,7 +330,7 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded, embedded = fa
                   className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-purple-400/60 rounded-lg text-purple-300 hover:bg-purple-500/10 text-sm font-medium"
                 >
                   <Mic className="w-4 h-4" />
-                  {t("tapToRecord")}
+                  {t.tapToRecord}
                 </button>
               )
             )}
@@ -284,14 +339,14 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded, embedded = fa
               <div className="flex flex-col items-center gap-2 py-3 border-2 border-purple-500 rounded-lg bg-purple-500/10">
                 <div className="flex items-center gap-2 text-sm font-medium text-white">
                   <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
-                  {t("recording", { time: formatTurnTime(turnElapsedSeconds) })}
+                  {t.recording(formatTurnTime(turnElapsedSeconds))}
                 </div>
                 <button
                   type="button"
                   onClick={stopTurnRecording}
                   className="flex items-center gap-2 px-4 py-1.5 bg-white hover:bg-gray-100 text-gray-900 rounded-lg text-sm font-medium"
                 >
-                  <Square className="w-3.5 h-3.5" /> {t("stop")}
+                  <Square className="w-3.5 h-3.5" /> {t.stop}
                 </button>
               </div>
             )}
@@ -306,7 +361,7 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded, embedded = fa
                     disabled={turnRecordingState === "sending"}
                     className="flex-1 flex items-center justify-center gap-1.5 py-2 border border-slate-600 hover:bg-slate-800 disabled:opacity-50 text-slate-200 rounded-lg text-xs font-medium"
                   >
-                    <RotateCcw className="w-3.5 h-3.5" /> {t("reRecord")}
+                    <RotateCcw className="w-3.5 h-3.5" /> {t.reRecord}
                   </button>
                   <button
                     type="button"
@@ -319,7 +374,7 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded, embedded = fa
                     ) : (
                       <Send className="w-3.5 h-3.5" />
                     )}
-                    {turnRecordingState === "sending" ? t("sending") : t("send")}
+                    {turnRecordingState === "sending" ? t.sending : t.send}
                   </button>
                 </div>
               </div>
@@ -329,18 +384,18 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded, embedded = fa
           <div className="flex-1 overflow-y-auto p-4 space-y-3">
             {translationSegments.length === 0 ? (
               <div className="rounded-xl border border-dashed border-slate-600 bg-slate-800/60 p-4 text-sm text-slate-300">
-                {t("noSegmentsYet")}
+                {t.noSegmentsYet}
               </div>
             ) : (
               translationSegments.map((segment) => (
                 <div key={segment.id} className="rounded-xl bg-slate-800 p-3 text-sm text-slate-100">
                   <div className="mb-2 flex items-center justify-between gap-3 text-xs text-slate-300">
-                    <span>{segment.speaker_role === role ? t("you") : t("otherParticipant")}</span>
+                    <span>{segment.speaker_role === role ? t.you : t.otherParticipant}</span>
                     <span>{segment.target_language}</span>
                   </div>
-                  <p className="text-xs uppercase tracking-wide text-slate-400 mb-1">{t("original")}</p>
+                  <p className="text-xs uppercase tracking-wide text-slate-400 mb-1">{t.original}</p>
                   <p className="text-sm text-slate-100 mb-2">{segment.original_text}</p>
-                  <p className="text-xs uppercase tracking-wide text-purple-300 mb-1">{t("translated")}</p>
+                  <p className="text-xs uppercase tracking-wide text-purple-300 mb-1">{t.translated}</p>
                   <p className="text-sm text-purple-100">{segment.translated_text}</p>
                 </div>
               ))
@@ -353,7 +408,7 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded, embedded = fa
         <div ref={setLanguageEl} className="flex items-center gap-3">
           <div className="flex items-center gap-1.5">
             <Mic className="w-4 h-4 text-gray-400" />
-            <label className="text-xs text-gray-300">{t("iSpeak")}</label>
+            <label className="text-xs text-gray-300">{t.iSpeak}</label>
             <select
               value={languagePrefs?.input_language ?? "en-US"}
               onChange={(e) => handleLanguageChange("input_language", e.target.value)}
@@ -368,7 +423,7 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded, embedded = fa
             </select>
           </div>
           <div className="flex items-center gap-1.5">
-            <label className="text-xs text-gray-300">{t("iWantToHear")}</label>
+            <label className="text-xs text-gray-300">{t.iWantToHear}</label>
             <select
               value={languagePrefs?.output_language ?? "en-US"}
               onChange={(e) => handleLanguageChange("output_language", e.target.value)}
@@ -389,11 +444,11 @@ export function LiveCallRoom({ sessionId, candidateToken, onEnded, embedded = fa
           onClick={handleEndCall}
           className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium"
         >
-          <PhoneOff className="w-4 h-4" /> {t("endCall")}
+          <PhoneOff className="w-4 h-4" /> {t.endCall}
         </button>
       </div>
 
-      <CallControlsIntro recordTarget={recordEl} languageTarget={languageEl} />
+      <CallControlsIntro recordTarget={recordEl} languageTarget={languageEl} candidateStrings={candidateAllStrings?.callControlsIntro} />
     </div>
   );
 }
