@@ -5,11 +5,13 @@ import { AlertTriangle } from "lucide-react";
 import interviewSessionService from "@/app/api/interview-session/endpoints";
 import { ensureModelsLoaded } from "@/lib/face-detection";
 import type { SessionStatus } from "@/app/api/interview-session/types";
+import { getCandidateStrings } from "../candidate-lang";
 
 interface IntegrityMonitorProps {
   sessionId: string;
   token: string;
   onSessionStatusChange?: (status: SessionStatus) => void;
+  uiLanguage?: string | null;
 }
 
 // Local-only cadence for watching the camera/face state and driving the
@@ -58,13 +60,8 @@ function isFrameEssentiallyBlack(el: HTMLVideoElement): boolean {
 
 type ProblemType = "NO_FACE_DETECTED" | "MULTIPLE_FACES_DETECTED" | "CAMERA_UNAVAILABLE";
 
-const PROBLEM_LABELS: Record<ProblemType, string> = {
-  NO_FACE_DETECTED: "We can't see you",
-  MULTIPLE_FACES_DETECTED: "Multiple faces detected",
-  CAMERA_UNAVAILABLE: "Your camera appears to be off or unavailable",
-};
-
-export function IntegrityMonitor({ sessionId, token, onSessionStatusChange }: IntegrityMonitorProps) {
+export function IntegrityMonitor({ sessionId, token, onSessionStatusChange, uiLanguage }: IntegrityMonitorProps) {
+  const t = getCandidateStrings(uiLanguage).integrityMonitor;
   const [graceCountdown, setGraceCountdown] = useState<{ type: ProblemType; secondsLeft: number } | null>(null);
   const [cameraReady, setCameraReady] = useState(false);
 
@@ -235,10 +232,7 @@ export function IntegrityMonitor({ sessionId, token, onSessionStatusChange }: In
       {graceCountdown && (
         <div className="flex items-center gap-2 bg-red-50 border border-red-300 text-red-700 px-3 py-2 rounded-lg text-sm shadow-md max-w-xs font-medium">
           <AlertTriangle className="w-4 h-4 shrink-0" />
-          <span>
-            {PROBLEM_LABELS[graceCountdown.type]} — this will be flagged as an integrity violation in{" "}
-            {graceCountdown.secondsLeft}s unless resolved.
-          </span>
+          <span>{t.willBeFlagged(t.problemLabels[graceCountdown.type], graceCountdown.secondsLeft)}</span>
         </div>
       )}
       <div

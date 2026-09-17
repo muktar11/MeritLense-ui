@@ -2,18 +2,21 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Clock } from "lucide-react";
+import { getCandidateStrings } from "../candidate-lang";
 
 interface TestTimerProps {
   startedAt: string;
   durationMinutes: number;
   onTimeUp: () => void;
+  uiLanguage?: string | null;
 }
 
 // The deadline is a fixed point in time derived from the server-persisted
 // started_at, not "durationMinutes from when this component mounted" - so
 // a page reload recomputes the exact same deadline instead of granting a
 // fresh full duration.
-export function TestTimer({ startedAt, durationMinutes, onTimeUp }: TestTimerProps) {
+export function TestTimer({ startedAt, durationMinutes, onTimeUp, uiLanguage }: TestTimerProps) {
+  const t = getCandidateStrings(uiLanguage).testTimer;
   const deadlineRef = useRef(new Date(startedAt).getTime() + durationMinutes * 60_000);
   const [remainingSeconds, setRemainingSeconds] = useState(() =>
     Math.max(0, Math.round((deadlineRef.current - Date.now()) / 1000))
@@ -48,9 +51,7 @@ export function TestTimer({ startedAt, durationMinutes, onTimeUp }: TestTimerPro
       }`}
     >
       <Clock className="w-4 h-4" />
-      <span>
-        {minutes}:{seconds.toString().padStart(2, "0")} remaining
-      </span>
+      <span>{t.remaining(minutes, seconds.toString().padStart(2, "0"))}</span>
     </div>
   );
 }

@@ -3,6 +3,7 @@
 import { Volume2, Loader2 } from "lucide-react";
 import type { SessionQuestion } from "@/app/api/interview-session/types";
 import { READ_ALOUD_LANGUAGES } from "./read-aloud-languages";
+import { getCandidateStrings } from "../candidate-lang";
 
 interface QuestionCardProps {
   question: SessionQuestion;
@@ -13,6 +14,7 @@ interface QuestionCardProps {
   loadingAudio: boolean;
   readAloudLanguage: string;
   onReadAloudLanguageChange: (languageCode: string) => void;
+  uiLanguage?: string | null;
 }
 
 export function QuestionCard({
@@ -24,7 +26,9 @@ export function QuestionCard({
   loadingAudio,
   readAloudLanguage,
   onReadAloudLanguageChange,
+  uiLanguage,
 }: QuestionCardProps) {
+  const t = getCandidateStrings(uiLanguage).questionCard;
   const progressPercent = totalQuestions > 0 ? Math.round((questionNumber / totalQuestions) * 100) : 0;
   const skillTag = question.skill_tag || question.skill;
 
@@ -32,9 +36,7 @@ export function QuestionCard({
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
       <div className="mb-4">
         <div className="flex items-center justify-between text-xs text-gray-500 mb-1.5">
-          <span>
-            Question {questionNumber} of {totalQuestions}
-          </span>
+          <span>{t.questionOf(questionNumber, totalQuestions)}</span>
           <span>{progressPercent}%</span>
         </div>
         <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
@@ -51,7 +53,7 @@ export function QuestionCard({
           <select
             value={readAloudLanguage}
             onChange={(e) => onReadAloudLanguageChange(e.target.value)}
-            title="Read-aloud language"
+            title={t.readAloudTitle}
             className="text-xs border border-gray-200 rounded-lg px-1.5 py-1 text-gray-600 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500"
           >
             {READ_ALOUD_LANGUAGES.map((lang) => (
@@ -65,7 +67,7 @@ export function QuestionCard({
             onClick={onPlayAudio}
             disabled={loadingAudio}
             className="p-2 rounded-full bg-purple-50 text-purple-600 hover:bg-purple-100 disabled:opacity-50"
-            title="Listen to question"
+            title={t.listenTitle}
           >
             {loadingAudio ? <Loader2 className="w-4 h-4 animate-spin" /> : <Volume2 className="w-4 h-4" />}
           </button>
@@ -76,12 +78,12 @@ export function QuestionCard({
         <div className="flex flex-wrap gap-2 mt-3">
           {question.domain && (
             <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
-              Domain: {question.domain}
+              {t.domainLabel(question.domain)}
             </span>
           )}
           {skillTag && (
             <span className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-full">
-              Skill Tag: {skillTag}
+              {t.skillTagLabel(skillTag)}
             </span>
           )}
         </div>
