@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import type { Candidate } from "@/app/api/candidates/types";
 import type { CandidateScoreSummary } from "@/app/api/evaluations/types";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { EvaluationDocumentsSection } from "@/components/evaluations/EvaluationDocumentLinks";
 
 interface ScoreViewModalProps {
   isOpen: boolean;
@@ -137,6 +138,8 @@ export function ScoreViewModal({
             </div>
           )}
         </div>
+
+        <EvaluationDocumentsSection evaluation={selected} candidateName={candidate.full_name} />
 
         {sortedScores.length > 0 ? (
           <div className="space-y-4">

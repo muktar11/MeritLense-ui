@@ -2414,6 +2414,7 @@
             "documents": "Documents",
             "actions": "Actions"
           },
+          "documentsHeading": "Documents",
           "transcript": "Transcript:",
           "certificate": "Certificate:",
           "notAvailable": "Not available",
