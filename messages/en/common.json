@@ -3074,6 +3074,24 @@
               "videoRecording": "Video Introduction Recording (Add-on: +€30)"
             }
           }
+        },
+        "usageSection": {
+          "title": "Your Usage",
+          "currentPlanLabel": "Current Plan",
+          "completedAiInterviews": "AI Interviews Completed",
+          "completedScheduledAssessments": "Scheduled Assessments Completed",
+          "assessmentSlotsTitle": "Assessment Slots",
+          "slotsRemainingOfLimit": "{remaining} of {limit} remaining",
+          "unlimitedValue": "Unlimited",
+          "slotsReservedNote": "{count} reserved for an upcoming assessment",
+          "pointsTitle": "Points",
+          "pointsRemainingOfLimit": "{remaining} of {limit} remaining",
+          "moreAssessmentsAvailable": "You can start {count} more assessment",
+          "moreAssessmentsAvailablePlural": "You can start {count} more assessments",
+          "moreAssessmentsUnlimited": "You can start unlimited assessments",
+          "noAssessmentsRemaining": "No assessment slots remaining - upgrade your plan to continue",
+          "noActivePlan": "No active plan",
+          "notAvailableShort": "N/A"
         }
       },
       "evaluations": {

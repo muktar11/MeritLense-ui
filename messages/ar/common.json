@@ -3082,6 +3082,24 @@
               "videoRecording": "تسجيل فيديو تقديمي (إضافة: +€30)"
             }
           }
+        },
+        "usageSection": {
+          "title": "استخدامك",
+          "currentPlanLabel": "الباقة الحالية",
+          "completedAiInterviews": "مقابلات الذكاء الاصطناعي المكتملة",
+          "completedScheduledAssessments": "التقييمات المجدولة المكتملة",
+          "assessmentSlotsTitle": "مقاعد التقييم",
+          "slotsRemainingOfLimit": "{remaining} من {limit} متبقٍ",
+          "unlimitedValue": "غير محدود",
+          "slotsReservedNote": "تم حجز {count} لتقييم قادم",
+          "pointsTitle": "النقاط",
+          "pointsRemainingOfLimit": "{remaining} من {limit} متبقٍ",
+          "moreAssessmentsAvailable": "يمكنك بدء {count} تقييم إضافي",
+          "moreAssessmentsAvailablePlural": "يمكنك بدء {count} تقييمات إضافية",
+          "moreAssessmentsUnlimited": "يمكنك بدء عدد غير محدود من التقييمات",
+          "noAssessmentsRemaining": "لا توجد مقاعد تقييم متبقية - قم بترقية باقتك للمتابعة",
+          "noActivePlan": "لا توجد باقة نشطة",
+          "notAvailableShort": "غير متاح"
         }
       },
       "evaluations": {

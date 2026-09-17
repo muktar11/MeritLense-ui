@@ -12,6 +12,7 @@ import paymentService from "@/app/api/payments/endpoints";
 import type { Price } from "@/app/api/payments/types";
 import { SubscriptionForm } from "./subscription-form";
 import { useSubscription } from "@/app/context/SubscriptionContext";
+import { UsageSummary } from "./usage-summary";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -145,6 +146,7 @@ export function PlansTab() {
 
   return (
     <div className="space-y-8">
+      {!selectedPlan && <UsageSummary />}
       <div className="text-center">
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
           <span

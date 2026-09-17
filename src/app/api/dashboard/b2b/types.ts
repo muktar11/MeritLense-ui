@@ -2,6 +2,8 @@ export interface DashboardStats {
   total_candidates: number;
   total_evaluations: number;
   completed_evaluations: number;
+  completed_ai_interviews: number;
+  completed_scheduled_assessments: number;
   certificates_issued: number;
   success_rate: number;
   team_members_count: number;
