@@ -19,6 +19,7 @@ import { LiveCallRoom } from "@/components/live-call/LiveCallRoom";
 import { IntegrityMonitor } from "./components/integrity-monitor";
 import { TestTimer } from "./components/test-timer";
 import { LANGUAGES } from "@/lib/languages";
+import { candidateDir, getCandidateStrings, resolveCandidateLanguage } from "./candidate-lang";
 
 type PageState =
   | "loading"
@@ -74,6 +75,12 @@ function InterviewSessionContent() {
   const [readAloudLanguage, setReadAloudLanguage] = useState("en-US");
   const [answerLanguage, setAnswerLanguage] = useState("en-US");
 
+  // Drives the whole candidate-facing experience's language/RTL layout -
+  // see ./candidate-lang.ts. Independent of this route's [locale] URL
+  // segment, which only governs next-intl's marketing/admin/dashboard UI.
+  const t = getCandidateStrings(session?.ui_language).interviewPage;
+  const dir = candidateDir(resolveCandidateLanguage(session?.ui_language));
+
   const loadCurrentQuestion = useCallback(async () => {
     setAudioUrl(null);
     try {
@@ -94,7 +101,7 @@ function InterviewSessionContent() {
       setQuestion(result);
       setPageState("question");
     } catch {
-      setError("Something went wrong loading your next question. Please refresh the page.");
+      setError(t.loadQuestionError);
       setPageState("error");
     }
   }, [sessionId, token]);
@@ -178,7 +185,7 @@ function InterviewSessionContent() {
 
   useEffect(() => {
     if (!sessionId || !token) {
-      setError("This interview link is missing required information.");
+      setError(t.missingLinkError);
       setPageState("unavailable");
       return;
     }
@@ -191,7 +198,7 @@ function InterviewSessionContent() {
         await resolveSessionState(data, () => active);
       } catch {
         if (active) {
-          setError("We couldn't find this interview session. The link may be invalid.");
+          setError(t.notFoundError);
           setPageState("unavailable");
         }
       }
@@ -246,7 +253,7 @@ function InterviewSessionContent() {
         setSession(started);
       }
     } catch {
-      setError("Your interview couldn't be started. Please refresh the page or contact the person who invited you.");
+      setError(t.startError);
       setPageState("not-ready");
       return;
     }
@@ -329,7 +336,7 @@ function InterviewSessionContent() {
       });
       await loadCurrentQuestion();
     } catch {
-      setError("Failed to submit your answer. Please try again.");
+      setError(t.submitAnswerError);
       setPageState("question");
     }
   };
@@ -349,7 +356,7 @@ function InterviewSessionContent() {
       await interviewSessionService.transcribeResponse(sessionId, token, uploaded.id, answerLanguage);
       await loadCurrentQuestion();
     } catch {
-      setError("Failed to submit your recording. Please try again.");
+      setError(t.submitRecordingError);
       setPageState("question");
     }
   };
@@ -364,36 +371,32 @@ function InterviewSessionContent() {
 
   if (pageState === "not-ready") {
     return (
-      <CenteredCard>
+      <CenteredCard dir={dir}>
         <Clock className="w-14 h-14 text-amber-500 mx-auto mb-4" />
-        <h1 className="text-xl font-bold text-gray-900 mb-2">Your interview isn't ready yet</h1>
-        <p className="text-gray-600">
-          Please contact the person who invited you to this interview — they'll need to start your session
-          before you can begin.
-        </p>
+        <h1 className="text-xl font-bold text-gray-900 mb-2">{t.notReadyTitle}</h1>
+        <p className="text-gray-600">{t.notReadyBody}</p>
       </CenteredCard>
     );
   }
 
   if (pageState === "scheduled") {
     const scheduledAt = session?.scheduled_start_at ? new Date(session.scheduled_start_at) : null;
+    const locale = dir === "rtl" ? "ar" : undefined;
+    const formattedDateTime = scheduledAt
+      ? `${scheduledAt.toLocaleDateString(locale, {
+          weekday: "long",
+          month: "long",
+          day: "numeric",
+        })} ${scheduledAt.toLocaleTimeString(locale, {
+          hour: "numeric",
+          minute: "2-digit",
+        })}`
+      : null;
     return (
-      <CenteredCard>
+      <CenteredCard dir={dir}>
         <Clock className="w-14 h-14 text-amber-500 mx-auto mb-4" />
-        <h1 className="text-xl font-bold text-gray-900 mb-2">Your interview is scheduled</h1>
-        <p className="text-gray-600">
-          {scheduledAt
-            ? `This interview will begin on ${scheduledAt.toLocaleDateString(undefined, {
-                weekday: "long",
-                month: "long",
-                day: "numeric",
-              })} at ${scheduledAt.toLocaleTimeString(undefined, {
-                hour: "numeric",
-                minute: "2-digit",
-              })} (your device's local time).`
-            : "This interview hasn't started yet."}{" "}
-          This page will continue automatically once it&apos;s time — you can leave it open, or come back later.
-        </p>
+        <h1 className="text-xl font-bold text-gray-900 mb-2">{t.scheduledTitle}</h1>
+        <p className="text-gray-600">{t.scheduledBody(formattedDateTime)}</p>
       </CenteredCard>
     );
   }
@@ -411,25 +414,28 @@ function InterviewSessionContent() {
         token={token}
         onContinue={handlePrecheckContinue}
         isLiveCall={Boolean(session?.scheduled_start_at)}
+        uiLanguage={session?.ui_language}
       />
     );
   }
 
   if (pageState === "orientation") {
-    return <OrientationTour onDone={handleOrientationDone} />;
+    return <OrientationTour onDone={handleOrientationDone} uiLanguage={session?.ui_language} />;
   }
 
   if (pageState === "paused") {
     return (
-      <CenteredCard>
+      <CenteredCard dir={dir}>
         <PauseCircle className="w-14 h-14 text-amber-500 mx-auto mb-4" />
-        <h1 className="text-xl font-bold text-gray-900 mb-2">Interview paused</h1>
-        <p className="text-gray-600">
-          We noticed more than one person in view. Please make sure you&apos;re alone in front of the camera —
-          your interview will resume automatically.
-        </p>
+        <h1 className="text-xl font-bold text-gray-900 mb-2">{t.pausedTitle}</h1>
+        <p className="text-gray-600">{t.pausedBody}</p>
         <div className="mt-4">
-          <IntegrityMonitor sessionId={sessionId} token={token} onSessionStatusChange={handleIntegrityStatusChange} />
+          <IntegrityMonitor
+            sessionId={sessionId}
+            token={token}
+            onSessionStatusChange={handleIntegrityStatusChange}
+            uiLanguage={session?.ui_language}
+          />
         </div>
       </CenteredCard>
     );
@@ -437,13 +443,10 @@ function InterviewSessionContent() {
 
   if (pageState === "terminated") {
     return (
-      <CenteredCard>
+      <CenteredCard dir={dir}>
         <ShieldAlert className="w-14 h-14 text-red-500 mx-auto mb-4" />
-        <h1 className="text-xl font-bold text-gray-900 mb-2">Interview ended</h1>
-        <p className="text-gray-600">
-          This interview was ended due to repeated integrity violations. Please contact the person who invited
-          you if you believe this is a mistake.
-        </p>
+        <h1 className="text-xl font-bold text-gray-900 mb-2">{t.terminatedTitle}</h1>
+        <p className="text-gray-600">{t.terminatedBody}</p>
       </CenteredCard>
     );
   }
@@ -451,17 +454,15 @@ function InterviewSessionContent() {
   if (pageState === "unavailable") {
     const isExpired = session?.status === "EXPIRED";
     return (
-      <CenteredCard>
+      <CenteredCard dir={dir}>
         <XCircle className="w-14 h-14 text-red-500 mx-auto mb-4" />
-        <h1 className="text-xl font-bold text-gray-900 mb-2">
-          {isExpired ? "This interview link has expired" : "This interview link is no longer active"}
-        </h1>
+        <h1 className="text-xl font-bold text-gray-900 mb-2">{isExpired ? t.expiredTitle : t.inactiveTitle}</h1>
         <p className="text-gray-600">
           {session?.status === "CANCELLED" && session.cancellation_reason
-            ? `This interview was cancelled: ${session.cancellation_reason}`
+            ? t.cancelledMessage(session.cancellation_reason)
             : isExpired
-              ? "Please contact the person who invited you to request a new link."
-              : (error ?? "This session has expired or is no longer available.")}
+              ? t.expiredMessage
+              : (error ?? t.genericUnavailableMessage)}
         </p>
       </CenteredCard>
     );
@@ -469,22 +470,19 @@ function InterviewSessionContent() {
 
   if (pageState === "completed") {
     return (
-      <CenteredCard>
+      <CenteredCard dir={dir}>
         <CheckCircle2 className="w-14 h-14 text-green-500 mx-auto mb-4" />
-        <h1 className="text-xl font-bold text-gray-900 mb-2">Interview complete</h1>
-        <p className="text-gray-600">
-          Thank you{session?.role_name ? ` for completing your ${session.role_name} interview` : ""}. Your
-          responses have been submitted.
-        </p>
+        <h1 className="text-xl font-bold text-gray-900 mb-2">{t.completedTitle}</h1>
+        <p className="text-gray-600">{t.completedMessage(session?.role_name ?? null)}</p>
       </CenteredCard>
     );
   }
 
   if (pageState === "error") {
     return (
-      <CenteredCard>
+      <CenteredCard dir={dir}>
         <XCircle className="w-14 h-14 text-red-500 mx-auto mb-4" />
-        <h1 className="text-xl font-bold text-gray-900 mb-2">Something went wrong</h1>
+        <h1 className="text-xl font-bold text-gray-900 mb-2">{t.errorTitle}</h1>
         <p className="text-gray-600">{error}</p>
       </CenteredCard>
     );
@@ -500,22 +498,28 @@ function InterviewSessionContent() {
   const audioAnswersUnavailable = !LANGUAGES.find((lang) => lang.code === answerLanguage)?.stt;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4">
+    <div className="min-h-screen bg-gray-50 py-10 px-4" dir={dir}>
       <div className="max-w-2xl mx-auto space-y-6">
         {session && (
           <div className="flex items-center justify-between gap-3 flex-wrap">
-            <h1 className="text-xl font-bold text-gray-900">{session.role_name} Interview</h1>
+            <h1 className="text-xl font-bold text-gray-900">{t.interviewTitle(session.role_name)}</h1>
             {session.started_at && session.config_details?.duration_minutes ? (
               <TestTimer
                 startedAt={session.started_at}
                 durationMinutes={session.config_details.duration_minutes}
                 onTimeUp={handleTimeUp}
+                uiLanguage={session.ui_language}
               />
             ) : null}
           </div>
         )}
 
-        <IntegrityMonitor sessionId={sessionId} token={token} onSessionStatusChange={handleIntegrityStatusChange} />
+        <IntegrityMonitor
+          sessionId={sessionId}
+          token={token}
+          onSessionStatusChange={handleIntegrityStatusChange}
+          uiLanguage={session?.ui_language}
+        />
 
         {question && (
           <QuestionCard
@@ -527,16 +531,17 @@ function InterviewSessionContent() {
             loadingAudio={loadingAudio}
             readAloudLanguage={readAloudLanguage}
             onReadAloudLanguageChange={handleReadAloudLanguageChange}
+            uiLanguage={session?.ui_language}
           />
         )}
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between gap-3 mb-3">
-            <label className="text-xs text-gray-500">Answering in:</label>
+            <label className="text-xs text-gray-500">{t.answeringInLabel}</label>
             <select
               value={answerLanguage}
               onChange={(e) => handleAnswerLanguageChange(e.target.value)}
-              title="Answer language"
+              title={t.answeringInLabel}
               className="text-xs border border-gray-200 rounded-lg px-1.5 py-1 text-gray-600 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500"
             >
               {LANGUAGES.map((lang) => (
@@ -557,7 +562,7 @@ function InterviewSessionContent() {
                     : "border-gray-200 text-gray-500"
                 }`}
               >
-                <Mic className="w-4 h-4" /> Record Answer
+                <Mic className="w-4 h-4" /> {t.recordAnswerButton}
               </button>
             )}
             <button
@@ -569,14 +574,12 @@ function InterviewSessionContent() {
                   : "border-gray-200 text-gray-500"
               }`}
             >
-              <Type className="w-4 h-4" /> Type Answer
+              <Type className="w-4 h-4" /> {t.typeAnswerButton}
             </button>
           </div>
           {audioAnswersUnavailable && (
             <p className="text-xs text-gray-500 -mt-2 mb-4">
-              Audio answers aren&apos;t available in{" "}
-              {LANGUAGES.find((lang) => lang.code === answerLanguage)?.label ?? "this language"} yet — please type
-              your answer.
+              {t.audioUnavailableMessage(LANGUAGES.find((lang) => lang.code === answerLanguage)?.label ?? t.thisLanguage)}
             </p>
           )}
 
@@ -590,10 +593,11 @@ function InterviewSessionContent() {
             <AnswerRecorder
               onSubmit={handleAudioSubmit}
               submitting={submitting}
-              submitLabel="Uploading & transcribing…"
+              submitLabel={t.uploadingLabel}
+              uiLanguage={session?.ui_language}
             />
           ) : (
-            <AnswerTextForm onSubmit={handleTextSubmit} submitting={submitting} />
+            <AnswerTextForm onSubmit={handleTextSubmit} submitting={submitting} uiLanguage={session?.ui_language} />
           )}
         </div>
       </div>
@@ -601,9 +605,9 @@ function InterviewSessionContent() {
   );
 }
 
-function CenteredCard({ children }: { children: React.ReactNode }) {
+function CenteredCard({ children, dir }: { children: React.ReactNode; dir?: "ltr" | "rtl" }) {
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4" dir={dir}>
       <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md text-center">{children}</div>
     </div>
   );

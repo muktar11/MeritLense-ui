@@ -4,11 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import { AlertCircle, Camera, CheckCircle2, Loader2, RotateCcw, ShieldCheck, Users, XCircle } from "lucide-react";
 import interviewSessionService from "@/app/api/interview-session/endpoints";
 import { ensureModelsLoaded, IDENTITY_DETECTOR_TUNING } from "@/lib/face-detection";
+import { candidateDir, getCandidateStrings, resolveCandidateLanguage } from "../candidate-lang";
 
 interface IdentityVerificationProps {
   sessionId: string;
   token: string;
   onContinue: () => void;
+  uiLanguage?: string | null;
 }
 
 type Step =
@@ -48,7 +50,9 @@ const PASS_SCORE_THRESHOLD = 20;
 // instantly (which reads as untrustworthy) or unpredictably.
 const VERIFICATION_DURATION_SECONDS = 30;
 
-export function IdentityVerification({ sessionId, token, onContinue }: IdentityVerificationProps) {
+export function IdentityVerification({ sessionId, token, onContinue, uiLanguage }: IdentityVerificationProps) {
+  const t = getCandidateStrings(uiLanguage).identity;
+  const dir = candidateDir(resolveCandidateLanguage(uiLanguage));
   const [step, setStep] = useState<Step>("loading");
   const [error, setError] = useState<string | null>(null);
   const [referenceUrl, setReferenceUrl] = useState<string | null>(null);
@@ -256,43 +260,36 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
 
   if (step === "loading") {
     return (
-      <CenteredCard>
+      <CenteredCard dir={dir}>
         <Loader2 className="w-10 h-10 animate-spin text-purple-500 mx-auto mb-4" />
-        <p className="text-gray-600">Preparing identity verification…</p>
+        <p className="text-gray-600">{t.loading}</p>
       </CenteredCard>
     );
   }
 
   if (step === "unavailable") {
     return (
-      <CenteredCard>
+      <CenteredCard dir={dir}>
         <XCircle className="w-14 h-14 text-red-500 mx-auto mb-4" />
-        <h1 className="text-xl font-bold text-red-700 mb-2">Identification Failed</h1>
-        <p className="text-gray-600 mb-2">
-          We couldn&apos;t find a readable reference photo on file for this session.
-        </p>
-        <p className="text-gray-600">
-          Please contact the person who invited you to this interview — your session cannot proceed until this is
-          resolved.
-        </p>
+        <h1 className="text-xl font-bold text-red-700 mb-2">{t.unavailableTitle}</h1>
+        <p className="text-gray-600 mb-2">{t.unavailableParagraph1}</p>
+        <p className="text-gray-600">{t.unavailableParagraph2}</p>
       </CenteredCard>
     );
   }
 
   if (step === "setup-failed") {
     return (
-      <CenteredCard>
+      <CenteredCard dir={dir}>
         <AlertCircle className="w-14 h-14 text-amber-500 mx-auto mb-4" />
-        <h1 className="text-xl font-bold text-gray-900 mb-2">Couldn&apos;t load verification</h1>
-        <p className="text-gray-600 mb-6">
-          This is usually a temporary connection issue. Please check your internet connection and try again.
-        </p>
+        <h1 className="text-xl font-bold text-gray-900 mb-2">{t.setupFailedTitle}</h1>
+        <p className="text-gray-600 mb-6">{t.setupFailedBody}</p>
         <button
           type="button"
           onClick={() => loadSetup()}
           className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium"
         >
-          <RotateCcw className="w-4 h-4" /> Retry
+          <RotateCcw className="w-4 h-4" /> {t.retryButton}
         </button>
       </CenteredCard>
     );
@@ -314,13 +311,10 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
   );
 
   return (
-    <CenteredCard wide>
+    <CenteredCard wide dir={dir}>
       <ShieldCheck className="w-12 h-12 text-purple-500 mx-auto mb-3" />
-      <h1 className="text-xl font-bold text-gray-900 mb-2">Verify your identity</h1>
-      <p className="text-gray-600 text-sm mb-6">
-        Take a quick photo so we can confirm it&apos;s you. You won&apos;t be able to start the interview until this
-        passes.
-      </p>
+      <h1 className="text-xl font-bold text-gray-900 mb-2">{t.title}</h1>
+      <p className="text-gray-600 text-sm mb-6">{t.subtitle}</p>
 
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded-lg text-sm mb-4">{error}</div>
@@ -329,16 +323,16 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
       {step === "ready" && (
         <div className="space-y-4">
           <CompareLayout
-            left={<Placeholder label="You" icon={<Camera className="w-8 h-8" />} />}
-            right={referenceImg ? <LabeledPane label="ID on file">{referenceImg}</LabeledPane> : <Placeholder label="ID on file" />}
+            left={<Placeholder label={t.youLabel} icon={<Camera className="w-8 h-8" />} />}
+            right={referenceImg ? <LabeledPane label={t.idOnFileLabel}>{referenceImg}</LabeledPane> : <Placeholder label={t.idOnFileLabel} />}
           />
-          <VerificationTips />
+          <VerificationTips t={t} />
           <button
             type="button"
             onClick={handleStartCamera}
             className="w-full flex items-center justify-center gap-2 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium"
           >
-            <Camera className="w-4 h-4" /> Start Camera
+            <Camera className="w-4 h-4" /> {t.startCameraButton}
           </button>
         </div>
       )}
@@ -347,7 +341,7 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
         <div className="space-y-3">
           <CompareLayout
             left={
-              <LabeledPane label="You">
+              <LabeledPane label={t.youLabel}>
                 <video
                   ref={videoRef}
                   autoPlay
@@ -358,14 +352,14 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
                 />
               </LabeledPane>
             }
-            right={referenceImg ? <LabeledPane label="ID on file">{referenceImg}</LabeledPane> : <Placeholder label="ID on file" />}
+            right={referenceImg ? <LabeledPane label={t.idOnFileLabel}>{referenceImg}</LabeledPane> : <Placeholder label={t.idOnFileLabel} />}
           />
           <button
             type="button"
             onClick={handleCapture}
             className="w-full flex items-center justify-center gap-2 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium"
           >
-            <Camera className="w-4 h-4" /> Capture Photo
+            <Camera className="w-4 h-4" /> {t.capturePhotoButton}
           </button>
         </div>
       )}
@@ -374,22 +368,22 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
         <div className="space-y-3">
           <CompareLayout
             left={
-              <LabeledPane label="You">
+              <LabeledPane label={t.youLabel}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={selfieUrl} alt="Captured selfie" className="w-full h-full object-cover" style={{ transform: "scaleX(-1)" }} />
               </LabeledPane>
             }
-            right={referenceImg ? <LabeledPane label="ID on file">{referenceImg}</LabeledPane> : <Placeholder label="ID on file" />}
+            right={referenceImg ? <LabeledPane label={t.idOnFileLabel}>{referenceImg}</LabeledPane> : <Placeholder label={t.idOnFileLabel} />}
           />
           <div className="flex flex-col items-center justify-center gap-2 text-sm text-gray-600 py-2">
             {step === "comparing" ? (
               <>
                 <div className="w-14 h-14 rounded-full border-4 border-purple-100 border-t-purple-600 animate-spin" />
-                <span className="font-medium">Verifying identity… {countdown}s</span>
+                <span className="font-medium">{t.verifyingLabel(countdown)}</span>
               </>
             ) : (
               <>
-                <Loader2 className="w-4 h-4 animate-spin" /> Preparing…
+                <Loader2 className="w-4 h-4 animate-spin" /> {t.preparingLabel}
               </>
             )}
           </div>
@@ -401,28 +395,27 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
           <CompareLayout
             left={
               <div className="relative">
-                <LabeledPane label="You">
+                <LabeledPane label={t.youLabel}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={selfieUrl} alt="Captured selfie" className="w-full h-full object-cover" style={{ transform: "scaleX(-1)" }} />
                 </LabeledPane>
                 <VerificationBadge passed={false} icon={<AlertCircle className="w-6 h-6 text-white" />} />
               </div>
             }
-            right={referenceImg ? <LabeledPane label="ID on file">{referenceImg}</LabeledPane> : <Placeholder label="ID on file" />}
+            right={referenceImg ? <LabeledPane label={t.idOnFileLabel}>{referenceImg}</LabeledPane> : <Placeholder label={t.idOnFileLabel} />}
           />
-          <h2 className="text-lg font-bold text-red-700">No Face Detected</h2>
+          <h2 className="text-lg font-bold text-red-700">{t.noFaceTitle}</h2>
           <div className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm bg-red-50 text-red-700 border border-red-200">
             <AlertCircle className="w-4 h-4 shrink-0" />
-            <span>We couldn&apos;t find a clear face in that photo — this isn&apos;t a match result, we simply
-              couldn&apos;t analyze the image.</span>
+            <span>{t.noFaceMessage}</span>
           </div>
-          <VerificationTips />
+          <VerificationTips t={t} />
           <button
             type="button"
             onClick={handleRetry}
             className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium"
           >
-            <RotateCcw className="w-4 h-4" /> Retry
+            <RotateCcw className="w-4 h-4" /> {t.retryButton}
           </button>
         </div>
       )}
@@ -432,26 +425,26 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
           <CompareLayout
             left={
               <div className="relative">
-                <LabeledPane label="You">
+                <LabeledPane label={t.youLabel}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={selfieUrl} alt="Captured selfie" className="w-full h-full object-cover" style={{ transform: "scaleX(-1)" }} />
                 </LabeledPane>
                 <VerificationBadge passed={false} icon={<Users className="w-6 h-6 text-white" />} />
               </div>
             }
-            right={referenceImg ? <LabeledPane label="ID on file">{referenceImg}</LabeledPane> : <Placeholder label="ID on file" />}
+            right={referenceImg ? <LabeledPane label={t.idOnFileLabel}>{referenceImg}</LabeledPane> : <Placeholder label={t.idOnFileLabel} />}
           />
-          <h2 className="text-lg font-bold text-red-700">Identification Failed</h2>
+          <h2 className="text-lg font-bold text-red-700">{t.identificationFailedTitle}</h2>
           <div className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm bg-red-50 text-red-700 border border-red-200">
             <Users className="w-4 h-4 shrink-0" />
-            <span>More than one person was detected. Please make sure only you are visible, then try again.</span>
+            <span>{t.multipleFacesMessage}</span>
           </div>
           <button
             type="button"
             onClick={handleRetry}
             className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium"
           >
-            <RotateCcw className="w-4 h-4" /> Retry
+            <RotateCcw className="w-4 h-4" /> {t.retryButton}
           </button>
         </div>
       )}
@@ -461,17 +454,17 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
           <CompareLayout
             left={
               <div className="relative">
-                <LabeledPane label="You">
+                <LabeledPane label={t.youLabel}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={selfieUrl} alt="Captured selfie" className="w-full h-full object-cover" style={{ transform: "scaleX(-1)" }} />
                 </LabeledPane>
                 <VerificationBadge passed={passed} />
               </div>
             }
-            right={referenceImg ? <LabeledPane label="ID on file">{referenceImg}</LabeledPane> : <Placeholder label="ID on file" />}
+            right={referenceImg ? <LabeledPane label={t.idOnFileLabel}>{referenceImg}</LabeledPane> : <Placeholder label={t.idOnFileLabel} />}
           />
           <h2 className={`text-lg font-bold ${passed ? "text-green-700" : "text-red-700"}`}>
-            {passed ? "Identity Verified" : "Identification Failed"}
+            {passed ? t.verifiedTitle : t.identificationFailedTitle}
           </h2>
           <div
             className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium ${
@@ -479,22 +472,18 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
             }`}
           >
             {passed ? <CheckCircle2 className="w-4 h-4 shrink-0" /> : <XCircle className="w-4 h-4 shrink-0" />}
-            <span>
-              {passed
-                ? `${matchScore?.toFixed(0)}% match.`
-                : `${matchScore?.toFixed(0)}% match — this doesn't meet the required threshold.`}
-            </span>
+            <span>{passed ? t.matchPassed(matchScore ?? 0) : t.matchFailed(matchScore ?? 0)}</span>
           </div>
-          {!passed && <VerificationTips />}
+          {!passed && <VerificationTips t={t} />}
           {passed ? (
-            <ContinueButton onClick={onContinue} />
+            <ContinueButton onClick={onContinue} label={t.continueButton} />
           ) : (
             <button
               type="button"
               onClick={handleRetry}
               className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium"
             >
-              <RotateCcw className="w-4 h-4" /> Retry
+              <RotateCcw className="w-4 h-4" /> {t.retryButton}
             </button>
           )}
         </div>
@@ -503,15 +492,14 @@ export function IdentityVerification({ sessionId, token, onContinue }: IdentityV
   );
 }
 
-function VerificationTips() {
+function VerificationTips({ t }: { t: ReturnType<typeof getCandidateStrings>["identity"] }) {
   return (
-    <div className="text-left bg-gray-50 border border-gray-200 rounded-lg p-3">
-      <p className="text-xs font-semibold text-gray-700 mb-1.5">For a successful match:</p>
+    <div className="text-start bg-gray-50 border border-gray-200 rounded-lg p-3">
+      <p className="text-xs font-semibold text-gray-700 mb-1.5">{t.tipsTitle}</p>
       <ul className="text-xs text-gray-600 space-y-1 list-disc list-inside">
-        <li>Face a light source — avoid sitting with a window or light behind you</li>
-        <li>Look directly at the camera with your full face visible</li>
-        <li>Remove sunglasses or anything covering your face</li>
-        <li>Make sure only you are in frame</li>
+        {t.tips.map((tip) => (
+          <li key={tip}>{tip}</li>
+        ))}
       </ul>
     </div>
   );
@@ -557,21 +545,21 @@ function VerificationBadge({ passed, icon }: { passed: boolean; icon?: React.Rea
   );
 }
 
-function ContinueButton({ onClick }: { onClick: () => void }) {
+function ContinueButton({ onClick, label }: { onClick: () => void; label: string }) {
   return (
     <button
       type="button"
       onClick={onClick}
       className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium"
     >
-      Continue to Interview
+      {label}
     </button>
   );
 }
 
-function CenteredCard({ children, wide }: { children: React.ReactNode; wide?: boolean }) {
+function CenteredCard({ children, wide, dir }: { children: React.ReactNode; wide?: boolean; dir?: "ltr" | "rtl" }) {
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4" dir={dir}>
       <div className={`bg-white rounded-2xl shadow-lg p-8 text-center ${wide ? "max-w-lg w-full" : "max-w-md"}`}>
         {children}
       </div>

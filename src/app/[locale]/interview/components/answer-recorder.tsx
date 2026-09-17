@@ -2,16 +2,19 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Mic, Square, RotateCcw, Loader2, Send } from "lucide-react";
+import { getCandidateStrings } from "../candidate-lang";
 
 interface AnswerRecorderProps {
   onSubmit: (blob: Blob, durationSeconds: number) => Promise<void>;
   submitting: boolean;
   submitLabel: string;
+  uiLanguage?: string | null;
 }
 
 type RecorderState = "idle" | "recording" | "recorded" | "error";
 
-export function AnswerRecorder({ onSubmit, submitting, submitLabel }: AnswerRecorderProps) {
+export function AnswerRecorder({ onSubmit, submitting, submitLabel, uiLanguage }: AnswerRecorderProps) {
+  const t = getCandidateStrings(uiLanguage).answerRecorder;
   const [state, setState] = useState<RecorderState>("idle");
   const [error, setError] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -69,7 +72,7 @@ export function AnswerRecorder({ onSubmit, submitting, submitLabel }: AnswerReco
       setState("recording");
       startTimer();
     } catch {
-      setError("Couldn't access your microphone. Please allow microphone access and try again.");
+      setError(t.micError);
       setState("error");
     }
   };
@@ -106,20 +109,20 @@ export function AnswerRecorder({ onSubmit, submitting, submitLabel }: AnswerReco
           className="w-full flex flex-col items-center justify-center gap-2 py-8 border-2 border-dashed border-purple-300 rounded-lg text-purple-600 hover:bg-purple-50"
         >
           <Mic className="w-8 h-8" />
-          <span className="text-sm font-medium">Tap to record your answer</span>
+          <span className="text-sm font-medium">{t.tapToRecord}</span>
         </button>
       ) : null}
 
       {state === "recording" && (
         <div className="flex flex-col items-center justify-center gap-3 py-8 border-2 border-purple-400 rounded-lg bg-purple-50">
           <div className="w-4 h-4 rounded-full bg-red-500 animate-pulse" />
-          <span className="text-sm font-medium text-gray-700">Recording… {formatTime(elapsedSeconds)}</span>
+          <span className="text-sm font-medium text-gray-700">{t.recordingLabel(formatTime(elapsedSeconds))}</span>
           <button
             type="button"
             onClick={handleStop}
             className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium"
           >
-            <Square className="w-4 h-4" /> Stop
+            <Square className="w-4 h-4" /> {t.stopButton}
           </button>
         </div>
       )}
@@ -135,7 +138,7 @@ export function AnswerRecorder({ onSubmit, submitting, submitLabel }: AnswerReco
               disabled={submitting}
               className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
             >
-              <RotateCcw className="w-4 h-4" /> Re-record
+              <RotateCcw className="w-4 h-4" /> {t.reRecordButton}
             </button>
             <button
               type="button"
@@ -144,7 +147,7 @@ export function AnswerRecorder({ onSubmit, submitting, submitLabel }: AnswerReco
               className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white rounded-lg text-sm font-medium"
             >
               {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-              {submitting ? submitLabel : "Submit Answer"}
+              {submitting ? submitLabel : t.submitButton}
             </button>
           </div>
         </div>

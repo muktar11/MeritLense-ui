@@ -16,6 +16,7 @@ import {
 import interviewSessionService from "@/app/api/interview-session/endpoints";
 import type { PrecheckStatus } from "@/app/api/interview-session/types";
 import { IdentityVerification } from "./identity-verification";
+import { candidateDir, getCandidateStrings, resolveCandidateLanguage, type CandidateStrings } from "../candidate-lang";
 
 interface PrecheckFlowProps {
   sessionId: string;
@@ -26,18 +27,20 @@ interface PrecheckFlowProps {
   // resolveSessionState) - candidates otherwise have no way to tell this
   // apart from a solo AI interview's identical-looking prechecks.
   isLiveCall?: boolean;
+  // Drives which language this entire precheck flow (and the identity
+  // verification step it ends on) renders in - see ../candidate-lang.ts.
+  uiLanguage?: string | null;
 }
 
 type Step = "loading" | "consent" | "privacy" | "device-check" | "verbal-confirmation" | "identity";
 
-const VERBAL_CONFIRMATION_PHRASE =
-  "I confirm that I am the person completing this interview and that my answers are my own.";
-
 const VERBAL_CONFIRMATION_MAX_SECONDS = 15;
 
-export function PrecheckFlow({ sessionId, token, onContinue, isLiveCall }: PrecheckFlowProps) {
+export function PrecheckFlow({ sessionId, token, onContinue, isLiveCall, uiLanguage }: PrecheckFlowProps) {
   const [step, setStep] = useState<Step>("loading");
   const [error, setError] = useState<string | null>(null);
+  const t = getCandidateStrings(uiLanguage);
+  const dir = candidateDir(resolveCandidateLanguage(uiLanguage));
 
   useEffect(() => {
     let active = true;
@@ -62,14 +65,16 @@ export function PrecheckFlow({ sessionId, token, onContinue, isLiveCall }: Prech
 
   if (step === "loading") {
     content = (
-      <CenteredCard>
+      <CenteredCard dir={dir}>
         <Loader2 className="w-10 h-10 animate-spin text-purple-500 mx-auto mb-4" />
-        <p className="text-gray-600">Preparing your interview…</p>
+        <p className="text-gray-600">{t.precheck.preparing}</p>
       </CenteredCard>
     );
   } else if (step === "consent") {
     content = (
       <ConsentStep
+        t={t}
+        dir={dir}
         error={error}
         onError={setError}
         onSubmit={async (signatoryName) => {
@@ -82,6 +87,8 @@ export function PrecheckFlow({ sessionId, token, onContinue, isLiveCall }: Prech
   } else if (step === "privacy") {
     content = (
       <PrivacyStep
+        t={t}
+        dir={dir}
         error={error}
         onError={setError}
         onSubmit={async () => {
@@ -94,6 +101,8 @@ export function PrecheckFlow({ sessionId, token, onContinue, isLiveCall }: Prech
   } else if (step === "device-check") {
     content = (
       <DeviceCheckStep
+        t={t}
+        dir={dir}
         error={error}
         onError={setError}
         onSubmit={async () => {
@@ -110,6 +119,8 @@ export function PrecheckFlow({ sessionId, token, onContinue, isLiveCall }: Prech
   } else if (step === "verbal-confirmation") {
     content = (
       <VerbalConfirmationStep
+        t={t}
+        dir={dir}
         error={error}
         onError={setError}
         onSubmit={async (blob) => {
@@ -120,16 +131,16 @@ export function PrecheckFlow({ sessionId, token, onContinue, isLiveCall }: Prech
       />
     );
   } else {
-    content = <IdentityVerification sessionId={sessionId} token={token} onContinue={onContinue} />;
+    content = <IdentityVerification sessionId={sessionId} token={token} onContinue={onContinue} uiLanguage={uiLanguage} />;
   }
 
   if (!isLiveCall) return content;
 
   return (
-    <div>
+    <div dir={dir}>
       <div className="bg-purple-700 text-white text-sm font-medium py-2.5 px-4 flex items-center justify-center gap-2 text-center">
         <Video className="w-4 h-4 shrink-0" />
-        Live interview — you&apos;ll join a video call with your evaluator once you&apos;re ready
+        {t.precheck.liveCallBanner}
       </div>
       {content}
     </div>
@@ -145,10 +156,14 @@ function nextIncompleteStep(status: PrecheckStatus): Step {
 }
 
 function ConsentStep({
+  t,
+  dir,
   error,
   onError,
   onSubmit,
 }: {
+  t: CandidateStrings;
+  dir: "ltr" | "rtl";
   error: string | null;
   onError: (message: string | null) => void;
   onSubmit: (signatoryName: string) => Promise<void>;
@@ -156,6 +171,7 @@ function ConsentStep({
   const [fullName, setFullName] = useState("");
   const [agreed, setAgreed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const c = t.precheck.consent;
 
   const canSubmit = agreed && fullName.trim().length > 1 && !submitting;
 
@@ -165,57 +181,50 @@ function ConsentStep({
     try {
       await onSubmit(fullName.trim());
     } catch {
-      onError("Something went wrong saving your consent. Please try again.");
+      onError(c.errorGeneric);
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <CenteredCard wide>
+    <CenteredCard wide dir={dir}>
       <ShieldCheck className="w-12 h-12 text-purple-500 mx-auto mb-3" />
-      <h1 className="text-xl font-bold text-gray-900 mb-2">Your Consent</h1>
+      <h1 className="text-xl font-bold text-gray-900 mb-2">{c.title}</h1>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded-lg text-sm mb-4 text-left">
+        <div className="bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded-lg text-sm mb-4 text-start">
           {error}
         </div>
       )}
 
-      <div className="text-left bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4 text-sm text-gray-700 space-y-3">
-        <p>
-          You have been invited to complete a workforce-readiness assessment through MeritLense. Taking part is
-          voluntary, and by continuing you confirm that you choose to participate of your own free will.
-        </p>
-        <p>
-          Your responses, audio, and identity-verification data will be processed to conduct this assessment, and
-          the resulting report will be shared with the employer or organization that requested it. MeritLense does
-          not make the hiring decision &mdash; the employer does.
-        </p>
+      <div className="text-start bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4 text-sm text-gray-700 space-y-3">
+        <p>{c.paragraph1}</p>
+        <p>{c.paragraph2}</p>
       </div>
 
-      <div className="text-left mb-4">
+      <div className="text-start mb-4">
         <label htmlFor="consent-full-name" className="block text-sm font-medium text-gray-700 mb-1">
-          Type your full name to sign
+          {c.signLabel}
         </label>
         <input
           id="consent-full-name"
           type="text"
           value={fullName}
           onChange={(e) => setFullName(e.target.value)}
-          placeholder="Your full name"
+          placeholder={c.namePlaceholder}
           className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
         />
       </div>
 
-      <label className="flex items-start gap-2 text-left text-sm text-gray-700 mb-4 cursor-pointer">
+      <label className="flex items-start gap-2 text-start text-sm text-gray-700 mb-4 cursor-pointer">
         <input
           type="checkbox"
           checked={agreed}
           onChange={(e) => setAgreed(e.target.checked)}
           className="mt-0.5"
         />
-        <span>I consent to participate in this assessment and to my data being processed as described above.</span>
+        <span>{c.agreeLabel}</span>
       </label>
 
       <button
@@ -225,7 +234,7 @@ function ConsentStep({
         className="w-full flex items-center justify-center gap-2 py-3 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-lg text-sm font-medium"
       >
         {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-        Sign & Continue
+        {c.submitLabel}
       </button>
     </CenteredCard>
   );
@@ -235,13 +244,18 @@ function PrivacyStep({
   error,
   onError,
   onSubmit,
+  t,
+  dir,
 }: {
   error: string | null;
   onError: (message: string | null) => void;
   onSubmit: () => Promise<void>;
+  t: CandidateStrings;
+  dir: "ltr" | "rtl";
 }) {
   const [acknowledged, setAcknowledged] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const p = t.precheck.privacy;
 
   const handleSubmit = async () => {
     if (!acknowledged || submitting) return;
@@ -249,62 +263,39 @@ function PrivacyStep({
     try {
       await onSubmit();
     } catch {
-      onError("Something went wrong saving your acknowledgement. Please try again.");
+      onError(p.errorGeneric);
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <CenteredCard wide>
+    <CenteredCard wide dir={dir}>
       <ShieldCheck className="w-12 h-12 text-purple-500 mx-auto mb-3" />
-      <h1 className="text-xl font-bold text-gray-900 mb-2">Privacy Notice</h1>
+      <h1 className="text-xl font-bold text-gray-900 mb-2">{p.title}</h1>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded-lg text-sm mb-4 text-left">
+        <div className="bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded-lg text-sm mb-4 text-start">
           {error}
         </div>
       )}
 
-      <div className="text-left bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4 text-sm text-gray-700 space-y-3">
-        <p>
-          MeritLense collects and processes your spoken and/or written responses (including audio recordings and
-          transcripts where you answer by voice), a photo captured for identity verification, and the scores,
-          indicators, and other outputs our AI-assisted analysis generates from your responses. If your session
-          includes a live video interview, the call itself is not recorded &mdash; only your spoken responses are
-          transcribed for evaluation.
-        </p>
-        <p>
-          This data is used to verify your identity, conduct your workforce-readiness assessment, analyze your
-          responses and competency performance, and generate your assessment report and, where applicable, a
-          certificate.
-        </p>
-        <p>
-          Some parts of this assessment use AI and automated analysis to transcribe, translate, and evaluate your
-          responses. Results are decision-support information, not a final decision &mdash; the employer or
-          organization that invited you to this assessment remains solely responsible for any hiring decision.
-        </p>
-        <p>
-          MeritLense does not sell your data. Authorized service providers (for example, speech-to-text,
-          translation, and AI-analysis providers) may process your data only as necessary to deliver this assessment
-          service, under appropriate data-protection safeguards. Your results are also shared with the employer or
-          agency that requested this assessment.
-        </p>
-        <p>Your data is retained according to MeritLense&apos;s data retention policy.</p>
+      <div className="text-start bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4 text-sm text-gray-700 space-y-3">
+        <p>{p.paragraph1}</p>
+        <p>{p.paragraph2}</p>
+        <p>{p.paragraph3}</p>
+        <p>{p.paragraph4}</p>
+        <p>{p.paragraph5}</p>
       </div>
 
-      <label className="flex items-start gap-2 text-left text-sm text-gray-700 mb-4 cursor-pointer">
+      <label className="flex items-start gap-2 text-start text-sm text-gray-700 mb-4 cursor-pointer">
         <input
           type="checkbox"
           checked={acknowledged}
           onChange={(e) => setAcknowledged(e.target.checked)}
           className="mt-0.5"
         />
-        <span>
-          I confirm that I have read and understood this Privacy Notice and acknowledge that my personal data,
-          including video, audio, transcripts and identity-verification information, will be processed for the
-          purposes described above.
-        </span>
+        <span>{p.ackLabel}</span>
       </label>
 
       <button
@@ -314,7 +305,7 @@ function PrivacyStep({
         className="w-full flex items-center justify-center gap-2 py-3 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-lg text-sm font-medium"
       >
         {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-        Acknowledge & Continue
+        {p.submitLabel}
       </button>
     </CenteredCard>
   );
@@ -324,11 +315,16 @@ function DeviceCheckStep({
   error,
   onError,
   onSubmit,
+  t,
+  dir,
 }: {
   error: string | null;
   onError: (message: string | null) => void;
   onSubmit: () => Promise<void>;
+  t: CandidateStrings;
+  dir: "ltr" | "rtl";
 }) {
+  const d = t.precheck.deviceCheck;
   const [state, setState] = useState<"idle" | "checking" | "passed" | "failed">("idle");
   const [submitting, setSubmitting] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -362,22 +358,20 @@ function DeviceCheckStep({
     try {
       await onSubmit();
     } catch {
-      onError("Something went wrong saving your device check. Please try again.");
+      onError(d.errorGeneric);
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <CenteredCard wide>
+    <CenteredCard wide dir={dir}>
       <Camera className="w-12 h-12 text-purple-500 mx-auto mb-3" />
-      <h1 className="text-xl font-bold text-gray-900 mb-2">Camera & Microphone Check</h1>
-      <p className="text-gray-600 text-sm mb-4">
-        We need to confirm your camera and microphone both work before you begin.
-      </p>
+      <h1 className="text-xl font-bold text-gray-900 mb-2">{d.title}</h1>
+      <p className="text-gray-600 text-sm mb-4">{d.subtitle}</p>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded-lg text-sm mb-4 text-left">
+        <div className="bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded-lg text-sm mb-4 text-start">
           {error}
         </div>
       )}
@@ -388,13 +382,13 @@ function DeviceCheckStep({
           onClick={runCheck}
           className="w-full flex items-center justify-center gap-2 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium"
         >
-          <Camera className="w-4 h-4" /> Test Camera & Microphone
+          <Camera className="w-4 h-4" /> {d.testButton}
         </button>
       )}
 
       {state === "checking" && (
         <div className="flex flex-col items-center gap-2 text-sm text-gray-600 py-4">
-          <Loader2 className="w-6 h-6 animate-spin" /> Checking devices…
+          <Loader2 className="w-6 h-6 animate-spin" /> {d.checking}
         </div>
       )}
 
@@ -405,7 +399,7 @@ function DeviceCheckStep({
           </div>
           <div className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm bg-green-50 text-green-700 border border-green-200">
             <CheckCircle2 className="w-4 h-4 shrink-0" />
-            <span>Camera and microphone are working.</span>
+            <span>{d.passedMessage}</span>
           </div>
           <button
             type="button"
@@ -414,7 +408,7 @@ function DeviceCheckStep({
             className="w-full flex items-center justify-center gap-2 py-3 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 text-white rounded-lg text-sm font-medium"
           >
             {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-            Continue
+            {d.continueButton}
           </button>
         </div>
       )}
@@ -423,16 +417,14 @@ function DeviceCheckStep({
         <div className="space-y-4">
           <div className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm bg-red-50 text-red-700 border border-red-200">
             <AlertCircle className="w-4 h-4 shrink-0" />
-            <span>
-              We couldn&apos;t access both your camera and microphone. Please allow access to both and try again.
-            </span>
+            <span>{d.failedMessage}</span>
           </div>
           <button
             type="button"
             onClick={runCheck}
             className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium"
           >
-            <RotateCcw className="w-4 h-4" /> Retry
+            <RotateCcw className="w-4 h-4" /> {d.retryButton}
           </button>
         </div>
       )}
@@ -444,11 +436,16 @@ function VerbalConfirmationStep({
   error,
   onError,
   onSubmit,
+  t,
+  dir,
 }: {
   error: string | null;
   onError: (message: string | null) => void;
   onSubmit: (blob: Blob) => Promise<void>;
+  t: CandidateStrings;
+  dir: "ltr" | "rtl";
 }) {
+  const v = t.precheck.verbalConfirmation;
   const [state, setState] = useState<"idle" | "recording" | "recorded" | "submitting">("idle");
   const [countdown, setCountdown] = useState(VERBAL_CONFIRMATION_MAX_SECONDS);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
@@ -520,25 +517,25 @@ function VerbalConfirmationStep({
     try {
       await onSubmit(blobRef.current);
     } catch {
-      onError("Something went wrong submitting your recording. Please try again.");
+      onError(v.errorGeneric);
       setState("recorded");
     }
   };
 
   return (
-    <CenteredCard wide>
+    <CenteredCard wide dir={dir}>
       <Mic className="w-12 h-12 text-purple-500 mx-auto mb-3" />
-      <h1 className="text-xl font-bold text-gray-900 mb-2">Verbal Confirmation</h1>
-      <p className="text-gray-600 text-sm mb-4">Please read the following out loud and record yourself saying it:</p>
+      <h1 className="text-xl font-bold text-gray-900 mb-2">{v.title}</h1>
+      <p className="text-gray-600 text-sm mb-4">{v.subtitle}</p>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded-lg text-sm mb-4 text-left">
+        <div className="bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded-lg text-sm mb-4 text-start">
           {error}
         </div>
       )}
 
       <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4 text-sm font-medium text-purple-900">
-        &ldquo;{VERBAL_CONFIRMATION_PHRASE}&rdquo;
+        &ldquo;{v.phrase}&rdquo;
       </div>
 
       {state === "idle" && (
@@ -547,21 +544,21 @@ function VerbalConfirmationStep({
           onClick={startRecording}
           className="w-full flex items-center justify-center gap-2 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium"
         >
-          <Mic className="w-4 h-4" /> Start Recording
+          <Mic className="w-4 h-4" /> {v.startButton}
         </button>
       )}
 
       {state === "recording" && (
         <div className="space-y-3">
           <div className="flex items-center justify-center gap-2 text-sm text-red-600 font-medium py-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" /> Recording… {countdown}s
+            <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" /> {v.recording(countdown)}
           </div>
           <button
             type="button"
             onClick={stopRecording}
             className="w-full flex items-center justify-center gap-2 py-3 bg-gray-800 hover:bg-gray-900 text-white rounded-lg text-sm font-medium"
           >
-            <Square className="w-4 h-4" /> Stop Recording
+            <Square className="w-4 h-4" /> {v.stopButton}
           </button>
         </div>
       )}
@@ -578,7 +575,7 @@ function VerbalConfirmationStep({
               disabled={state === "submitting"}
               className="flex-1 flex items-center justify-center gap-2 py-2.5 border border-gray-300 hover:bg-gray-50 disabled:opacity-50 text-gray-700 rounded-lg text-sm font-medium"
             >
-              <RotateCcw className="w-4 h-4" /> Re-record
+              <RotateCcw className="w-4 h-4" /> {v.retryButton}
             </button>
             <button
               type="button"
@@ -587,7 +584,7 @@ function VerbalConfirmationStep({
               className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 text-white rounded-lg text-sm font-medium"
             >
               {state === "submitting" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
-              Submit & Continue
+              {v.submitButton}
             </button>
           </div>
         </div>
@@ -596,9 +593,9 @@ function VerbalConfirmationStep({
   );
 }
 
-function CenteredCard({ children, wide }: { children: React.ReactNode; wide?: boolean }) {
+function CenteredCard({ children, wide, dir }: { children: React.ReactNode; wide?: boolean; dir?: "ltr" | "rtl" }) {
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4" dir={dir}>
       <div className={`bg-white rounded-2xl shadow-lg p-8 text-center ${wide ? "max-w-lg w-full" : "max-w-md"}`}>
         {children}
       </div>
