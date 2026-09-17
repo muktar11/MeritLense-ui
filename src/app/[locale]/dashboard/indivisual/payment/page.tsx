@@ -9,11 +9,12 @@ import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { useAuth } from "@/app/hooks/useAuth";
 import paymentService from "@/app/api/payments/endpoints";
-import type { Price, Subscription, UsageResponse } from "@/app/api/payments/types";
+import { planCoverageFlags, type Price, type Subscription, type UsageResponse } from "@/app/api/payments/types";
 import { SubscriptionForm } from "../components/subscription-form";
 import { OneTimePaymentForm } from "../components/one-time-payment-form";
 import { UsageMeter } from "../components/usage-meter";
 import { UsageSummary } from "../components/usage-summary";
+import { PlanCoverageChecklist } from "@/components/payments/PlanCoverageChecklist";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -430,6 +431,7 @@ export default function PaymentPage() {
               {
                 recurringPlans.map((plan) => {
                   const isCurrentPlan = currentSubscription?.price_details?.id === plan.id;
+                  const coverage = planCoverageFlags(plan);
                   return (
                   <div
                     key={plan.id}
@@ -507,6 +509,7 @@ export default function PaymentPage() {
                           </span>
                         </div>
                       )}
+                      <PlanCoverageChecklist t={t} coverage={coverage} />
                     </div>
 
                     <button
@@ -544,6 +547,7 @@ export default function PaymentPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {oneTimePlans.map((plan) => {
                     const isPurchased = purchasedOneTimePriceIds.has(plan.id);
+                    const coverage = planCoverageFlags(plan);
                     return (
                     <div
                       key={plan.id}
@@ -572,6 +576,14 @@ export default function PaymentPage() {
                       </div>
 
                       <div className="space-y-2 sm:space-y-3 mb-6 sm:mb-8">
+                        {plan.slot_grant != null && (
+                          <div className="flex items-start gap-2 sm:gap-3">
+                            <Check className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 shrink-0 mt-1" />
+                            <span className="text-gray-700 text-xs sm:text-sm">
+                              {t('oneTimeSection.slotsLabel', { count: plan.slot_grant })}
+                            </span>
+                          </div>
+                        )}
                         {plan.feature_limits?.points_granted ? (
                           <div className="flex items-start gap-2 sm:gap-3">
                             <Check className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 shrink-0 mt-1" />
@@ -580,14 +592,7 @@ export default function PaymentPage() {
                             </span>
                           </div>
                         ) : null}
-                        {plan.evaluation_tier && (
-                          <div className="flex items-start gap-2 sm:gap-3">
-                            <Check className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 shrink-0 mt-1" />
-                            <span className="text-gray-700 text-xs sm:text-sm">
-                              {plan.evaluation_tier === 'SCREENING' ? t('oneTimeSection.screeningEvaluation') : t('oneTimeSection.fullEvaluation')}
-                            </span>
-                          </div>
-                        )}
+                        <PlanCoverageChecklist t={t} coverage={coverage} />
                       </div>
 
                       <button

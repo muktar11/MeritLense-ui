@@ -2994,7 +2994,12 @@
           "currentPlanButton": "الخطة الحالية",
           "currentPlanBadge": "خطتك",
           "upgradeButton": "ترقية",
-          "subscribeButton": "اشتراك"
+          "subscribeButton": "اشتراك",
+          "screeningInterviews": "مقابلات الفرز",
+          "fullInterviews": "المقابلات الكاملة",
+          "certificateIncluded": "شهادة متضمنة",
+          "certificateNotIncluded": "بدون شهادة",
+          "transcriptIncluded": "تقرير نسخة كامل"
         },
         "oneTimeSection": {
           "heading": "باقات النقاط لمرة واحدة",
@@ -3004,7 +3009,8 @@
           "fullEvaluation": "تقييم كامل",
           "oneTimeLabel": "لمرة واحدة",
           "buyNow": "اشترِ الآن",
-          "purchasedBadge": "تم الشراء"
+          "purchasedBadge": "تم الشراء",
+          "slotsLabel": "{count} مقعد تقييم"
         },
         "subscriptionForm": {
           "stripeNotInitialized": "لم يتم تهيئة Stripe",

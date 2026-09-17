@@ -9,10 +9,11 @@ import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { useAuth } from "@/app/hooks/useAuth";
 import paymentService from "@/app/api/payments/endpoints";
-import type { Price } from "@/app/api/payments/types";
+import { planCoverageFlags, type Price } from "@/app/api/payments/types";
 import { SubscriptionForm } from "./subscription-form";
 import { useSubscription } from "@/app/context/SubscriptionContext";
 import { UsageSummary } from "./usage-summary";
+import { PlanCoverageChecklist } from "@/components/payments/PlanCoverageChecklist";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -211,6 +212,7 @@ export function PlansTab() {
             ) : (
               plans.map((plan) => {
                 const isCurrentPlan = currentSubscription?.price_details?.id === plan.id;
+                const coverage = planCoverageFlags(plan);
                 return (
                 <div
                   key={plan.id}
@@ -259,6 +261,7 @@ export function PlansTab() {
                             </span>
                           </div>
                         )}
+                        <PlanCoverageChecklist t={t} coverage={coverage} />
                       </>
                     ) : (
                       <>
@@ -309,6 +312,7 @@ export function PlansTab() {
                             </span>
                           </div>
                         )}
+                        <PlanCoverageChecklist t={t} coverage={coverage} />
                       </>
                     )}
                   </div>

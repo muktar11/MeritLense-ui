@@ -2986,7 +2986,12 @@
           "currentPlanButton": "Current Plan",
           "currentPlanBadge": "Your Plan",
           "upgradeButton": "Upgrade",
-          "subscribeButton": "Subscribe"
+          "subscribeButton": "Subscribe",
+          "screeningInterviews": "Screening interviews",
+          "fullInterviews": "Full interviews",
+          "certificateIncluded": "Certificate included",
+          "certificateNotIncluded": "No certificate",
+          "transcriptIncluded": "Full transcript report"
         },
         "oneTimeSection": {
           "heading": "One-Time Points Packages",
@@ -2996,7 +3001,8 @@
           "fullEvaluation": "Full evaluation",
           "oneTimeLabel": "one-time",
           "buyNow": "Buy Now",
-          "purchasedBadge": "Purchased"
+          "purchasedBadge": "Purchased",
+          "slotsLabel": "{count} assessment slots"
         },
         "subscriptionForm": {
           "stripeNotInitialized": "Stripe not initialized",
