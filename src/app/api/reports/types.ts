@@ -90,12 +90,19 @@ export interface EmployerExecutiveSummary {
   reliability_factors?: string[];
 }
 
+export interface EmployerAssessmentCoverageItem {
+  label: string;
+  covered: boolean;
+}
+
 export interface EmployerAssessmentContext {
   candidate_reference?: string;
   candidate_name?: string;
   target_role?: string;
   assessment_date?: string;
-  assessment_coverage?: string;
+  // A per-competency-dimension checklist ({label, covered}), not a string -
+  // see EvaluationReportService._derive_assessment_coverage on the backend.
+  assessment_coverage?: EmployerAssessmentCoverageItem[];
 }
 
 export interface EmployerEvidenceSummaryItem {

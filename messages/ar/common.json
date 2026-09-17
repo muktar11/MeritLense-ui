@@ -215,7 +215,8 @@
         "integrityReliability": "النزاهة والموثوقية",
         "taskExecution": "تنفيذ المهام العملية",
         "knowledgeComprehension": "المعرفة والاستيعاب"
-      }
+      },
+      "notAssessed": "غير مقيَّم"
     },
     "liveCallRoom": {
       "missingSessionId": "معرّف الجلسة مفقود.",
