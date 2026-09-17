@@ -13,6 +13,7 @@ import type { Price, Subscription, UsageResponse } from "@/app/api/payments/type
 import { SubscriptionForm } from "../components/subscription-form";
 import { OneTimePaymentForm } from "../components/one-time-payment-form";
 import { UsageMeter } from "../components/usage-meter";
+import { UsageSummary } from "../components/usage-summary";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -285,6 +286,8 @@ export default function PaymentPage() {
             {upgradeMessage}
           </div>
         )}
+
+        {!(selectedPlan && clientSecret) && <UsageSummary />}
 
         {selectedPlan && clientSecret ? (
           <div className="max-w-md mx-auto">
