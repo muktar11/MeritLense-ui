@@ -39,12 +39,14 @@ export default function PaymentPage() {
   const [currentSubscription, setCurrentSubscription] = useState<Subscription | null>(null);
   const [currentUsage, setCurrentUsage] = useState<UsageResponse | null>(null);
   // One-time "points" packages are consumable (buying the same one again to
-  // top up is a normal, valid action) so they never become "the" current
-  // plan the way a recurring subscription does - but the price(s) the user
-  // has actually bought before are still worth marking, or B2C accounts
-  // that only ever buy one-time packages (the common case) never see any
-  // "this is what I have" indicator anywhere on this page.
-  const [purchasedOneTimePriceIds, setPurchasedOneTimePriceIds] = useState<Set<string>>(new Set());
+  // top up is a normal, valid action), so a B2C account can accumulate
+  // several over time - but only the most recently purchased one is shown
+  // as the "current" package (older ones still contributed real slots/
+  // points to the balance, they just aren't singled out as current
+  // anymore). B2C accounts that only ever buy one-time packages (the
+  // common case) would otherwise never see any "this is what I have"
+  // indicator on this page at all.
+  const [currentOneTimePriceId, setCurrentOneTimePriceId] = useState<string | null>(null);
   const [subLoading, setSubLoading] = useState(true);
   const [showPlanPicker, setShowPlanPicker] = useState(false);
   const [upgrading, setUpgrading] = useState(false);
@@ -75,13 +77,10 @@ export default function PaymentPage() {
         // flow, but a user can have both kinds active at once, so the most
         // recent overall row isn't necessarily the real subscription to show.
         const recurring = fullSubs.find((s) => s.price_details && s.price_details.billing_type !== 'ONE_TIME') || null;
-        setPurchasedOneTimePriceIds(
-          new Set(
-            fullSubs
-              .filter((s) => s.price_details?.billing_type === 'ONE_TIME' && s.price_details?.id)
-              .map((s) => s.price_details!.id)
-          )
-        );
+        const oneTimePurchases = fullSubs
+          .filter((s) => s.price_details?.billing_type === 'ONE_TIME' && s.price_details?.id)
+          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        setCurrentOneTimePriceId(oneTimePurchases[0]?.price_details?.id ?? null);
 
         if (recurring) {
           setCurrentSubscription(recurring);
@@ -99,13 +98,13 @@ export default function PaymentPage() {
       } else {
         setCurrentSubscription(null);
         setCurrentUsage(null);
-        setPurchasedOneTimePriceIds(new Set());
+        setCurrentOneTimePriceId(null);
       }
     } catch (error) {
       console.error('Failed to fetch current subscription:', error);
       setCurrentSubscription(null);
       setCurrentUsage(null);
-      setPurchasedOneTimePriceIds(new Set());
+      setCurrentOneTimePriceId(null);
     } finally {
       setSubLoading(false);
     }
@@ -546,7 +545,7 @@ export default function PaymentPage() {
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {oneTimePlans.map((plan) => {
-                    const isPurchased = purchasedOneTimePriceIds.has(plan.id);
+                    const isPurchased = plan.id === currentOneTimePriceId;
                     const coverage = planCoverageFlags(plan);
                     return (
                     <div
