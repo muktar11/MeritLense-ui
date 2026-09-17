@@ -115,22 +115,17 @@ export function ArtifactActions({
   );
 }
 
-// Transcript + certificate rows for one specific evaluation - the table row
-// only ever shows the candidate's most-recent evaluation's documents, so a
-// candidate with more than one evaluation (a retry, or a second role) had no
-// way to reach an older one's documents at all. Dropped into ScoreViewModal
-// next to its existing evaluation selector, so switching evaluations there
-// also switches which one's documents are shown.
-export function EvaluationDocumentsSection({
+// Transcript + certificate rows for one specific evaluation.
+function EvaluationDocumentsRow({
   evaluation,
   candidateName,
+  label,
 }: {
-  evaluation: CandidateScoreSummary | null;
+  evaluation: CandidateScoreSummary;
   candidateName: string;
+  label: string;
 }) {
   const t = useTranslations("dashboard.business.score-management.table");
-
-  if (!evaluation) return null;
 
   const downloadAllArtifacts = async () => {
     const tasks: Promise<void>[] = [];
@@ -144,13 +139,10 @@ export function EvaluationDocumentsSection({
   };
 
   return (
-    <div className="space-y-3 mb-6">
-      <h3 className="font-medium text-gray-700 flex items-center gap-2">
-        <span className="w-1 h-6 bg-purple-500 rounded-full"></span>
-        {t("documentsHeading")}
-      </h3>
+    <div className="p-4 bg-gray-50 rounded-lg">
+      <p className="text-xs font-semibold text-gray-600 mb-2">{label}</p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div className="p-4 bg-gray-50 rounded-lg">
+        <div>
           <span className="text-xs text-gray-500 mr-1">{t("transcript")}</span>
           <div className="mt-1">
             {evaluation.report?.pdf_url ? (
@@ -168,7 +160,7 @@ export function EvaluationDocumentsSection({
             <p className="text-[11px] text-amber-600 mt-1">{t("screeningNote")}</p>
           )}
         </div>
-        <div className="p-4 bg-gray-50 rounded-lg">
+        <div>
           <span className="text-xs text-gray-500 mr-1">{t("certificate")}</span>
           <div className="mt-1">
             {evaluation.certificate ? (
@@ -183,6 +175,47 @@ export function EvaluationDocumentsSection({
             )}
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+// Every evaluation's documents at once, not just the most recent - the
+// table row only ever shows the candidate's most-recent evaluation's
+// documents, so a candidate with more than one evaluation (a retry, or a
+// second role) had no way to reach an older one's documents at all.
+// Dropped into ScoreViewModal below its evaluation selector (which still
+// controls the score breakdown shown below) - `labelFor` reuses that same
+// modal's own "{role} — {date} ({score}%)" formatting so each block reads
+// consistently with the selector's option text.
+export function EvaluationDocumentsSection({
+  evaluations,
+  candidateName,
+  labelFor,
+}: {
+  evaluations: CandidateScoreSummary[];
+  candidateName: string;
+  labelFor: (evaluation: CandidateScoreSummary) => string;
+}) {
+  const t = useTranslations("dashboard.business.score-management.table");
+
+  if (evaluations.length === 0) return null;
+
+  return (
+    <div className="space-y-3 mb-6">
+      <h3 className="font-medium text-gray-700 flex items-center gap-2">
+        <span className="w-1 h-6 bg-purple-500 rounded-full"></span>
+        {t("documentsHeading")}
+      </h3>
+      <div className="space-y-3">
+        {evaluations.map((evaluation, index) => (
+          <EvaluationDocumentsRow
+            key={evaluation.evaluation_id ?? index}
+            evaluation={evaluation}
+            candidateName={candidateName}
+            label={labelFor(evaluation)}
+          />
+        ))}
       </div>
     </div>
   );
