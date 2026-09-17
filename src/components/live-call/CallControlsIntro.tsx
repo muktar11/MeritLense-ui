@@ -12,6 +12,13 @@ interface Beat {
 interface CallControlsIntroProps {
   recordTarget: HTMLElement | null;
   languageTarget: HTMLElement | null;
+  // Passed only by the candidate flow (see LiveCallRoom), already resolved
+  // from the interview's configured language - the evaluator's copy stays
+  // undefined and falls back to next-intl, driven by their own dashboard
+  // locale. A plain `uiLanguage` prop here would be ambiguous (undefined
+  // means both "evaluator" and "candidate defaulting to English"), so the
+  // caller resolves and passes the strings themselves instead.
+  candidateStrings?: { recordBeat: string; languageBeat: string; gotIt: string } | null;
 }
 
 const SEEN_KEY = "meritlense_live_call_intro_seen";
@@ -25,8 +32,13 @@ const BEAT_MS = 3200;
 // actual live elements already on screen - they're already mounted by the
 // time this runs, so a real getBoundingClientRect() spotlight is possible
 // and reads as more trustworthy than a mock of the same thing.
-export function CallControlsIntro({ recordTarget, languageTarget }: CallControlsIntroProps) {
-  const t = useTranslations("shared.callControlsIntro");
+export function CallControlsIntro({ recordTarget, languageTarget, candidateStrings }: CallControlsIntroProps) {
+  const tIntl = useTranslations("shared.callControlsIntro");
+  const t = candidateStrings ?? {
+    recordBeat: tIntl("recordBeat"),
+    languageBeat: tIntl("languageBeat"),
+    gotIt: tIntl("gotIt"),
+  };
   const [dismissed, setDismissed] = useState(true);
   const [beatIndex, setBeatIndex] = useState(0);
   const [rect, setRect] = useState<DOMRect | null>(null);
@@ -40,8 +52,8 @@ export function CallControlsIntro({ recordTarget, languageTarget }: CallControls
   }, [!!recordTarget, !!languageTarget]);
 
   const beats: Beat[] = [
-    { target: recordTarget, text: t("recordBeat") },
-    { target: languageTarget, text: t("languageBeat") },
+    { target: recordTarget, text: t.recordBeat },
+    { target: languageTarget, text: t.languageBeat },
   ];
   const beat = beats[beatIndex];
 
@@ -138,7 +150,7 @@ export function CallControlsIntro({ recordTarget, languageTarget }: CallControls
               onClick={dismiss}
               className="text-xs text-gray-400 hover:text-gray-600 font-medium"
             >
-              {t("gotIt")}
+              {t.gotIt}
             </button>
           </div>
           <p>{beat.text}</p>

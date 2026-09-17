@@ -162,6 +162,53 @@ interface CandidateStrings {
   testTimer: {
     remaining: (mm: number, ss: string) => string;
   };
+  liveCallRoom: {
+    missingSessionId: string;
+    callEnded: string;
+    callEndedMessage: string;
+    returnToDashboard: string;
+    couldntJoin: string;
+    refreshAndTryAgain: string;
+    opensAt: string;
+    yourLocalTime: string;
+    statusJoining: string;
+    statusWaiting: string;
+    statusPendingAdmission: string;
+    statusReconnecting: string;
+    statusConnecting: string;
+    candidateWantsToJoin: string;
+    letThemIn: string;
+    deny: string;
+    admit: string;
+    manualTranslationActive: string;
+    youreEvaluator: string;
+    youreCandidate: string;
+    manualTranslationLabel: string;
+    messageFeed: string;
+    isSpeaking: (role: string) => string;
+    waitingToFinish: (role: string) => string;
+    tapToRecord: string;
+    recording: (time: string) => string;
+    stop: string;
+    reRecord: string;
+    sending: string;
+    send: string;
+    noSegmentsYet: string;
+    you: string;
+    otherParticipant: string;
+    original: string;
+    translated: string;
+    iSpeak: string;
+    iWantToHear: string;
+    endCall: string;
+    candidateLabel: string;
+    evaluatorLabel: string;
+  };
+  callControlsIntro: {
+    recordBeat: string;
+    languageBeat: string;
+    gotIt: string;
+  };
 }
 
 const en: CandidateStrings = {
@@ -355,6 +402,53 @@ const en: CandidateStrings = {
   testTimer: {
     remaining: (mm, ss) => `${mm}:${ss} remaining`,
   },
+  liveCallRoom: {
+    missingSessionId: "Missing session ID.",
+    callEnded: "Call ended",
+    callEndedMessage: "This live interview call has ended.",
+    returnToDashboard: "Return to dashboard",
+    couldntJoin: "Couldn't join the call",
+    refreshAndTryAgain: "Please refresh and try again.",
+    opensAt: "This call opens 15 minutes before its scheduled time:",
+    yourLocalTime: "(your local time).",
+    statusJoining: "Joining the call…",
+    statusWaiting: "Waiting for the other participant to join…",
+    statusPendingAdmission: "Waiting for the evaluator to let you in…",
+    statusReconnecting: "Reconnecting…",
+    statusConnecting: "Connecting…",
+    candidateWantsToJoin: "Candidate wants to join",
+    letThemIn: "Let them into the interview?",
+    deny: "Deny",
+    admit: "Admit",
+    manualTranslationActive: "Manual translation mode is active",
+    youreEvaluator: "You're the evaluator",
+    youreCandidate: "You're the candidate",
+    manualTranslationLabel: "Manual translation",
+    messageFeed: "Message feed",
+    isSpeaking: (role) => `${role} is speaking…`,
+    waitingToFinish: (role) => `Waiting for ${role} to finish…`,
+    tapToRecord: "Tap to record a turn",
+    recording: (time) => `Recording… ${time}`,
+    stop: "Stop",
+    reRecord: "Re-record",
+    sending: "Sending…",
+    send: "Send",
+    noSegmentsYet: "Record a speaking turn to send it to the other participant in their language.",
+    you: "You",
+    otherParticipant: "Other participant",
+    original: "Original",
+    translated: "Translated",
+    iSpeak: "I speak",
+    iWantToHear: "I want to hear",
+    endCall: "End Call",
+    candidateLabel: "Candidate",
+    evaluatorLabel: "Evaluator",
+  },
+  callControlsIntro: {
+    recordBeat: "Tap here to record your turn when it's your turn to speak.",
+    languageBeat: "Set the language you speak and the one you want to hear here.",
+    gotIt: "Got it",
+  },
 };
 
 const ar: CandidateStrings = {
@@ -542,6 +636,53 @@ const ar: CandidateStrings = {
   },
   testTimer: {
     remaining: (mm, ss) => `${mm}:${ss} متبقٍ`,
+  },
+  liveCallRoom: {
+    missingSessionId: "معرّف الجلسة مفقود.",
+    callEnded: "انتهت المكالمة",
+    callEndedMessage: "انتهت مكالمة المقابلة المباشرة هذه.",
+    returnToDashboard: "العودة إلى لوحة التحكم",
+    couldntJoin: "تعذر الانضمام إلى المكالمة",
+    refreshAndTryAgain: "يرجى تحديث الصفحة والمحاولة مرة أخرى.",
+    opensAt: "تُفتح هذه المكالمة قبل 15 دقيقة من موعدها المحدد:",
+    yourLocalTime: "(بتوقيتك المحلي).",
+    statusJoining: "جارٍ الانضمام إلى المكالمة…",
+    statusWaiting: "في انتظار انضمام المشارك الآخر…",
+    statusPendingAdmission: "في انتظار سماح المُقيِّم لك بالدخول…",
+    statusReconnecting: "جارٍ إعادة الاتصال…",
+    statusConnecting: "جارٍ الاتصال…",
+    candidateWantsToJoin: "يريد المرشح الانضمام",
+    letThemIn: "هل تسمح له بالدخول إلى المقابلة؟",
+    deny: "رفض",
+    admit: "قبول",
+    manualTranslationActive: "وضع الترجمة اليدوية مفعّل",
+    youreEvaluator: "أنت المُقيِّم",
+    youreCandidate: "أنت المرشح",
+    manualTranslationLabel: "الترجمة اليدوية",
+    messageFeed: "سجل الرسائل",
+    isSpeaking: (role) => `${role} يتحدث الآن…`,
+    waitingToFinish: (role) => `في انتظار انتهاء ${role}…`,
+    tapToRecord: "اضغط لتسجيل دورك",
+    recording: (time) => `جارٍ التسجيل… ${time}`,
+    stop: "إيقاف",
+    reRecord: "إعادة التسجيل",
+    sending: "جارٍ الإرسال…",
+    send: "إرسال",
+    noSegmentsYet: "سجّل دورك في الحديث لإرساله إلى المشارك الآخر بلغته.",
+    you: "أنت",
+    otherParticipant: "المشارك الآخر",
+    original: "النص الأصلي",
+    translated: "الترجمة",
+    iSpeak: "أتحدث",
+    iWantToHear: "أريد أن أسمع",
+    endCall: "إنهاء المكالمة",
+    candidateLabel: "المرشح",
+    evaluatorLabel: "المُقيِّم",
+  },
+  callControlsIntro: {
+    recordBeat: "اضغط هنا لتسجيل دورك عندما يحين وقت حديثك.",
+    languageBeat: "حدد هنا اللغة التي تتحدثها واللغة التي تريد سماعها.",
+    gotIt: "فهمت",
   },
 };
 

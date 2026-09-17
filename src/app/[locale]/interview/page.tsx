@@ -404,7 +404,7 @@ function InterviewSessionContent() {
   if (pageState === "live-call") {
     // LiveCallRoom owns its own "call ended" screen internally once the
     // call finishes - no page-level state transition needed on top of it.
-    return <LiveCallRoom sessionId={sessionId} candidateToken={token} />;
+    return <LiveCallRoom sessionId={sessionId} candidateToken={token} uiLanguage={session?.ui_language} />;
   }
 
   if (pageState === "precheck") {
