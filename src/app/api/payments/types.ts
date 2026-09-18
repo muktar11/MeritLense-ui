@@ -107,6 +107,29 @@ export function planCoverageFlags(plan: Pick<Price, "evaluation_tier">) {
   };
 }
 
+// Price.name is a plain free-text field on the backend (e.g. "advanced
+// package") with no separate machine-readable code, so unlike role names
+// (ROLE_NAME_AR on the backend) there's nothing to key an Arabic lookup off
+// except the string itself - matched case-insensitively since the backend
+// value is lowercase but this also tolerates a differently-cased name.
+// Falls back to the raw name for any plan not in this table (a new plan
+// added without an Arabic translation here stays in English rather than
+// showing nothing).
+const PLAN_NAME_AR: Record<string, string> = {
+  "basic package": "الباقة الأساسية",
+  "essential package": "الباقة الضرورية",
+  "advanced package": "الباقة المتقدمة",
+  "premium package": "الباقة المميزة",
+  "growth package": "باقة النمو",
+  "business package": "باقة الأعمال",
+};
+
+export function localizedPlanName(name: string | undefined | null, locale: string): string {
+  if (!name) return name ?? "";
+  if (locale !== "ar") return name;
+  return PLAN_NAME_AR[name.trim().toLowerCase()] ?? name;
+}
+
 export interface Customer {
   id: number;
   user: number;

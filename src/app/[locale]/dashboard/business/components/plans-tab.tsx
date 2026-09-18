@@ -4,12 +4,12 @@
 import { useState, useEffect } from "react";
 import { Check, Loader2, AlertCircle, CreditCard } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { useAuth } from "@/app/hooks/useAuth";
 import paymentService from "@/app/api/payments/endpoints";
-import { planCoverageFlags, type Price } from "@/app/api/payments/types";
+import { localizedPlanName, planCoverageFlags, type Price } from "@/app/api/payments/types";
 import { SubscriptionForm } from "./subscription-form";
 import { useSubscription } from "@/app/context/SubscriptionContext";
 import { UsageSummary } from "./usage-summary";
@@ -19,6 +19,7 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 
 export function PlansTab() {
   const t = useTranslations("dashboard.indivisual.payment");
+  const locale = useLocale();
   const router = useRouter();
   const { userRole, isAuthenticated } = useAuth();
   const { subscription: currentSubscription } = useSubscription();
@@ -230,7 +231,7 @@ export function PlansTab() {
                     </span>
                   )}
                   <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4">
-                    {plan.name}
+                    {localizedPlanName(plan.name, locale)}
                   </h3>
 
                   <div className="mb-4 sm:mb-6 flex flex-wrap items-baseline gap-x-1">

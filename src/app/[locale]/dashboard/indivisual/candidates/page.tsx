@@ -12,7 +12,7 @@ import {
 } from "recharts";
 import DashboardHeader from "../components/dashboard-header";
 import { Download, FileText, Loader2 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import {CandidateModal} from "../candidates/components/candidate-modal";
 import CandidatesTable from "../candidates/components/candidates-table";
 import ShareModal from "../candidates/components/share-modal";
@@ -42,6 +42,7 @@ const CANDIDATE_COLORS = ['#6366F1', '#10B981', '#F59E0B', '#EF4444'];
 export default function CandidateComparison() {
   const t = useTranslations("dashboard.indivisual.candidates");
   const tRoles = useTranslations("dashboard.candidates.table");
+  const locale = useLocale();
   const { userRole, userId, isAuthenticated, loading: authLoading } = useAuth();
 
   // State for candidates
@@ -88,7 +89,7 @@ export default function CandidateComparison() {
     let active = true;
     setLoadingComparison(true);
     b2cDashboardService
-      .getCandidateComparison(selectedCandidates)
+      .getCandidateComparison(selectedCandidates, locale)
       .then((data) => {
         if (!active) return;
         setComparisonData(data);
@@ -109,7 +110,7 @@ export default function CandidateComparison() {
     return () => {
       active = false;
     };
-  }, [selectedCandidates]);
+  }, [selectedCandidates, locale]);
 
   // Every area currently present across the selected candidates' real
   // scores - the actual set of metric checkboxes to offer.
