@@ -24,6 +24,16 @@ import {
 } from "../../../../../api/candidates/types"
 import { checkPassportPhotoQuality, matchFaces, passportQualityMessage, isBlockingQualityStatus, FaceMatchResult, PassportPhotoQualityResult, PASSPORT_PHOTO_MATCH_THRESHOLD } from "@/lib/face-detection"
 import { PASSPORT_PHOTO_GUIDELINES } from "@/lib/photo-guidelines"
+import { CANDIDATE_SKILLS_BY_ROLE, translateSkill } from "@/lib/candidate-skills"
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuCheckboxItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu"
+import { ChevronDown } from "lucide-react"
 
 type PhotoField = 'passport_document' | 'profile_photo'
 
@@ -48,6 +58,7 @@ export function CandidateModal({
   const t = useTranslations("dashboard.candidates.modal")
   const tRoles = useTranslations("dashboard.candidates.table.candidateRoles")
   const tLanguages = useTranslations("dashboard.indivisual.settings.edit-profile-tab.languages")
+  const tSkills = useTranslations("shared.candidateSkills")
   const router = useRouter()
   const locale = useLocale()
   
@@ -190,9 +201,31 @@ export function CandidateModal({
       })
     }
 
-    if (name === 'core_skills') {
-      const skills = value.split(',').map(s => s.trim()).filter(s => s)
-      setSkillsList(skills)
+    // Skills are role-specific (CANDIDATE_SKILLS_BY_ROLE) - changing the
+    // role drops any selected skills that aren't in the new role's list,
+    // rather than silently leaving a Nanny skill selected on a Driver.
+    if (name === 'job_role') {
+      const validSkills = new Set(CANDIDATE_SKILLS_BY_ROLE[value] || [])
+      setSkillsList(prev => {
+        const kept = prev.filter(skill => validSkills.has(skill))
+        setFormData(f => ({ ...f, core_skills: kept.join(', ') }))
+        return kept
+      })
+    }
+  }
+
+  const toggleSkill = (skill: string, checked: boolean) => {
+    setSkillsList(prev => {
+      const next = checked ? [...prev, skill] : prev.filter(s => s !== skill)
+      setFormData(f => ({ ...f, core_skills: next.join(', ') }))
+      return next
+    })
+    if (errors.core_skills) {
+      setErrors(prev => {
+        const newErrors = { ...prev }
+        delete newErrors.core_skills
+        return newErrors
+      })
     }
   }
 
@@ -674,24 +707,47 @@ export function CandidateModal({
                             key={idx}
                             className="px-2 py-1 bg-purple-50 text-purple-700 rounded-full text-sm"
                           >
-                            {skill}
+                            {translateSkill(skill, tSkills)}
                           </span>
                         ))}
                       </div>
                     ) : (
                       <>
-                        <textarea
-                          name="core_skills"
-                          value={formData.core_skills}
-                          onChange={handleInputChange}
-                          onBlur={() => handleBlur('core_skills')}
-                          disabled={!canEdit}
-                          rows={3}
-                          placeholder={t("fields.skillsPlaceholder")}
-                          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${
-                            touchedFields.core_skills && errors.core_skills ? 'border-red-500' : 'border-gray-300'
-                          }`}
-                        />
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <button
+                              type="button"
+                              disabled={!canEdit || !formData.job_role}
+                              onBlur={() => handleBlur('core_skills')}
+                              className={`w-full flex items-center justify-between px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white text-left disabled:bg-gray-50 disabled:text-gray-400 ${
+                                touchedFields.core_skills && errors.core_skills ? 'border-red-500' : 'border-gray-300'
+                              }`}
+                            >
+                              <span className={skillsList.length === 0 ? "text-gray-400" : "text-gray-900"}>
+                                {!formData.job_role
+                                  ? tSkills("selectRoleFirst")
+                                  : skillsList.length === 0
+                                    ? tSkills("selectSkillsPlaceholder")
+                                    : tSkills("selectedCount", { count: skillsList.length })}
+                              </span>
+                              <ChevronDown className="w-4 h-4 text-gray-400 shrink-0" />
+                            </button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="w-72 max-h-64 overflow-y-auto">
+                            <DropdownMenuLabel>{t("fields.coreSkills")}</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            {(CANDIDATE_SKILLS_BY_ROLE[formData.job_role] || []).map((skill) => (
+                              <DropdownMenuCheckboxItem
+                                key={skill}
+                                checked={skillsList.includes(skill)}
+                                onSelect={(e) => e.preventDefault()}
+                                onCheckedChange={(checked) => toggleSkill(skill, checked === true)}
+                              >
+                                {translateSkill(skill, tSkills)}
+                              </DropdownMenuCheckboxItem>
+                            ))}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                         <p className="mt-1 text-xs text-gray-500">
                           {t("fields.skillsHint")}
                         </p>
@@ -709,9 +765,17 @@ export function CandidateModal({
                         {skillsList.map((skill, idx) => (
                           <span
                             key={idx}
-                            className="px-2 py-1 bg-purple-50 text-purple-700 rounded-full text-sm"
+                            className="inline-flex items-center gap-1 px-2 py-1 bg-purple-50 text-purple-700 rounded-full text-sm"
                           >
-                            {skill}
+                            {translateSkill(skill, tSkills)}
+                            <button
+                              type="button"
+                              onClick={() => toggleSkill(skill, false)}
+                              className="text-purple-400 hover:text-purple-700"
+                              aria-label={t("fields.coreSkills")}
+                            >
+                              ×
+                            </button>
                           </span>
                         ))}
                       </div>
