@@ -30,7 +30,11 @@ export interface RecentCandidate {
 }
 
 export interface RecentEvaluation {
-  id: number;
+  // RecentEvaluationSerializer extends PublicIdModelSerializer, so this is
+  // actually the public_id UUID string, not the internal numeric PK -
+  // matches EvaluationListItem.id (evaluations/types.ts) and is what
+  // evaluationService.getEvaluation() expects.
+  id: string;
   candidate_name: string;
   evaluation_type: string;
   evaluation_type_display: string;
