@@ -8,6 +8,9 @@ import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import type { RecentEvaluation } from "@/app/api/dashboard/b2b/types";
 import { format } from "date-fns";
+import EvaluationModal from "./schedule-evaluation-modal";
+import evaluationService from "@/app/api/evaluations/endpoints";
+import type { Evaluation } from "@/app/api/evaluations/types";
 
 interface CandidateEvaluationTableProps {
   evaluations: RecentEvaluation[];
@@ -19,6 +22,18 @@ export function CandidateEvaluationTable({ evaluations, searchTerm = "" }: Candi
   const locale = useLocale();
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(8);
+  const [selectedEvaluation, setSelectedEvaluation] = useState<Evaluation | null>(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+
+  const handleViewEvaluation = async (evaluation: RecentEvaluation) => {
+    try {
+      const fullEvaluation = await evaluationService.getEvaluation(evaluation.id);
+      setSelectedEvaluation(fullEvaluation);
+      setIsViewModalOpen(true);
+    } catch (error) {
+      console.error("Failed to fetch evaluation details:", error);
+    }
+  };
 
   const filteredEvaluations = evaluations.filter(evaluation => 
     evaluation.candidate_name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -108,7 +123,10 @@ export function CandidateEvaluationTable({ evaluations, searchTerm = "" }: Candi
                       {format(new Date(evaluation.scheduled_date), 'MMM d, yyyy')}
                     </td>
                     <td className="py-2 px-2">
-                      <button className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+                      <button
+                        onClick={() => handleViewEvaluation(evaluation)}
+                        className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+                      >
                         <Eye className="w-4 h-4 text-gray-400" />
                       </button>
                     </td>
@@ -160,6 +178,16 @@ export function CandidateEvaluationTable({ evaluations, searchTerm = "" }: Candi
           </div>
         )}
       </CardContent>
+
+      <EvaluationModal
+        isOpen={isViewModalOpen}
+        onClose={() => {
+          setIsViewModalOpen(false);
+          setSelectedEvaluation(null);
+        }}
+        mode="view"
+        evaluation={selectedEvaluation || undefined}
+      />
     </Card>
   );
 }
