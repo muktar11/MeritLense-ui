@@ -23,6 +23,7 @@ export interface B2BProfileData {
   website?: string
   industry?: string
   preferred_language?: string
+  notification_preference?: string
 }
 
 export interface AdminProfileData {

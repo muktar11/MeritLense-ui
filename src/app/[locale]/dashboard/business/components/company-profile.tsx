@@ -79,6 +79,7 @@ export function CompanyProfile() {
     website: "",
     industry: "",
     preferred_language: "EN",
+    notification_preference: "email",
   })
 
   useEffect(() => {
@@ -95,6 +96,7 @@ export function CompanyProfile() {
         website: profile.website || "",
         industry: profile.industry || "",
         preferred_language: profile.preferred_language || "EN",
+        notification_preference: profile.notification_preference || "email",
       })
     }
   }, [profile])
@@ -330,9 +332,6 @@ export function CompanyProfile() {
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <Button variant="outline" size="sm" className="text-sm bg-transparent whitespace-nowrap">
             <span className="mr-2">👤</span> {t("myProfile")}
-          </Button>
-          <Button variant="outline" size="sm" className="text-sm bg-transparent whitespace-nowrap">
-            <span className="mr-2">🔔</span> {t("notification")}
           </Button>
           <span className="text-sm font-medium">{t("more")}</span>
           <Button 
@@ -944,7 +943,10 @@ export function CompanyProfile() {
                 </div>
                 <div>
                   <label className="text-xs text-muted-foreground block mb-2">{t("notification")}</label>
-                  <Select defaultValue="email">
+                  <Select
+                    value={formData.notification_preference}
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, notification_preference: value }))}
+                  >
                     <SelectTrigger className="h-8 text-xs">
                       <SelectValue />
                     </SelectTrigger>
@@ -955,14 +957,14 @@ export function CompanyProfile() {
                     </SelectContent>
                   </Select>
                 </div>
-                <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white text-xs mt-2">{t("save")}</Button>
+                <Button onClick={handleSave} className="w-full bg-purple-600 hover:bg-purple-700 text-white text-xs mt-2">{t("save")}</Button>
               </CardContent>
             </Card>
           </div>
         </div>
 
         <div className="fixed bottom-6 right-6 lg:static lg:mt-4">
-          <Button className="bg-purple-600 hover:bg-purple-700 text-white w-full lg:w-auto">
+          <Button onClick={handleSave} className="bg-purple-600 hover:bg-purple-700 text-white w-full lg:w-auto">
             {t("saveChanges")}
           </Button>
         </div>
