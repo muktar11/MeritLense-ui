@@ -77,18 +77,13 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
             const evaluations = scores[candidate.id];
             const summary = evaluations?.[0];
 
-            // Clicking Download on either document downloads whatever
-            // artifacts exist for this candidate together, rather than just
-            // the one under that document.
-            const downloadAllArtifacts = async () => {
-              const tasks: Promise<void>[] = [];
-              if (summary?.report?.pdf_url) {
-                tasks.push(reportService.downloadPdf(summary.report.report_id, `${summary.report.report_number}.pdf`));
-              }
-              if (summary?.certificate) {
-                tasks.push(downloadFromUrl(summary.certificate.pdf_url, `${summary.certificate.certificate_id}.pdf`));
-              }
-              await Promise.all(tasks);
+            const downloadReport = async () => {
+              if (!summary?.report?.pdf_url) return;
+              await reportService.downloadPdf(summary.report.report_id, `${summary.report.report_number}.pdf`);
+            };
+            const downloadCertificate = async () => {
+              if (!summary?.certificate) return;
+              await downloadFromUrl(summary.certificate.pdf_url, `${summary.certificate.certificate_id}.pdf`);
             };
 
             return (
@@ -127,7 +122,7 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
                           url={summary.report.pdf_url}
                           candidateName={candidate.full_name}
                           artifactLabel={t("transcriptReportLabel")}
-                          onDownload={downloadAllArtifacts}
+                          onDownload={downloadReport}
                         />
                       ) : (
                         <span className="text-gray-400">{t("notAvailable")}</span>
@@ -145,7 +140,7 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
                           url={summary.certificate.pdf_url}
                           candidateName={candidate.full_name}
                           artifactLabel={t("certificateLabel")}
-                          onDownload={downloadAllArtifacts}
+                          onDownload={downloadCertificate}
                         />
                       ) : (
                         <span className="text-gray-400">{t("notAvailable")}</span>

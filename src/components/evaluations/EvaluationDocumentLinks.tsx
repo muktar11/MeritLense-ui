@@ -127,15 +127,14 @@ function EvaluationDocumentsRow({
 }) {
   const t = useTranslations("dashboard.business.score-management.table");
 
-  const downloadAllArtifacts = async () => {
-    const tasks: Promise<void>[] = [];
-    if (evaluation.report?.pdf_url) {
-      tasks.push(reportService.downloadPdf(evaluation.report.report_id, `${evaluation.report.report_number}.pdf`));
-    }
-    if (evaluation.certificate) {
-      tasks.push(downloadFromUrl(evaluation.certificate.pdf_url, `${evaluation.certificate.certificate_id}.pdf`));
-    }
-    await Promise.all(tasks);
+  const downloadReport = async () => {
+    if (!evaluation.report?.pdf_url) return;
+    await reportService.downloadPdf(evaluation.report.report_id, `${evaluation.report.report_number}.pdf`);
+  };
+
+  const downloadCertificate = async () => {
+    if (!evaluation.certificate) return;
+    await downloadFromUrl(evaluation.certificate.pdf_url, `${evaluation.certificate.certificate_id}.pdf`);
   };
 
   return (
@@ -150,7 +149,7 @@ function EvaluationDocumentsRow({
                 url={evaluation.report.pdf_url}
                 candidateName={candidateName}
                 artifactLabel={t("transcriptReportLabel")}
-                onDownload={downloadAllArtifacts}
+                onDownload={downloadReport}
               />
             ) : (
               <span className="text-gray-400">{t("notAvailable")}</span>
@@ -168,7 +167,7 @@ function EvaluationDocumentsRow({
                 url={evaluation.certificate.pdf_url}
                 candidateName={candidateName}
                 artifactLabel={t("certificateLabel")}
-                onDownload={downloadAllArtifacts}
+                onDownload={downloadCertificate}
               />
             ) : (
               <span className="text-gray-400">{t("notAvailable")}</span>
