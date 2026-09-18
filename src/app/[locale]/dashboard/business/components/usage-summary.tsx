@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Info, AlertTriangle } from "lucide-react";
 import b2bDashboardService from "@/app/api/dashboard/b2b/endpoints";
 import type { DashboardStats } from "@/app/api/dashboard/b2b/types";
 import { useSubscription } from "@/app/context/SubscriptionContext";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { localizedPlanName } from "@/app/api/payments/types";
 
 // Surfaces the same real entitlement ledger (EntitlementService) the
 // dashboard overview's "Assessment Slots" card uses - not the older,
@@ -16,6 +17,7 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 // info/warning banner rather than a card grid - everything at a glance.
 export function UsageSummary() {
   const t = useTranslations("dashboard.indivisual.payment.usageSection");
+  const locale = useLocale();
   const { subscription } = useSubscription();
   const [stats, setStats] = useState<DashboardStats | null>(null);
 
@@ -78,7 +80,7 @@ export function UsageSummary() {
       {outOfSlots ? <AlertTriangle /> : <Info />}
       <AlertTitle>
         {t("title")}
-        {subscription?.price_details?.name ? ` — ${subscription.price_details.name}` : ""}
+        {subscription?.price_details?.name ? ` — ${localizedPlanName(subscription.price_details.name, locale)}` : ""}
       </AlertTitle>
       <AlertDescription>
         <p>{parts.join(" · ")}</p>

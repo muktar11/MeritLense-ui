@@ -48,10 +48,17 @@ class B2CDashboardService {
     return response.data;
   }
 
-  async getCandidateComparison(candidateIds?: string[]): Promise<CandidateComparison[]> {
+  // `lang` drives the backend's competency-label translation
+  // (EvaluationReportService._friendly_competency_name) - this compares
+  // candidates who may have interviewed in different languages, so it's
+  // the viewer's own dashboard locale, not any one candidate's.
+  async getCandidateComparison(candidateIds?: string[], lang?: string): Promise<CandidateComparison[]> {
     this.ensureAuthToken();
     const response = await apiClient.get(`${this.baseURL}candidate-comparison`, {
-      params: candidateIds?.length ? { candidate_ids: candidateIds.join(',') } : undefined,
+      params: {
+        ...(candidateIds?.length ? { candidate_ids: candidateIds.join(',') } : undefined),
+        ...(lang ? { lang } : undefined),
+      },
     });
     return response.data;
   }

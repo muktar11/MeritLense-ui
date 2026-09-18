@@ -5,7 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Download, Loader2 } from "lucide-react";
 import { useSubscription } from "@/app/context/SubscriptionContext";
 import paymentService from "@/app/api/payments/endpoints";
-import type { PaymentMethod, Invoice } from "@/app/api/payments/types";
+import { localizedPlanName, type PaymentMethod, type Invoice } from "@/app/api/payments/types";
 import { PaymentMethodsList } from "../payment-methods-list";
 import { AddPaymentMethodModal } from "../add-payment-method-modal";
 import { UsageMeter } from "../usage-meter";
@@ -242,7 +242,7 @@ export function BillingTab() {
             <div>
               <h3 className="text-lg font-semibold text-gray-900">{t('currentPlan')}</h3>
               <p className="text-sm text-gray-600">
-                {subscription.price_details?.name || subscription.stripe_price?.name || t('noActivePlan')} - {SUBSCRIPTION_STATUS_KEYS[subscription.status] ? t(`subscriptionStatus.${SUBSCRIPTION_STATUS_KEYS[subscription.status]}`) : subscription.status_display}
+                {localizedPlanName(subscription.price_details?.name || subscription.stripe_price?.name, locale) || t('noActivePlan')} - {SUBSCRIPTION_STATUS_KEYS[subscription.status] ? t(`subscriptionStatus.${SUBSCRIPTION_STATUS_KEYS[subscription.status]}`) : subscription.status_display}
               </p>
             </div>
             <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm">

@@ -9,7 +9,7 @@ import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { useAuth } from "@/app/hooks/useAuth";
 import paymentService from "@/app/api/payments/endpoints";
-import { planCoverageFlags, type Price, type Subscription, type UsageResponse } from "@/app/api/payments/types";
+import { localizedPlanName, planCoverageFlags, type Price, type Subscription, type UsageResponse } from "@/app/api/payments/types";
 import { SubscriptionForm } from "../components/subscription-form";
 import { OneTimePaymentForm } from "../components/one-time-payment-form";
 import { UsageMeter } from "../components/usage-meter";
@@ -191,7 +191,7 @@ export default function PaymentPage() {
       await paymentService.changePlan(currentSubscription.id, { price_id: plan.id, prorate: true });
       await fetchCurrentSubscription();
       setShowPlanPicker(false);
-      setUpgradeMessage(t('planChanged', { name: plan.name }));
+      setUpgradeMessage(t('planChanged', { name: localizedPlanName(plan.name, locale) }));
     } catch (error: any) {
       console.error('Failed to change plan:', error);
       setError(error?.detail || error?.error || t('errors.changePlanFailed'));
@@ -323,7 +323,7 @@ export default function PaymentPage() {
                 <div>
                   <p className="text-sm text-gray-500 mb-1">{t('currentPlanSection.currentPlanLabel')}</p>
                   <h2 className="text-2xl font-bold text-gray-900">
-                    {currentSubscription.price_details?.name || t('currentPlanSection.unknownPlan')}
+                    {localizedPlanName(currentSubscription.price_details?.name, locale) || t('currentPlanSection.unknownPlan')}
                   </h2>
                   <p className="text-gray-600 mt-1">
                     {currentSubscription.price_details
@@ -448,7 +448,7 @@ export default function PaymentPage() {
                       </span>
                     )}
                     <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4">
-                      {plan.name}
+                      {localizedPlanName(plan.name, locale)}
                     </h3>
 
                     <div className="mb-4 sm:mb-6">
@@ -564,7 +564,7 @@ export default function PaymentPage() {
                         </span>
                       )}
                       <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4">
-                        {plan.name}
+                        {localizedPlanName(plan.name, locale)}
                       </h3>
 
                       <div className="mb-4 sm:mb-6">
