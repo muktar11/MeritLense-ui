@@ -11,6 +11,7 @@ import {
 import { useTranslations } from "next-intl";
 import { Candidate } from "../../../../../api/candidates/types";
 import TablePagination from "@/components/ui/table-pagination";
+import { translateSkill } from "@/lib/candidate-skills";
 
 const PAGE_SIZE = 10;
 
@@ -36,6 +37,7 @@ export default function CandidatesTable({
   currentUserId
 }: CandidatesTableProps) {
   const t = useTranslations("dashboard.candidates.table");
+  const tSkills = useTranslations("shared.candidateSkills");
   const [searchTerm, setSearchTerm] = useState("");
   const [filterRole, setFilterRole] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -223,7 +225,7 @@ export default function CandidatesTable({
                           key={index}
                           className="px-1.5 py-0.5 text-xs bg-gray-100 text-gray-600 rounded"
                         >
-                          {skill}
+                          {translateSkill(skill, tSkills)}
                         </span>
                       ))}
                       {candidate.skills_list.length > 3 && (
