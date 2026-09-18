@@ -24,7 +24,6 @@ export function PlansTab() {
   const { userRole, isAuthenticated } = useAuth();
   const { subscription: currentSubscription } = useSubscription();
 
-  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "annual">("monthly");
   const [plans, setPlans] = useState<Price[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -39,26 +38,22 @@ export function PlansTab() {
       setLoading(false);
       setError(t('errors.loginRequired'));
     }
-  }, [billingPeriod, isAuthenticated]);
+  }, [isAuthenticated]);
 
   const fetchPlans = async () => {
     setLoading(true);
     setError(null);
     try {
       const data = await paymentService.getPricesForUser();
-      console.log('Fetched plans:', data);
-      
+
+      // B2B recurring plans are monthly-only - no annual billing exists in
+      // production (confirmed against every RECURRING Price's interval),
+      // so this only ever excludes one-time plans, not a real period choice.
       const filteredPlans = data.filter(plan => {
         const interval = plan.interval?.toUpperCase() || '';
-        
-        if (billingPeriod === 'monthly') {
-          return interval === 'MONTH' || interval === 'MONTHLY';
-        } else {
-          return interval === 'YEAR' || interval === 'YEARLY';
-        }
+        return interval === 'MONTH' || interval === 'MONTHLY';
       });
-      
-      console.log(`Filtered plans for ${billingPeriod}:`, filteredPlans);
+
       setPlans(filteredPlans);
     } catch (error: any) {
       console.error('Failed to fetch plans:', error);
@@ -150,35 +145,6 @@ export function PlansTab() {
     <div className="space-y-8">
       {!selectedPlan && <UsageSummary />}
       <div className="text-center">
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
-          <span
-            className={`text-sm font-medium ${
-              billingPeriod === "monthly" ? "text-gray-900" : "text-gray-500"
-            }`}
-          >
-            {t("billingMonthly")}
-          </span>
-          <button
-            onClick={() =>
-              setBillingPeriod(billingPeriod === "monthly" ? "annual" : "monthly")
-            }
-            className="relative inline-flex h-8 w-14 items-center rounded-full bg-purple-500"
-          >
-            <span
-              className={`inline-block h-6 w-6 transform rounded-full bg-white transition ${
-                billingPeriod === "annual" ? "translate-x-7" : "translate-x-1"
-              }`}
-            />
-          </button>
-          <span
-            className={`text-sm font-medium ${
-              billingPeriod === "annual" ? "text-gray-900" : "text-gray-500"
-            }`}
-          >
-            {t("billingAnnual")}
-          </span>
-        </div>
-
         {selectedPlan && clientSecret ? (
           <div className="max-w-md mx-auto">
             <button
@@ -204,7 +170,7 @@ export function PlansTab() {
               <div className="col-span-full text-center py-12">
                 <CreditCard className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                 <p className="text-gray-500">
-                  {billingPeriod === 'monthly' ? t('plansGrid.noPlansForBillingMonthly') : t('plansGrid.noPlansForBillingAnnual')}
+                  {t('plansGrid.noPlansForBillingMonthly')}
                 </p>
                 <p className="text-sm text-gray-400 mt-2">
                   {t('plansGrid.availableIntervals')}
