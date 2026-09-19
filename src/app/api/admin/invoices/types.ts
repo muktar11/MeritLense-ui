@@ -19,6 +19,7 @@ export interface AdminInvoice {
   voided_at: string | null;
   invoice_pdf: string;
   hosted_invoice_url: string;
+  local_pdf_file: string | null;
   metadata: Record<string, any>;
   created_at: string;
   updated_at: string;
