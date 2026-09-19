@@ -7,3 +7,4 @@ export { Pricing } from "./Pricing";
 export { CTA } from "./CTA";
 export { Footer } from "./Footer";
 export { PublicAgreementDocument } from "./PublicAgreementDocument";
+export { FAQDocument } from "./FAQDocument";

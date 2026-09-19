@@ -101,6 +101,10 @@
       "termsOfService": {
         "title": "شروط الخدمة",
         "description": "الشروط والأحكام التي تنطبق على جميع مستخدمي منصة MeritLense وخدماتها وتطبيقاتها."
+      },
+      "faq": {
+        "title": "الأسئلة الشائعة",
+        "description": "إجابات عن الأسئلة الشائعة حول كيفية عمل MeritLense، ومعيار الجاهزية، والتقارير والشهادات، والتسعير."
       }
     },
     "tablePagination": {
@@ -341,7 +345,8 @@
       "menu_items": {
         "features": "الميزات",
         "how_it_works": "كيف يعمل",
-        "pricing": "التسعير"
+        "pricing": "التسعير",
+        "faq": "الأسئلة الشائعة"
       },
       "actions": {
         "sign_in": "تسجيل الدخول",
@@ -549,6 +554,7 @@
       "link_features": "الميزات",
       "link_how_it_works": "كيف يعمل",
       "link_pricing": "التسعير",
+      "link_faq": "الأسئلة الشائعة",
       "legal_section_title": "الشؤون القانونية",
       "link_b2c_agreement": "اتفاقية العميل الفردي (B2C)",
       "link_b2b_agreement": "اتفاقية العميل التجاري (B2B)",
