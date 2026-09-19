@@ -530,9 +530,9 @@ export function BillingTab() {
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      {invoice.invoice_pdf && (
+                      {(invoice.local_pdf_file || invoice.invoice_pdf || invoice.hosted_invoice_url) && (
                         <a
-                          href={invoice.invoice_pdf}
+                          href={invoice.local_pdf_file || invoice.invoice_pdf || invoice.hosted_invoice_url}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-purple-600 hover:text-purple-700 flex items-center gap-1"

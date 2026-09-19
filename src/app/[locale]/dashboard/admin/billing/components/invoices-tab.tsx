@@ -155,7 +155,7 @@ export function InvoicesTab() {
                 </TableRow>
               ) : (
                 invoices.map((invoice) => {
-                  const pdfLink = invoice.invoice_pdf || invoice.hosted_invoice_url
+                  const pdfLink = invoice.local_pdf_file || invoice.invoice_pdf || invoice.hosted_invoice_url
                   return (
                     <TableRow key={invoice.id} className="hover:bg-gray-50 align-top">
                       <TableCell>

@@ -265,6 +265,7 @@ export interface Invoice {
   voided_at?: string;
   invoice_pdf: string;
   hosted_invoice_url: string;
+  local_pdf_file: string | null;
   metadata: Record<string, any>;
   created_at: string;
   updated_at: string;
