@@ -86,6 +86,14 @@ export function Footer() {
                   {t("link_pricing")}
                 </Link>
               </li>
+              <li>
+                <Link
+                  href={`/${locale}/faq`}
+                  className="text-foreground-muted hover:text-foreground transition-colors"
+                >
+                  {t("link_faq")}
+                </Link>
+              </li>
             </ul>
           </div>
 

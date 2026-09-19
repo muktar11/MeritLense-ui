@@ -60,6 +60,7 @@ export default async function LocaleLayout({
     messages = {
       ...(await import(`../../../messages/${locale}/common.json`)).default,
       ...(await import(`../../../messages/${locale}/legal.json`)).default,
+      ...(await import(`../../../messages/${locale}/faq.json`)).default,
     };
   } catch {
     notFound();

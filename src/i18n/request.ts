@@ -10,11 +10,13 @@ export default getRequestConfig(async ({requestLocale}) => {
 
   const common = await import(`@/../messages/${locale}/common.json`);
   const legal = await import(`@/../messages/${locale}/legal.json`);
+  const faq = await import(`@/../messages/${locale}/faq.json`);
 
   return {
     messages: {
       ...common.default,
-      ...legal.default
+      ...legal.default,
+      ...faq.default
     },
     locale
   };

@@ -51,6 +51,12 @@ export function Navbar() {
           >
             {t("menu_items.pricing")}
           </a>
+          <Link
+            href={withLocale("/faq")}
+            className="text-sm font-medium text-foreground-muted hover:text-foreground transition-colors"
+          >
+            {t("menu_items.faq")}
+          </Link>
         </div>
 
         {/* Desktop Actions */}
@@ -109,6 +115,14 @@ export function Navbar() {
         >
           {t("menu_items.pricing")}
         </a>
+
+        <Link
+          href={withLocale("/faq")}
+          onClick={() => setMobileMenuOpen(false)}
+          className="text-lg font-medium text-gray-800 hover:text-primary transition-colors"
+        >
+          {t("menu_items.faq")}
+        </Link>
       </div>
 
       {/* Divider */}

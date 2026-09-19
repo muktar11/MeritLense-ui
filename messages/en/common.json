@@ -101,6 +101,10 @@
       "termsOfService": {
         "title": "Terms of Service",
         "description": "The terms and conditions that apply to all users of the MeritLense platform, services, and applications."
+      },
+      "faq": {
+        "title": "Frequently Asked Questions",
+        "description": "Answers to common questions about how MeritLense works, the Readiness Standard, reports and certificates, and pricing."
       }
     },
     "tablePagination": {
@@ -341,7 +345,8 @@
       "menu_items": {
         "features": "Features",
         "how_it_works": "How It Works",
-        "pricing": "Pricing"
+        "pricing": "Pricing",
+        "faq": "FAQ"
       },
       "actions": {
         "sign_in": "Sign In",
@@ -549,6 +554,7 @@
       "link_features": "Features",
       "link_how_it_works": "How It Works",
       "link_pricing": "Pricing",
+      "link_faq": "FAQ",
       "legal_section_title": "Legal",
       "link_b2c_agreement": "B2C / Individual Customer Agreement",
       "link_b2b_agreement": "B2B / Business Customer Agreement",
