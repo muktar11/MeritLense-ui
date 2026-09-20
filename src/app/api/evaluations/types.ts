@@ -182,7 +182,7 @@ export interface CertificateVerification {
   candidate_name: string;
   issued_at: string | null;
   expires_at: string | null;
-  status: 'VALID' | 'REVOKED' | 'EXPIRED';
+  status: 'VALID' | 'REVOKED' | 'EXPIRED' | 'SUPERSEDED';
   pdf_hash: string;
 }
 
