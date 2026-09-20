@@ -205,6 +205,35 @@ export interface PassportPhotoQualityResult {
   box?: FaceBox;
 }
 
+// The candidate-modal submit button stays disabled while a quality/match
+// check is in flight (see its "Checking..." state) - so an unbounded wait
+// here doesn't just delay a hint, it can leave a candidate completely
+// unable to submit the form. Applied only to ensureModelsLoaded(): that's
+// the one step with a real network dependency (~6.4MB across 3 files from
+// a CDN, with a same-origin fallback) and therefore the one realistically
+// capable of hanging indefinitely on a slow/congested connection - the
+// in-browser detection calls that follow run against an already-loaded
+// local model and normally complete in well under a second. A timeout
+// here makes the check fall through to its existing "skipped" outcome
+// instead of leaving the button disabled forever.
+const MODEL_AND_DETECTION_TIMEOUT_MS = 15000;
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error("face-detection check timed out")), ms);
+    promise.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (error) => {
+        clearTimeout(timer);
+        reject(error);
+      }
+    );
+  });
+}
+
 // Best-effort, client-side-only hint shown at upload time so candidates
 // catch an unusable passport photo before it ever reaches an interview -
 // by then it's too late to ask them to re-upload. Deliberately never
@@ -223,7 +252,7 @@ export async function checkPassportPhotoQuality(file: File): Promise<PassportPho
   try {
     objectUrl = URL.createObjectURL(file);
     const image = await loadImage(objectUrl);
-    const faceapi = await ensureModelsLoaded();
+    const faceapi = await withTimeout(ensureModelsLoaded(), MODEL_AND_DETECTION_TIMEOUT_MS);
     const detections = await faceapi.detectAllFaces(
       image,
       new faceapi.TinyFaceDetectorOptions(IDENTITY_DETECTOR_TUNING)
@@ -393,7 +422,7 @@ export async function matchFaces(fileA: File, fileB: File): Promise<FaceMatchRes
     urlA = URL.createObjectURL(fileA);
     urlB = URL.createObjectURL(fileB);
     const [imageA, imageB] = await Promise.all([loadImage(urlA), loadImage(urlB)]);
-    const faceapi = await ensureModelsLoaded();
+    const faceapi = await withTimeout(ensureModelsLoaded(), MODEL_AND_DETECTION_TIMEOUT_MS);
     const detectorOptions = new faceapi.TinyFaceDetectorOptions(IDENTITY_DETECTOR_TUNING);
 
     const [resultA, resultB] = await Promise.all([

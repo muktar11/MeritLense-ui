@@ -22,7 +22,7 @@ import {
   JOB_ROLES,
   LANGUAGES
 } from "../../../../../api/candidates/types"
-import { checkPassportPhotoQuality, matchFaces, passportQualityMessage, isBlockingQualityStatus, FaceMatchResult, PassportPhotoQualityResult, PASSPORT_PHOTO_MATCH_THRESHOLD } from "@/lib/face-detection"
+import { checkPassportPhotoQuality, matchFaces, passportQualityMessage, isBlockingQualityStatus, ensureModelsLoaded, FaceMatchResult, PassportPhotoQualityResult, PASSPORT_PHOTO_MATCH_THRESHOLD } from "@/lib/face-detection"
 import { PASSPORT_PHOTO_GUIDELINES } from "@/lib/photo-guidelines"
 import { CANDIDATE_SKILLS_BY_ROLE, translateSkill } from "@/lib/candidate-skills"
 import {
@@ -95,6 +95,17 @@ export function CandidateModal({
 
   useEffect(() => {
     if (isOpen) {
+      // Start downloading/initializing the face-detection models as soon
+      // as the modal opens, not lazily on first file upload - by the time
+      // the candidate actually reaches the photo fields (after filling
+      // name/email/role/skills), the ~6.4MB model download has usually
+      // already finished in the background, so the quality/match check
+      // that gates the submit button resolves near-instantly instead of
+      // visibly stalling on "Checking...". Errors are swallowed here;
+      // checkPassportPhotoQuality/matchFaces retry the load themselves
+      // and handle failure gracefully.
+      ensureModelsLoaded().catch(() => {})
+
       if ((mode === 'edit' || mode === 'view') && candidate) {
         setFormData({
           first_name: candidate.first_name,
