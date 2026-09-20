@@ -94,6 +94,11 @@ function VerifyCertificateContent() {
                   <AlertTriangle className="w-6 h-6 text-amber-500" />
                   <span className="text-amber-700 font-semibold">Expired Certificate</span>
                 </>
+              ) : result.status === "SUPERSEDED" ? (
+                <>
+                  <AlertTriangle className="w-6 h-6 text-amber-500" />
+                  <span className="text-amber-700 font-semibold">Superseded Certificate</span>
+                </>
               ) : (
                 <>
                   <XCircle className="w-6 h-6 text-red-500" />
