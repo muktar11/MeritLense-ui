@@ -220,3 +220,64 @@ select option, select optgroup {
     @apply bg-background text-foreground;
   }
 }
+
+/* ---------------------------------------------------------------------
+   Casual copy-protection deterrents (platform-wide).
+
+   This is a UX-level deterrent against casual copying/screenshotting by
+   an ordinary user, not a security boundary - anyone who opens devtools
+   or disables CSS/JS can bypass all of it. Real protection for sensitive
+   data must happen server-side. See src/lib/content-protection.ts for
+   the companion keyboard/context-menu/drag handling.
+
+   Selection is disabled by default and explicitly re-enabled on form
+   controls, contenteditable elements, and anything opted in via
+   .allow-select - typing, pasting, and copying your own input all keep
+   working normally everywhere in the app.
+   --------------------------------------------------------------------- */
+body {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+input,
+textarea,
+select,
+[contenteditable="true"],
+.allow-select {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* Blocks the native "drag this image out of the browser to save it"
+   gesture. Doesn't affect the app's own file-upload inputs, which are
+   click-to-browse (no drag-and-drop upload zone exists to interfere
+   with) - see content-protection.ts's dragstart handler for the
+   matching JS-level preventDefault. */
+img,
+.protect-drag {
+  -webkit-user-drag: none;
+  user-drag: none;
+}
+
+/* A real, browser-enforced control (unlike the JS-level deterrents
+   above) - printing any page renders this notice instead of the actual
+   content. */
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+  body::after {
+    content: "This content is protected and is not available for printing.";
+    visibility: visible !important;
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    font-family: sans-serif;
+    font-size: 14pt;
+    text-align: center;
+  }
+}

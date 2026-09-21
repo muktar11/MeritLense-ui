@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { Toaster } from "sonner";
 import { locales, rtlLocales, type Locale } from "@/config/locales";
 import { buildPageMetadata } from "@/lib/buildPageMetadata";
+import { ContentProtectionProvider } from "@/components/app/ContentProtectionProvider";
 
 
 export function generateStaticParams() {
@@ -69,6 +70,7 @@ export default async function LocaleLayout({
   return (
     <div lang={locale} dir={isRtl ? "rtl" : "ltr"}>
       <NextIntlClientProvider locale={locale} messages={messages}>
+        <ContentProtectionProvider />
         {children}
         <Toaster richColors position={isRtl ? "top-left" : "top-right"} dir={isRtl ? "rtl" : "ltr"} />
       </NextIntlClientProvider>

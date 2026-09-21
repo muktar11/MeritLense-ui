@@ -3,6 +3,7 @@
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Breadcrumb } from "@/components/app/Breadcrumb";
 import AuthGuard from "@/components/auth/AuthGuard";
+import { Watermark } from "@/components/app/Watermark";
 import { AgreementGuard, useB2CAgreementStatus } from "./components/agreement-guard";
 
 import {
@@ -89,6 +90,7 @@ export default function AdminLayout({
 
   return (
     <AuthGuard allowedRoles={["B2C"]}>
+      <Watermark />
       <AgreementGuard status={agreementStatus}>
         <DashboardLayout
           sidebarItems={BUSINESS_SIDEBAR_ITEMS}

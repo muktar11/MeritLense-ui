@@ -5,6 +5,7 @@ import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Breadcrumb } from "@/components/app/Breadcrumb";
 import { LanguageSelector } from "@/components/app/LanguageSelector";
 import AuthGuard from "@/components/auth/AuthGuard";
+import { Watermark } from "@/components/app/Watermark";
 import { useAuth } from "@/app/hooks/useAuth";
 import { useTranslations, useLocale } from "next-intl";
 
@@ -105,6 +106,7 @@ export default function AdminLayout({
 
   return (
     <AuthGuard allowedRoles={["SUPERADMIN", "ADMIN"]}>
+      <Watermark />
       <DashboardLayout
         sidebarItems={ADMIN_SIDEBAR_ITEMS}
         userType={t("user_type")}
