@@ -288,13 +288,14 @@ export default function BillingAndSubscriptions() {
         )}
 
         {/* Subscriptions Table */}
-        <Card className="overflow-x-auto">
+        <Card>
           {loading ? (
             <div className="flex justify-center py-12">
               <Loader2 className="w-8 h-8 animate-spin text-purple-500" />
             </div>
           ) : (
             <>
+              <div className="hidden md:block overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow className="bg-gray-50">
@@ -386,6 +387,57 @@ export default function BillingAndSubscriptions() {
                   )}
                 </TableBody>
               </Table>
+              </div>
+
+              {/* Mobile: card list, same data/actions as the table above. */}
+              <div className="md:hidden divide-y divide-gray-100">
+                {!subscriptions || subscriptions.length === 0 ? (
+                  <p className="text-center py-8 text-gray-500 text-sm">{t("noSubscriptionsFound")}</p>
+                ) : (
+                  subscriptions.map((sub) => {
+                    const daysLeft = sub.current_period_end
+                      ? Math.ceil((new Date(sub.current_period_end).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
+                      : 0
+
+                    return (
+                      <div key={sub.id} className="p-4">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="font-medium text-gray-900 truncate">{sub.user_name}</p>
+                            <p className="text-sm text-gray-500 truncate">{sub.user_email}</p>
+                            {sub.company && (
+                              <p className="text-xs text-gray-400 truncate">{sub.company_name || t("companyIdLabel", { id: sub.company })}</p>
+                            )}
+                          </div>
+                          <Button variant="ghost" size="sm" onClick={() => setViewingSubscription(sub)} className="shrink-0">
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                        </div>
+                        <div className="mt-2 flex flex-wrap items-center gap-2">
+                          <Badge className={getStatusColor(sub.status)}>
+                            {(() => {
+                              const key = sub.status === 'past_due' ? 'pastDue' : sub.status
+                              return tSubStatus.has(key) ? tSubStatus(key) : sub.status
+                            })()}
+                          </Badge>
+                          <span className="text-sm font-medium">
+                            {sub.price_details?.name || t("unknownPlan")}
+                          </span>
+                        </div>
+                        <div className="mt-2 flex items-center justify-between text-sm text-gray-600">
+                          <span>
+                            {formatCurrency(sub.price_details?.unit_amount || '0', sub.price_details?.currency)}
+                            {sub.quantity > 1 && ` x${sub.quantity}`}
+                          </span>
+                          <span>
+                            {sub.current_period_end ? formatDate(sub.current_period_end) : t("notAvailable")}
+                          </span>
+                        </div>
+                      </div>
+                    )
+                  })
+                )}
+              </div>
 
               {/* Pagination - only show if we have pagination */}
               {totalCount > pageSize && (

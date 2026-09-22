@@ -202,7 +202,7 @@ export default function CandidateManagementConsole() {
             </div>
           ) : (
             <>
-              <div className="overflow-x-auto">
+              <div className="hidden md:block overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-gray-50">
@@ -275,6 +275,49 @@ export default function CandidateManagementConsole() {
                     )}
                   </TableBody>
                 </Table>
+              </div>
+
+              {/* Mobile: card list, same data/actions as the table above. */}
+              <div className="md:hidden divide-y divide-gray-100">
+                {employers.length === 0 ? (
+                  <p className="text-center py-8 text-gray-500 text-sm">{t("noEmployersFound")}</p>
+                ) : (
+                  employers.map((employer) => (
+                    <div key={employer.id} className="p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="font-semibold truncate">{employer.full_name}</p>
+                          <p className="text-sm text-gray-500 truncate">{employer.email}</p>
+                        </div>
+                        <Badge className={`${ROLE_COLOR[employer.role]} border-0 shrink-0`}>
+                          {t(`roles.${employer.role}`)}
+                        </Badge>
+                      </div>
+                      <div className="mt-2 flex flex-wrap items-center gap-2">
+                        <Badge className={`${VERIFICATION_COLOR[employer.documents_verification_status?.toLowerCase()] || 'bg-gray-400'} border-0`}>
+                          {employer.documents_verification_status ? t(`verificationStatus.${employer.documents_verification_status.toLowerCase()}`) : t("verificationStatus.pending")}
+                        </Badge>
+                        <Badge className={`${DOC_STATUS_COLOR[String(employer.documents_verified)]} border-0`}>
+                          {employer.documents_verified ? t("docStatus.verified") : t("docStatus.notVerified")}
+                        </Badge>
+                      </div>
+                      <div className="mt-2 flex items-center justify-between">
+                        <p className="text-sm text-gray-600">
+                          {format(new Date(employer.created_at), 'MMM d, yyyy', locale === 'ar' ? { locale: ar } : undefined)}
+                        </p>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleViewDetails(employer)}
+                          className="text-blue-600 hover:text-blue-700"
+                        >
+                          <Eye className="w-4 h-4 mr-1" />
+                          {t("viewButton")}
+                        </Button>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
 
               {/* Pagination */}

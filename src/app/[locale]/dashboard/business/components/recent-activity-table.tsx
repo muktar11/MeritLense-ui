@@ -21,7 +21,7 @@ export function RecentActivityTable({ activities }: RecentActivityTableProps) {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto">
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="text-xs text-gray-500 border-b border-gray-100">
@@ -44,6 +44,29 @@ export function RecentActivityTable({ activities }: RecentActivityTableProps) {
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile: card list, same fields as the table above. */}
+        <div className="md:hidden divide-y divide-gray-100">
+          {activities.map((activity) => (
+            <div key={activity.month} className="py-3">
+              <p className="text-gray-900 font-medium">{activity.month}</p>
+              <div className="mt-1 grid grid-cols-3 gap-2 text-sm">
+                <div>
+                  <p className="text-xs text-gray-500">{t("columns.candidatesAdded")}</p>
+                  <p className="text-gray-700">{activity.candidates_added}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500">{t("columns.evaluationsCompleted")}</p>
+                  <p className="text-gray-700">{activity.evaluations_completed}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500">{t("columns.certificatesIssued")}</p>
+                  <p className="text-gray-700">{activity.certificates_issued}</p>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </CardContent>
     </Card>

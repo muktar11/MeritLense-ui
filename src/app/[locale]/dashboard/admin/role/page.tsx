@@ -199,7 +199,7 @@ const handleToggleStatus = async (user: AdminUser) => {
               </div>
             ) : (
               <>
-                <div className="overflow-x-auto">
+                <div className="hidden md:block overflow-x-auto">
                   <Table>
                     <TableHeader>
                       <TableRow className="border-b border-gray-200">
@@ -314,6 +314,67 @@ const handleToggleStatus = async (user: AdminUser) => {
                       )}
                     </TableBody>
                   </Table>
+                </div>
+
+                {/* Mobile: card list, same data/actions as the table above. */}
+                <div className="md:hidden divide-y divide-gray-100">
+                  {users.length === 0 ? (
+                    <p className="text-center py-8 text-gray-500 text-sm">{t("table.noResults")}</p>
+                  ) : (
+                    users.map((user) => (
+                      <div key={user.id} className="py-3">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="font-medium text-gray-900 truncate">{user.full_name}</p>
+                            <p className="text-sm text-gray-500 truncate">{user.email}</p>
+                          </div>
+                          <span className={`shrink-0 px-3 py-1 text-xs font-medium rounded-full ${ROLE_BADGE_STYLE[user.role]}`}>
+                            {user.role === 'SUPERADMIN' ? t("roles.superAdmin") : t("roles.admin")}
+                          </span>
+                        </div>
+                        <div className="mt-2 flex flex-wrap gap-1">
+                          {user.admin_permissions?.slice(0, 2).map((perm) => (
+                            <span key={perm} className="px-2 py-0.5 text-xs bg-gray-100 text-gray-600 rounded">
+                              {perm.replace('_', ' ')}
+                            </span>
+                          ))}
+                          {(user.admin_permissions?.length || 0) > 2 && (
+                            <span className="px-2 py-0.5 text-xs bg-gray-100 text-gray-600 rounded">
+                              +{user.admin_permissions!.length - 2}
+                            </span>
+                          )}
+                        </div>
+                        <div className="mt-2 flex items-center justify-between">
+                          <span className={`text-sm font-medium ${STATUS_STYLE[String(user.is_active)]}`}>
+                            {user.is_active ? t("status.active") : t("status.inactive")}
+                          </span>
+                          <span className="text-sm text-gray-600">
+                            {user.last_login ? format(new Date(user.last_login), 'MMM d, yyyy', locale === 'ar' ? { locale: ar } : undefined) : t("table.neverLoggedIn")}
+                          </span>
+                        </div>
+                        <div className="mt-3 flex gap-2">
+                          {user.is_active ? (
+                            <button
+                              onClick={() => handleToggleStatus(user)}
+                              className="px-3 py-1 text-xs font-medium text-red-800 bg-red-400 rounded hover:bg-red-500"
+                            >
+                              {t("table.actions.disable")}
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => handleToggleStatus(user)}
+                              className="px-3 py-1 text-xs font-medium text-green-800 bg-green-400 rounded hover:bg-green-500"
+                            >
+                              {t("table.actions.enable")}
+                            </button>
+                          )}
+                          <button className="px-3 py-1 text-xs font-medium text-gray-800 bg-gray-400 rounded hover:bg-gray-500">
+                            <MoreVertical className="w-3 h-3" />
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
 
                 {/* Pagination */}
