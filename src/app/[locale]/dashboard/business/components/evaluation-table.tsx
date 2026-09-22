@@ -137,7 +137,7 @@ export default function EvaluationTable({
 
   return (
     <div>
-      <div className="overflow-x-auto">
+      <div className="hidden md:block overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-gray-200">
@@ -304,6 +304,144 @@ export default function EvaluationTable({
           )}
         </tbody>
       </table>
+      </div>
+
+      {/* Mobile: card list, same actions as the table above. */}
+      <div className="md:hidden divide-y divide-gray-100">
+        {data.length === 0 ? (
+          <p className="py-8 text-center text-gray-500 text-sm">{t("noEvaluations")}</p>
+        ) : (
+          paginatedData.map((item) => {
+            const canEditRow = canEdit && (item.status === 'SCHEDULED' || item.status === 'RESCHEDULED')
+            const canRescheduleRow = canManage && item.status === 'SCHEDULED'
+            const canCompleteRow = canManage && (item.status === 'SCHEDULED' || item.status === 'RESCHEDULED')
+            const canCancelRow = canManage && (item.status === 'SCHEDULED' || item.status === 'RESCHEDULED')
+            const canStartSessionRow = !!onStartSession && item.status !== 'CANCELLED' && !item.session_id
+            const hasMoreActions = canEditRow || canRescheduleRow || canCompleteRow || canCancelRow || canStartSessionRow
+
+            return (
+              <div key={item.id} className="py-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div className="w-8 h-8 rounded-full bg-linear-to-br from-purple-400 to-blue-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
+                      {getInitials(item.candidate_name)}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-gray-900 truncate">{item.candidate_name}</p>
+                      <p className="text-xs text-gray-500 truncate">
+                        {TYPE_KEYS[item.evaluation_type] ? tType(TYPE_KEYS[item.evaluation_type]) : item.evaluation_type_display}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      onClick={() => onViewDetails?.(item)}
+                      className="p-1 hover:bg-gray-100 rounded transition-colors text-gray-500 hover:text-purple-600"
+                      title={t("actions.viewDetails")}
+                    >
+                      <Eye className="w-4 h-4" />
+                    </button>
+
+                    {onViewResults && item.status === 'COMPLETED' && item.assessment_mode === 'AI_INTERVIEW' && (
+                      <button
+                        onClick={() => onViewResults(item)}
+                        className="p-1 hover:bg-gray-100 rounded transition-colors text-gray-500 hover:text-purple-600"
+                        title={t("actions.viewAiResults")}
+                      >
+                        <BarChart3 className="w-4 h-4" />
+                      </button>
+                    )}
+
+                    {item.evaluation_type === 'INTERVIEW' &&
+                      item.session_id &&
+                      ['SCHEDULED', 'RESCHEDULED', 'IN_PROGRESS'].includes(item.status) && (
+                        <button
+                          onClick={() => handleJoinLiveInterview(item)}
+                          className="p-1 hover:bg-gray-100 rounded transition-colors text-gray-500 hover:text-purple-600"
+                          title={t("actions.joinInterview")}
+                        >
+                          <Video className="w-4 h-4" />
+                        </button>
+                      )}
+
+                    {(item.status === 'SCHEDULED' || item.status === 'RESCHEDULED') && item.meeting_link && (
+                      <button
+                        onClick={() => handleCopyMeetingLink(item)}
+                        className="p-1 hover:bg-gray-100 rounded transition-colors text-gray-500 hover:text-gray-700"
+                        title={item.evaluation_type === 'INTERVIEW' ? t("actions.copyAccessLink") : t("actions.copyMeetingLink")}
+                      >
+                        {copiedId === item.id ? (
+                          <span className="text-xs text-green-600">{t("actions.copied")}</span>
+                        ) : (
+                          <Copy className="w-4 h-4" />
+                        )}
+                      </button>
+                    )}
+
+                    {hasMoreActions && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button
+                            className="p-1 hover:bg-gray-100 rounded transition-colors text-gray-500 hover:text-gray-700"
+                            title={t("actions.moreActions")}
+                          >
+                            <MoreHorizontal className="w-4 h-4" />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          {canEditRow && (
+                            <DropdownMenuItem onClick={() => onEdit?.(item)}>
+                              <Edit className="w-4 h-4 mr-2" />
+                              {t("actions.edit")}
+                            </DropdownMenuItem>
+                          )}
+                          {canRescheduleRow && (
+                            <DropdownMenuItem onClick={() => onReschedule?.(item)}>
+                              <Calendar className="w-4 h-4 mr-2" />
+                              {t("actions.reschedule")}
+                            </DropdownMenuItem>
+                          )}
+                          {canCompleteRow && (
+                            <DropdownMenuItem onClick={() => onComplete?.(item)}>
+                              <CheckCircle className="w-4 h-4 mr-2" />
+                              {t("actions.markComplete")}
+                            </DropdownMenuItem>
+                          )}
+                          {canStartSessionRow && (
+                            <DropdownMenuItem onClick={() => onStartSession?.(item)}>
+                              <Mic className="w-4 h-4 mr-2" />
+                              {t("actions.startAiInterview")}
+                            </DropdownMenuItem>
+                          )}
+                          {canCancelRow && (
+                            <DropdownMenuItem onClick={() => onCancel?.(item)} variant="destructive">
+                              <XCircle className="w-4 h-4 mr-2" />
+                              {t("actions.cancel")}
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
+                  </div>
+                </div>
+                <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
+                  <span className={`px-3 py-1 rounded-full font-medium ${getStatusBadgeColor(item.status)}`}>
+                    {STATUS_KEYS[item.status] ? tStatus(STATUS_KEYS[item.status]) : item.status_display}
+                  </span>
+                  <span className="text-gray-600">
+                    {format(new Date(item.scheduled_date), 'MMM d, yyyy h:mm a', locale === 'ar' ? { locale: ar } : undefined)}
+                  </span>
+                  <span className="text-gray-600">{t("durationMinutes", { value: item.duration_minutes })}</span>
+                  <span className="font-semibold text-gray-900">
+                    {item.assessment_mode === 'SCHEDULED_INTERVIEW' ? (
+                      item.evaluator_rating ? `${averageEvaluatorRating(item.evaluator_rating)}%` : '-'
+                    ) : item.score !== null && item.score !== undefined ? `${item.score}%` : '-'}
+                  </span>
+                </div>
+              </div>
+            )
+          })
+        )}
       </div>
 
       {data.length > 0 && (

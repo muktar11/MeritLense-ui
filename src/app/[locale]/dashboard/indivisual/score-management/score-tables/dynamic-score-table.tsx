@@ -62,7 +62,7 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
 
   return (
     <div>
-      <div className="overflow-x-auto">
+      <div className="hidden md:block overflow-x-auto">
       <table className="w-full text-sm">
         <thead className="bg-gray-50 border-b border-gray-200">
           <tr>
@@ -162,6 +162,87 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
           })}
         </tbody>
       </table>
+      </div>
+
+      {/* Mobile: card list, same data/actions as the table above. */}
+      <div className="md:hidden divide-y divide-gray-100">
+        {paginatedCandidates.map((candidate) => {
+          const evaluations = scores[candidate.id];
+          const summary = evaluations?.[0];
+
+          const downloadReport = async () => {
+            if (!summary?.report?.pdf_url) return;
+            await reportService.downloadPdf(summary.report.report_id, `${summary.report.report_number}.pdf`);
+          };
+          const downloadCertificate = async () => {
+            if (!summary?.certificate) return;
+            await downloadFromUrl(summary.certificate.pdf_url, `${summary.certificate.certificate_id}.pdf`);
+          };
+
+          return (
+            <div key={candidate.id} className="py-3">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="w-8 h-8 rounded-full bg-linear-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white font-semibold text-sm shrink-0">
+                    {candidate.first_name.charAt(0)}{candidate.last_name.charAt(0)}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-medium text-gray-900 truncate text-sm">{candidate.full_name}</p>
+                    <p className="text-xs text-gray-500 truncate">{candidate.email}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className="font-medium text-purple-600 text-sm">
+                    {summary?.evaluation_id ? `${summary.overall_percentage}%` : "—"}
+                  </span>
+                  <button
+                    onClick={() => onViewScores(candidate)}
+                    className="p-1 text-gray-400 hover:text-purple-600 rounded-full hover:bg-purple-50"
+                    title={t("viewScoresTooltip")}
+                  >
+                    <Eye className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+              {summary?.evaluation_id && (evaluations?.length ?? 0) > 1 && (
+                <p className="mt-1 text-xs text-gray-400">
+                  {t("moreEvaluations", { count: evaluations!.length - 1 })}
+                </p>
+              )}
+              <div className="mt-2 space-y-1">
+                <div className="flex items-center gap-1">
+                  <span className="text-xs text-gray-500">{t("transcript")}</span>
+                  {summary?.report?.pdf_url ? (
+                    <ArtifactActions
+                      url={summary.report.pdf_url}
+                      candidateName={candidate.full_name}
+                      artifactLabel={t("transcriptReportLabel")}
+                      onDownload={downloadReport}
+                    />
+                  ) : (
+                    <span className="text-gray-400 text-xs">{t("notAvailable")}</span>
+                  )}
+                </div>
+                {summary?.evaluation_tier === "SCREENING" && (
+                  <p className="text-[11px] text-amber-600">{t("screeningNote")}</p>
+                )}
+                <div className="flex items-center gap-1">
+                  <span className="text-xs text-gray-500">{t("certificate")}</span>
+                  {summary?.certificate ? (
+                    <ArtifactActions
+                      url={summary.certificate.pdf_url}
+                      candidateName={candidate.full_name}
+                      artifactLabel={t("certificateLabel")}
+                      onDownload={downloadCertificate}
+                    />
+                  ) : (
+                    <span className="text-gray-400 text-xs">{t("notAvailable")}</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       {candidates.length > 0 && (
