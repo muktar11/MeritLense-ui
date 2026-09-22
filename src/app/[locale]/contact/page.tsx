@@ -1,6 +1,6 @@
 "use client";
 
-import { Mail, Users } from "lucide-react";
+import { Mail, MapPin, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Navbar, Footer } from "../_components";
 
@@ -30,7 +30,7 @@ export default function ContactPage() {
               </span>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 mb-6">
               <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-primary shrink-0">
                 <Mail className="h-5 w-5" />
               </div>
@@ -43,6 +43,25 @@ export default function ContactPage() {
                   className="text-base font-medium text-primary hover:text-primary-600 transition-colors"
                 >
                   info@meritlense.com
+                </a>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-primary shrink-0">
+                <MapPin className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-wide text-foreground-muted">
+                  {t("address_label")}
+                </p>
+                <a
+                  href="https://maps.app.goo.gl/9EQbVVz9VRVTH3Lz6"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-base font-medium text-primary hover:text-primary-600 transition-colors"
+                >
+                  MeritLense OÜ, Ruunaoja tn 3, 11415 Tallinn, Estonia
                 </a>
               </div>
             </div>

@@ -570,7 +570,8 @@
       "page_title": "تواصل معنا",
       "page_subtitle": "هل لديك سؤال أو ترغب في التواصل معنا؟ تواصل مع فريقنا.",
       "team_name": "فريق MeritLense",
-      "email_label": "البريد الإلكتروني"
+      "email_label": "البريد الإلكتروني",
+      "address_label": "العنوان"
     }
   },
   "auth_page": {
