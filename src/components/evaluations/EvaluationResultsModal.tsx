@@ -389,7 +389,7 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between text-xs text-gray-500">
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between text-xs text-gray-500">
                       <div>
                         <p className="font-mono text-gray-700">{report.report_number}</p>
                         <p>
@@ -397,7 +397,7 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
                           {report.generated_by_name ? t("generatedBy", { name: report.generated_by_name }) : ""}
                         </p>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
                         {report.employer_pdf_url && (
                           <button
                             type="button"
