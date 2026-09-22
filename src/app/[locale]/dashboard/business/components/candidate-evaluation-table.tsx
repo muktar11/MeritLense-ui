@@ -73,7 +73,7 @@ export function CandidateEvaluationTable({ evaluations, searchTerm = "" }: Candi
         <CardTitle className="text-lg font-semibold text-gray-900">{t("title")}</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto">
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="text-xs text-gray-500 border-b border-gray-100">
@@ -141,6 +141,48 @@ export function CandidateEvaluationTable({ evaluations, searchTerm = "" }: Candi
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile: card list, same actions as the table above. */}
+        <div className="md:hidden divide-y divide-gray-100">
+          {paginatedEvaluations.length > 0 ? (
+            paginatedEvaluations.map((evaluation) => (
+              <div key={evaluation.id} className="py-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <Avatar className="w-7 h-7 shrink-0">
+                      <AvatarFallback className="text-xs bg-blue-100">
+                        {getInitials(evaluation.candidate_name)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0">
+                      <p className="text-sm text-gray-900 truncate">{evaluation.candidate_name}</p>
+                      <p className="text-xs text-gray-500 truncate">{evaluation.evaluation_type_display}</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleViewEvaluation(evaluation)}
+                    className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors shrink-0"
+                  >
+                    <Eye className="w-4 h-4 text-gray-400" />
+                  </button>
+                </div>
+                <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
+                  <span className={`px-2 py-1 rounded-full ${getStatusColor(evaluation.status)}`}>
+                    {evaluation.status_display}
+                  </span>
+                  <span className="font-medium text-gray-700">
+                    {evaluation.score ? `${evaluation.score}%` : '-'}
+                  </span>
+                  <span className="text-gray-500">
+                    {format(new Date(evaluation.scheduled_date), 'MMM d, yyyy')}
+                  </span>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="py-8 text-center text-gray-500 text-sm">{t("noEvaluations")}</p>
+          )}
         </div>
 
         {/* Pagination */}

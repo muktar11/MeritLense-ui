@@ -138,7 +138,11 @@ export default function CandidatesTable({
         </div>
       </div>
 
-      <div className="overflow-x-auto">
+      {/* Desktop/tablet: full table. Below md, a horizontally-scrolling
+          table hides Job Role/Status/Skills/Actions off-screen with no
+          visual hint they exist - the card list below replaces it instead
+          of trying to cram the same columns into a narrow viewport. */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
@@ -265,6 +269,98 @@ export default function CandidatesTable({
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile: card list. Same data and the same view/edit/share actions
+          as the table above, just laid out so nothing requires a
+          horizontal swipe to reach. */}
+      <div className="md:hidden divide-y divide-gray-200">
+        {loading ? (
+          <p className="px-4 py-6 text-center text-gray-500">{t("loading")}</p>
+        ) : filteredCandidates.length === 0 ? (
+          <p className="px-4 py-6 text-center text-gray-500">{t("noCandidates")}</p>
+        ) : (
+          paginatedCandidates.map((candidate) => (
+            <div key={candidate.id} className="p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="shrink-0 h-9 w-9">
+                    {candidate.profile_photo ? (
+                      <img
+                        src={candidate.profile_photo}
+                        alt={candidate.full_name}
+                        className="h-9 w-9 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="h-9 w-9 rounded-full bg-gray-200 flex items-center justify-center">
+                        <span className="text-gray-500 text-xs font-medium">
+                          {candidate.first_name[0]}{candidate.last_name[0]}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate">
+                      {candidate.full_name}
+                    </p>
+                    <p className="text-xs text-gray-500 truncate">
+                      {candidate.email} · {t("idLabel", { id: candidate.passport_id })}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1 shrink-0">
+                  <button
+                    onClick={() => onView(candidate)}
+                    className="p-2 text-gray-400 hover:text-purple-500 rounded-full hover:bg-purple-50"
+                    title={t("actions.view")}
+                  >
+                    <Eye size={18} />
+                  </button>
+                  {canEdit(candidate) && (
+                    <button
+                      onClick={() => onEdit(candidate)}
+                      className="p-2 text-gray-400 hover:text-blue-500 rounded-full hover:bg-blue-50"
+                      title={t("actions.edit")}
+                    >
+                      <Edit size={18} />
+                    </button>
+                  )}
+                  {canShare && (
+                    <button
+                      onClick={() => onShare(candidate)}
+                      className="p-2 text-gray-400 hover:text-green-500 rounded-full hover:bg-green-50"
+                      title={t("actions.share")}
+                    >
+                      <Share2 size={18} />
+                    </button>
+                  )}
+                </div>
+              </div>
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <span className="text-xs text-gray-900 bg-gray-100 px-2 py-0.5 rounded">
+                  {getJobRoleLabel(candidate.job_role)}
+                </span>
+                <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${getStatusColor(candidate.status)}`}>
+                  {t(`status.${candidate.status.toLowerCase()}`)}
+                </span>
+              </div>
+              {candidate.skills_list.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-1">
+                  {candidate.skills_list.slice(0, 4).map((skill, index) => (
+                    <span key={index} className="px-1.5 py-0.5 text-xs bg-gray-100 text-gray-600 rounded">
+                      {translateSkill(skill, tSkills)}
+                    </span>
+                  ))}
+                  {candidate.skills_list.length > 4 && (
+                    <span className="px-1.5 py-0.5 text-xs bg-gray-100 text-gray-600 rounded">
+                      +{candidate.skills_list.length - 4}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+          ))
+        )}
       </div>
 
       <TablePagination
