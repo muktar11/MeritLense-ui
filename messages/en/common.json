@@ -570,7 +570,8 @@
       "page_title": "Contact Us",
       "page_subtitle": "Have a question or want to get in touch? Reach out to our team.",
       "team_name": "MeritLense Team",
-      "email_label": "Email"
+      "email_label": "Email",
+      "address_label": "Address"
     }
   },
   "auth_page": {
