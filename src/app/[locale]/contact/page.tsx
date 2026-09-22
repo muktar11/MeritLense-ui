@@ -12,7 +12,7 @@ export default function ContactPage() {
       <Navbar />
 
       <main className="pt-32 pb-24">
-        <div className="container mx-auto px-6 lg:px-12 max-w-2xl text-center">
+        <div className="container mx-auto px-6 lg:px-12 max-w-5xl text-center">
           <h1 className="text-4xl lg:text-5xl font-bold text-foreground mb-4">
             {t("page_title")}
           </h1>
@@ -20,63 +20,65 @@ export default function ContactPage() {
             {t("page_subtitle")}
           </p>
 
-          <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-8 sm:p-10">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-primary shrink-0">
-                <Users className="h-5 w-5" />
+          <div className="flex flex-col md:flex-row gap-8 text-left">
+            <div className="flex-1 rounded-2xl border border-gray-200 bg-white shadow-sm p-8 sm:p-10">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-primary shrink-0">
+                  <Users className="h-5 w-5" />
+                </div>
+                <span className="text-xl font-semibold text-foreground">
+                  {t("team_name")}
+                </span>
               </div>
-              <span className="text-xl font-semibold text-foreground">
-                {t("team_name")}
-              </span>
+
+              <div className="flex items-center gap-3 mb-6">
+                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-primary shrink-0">
+                  <Mail className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-xs uppercase tracking-wide text-foreground-muted">
+                    {t("email_label")}
+                  </p>
+                  <a
+                    href="mailto:info@meritlense.com"
+                    className="text-base font-medium text-primary hover:text-primary-600 transition-colors"
+                  >
+                    info@meritlense.com
+                  </a>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-primary shrink-0">
+                  <MapPin className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-xs uppercase tracking-wide text-foreground-muted">
+                    {t("address_label")}
+                  </p>
+                  <a
+                    href="https://maps.app.goo.gl/9EQbVVz9VRVTH3Lz6"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-base font-medium text-primary hover:text-primary-600 transition-colors"
+                  >
+                    MeritLense OÜ, Ruunaoja tn 3, 11415 Tallinn, Estonia
+                  </a>
+                </div>
+              </div>
             </div>
 
-            <div className="flex items-center gap-3 mb-6">
-              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-primary shrink-0">
-                <Mail className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-xs uppercase tracking-wide text-foreground-muted">
-                  {t("email_label")}
-                </p>
-                <a
-                  href="mailto:info@meritlense.com"
-                  className="text-base font-medium text-primary hover:text-primary-600 transition-colors"
-                >
-                  info@meritlense.com
-                </a>
-              </div>
+            <div className="flex-1 overflow-hidden rounded-2xl border border-gray-200 shadow-sm">
+              <iframe
+                title={t("address_label")}
+                src="https://www.google.com/maps?q=MeritLense+O%C3%9C%2C+Ruunaoja+tn+3%2C+11415+Tallinn%2C+Estonia&z=16&output=embed"
+                width="100%"
+                height="100%"
+                style={{ border: 0, display: "block", minHeight: 320 }}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
             </div>
-
-            <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-primary shrink-0">
-                <MapPin className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-xs uppercase tracking-wide text-foreground-muted">
-                  {t("address_label")}
-                </p>
-                <a
-                  href="https://maps.app.goo.gl/9EQbVVz9VRVTH3Lz6"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-base font-medium text-primary hover:text-primary-600 transition-colors"
-                >
-                  MeritLense OÜ, Ruunaoja tn 3, 11415 Tallinn, Estonia
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-8 overflow-hidden rounded-2xl border border-gray-200 shadow-sm">
-            <iframe
-              title={t("address_label")}
-              src="https://www.google.com/maps?q=MeritLense+O%C3%9C%2C+Ruunaoja+tn+3%2C+11415+Tallinn%2C+Estonia&z=16&output=embed"
-              width="100%"
-              height="320"
-              style={{ border: 0, display: "block" }}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            />
           </div>
         </div>
       </main>
