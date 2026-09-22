@@ -17,12 +17,14 @@ export default function SettingsTabs({ activeTab, setActiveTab }: SettingsTabsPr
 
   return (
     <div className="bg-white rounded-lg shadow">
-      {/* Tabs Navigation. Scrolls horizontally within its own row on
-          narrow viewports instead of overflowing past the card. */}
-      <div className="flex overflow-x-auto border-b">
+      {/* Tabs Navigation. Wraps onto multiple lines on narrow viewports -
+          horizontal scroll (the previous approach) isn't reliably
+          swipeable on every mobile browser, so every tab needs to stay
+          visible without depending on a scroll gesture at all. */}
+      <div className="flex flex-wrap border-b">
         <button
           onClick={() => setActiveTab("profile")}
-          className={`shrink-0 whitespace-nowrap px-4 sm:px-6 py-4 font-medium text-sm transition-colors ${
+          className={`whitespace-nowrap px-4 sm:px-6 py-3 sm:py-4 font-medium text-sm transition-colors ${
             activeTab === "profile" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-600 hover:text-gray-900"
           }`}
         >
@@ -30,7 +32,7 @@ export default function SettingsTabs({ activeTab, setActiveTab }: SettingsTabsPr
         </button>
         <button
           onClick={() => setActiveTab("security")}
-          className={`shrink-0 whitespace-nowrap px-4 sm:px-6 py-4 font-medium text-sm transition-colors ${
+          className={`whitespace-nowrap px-4 sm:px-6 py-3 sm:py-4 font-medium text-sm transition-colors ${
             activeTab === "security" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-600 hover:text-gray-900"
           }`}
         >
@@ -38,7 +40,7 @@ export default function SettingsTabs({ activeTab, setActiveTab }: SettingsTabsPr
         </button>
         <button
           onClick={() => setActiveTab("billing")}
-          className={`shrink-0 whitespace-nowrap px-4 sm:px-6 py-4 font-medium text-sm transition-colors ${
+          className={`whitespace-nowrap px-4 sm:px-6 py-3 sm:py-4 font-medium text-sm transition-colors ${
             activeTab === "billing" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-600 hover:text-gray-900"
           }`}
         >
@@ -46,7 +48,7 @@ export default function SettingsTabs({ activeTab, setActiveTab }: SettingsTabsPr
         </button>
         <button
           onClick={() => setActiveTab("agreements")}
-          className={`shrink-0 whitespace-nowrap px-4 sm:px-6 py-4 font-medium text-sm transition-colors ${
+          className={`whitespace-nowrap px-4 sm:px-6 py-3 sm:py-4 font-medium text-sm transition-colors ${
             activeTab === "agreements" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-600 hover:text-gray-900"
           }`}
         >
