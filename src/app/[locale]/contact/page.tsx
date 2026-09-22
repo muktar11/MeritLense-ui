@@ -66,6 +66,18 @@ export default function ContactPage() {
               </div>
             </div>
           </div>
+
+          <div className="mt-8 overflow-hidden rounded-2xl border border-gray-200 shadow-sm">
+            <iframe
+              title={t("address_label")}
+              src="https://www.google.com/maps?q=MeritLense+O%C3%9C%2C+Ruunaoja+tn+3%2C+11415+Tallinn%2C+Estonia&z=16&output=embed"
+              width="100%"
+              height="320"
+              style={{ border: 0, display: "block" }}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+          </div>
         </div>
       </main>
 
