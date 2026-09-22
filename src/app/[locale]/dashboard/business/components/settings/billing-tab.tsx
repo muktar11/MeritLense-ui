@@ -487,7 +487,8 @@ export function BillingTab() {
       <div className="space-y-4">
         <h3 className="text-lg font-semibold text-gray-900">{t('invoices')}</h3>
 
-        <div className="overflow-x-auto rounded-lg border border-gray-200">
+        <div className="rounded-lg border border-gray-200 overflow-hidden">
+          <div className="hidden md:block overflow-x-auto">
           <table className="min-w-full w-full text-sm">
             <thead className="bg-gray-100">
               <tr>
@@ -547,6 +548,53 @@ export function BillingTab() {
               )}
             </tbody>
           </table>
+          </div>
+
+          {/* Mobile: card list, same data as the table above. */}
+          <div className="md:hidden divide-y divide-gray-200">
+            {invoices.length === 0 ? (
+              <p className="px-4 py-8 text-center text-gray-500 text-sm">{t('noInvoices')}</p>
+            ) : (
+              paginatedInvoices.map((invoice) => (
+                <div key={invoice.id} className="p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-gray-900 font-medium">{invoice.number}</p>
+                      <p className="text-sm text-gray-500">
+                        {format(new Date(invoice.created_at), 'MMM d, yyyy', locale === 'ar' ? { locale: ar } : undefined)}
+                      </p>
+                    </div>
+                    <span
+                      className={`shrink-0 px-2 py-1 rounded-full text-xs ${
+                        invoice.status === 'PAID'
+                          ? 'bg-green-100 text-green-700'
+                          : invoice.status === 'OPEN'
+                          ? 'bg-yellow-100 text-yellow-700'
+                          : 'bg-gray-100 text-gray-700'
+                      }`}
+                    >
+                      {invoice.status}
+                    </span>
+                  </div>
+                  <div className="mt-2 flex items-center justify-between">
+                    <span className="font-medium">{paymentService.formatPrice(invoice.amount_paid, invoice.currency)}</span>
+                    {(invoice.local_pdf_file || invoice.invoice_pdf || invoice.hosted_invoice_url) && (
+                      <a
+                        href={invoice.local_pdf_file || invoice.invoice_pdf || invoice.hosted_invoice_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-purple-600 hover:text-purple-700 flex items-center gap-1 text-sm"
+                      >
+                        <Download className="w-4 h-4" />
+                        PDF
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
           {invoices.length > 0 && (
             <TablePagination
               currentPage={invoicesSafePage}

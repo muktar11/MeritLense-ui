@@ -176,7 +176,7 @@ export default function PackageManagementPage() {
             </div>
           ) : (
             <>
-              <div className="overflow-x-auto">
+              <div className="hidden md:block overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-gray-50">
@@ -261,6 +261,57 @@ export default function PackageManagementPage() {
                     )}
                   </TableBody>
                 </Table>
+              </div>
+
+              {/* Mobile: card list, same data/actions as the table above. */}
+              <div className="md:hidden divide-y divide-gray-100">
+                {packages.length === 0 ? (
+                  <p className="text-center py-8 text-gray-500 text-sm">{t("table.noResults")}</p>
+                ) : (
+                  packages.map((pkg) => (
+                    <div key={pkg.id} className="p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="font-medium text-gray-900 truncate">{pkg.name}</p>
+                          <p className="text-sm text-gray-600">
+                            {pkg.formatted_price}
+                            {pkg.billing_type === 'RECURRING' && pkg.interval && (
+                              <span className="text-gray-500">/{t(`intervals.${pkg.interval}`)}</span>
+                            )}
+                          </p>
+                        </div>
+                        <Badge className={`${TARGET_USER_TYPE_COLOR[pkg.target_user_type]} border-0 shrink-0`}>
+                          {t(`targetUserTypes.${pkg.target_user_type}`)}
+                        </Badge>
+                      </div>
+                      <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-gray-600">
+                        <span>{t(`billingTypes.${pkg.billing_type}`)}</span>
+                        <span>{pkg.evaluation_tier ? t(`evaluationTiers.${pkg.evaluation_tier}`) : '—'}</span>
+                        <span>{t("table.headers.slots")}: {pkg.slot_grant ?? t("table.unlimited")}</span>
+                        <span>{t("table.headers.points")}: {pkg.points_grant ?? t("table.unlimited")}</span>
+                      </div>
+                      <div className="mt-3 flex items-center justify-between">
+                        <Badge className={pkg.is_active ? 'bg-green-100 text-green-800 border-0' : 'bg-gray-100 text-gray-600 border-0'}>
+                          {pkg.is_active ? t("filters.active") : t("filters.inactive")}
+                        </Badge>
+                        <div className="flex gap-2">
+                          <Button variant="ghost" size="sm" onClick={() => handleEdit(pkg)} className="text-blue-600 hover:text-blue-700">
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                          {pkg.is_active ? (
+                            <Button variant="ghost" size="sm" onClick={() => handleDeactivate(pkg)} className="text-red-600 hover:text-red-700">
+                              <Ban className="w-4 h-4" />
+                            </Button>
+                          ) : (
+                            <Button variant="ghost" size="sm" onClick={() => handleDelete(pkg)} className="text-red-600 hover:text-red-700">
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
 
               {totalPages > 1 && (

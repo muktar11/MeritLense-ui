@@ -652,7 +652,7 @@ export function CompanyProfile() {
                       onCancel={handleCancelInvitation}
                     />
 
-                    <div className="overflow-x-auto">
+                    <div className="hidden md:block overflow-x-auto">
                       <Table>
                         <TableHeader>
                           <TableRow>
@@ -767,6 +767,103 @@ export function CompanyProfile() {
 )}
                         </TableBody>
                       </Table>
+                    </div>
+
+                    {/* Mobile: card list, same controls as the table above. */}
+                    <div className="md:hidden divide-y">
+                      {teamMembers.length === 0 && pendingInvitations.length === 0 ? (
+                        <p className="text-center py-8 text-muted-foreground text-sm">{t("noTeamMembers")}</p>
+                      ) : (
+                        paginatedTeamMembers.map((member) => (
+                          <div key={member.id} className="py-3">
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="min-w-0">
+                                <p className="text-sm font-medium truncate">
+                                  {member.first_name} {member.last_name}
+                                </p>
+                                <p className="text-xs text-muted-foreground truncate">{member.email}</p>
+                                {member.invitation_accepted_at && (
+                                  <p className="text-xs text-gray-400 mt-1">
+                                    {t("joinedLabel", { date: format(new Date(member.invitation_accepted_at), 'MMM d, yyyy', locale === 'ar' ? { locale: ar } : undefined) })}
+                                  </p>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-2 shrink-0">
+                                {member.is_active ? (
+                                  <span className="inline-flex items-center gap-1 text-xs text-green-600">
+                                    <UserCheck className="w-3 h-3" />
+                                    {t("memberActive")}
+                                  </span>
+                                ) : (
+                                  <span className="inline-flex items-center gap-1 text-xs text-gray-400">
+                                    <Clock className="w-3 h-3" />
+                                    {t("memberInactive")}
+                                  </span>
+                                )}
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-8"
+                                  onClick={() => handleRemoveMember(member.id)}
+                                  disabled={updatingMember === member.id}
+                                >
+                                  {updatingMember === member.id ? (
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                  ) : (
+                                    <MoreVertical className="w-4 h-4" />
+                                  )}
+                                </Button>
+                              </div>
+                            </div>
+                            <div className="mt-2 flex gap-2">
+                              <Select
+                                defaultValue={member.job_title?.toLowerCase().replace(/\s+/g, '-') || 'member'}
+                                onValueChange={(value) => {
+                                  const jobTitle = value.split('-').map(word =>
+                                    word.charAt(0).toUpperCase() + word.slice(1)
+                                  ).join(' ')
+                                  handleUpdateMemberRole(member.id, jobTitle)
+                                }}
+                                disabled={updatingMember === member.id}
+                              >
+                                <SelectTrigger className="flex-1 h-8 text-xs">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="business-manager">{t("roles.businessManager")}</SelectItem>
+                                  <SelectItem value="agent">{t("roles.agent")}</SelectItem>
+                                  <SelectItem value="analyst">{t("roles.analyst")}</SelectItem>
+                                  <SelectItem value="hr-manager">{t("roles.hrManager")}</SelectItem>
+                                  <SelectItem value="recruiter">{t("roles.recruiter")}</SelectItem>
+                                  <SelectItem value="junior-recruiter">{t("roles.juniorRecruiter")}</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <Select
+                                defaultValue={member.permissions.includes('full_access') ? 'full-access' :
+                                             member.permissions.length > 1 ? 'standard' : 'read-only'}
+                                onValueChange={(value) => {
+                                  const permissions = value === 'full-access'
+                                    ? ['full_access', 'view_candidates', 'manage_evaluations', 'manage_team']
+                                    : value === 'standard'
+                                    ? ['view_candidates', 'manage_evaluations']
+                                    : ['view_candidates']
+                                  handleUpdateMemberPermission(member.id, permissions)
+                                }}
+                                disabled={updatingMember === member.id}
+                              >
+                                <SelectTrigger className="flex-1 h-8 text-xs border-purple-200">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="full-access">{t("permissions.fullAccess")}</SelectItem>
+                                  <SelectItem value="standard">{t("permissions.standard")}</SelectItem>
+                                  <SelectItem value="read-only">{t("permissions.readOnly")}</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                        ))
+                      )}
                     </div>
                     {teamMembers.length > 0 && (
                       <TablePagination

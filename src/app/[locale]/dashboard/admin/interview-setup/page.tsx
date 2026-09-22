@@ -184,7 +184,8 @@ export default function InterviewSetupPage() {
               <Loader2 className="w-8 h-8 animate-spin text-purple-500" />
             </div>
           ) : tab === "questions" ? (
-            <div className="overflow-x-auto">
+            <>
+            <div className="hidden md:block overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow className="bg-gray-50">
@@ -244,8 +245,45 @@ export default function InterviewSetupPage() {
                 </TableBody>
               </Table>
             </div>
+
+            {/* Mobile: card list, same data/actions as the table above. */}
+            <div className="md:hidden divide-y divide-gray-100">
+              {templates.length === 0 ? (
+                <p className="text-center py-8 text-gray-500 text-sm">{t("table.noQuestions")}</p>
+              ) : (
+                templates.map((template) => (
+                  <div key={template.id} className="p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="font-medium text-gray-900">{roleName(template.role_code)}</p>
+                        <p className="text-xs text-gray-400">{template.role_code}</p>
+                      </div>
+                      <Badge className={`shrink-0 border-0 ${template.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}`}>
+                        {template.is_active ? t("table.active") : t("table.inactive")}
+                      </Badge>
+                    </div>
+                    <p className="mt-2 text-sm text-gray-700">{template.question_text}</p>
+                    <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
+                      <Badge className="bg-blue-100 text-blue-800 border-0">{t(`evaluationTiers.${template.evaluation_tier}`)}</Badge>
+                      <span className="text-gray-600">{template.skill}</span>
+                      <span className="text-gray-600">{t(`questionDifficulties.${template.difficulty}`)}</span>
+                    </div>
+                    <div className="mt-3 flex gap-2">
+                      <Button variant="ghost" size="sm" onClick={() => handleEditTemplate(template)} className="text-blue-600 hover:text-blue-700">
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => handleDeleteTemplate(template)} className="text-red-600 hover:text-red-700">
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+            </>
           ) : tab === "configs" ? (
-            <div className="overflow-x-auto">
+            <>
+            <div className="hidden md:block overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow className="bg-gray-50">
@@ -305,8 +343,45 @@ export default function InterviewSetupPage() {
                 </TableBody>
               </Table>
             </div>
+
+            {/* Mobile: card list, same data/actions as the table above. */}
+            <div className="md:hidden divide-y divide-gray-100">
+              {configs.length === 0 ? (
+                <p className="text-center py-8 text-gray-500 text-sm">{t("table.noConfigs")}</p>
+              ) : (
+                configs.map((c) => (
+                  <div key={c.id} className="p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="font-medium text-gray-900">{roleName(c.role_code)}</p>
+                        <p className="text-xs text-gray-400">{c.role_code}</p>
+                      </div>
+                      <Badge className={`shrink-0 border-0 ${c.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}`}>
+                        {c.is_active ? t("table.active") : t("table.inactive")}
+                      </Badge>
+                    </div>
+                    <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
+                      <Badge className="bg-blue-100 text-blue-800 border-0">{t(`evaluationTiers.${c.evaluation_tier}`)}</Badge>
+                      <span className="text-gray-600">{t(`languages.${c.language}`)}</span>
+                      <span className="text-gray-600">{c.total_questions} q</span>
+                      <span className="text-gray-600">{c.duration_minutes} min</span>
+                    </div>
+                    <div className="mt-3 flex gap-2">
+                      <Button variant="ghost" size="sm" onClick={() => handleEditConfig(c)} className="text-blue-600 hover:text-blue-700">
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => handleDeleteConfig(c)} className="text-red-600 hover:text-red-700">
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+            </>
           ) : (
-            <div className="overflow-x-auto">
+            <>
+            <div className="hidden md:block overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow className="bg-gray-50">
@@ -371,6 +446,45 @@ export default function InterviewSetupPage() {
                 </TableBody>
               </Table>
             </div>
+
+            {/* Mobile: card list, same data/actions as the table above. */}
+            <div className="md:hidden divide-y divide-gray-100">
+              {ruleSets.length === 0 ? (
+                <p className="text-center py-8 text-gray-500 text-sm">{t("table.noRuleSets")}</p>
+              ) : (
+                ruleSets.map((rs) => (
+                  <div key={rs.id} className="p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-gray-900">{rs.name}</p>
+                        <p className="text-xs text-gray-400">{roleName(rs.role_code)} · {rs.version}</p>
+                      </div>
+                      <Badge className={`shrink-0 border-0 ${rs.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}`}>
+                        {rs.is_active ? t("table.active") : t("table.inactive")}
+                      </Badge>
+                    </div>
+                    <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
+                      <Badge className="bg-blue-100 text-blue-800 border-0">{t(`evaluationTiers.${rs.evaluation_tier}`)}</Badge>
+                      <span className="text-gray-600">{rs.rules.length} {t("table.headers.rules")}</span>
+                      {rs.has_usage ? (
+                        <Badge className="bg-amber-100 text-amber-800 border-0">{t("table.usedLocked")}</Badge>
+                      ) : (
+                        <span className="text-xs text-gray-400">{t("table.notYetUsed")}</span>
+                      )}
+                    </div>
+                    <div className="mt-3 flex gap-2">
+                      <Button variant="ghost" size="sm" onClick={() => handleEditRuleSet(rs)} className="text-blue-600 hover:text-blue-700">
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => handleDeleteRuleSet(rs)} className="text-red-600 hover:text-red-700">
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+            </>
           )}
         </Card>
       </div>

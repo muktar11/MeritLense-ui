@@ -277,8 +277,8 @@ export function Dashboard() {
 
         {/* Candidate Evaluation & Recent Activity */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div className="col-span-12 lg:col-span-8 overflow-x-auto">
-            <CandidateEvaluationTable 
+          <div className="col-span-12 lg:col-span-8">
+            <CandidateEvaluationTable
               evaluations={recentEvaluations}
               searchTerm={searchTerm}
             />

@@ -187,7 +187,7 @@ export default function RoleBasedManagementPage() {
                 <Loader2 className="w-8 h-8 animate-spin text-purple-500" />
               </div>
             ) : (
-              <div className="overflow-x-auto">
+              <div className="hidden md:block overflow-x-auto">
                 <Table>
                   <TableHeader className="bg-gray-50">
                     <TableRow>
@@ -262,6 +262,49 @@ export default function RoleBasedManagementPage() {
                     )}
                   </TableBody>
                 </Table>
+              </div>
+            )}
+
+            {/* Mobile: card list, same fields as the table above. */}
+            {!loading && (
+              <div className="md:hidden divide-y divide-gray-100">
+                {filteredUsers.length === 0 ? (
+                  <p className="text-center py-8 text-gray-500 text-sm">{t("table.noResults")}</p>
+                ) : (
+                  filteredUsers.map((user) => (
+                    <div key={`${user.type}-${user.id}`} className="py-3">
+                      <div className="flex items-center gap-2">
+                        {getUserTypeIcon(user.type)}
+                        <div className="min-w-0">
+                          <p className="font-medium truncate">{user.name}</p>
+                          <p className="text-sm text-gray-500 truncate">{user.email}</p>
+                        </div>
+                      </div>
+                      <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
+                        <Badge variant="outline" className="capitalize">{t(`userTypes.${user.type}`)}</Badge>
+                        <span className="font-medium">{t(`roles.${user.role.toLowerCase().replace(' ', '')}`)}</span>
+                        <span className="text-gray-600">{t(`systems.${user.system.replace('-', '')}`)}</span>
+                      </div>
+                      <div className="mt-2 flex flex-wrap gap-1">
+                        {user.permissions.length > 0 ? (
+                          <>
+                            {user.permissions.slice(0, 2).map((perm, idx) => (
+                              <Badge key={idx} className={getAccessBadgeColor(perm)}>
+                                {t.has(`permissions.${perm}`) ? t(`permissions.${perm}`) : perm.replace(/_/g, ' ')}
+                              </Badge>
+                            ))}
+                            {user.permissions.length > 2 && (
+                              <Badge className="bg-gray-100 text-gray-800">+{user.permissions.length - 2}</Badge>
+                            )}
+                          </>
+                        ) : (
+                          <span className="text-sm text-gray-400">{t("noPermissions")}</span>
+                        )}
+                      </div>
+                      {user.phone && <p className="mt-1 text-sm text-gray-600">{user.phone}</p>}
+                    </div>
+                  ))
+                )}
               </div>
             )}
           </CardContent>

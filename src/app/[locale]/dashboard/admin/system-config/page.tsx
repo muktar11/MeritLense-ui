@@ -277,7 +277,7 @@ export default function SystemConfigSecurity() {
             </div>
           </div>
 
-          <div className="overflow-x-auto">
+          <div className="hidden md:block overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow className="bg-gray-50">
@@ -337,6 +337,48 @@ export default function SystemConfigSecurity() {
                 )}
               </TableBody>
             </Table>
+          </div>
+
+          {/* Mobile: card list, same fields as the table above. */}
+          <div className="md:hidden divide-y divide-gray-100">
+            {filteredUsers.length === 0 ? (
+              <p className="text-center py-8 text-gray-500 text-sm">{t("table.noResults")}</p>
+            ) : (
+              filteredUsers.slice(0, 10).map((user) => (
+                <div key={`${user.role_type}-${user.id}`} className="py-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="font-semibold text-gray-900 truncate">{user.name}</p>
+                      <p className="text-sm text-gray-500 truncate">{user.email}</p>
+                    </div>
+                    {getStatusBadge(user.status)}
+                  </div>
+                  <div className="mt-2 flex items-center justify-between">
+                    {getRoleBadge(user.role_type, user.role)}
+                    <span className="text-sm text-gray-600">
+                      {format(new Date(user.created_at), 'MMM d, yyyy', locale === 'ar' ? { locale: ar } : undefined)}
+                    </span>
+                  </div>
+                  <div className="mt-2 flex gap-2">
+                    <Badge className="bg-yellow-100 text-yellow-800 border-0 text-xs cursor-pointer hover:bg-yellow-200">
+                      {t("actions.edit")}
+                    </Badge>
+                    <Badge className="bg-orange-100 text-orange-800 border-0 text-xs cursor-pointer hover:bg-orange-200">
+                      {t("actions.reset")}
+                    </Badge>
+                    {user.status === 'active' ? (
+                      <Badge className="bg-red-100 text-red-800 border-0 text-xs cursor-pointer hover:bg-red-200">
+                        {t("actions.disable")}
+                      </Badge>
+                    ) : (
+                      <Badge className="bg-green-100 text-green-800 border-0 text-xs cursor-pointer hover:bg-green-200">
+                        {t("actions.enable")}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
           </div>
 
           {filteredUsers.length > 10 && (

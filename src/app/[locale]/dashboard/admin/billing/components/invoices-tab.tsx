@@ -129,12 +129,13 @@ export function InvoicesTab() {
         </div>
       </Card>
 
-      <Card className="overflow-x-auto">
+      <Card>
         {loading ? (
           <div className="flex justify-center py-12">
             <Loader2 className="w-8 h-8 animate-spin text-purple-500" />
           </div>
         ) : (
+          <div className="hidden md:block overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow className="bg-gray-50">
@@ -213,6 +214,69 @@ export function InvoicesTab() {
               )}
             </TableBody>
           </Table>
+          </div>
+        )}
+
+        {/* Mobile: card list, same data/actions as the table above. */}
+        {!loading && (
+          <div className="md:hidden divide-y divide-gray-100">
+            {invoices.length === 0 ? (
+              <p className="text-center py-8 text-gray-500 text-sm">{t("noInvoicesFound")}</p>
+            ) : (
+              invoices.map((invoice) => {
+                const pdfLink = invoice.local_pdf_file || invoice.invoice_pdf || invoice.hosted_invoice_url
+                return (
+                  <div key={invoice.id} className="p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="font-medium text-gray-900 truncate">{invoice.user_full_name}</p>
+                        <p className="text-sm text-gray-500 truncate">{invoice.user_email}</p>
+                      </div>
+                      <Badge className={`shrink-0 ${STATUS_COLORS[invoice.status] || "bg-gray-100 text-gray-800"}`}>
+                        {t(`statusLabels.${invoice.status}` as any)}
+                      </Badge>
+                    </div>
+                    <div className="mt-2 flex items-center justify-between text-sm">
+                      <p className="font-mono text-xs text-gray-700">{invoice.number || invoice.stripe_invoice_id}</p>
+                      <p className="font-medium">{formatCurrency(invoice.amount_due, invoice.currency)}</p>
+                    </div>
+                    <div className="mt-2 flex items-center justify-between">
+                      <p className="text-sm text-gray-600">{formatDate(invoice.paid_at || invoice.due_date)}</p>
+                      <div className="flex items-center gap-2">
+                        {pdfLink ? (
+                          <a href={pdfLink} target="_blank" rel="noopener noreferrer">
+                            <Button variant="ghost" size="sm" title={t("download")}>
+                              <Download className="w-4 h-4" />
+                            </Button>
+                          </a>
+                        ) : (
+                          <span className="text-xs text-gray-400">{t("noPdfYet")}</span>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          title={t("send")}
+                          disabled={sendingId === invoice.id || !pdfLink}
+                          onClick={() => handleSend(invoice)}
+                        >
+                          {sendingId === invoice.id ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Send className="w-4 h-4" />
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                    {feedback && feedback.id === invoice.id && (
+                      <p className={`text-xs mt-1 ${feedback.kind === "success" ? "text-green-600" : "text-red-600"}`}>
+                        {feedback.message}
+                      </p>
+                    )}
+                  </div>
+                )
+              })
+            )}
+          </div>
         )}
       </Card>
     </div>

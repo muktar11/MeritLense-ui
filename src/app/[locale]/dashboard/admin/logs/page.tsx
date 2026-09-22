@@ -265,7 +265,7 @@ export default function AuditLog() {
             )}
 
             {/* Pending Verifications Table */}
-            <Card className="bg-white shadow-sm border-0 overflow-x-auto">
+            <Card className="bg-white shadow-sm border-0">
               <div className="p-4 border-b border-gray-100">
                 <h3 className="text-lg font-semibold text-gray-900">
                   {t("pending.title")}
@@ -282,55 +282,93 @@ export default function AuditLog() {
                   <p className="text-gray-600">{t("pending.empty")}</p>
                 </div>
               ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow className="bg-gray-50">
-                      <TableHead>{t("pending.table.user")}</TableHead>
-                      <TableHead>{t("pending.table.role")}</TableHead>
-                      <TableHead>{t("pending.table.documents")}</TableHead>
-                      <TableHead>{t("pending.table.submitted")}</TableHead>
-                      <TableHead>{t("pending.table.actions")}</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
+                <>
+                  <div className="hidden md:block overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="bg-gray-50">
+                          <TableHead>{t("pending.table.user")}</TableHead>
+                          <TableHead>{t("pending.table.role")}</TableHead>
+                          <TableHead>{t("pending.table.documents")}</TableHead>
+                          <TableHead>{t("pending.table.submitted")}</TableHead>
+                          <TableHead>{t("pending.table.actions")}</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {pendingUsers.map((user) => (
+                          <TableRow key={user.id} className="hover:bg-gray-50">
+                            <TableCell>
+                              <div>
+                                <p className="font-medium text-gray-900">{user.full_name}</p>
+                                <p className="text-sm text-gray-500">{user.email}</p>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <Badge className={user.role === 'B2C' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}>
+                                {user.role === 'B2C' ? t("roles.b2c") : t("roles.b2b")}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex gap-1">
+                                {Object.values(user.documents || {}).filter(Boolean).length} / {Object.keys(user.documents || {}).length}
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-sm text-gray-600">
+                              {new Date(user.created_at).toLocaleDateString()}
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedUser(user)
+                                  setIsVerifyModalOpen(true)
+                                }}
+                                className="bg-purple-600 hover:bg-purple-700 text-white"
+                              >
+                                <Eye className="w-4 h-4 mr-1" />
+                                {t("pending.table.review")}
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  {/* Mobile: card list, same data/actions as the table above. */}
+                  <div className="md:hidden divide-y divide-gray-100">
                     {pendingUsers.map((user) => (
-                      <TableRow key={user.id} className="hover:bg-gray-50">
-                        <TableCell>
-                          <div>
-                            <p className="font-medium text-gray-900">{user.full_name}</p>
-                            <p className="text-sm text-gray-500">{user.email}</p>
+                      <div key={user.id} className="p-4">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="font-medium text-gray-900 truncate">{user.full_name}</p>
+                            <p className="text-sm text-gray-500 truncate">{user.email}</p>
                           </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge className={user.role === 'B2C' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}>
+                          <Badge className={`shrink-0 ${user.role === 'B2C' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}`}>
                             {user.role === 'B2C' ? t("roles.b2c") : t("roles.b2b")}
                           </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex gap-1">
-                            {Object.values(user.documents || {}).filter(Boolean).length} / {Object.keys(user.documents || {}).length}
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-sm text-gray-600">
-                          {new Date(user.created_at).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell>
-                          <Button
-                            size="sm"
-                            onClick={() => {
-                              setSelectedUser(user)
-                              setIsVerifyModalOpen(true)
-                            }}
-                            className="bg-purple-600 hover:bg-purple-700 text-white"
-                          >
-                            <Eye className="w-4 h-4 mr-1" />
-                            {t("pending.table.review")}
-                          </Button>
-                        </TableCell>
-                      </TableRow>
+                        </div>
+                        <div className="mt-2 flex items-center justify-between text-sm text-gray-600">
+                          <span>
+                            {Object.values(user.documents || {}).filter(Boolean).length} / {Object.keys(user.documents || {}).length} {t("pending.table.documents")}
+                          </span>
+                          <span>{new Date(user.created_at).toLocaleDateString()}</span>
+                        </div>
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            setSelectedUser(user)
+                            setIsVerifyModalOpen(true)
+                          }}
+                          className="mt-3 w-full bg-purple-600 hover:bg-purple-700 text-white"
+                        >
+                          <Eye className="w-4 h-4 mr-1" />
+                          {t("pending.table.review")}
+                        </Button>
+                      </div>
                     ))}
-                  </TableBody>
-                </Table>
+                  </div>
+                </>
               )}
             </Card>
           </div>
@@ -402,13 +440,14 @@ export default function AuditLog() {
             </Card>
 
             {/* Audit Logs Table */}
-            <Card className="bg-white shadow-sm border-0 overflow-x-auto">
+            <Card className="bg-white shadow-sm border-0">
               {auditLoading ? (
                 <div className="flex justify-center py-12">
                   <Loader2 className="w-8 h-8 animate-spin text-purple-500" />
                 </div>
               ) : (
                 <>
+                  <div className="hidden md:block overflow-x-auto">
                   <Table>
                     <TableHeader>
                       <TableRow className="bg-gray-50">
@@ -472,6 +511,41 @@ export default function AuditLog() {
                       )}
                     </TableBody>
                   </Table>
+                  </div>
+
+                  {/* Mobile: card list, same fields as the table above. */}
+                  <div className="md:hidden divide-y divide-gray-100">
+                    {!auditLogs || auditLogs.length === 0 ? (
+                      <p className="text-center py-8 text-gray-500 text-sm">{t("audit.noLogs")}</p>
+                    ) : (
+                      auditLogs.map((log) => (
+                        <div key={log.id} className="p-4">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0">
+                              <p className="font-medium text-gray-900 truncate">{log.user_name || t("audit.system")}</p>
+                              <p className="text-xs text-gray-500 truncate">{log.user_email}</p>
+                            </div>
+                            <div className="flex items-center gap-1 shrink-0">
+                              {getSeverityIcon(log.severity)}
+                              {getSeverityBadge(log.severity)}
+                            </div>
+                          </div>
+                          <div className="mt-2 flex flex-wrap gap-1">
+                            <Badge variant="outline">{log.action_display}</Badge>
+                            <Badge className="bg-blue-100 text-blue-800">{log.category_display}</Badge>
+                          </div>
+                          {log.resource_name && (
+                            <p className="mt-1 text-sm">
+                              <span className="font-medium">{log.resource_name}</span>
+                              {log.resource_type_name && <span className="text-gray-500"> · {log.resource_type_name}</span>}
+                            </p>
+                          )}
+                          <p className="mt-1 text-sm text-gray-600">{log.description}</p>
+                          <p className="mt-1 text-xs text-gray-400">{auditService.formatTimestamp(log.created_at)}</p>
+                        </div>
+                      ))
+                    )}
+                  </div>
 
                   {/* Pagination */}
                   {auditTotal > 0 && (
