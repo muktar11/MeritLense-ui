@@ -6,6 +6,8 @@ import { useTranslations } from "next-intl"
 import { useProfile } from "../../../../../hooks/useProfile"
 import { Loader2 } from "lucide-react"
 import { LANGUAGES } from "../../../../../api/auth/endpoints"
+import { COUNTRIES } from "@/lib/countries"
+import { getTimezoneOptions } from "@/lib/location-detection"
 
 const COMPANY_SIZE_KEYS = ['1-10', '11-50', '51-200', '201-1000', '1000+']
 
@@ -28,9 +30,12 @@ export default function EditProfileTab() {
     address: "",
     website: "",
     preferred_language: "EN",
+    target_market: "",
+    timezone: "",
   })
 
   const [saveSuccess, setSaveSuccess] = useState(false)
+  const [timezoneOptions] = useState<string[]>(getTimezoneOptions)
 
   useEffect(() => {
     if (profile) {
@@ -48,6 +53,8 @@ export default function EditProfileTab() {
         address: profile.address || "",
         website: profile.website || "",
         preferred_language: profile.preferred_language || "EN",
+        target_market: profile.target_market || "",
+        timezone: profile.timezone || "",
       })
     }
   }, [profile])
@@ -71,6 +78,8 @@ export default function EditProfileTab() {
       website: formData.website || undefined,
       industry: formData.industry || undefined,
       preferred_language: formData.preferred_language,
+      target_market: formData.target_market || undefined,
+      timezone: formData.timezone || undefined,
     })
 
     if (success) {
@@ -232,14 +241,21 @@ export default function EditProfileTab() {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">{t("fields.country")} *</label>
-          <input
-            type="text"
+          <select
             name="country"
             value={formData.country}
             onChange={handleChange}
             required
             className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
+          >
+            <option value="">{t("fields.selectCountry")}</option>
+            {formData.country && !COUNTRIES.some((c) => c.label === formData.country) && (
+              <option value={formData.country}>{formData.country}</option>
+            )}
+            {COUNTRIES.map((c) => (
+              <option key={c.key} value={c.label}>{c.label}</option>
+            ))}
+          </select>
         </div>
 
         <div>
@@ -264,6 +280,39 @@ export default function EditProfileTab() {
           >
             {LANGUAGES.map((lang) => (
               <option key={lang.key} value={lang.key}>{tLanguages(lang.key)}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">{t("fields.targetMarket")}</label>
+          <select
+            name="target_market"
+            value={formData.target_market}
+            onChange={handleChange}
+            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="">{t("fields.selectTargetMarket")}</option>
+            {COUNTRIES.map((c) => (
+              <option key={c.key} value={c.key}>{c.label}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">{t("fields.timezone")}</label>
+          <select
+            name="timezone"
+            value={formData.timezone}
+            onChange={handleChange}
+            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="">{t("fields.selectTimezone")}</option>
+            {formData.timezone && !timezoneOptions.includes(formData.timezone) && (
+              <option value={formData.timezone}>{formData.timezone}</option>
+            )}
+            {timezoneOptions.map((tz) => (
+              <option key={tz} value={tz}>{tz}</option>
             ))}
           </select>
         </div>

@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { Upload, Loader2, FileText, CheckCircle, Eye, EyeOff } from "lucide-react"
@@ -12,6 +12,8 @@ import { Label } from "@/components/ui/label"
 import ProgressStepper from "../components/auth/progress-stepper"
 import { useAuth } from "../../../../hooks/useAuth"
 import { JOB_ROLES, NATIONALITIES, LANGUAGES } from "../../../../api/auth/endpoints"
+import { COUNTRIES } from "@/lib/countries"
+import { detectCountry, detectTimezone, suggestLanguageFromCountry } from "@/lib/location-detection"
 import type { B2CRegistrationData } from "@/app/api/auth/auth"
 
 export default function CandidateRegistrationPage() {
@@ -37,6 +39,9 @@ export default function CandidateRegistrationPage() {
     job_role: "",
     nationality: "",
     preferred_language: "EN",
+    country_of_residence: "",
+    target_market: "",
+    timezone: "",
     phone_number: "",
     date_of_birth: "",
     address: "",
@@ -46,8 +51,40 @@ export default function CandidateRegistrationPage() {
 
   const [formErrors, setFormErrors] = useState<Record<string, string>>({})
 
+  // Location & Localization: detection only ever pre-fills a field the user
+  // hasn't touched yet, and never blocks rendering/submission if it's slow
+  // or fails. Tracked outside React state (a ref, not re-rendered on write)
+  // since it only needs to be read once, when each async detection resolves.
+  const touchedFields = useRef<Set<string>>(new Set())
+
+  useEffect(() => {
+    const timezone = detectTimezone()
+    if (timezone && !touchedFields.current.has("timezone")) {
+      setFormData((prev) => (prev.timezone ? prev : { ...prev, timezone }))
+    }
+
+    detectCountry().then((detected) => {
+      if (!detected) return
+      setFormData((prev) => {
+        const next = { ...prev }
+        if (!touchedFields.current.has("country_of_residence") && !prev.country_of_residence) {
+          next.country_of_residence = detected.countryCode
+        }
+        if (!touchedFields.current.has("target_market") && !prev.target_market) {
+          next.target_market = detected.countryCode
+        }
+        if (!touchedFields.current.has("preferred_language")) {
+          const suggested = suggestLanguageFromCountry(detected.countryCode)
+          if (suggested) next.preferred_language = suggested
+        }
+        return next
+      })
+    })
+  }, [])
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target
+    touchedFields.current.add(name)
     setFormData((prev) => ({ ...prev, [name]: value }))
     if (formErrors[name]) {
       setFormErrors((prev) => {
@@ -113,6 +150,9 @@ export default function CandidateRegistrationPage() {
       job_role: formData.job_role,
       nationality: formData.nationality,
       preferred_language: formData.preferred_language,
+      country_of_residence: formData.country_of_residence || undefined,
+      target_market: formData.target_market || undefined,
+      timezone: formData.timezone || undefined,
       phone_number: formData.phone_number,
       date_of_birth: formData.date_of_birth || undefined,
       address: formData.address || undefined,
@@ -350,6 +390,39 @@ export default function CandidateRegistrationPage() {
                     <option key={lang.key} value={lang.key}>{tLanguages(lang.key)}</option>
                   ))}
                 </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="country_of_residence">{t("fields.countryOfResidence")}</Label>
+                  <select
+                    id="country_of_residence"
+                    name="country_of_residence"
+                    value={formData.country_of_residence}
+                    onChange={handleInputChange}
+                    className="flex h-11 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-1 focus-visible:ring-primary/50"
+                  >
+                    <option value="">{t("placeholders.selectCountry")}</option>
+                    {COUNTRIES.map((c) => (
+                      <option key={c.key} value={c.key}>{c.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="target_market">{t("fields.targetMarket")}</Label>
+                  <select
+                    id="target_market"
+                    name="target_market"
+                    value={formData.target_market}
+                    onChange={handleInputChange}
+                    className="flex h-11 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-1 focus-visible:ring-primary/50"
+                  >
+                    <option value="">{t("placeholders.selectTargetMarket")}</option>
+                    {COUNTRIES.map((c) => (
+                      <option key={c.key} value={c.key}>{c.label}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </div>
 

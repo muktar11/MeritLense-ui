@@ -12,6 +12,9 @@ export interface Candidate {
   core_skills: string;
   skills_list: string[];
   preferred_language: string;
+  country_of_residence: string | null;
+  target_market: string | null;
+  timezone: string | null;
   status: string;
   passport_document: string;
   profile_photo: string | null;
@@ -33,6 +36,11 @@ export interface CandidateFormData {
   job_role: string;
   core_skills: string;
   preferred_language: string;
+  // Location & Localization - detected/suggested client-side on create
+  // only, never on edit (see candidate-modal.tsx), always optional.
+  country_of_residence?: string;
+  target_market?: string;
+  timezone?: string;
   passport_document: File | null;
   profile_photo: File | null;
   verification_photo: File | null;

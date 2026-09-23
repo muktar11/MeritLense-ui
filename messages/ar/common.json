@@ -817,7 +817,9 @@
         "address": "العنوان",
         "jobRole": "المسمى الوظيفي",
         "nationality": "الجنسية",
-        "preferredLanguage": "اللغة المفضلة"
+        "preferredLanguage": "اللغة المفضلة",
+        "countryOfResidence": "بلد الإقامة",
+        "targetMarket": "سوق التوظيف المستهدف"
       },
       "placeholders": {
         "email": "you@example.com",
@@ -829,7 +831,9 @@
         "phoneNumber": "+1234567890",
         "address": "عنوانك",
         "selectJobRole": "اختر المسمى الوظيفي",
-        "selectNationality": "اختر الجنسية"
+        "selectNationality": "اختر الجنسية",
+        "selectCountry": "اختر الدولة",
+        "selectTargetMarket": "اختر السوق"
       },
       "documents": {
         "idDocumentLabel": "مستند الهوية",
@@ -2665,8 +2669,13 @@
             "industryPlaceholder": "مثال: التكنولوجيا، الرعاية الصحية",
             "website": "الموقع الإلكتروني",
             "country": "الدولة",
+            "selectCountry": "اختر الدولة",
             "city": "المدينة",
             "preferredLanguage": "اللغة المفضلة",
+            "targetMarket": "سوق التوظيف المستهدف",
+            "selectTargetMarket": "اختر السوق",
+            "timezone": "المنطقة الزمنية",
+            "selectTimezone": "اختر المنطقة الزمنية",
             "address": "العنوان",
             "addressPlaceholder": "عنوان الشركة"
           },
@@ -2903,6 +2912,12 @@
           "skillsPlaceholder": "مثال: التنظيف، الطهي، الإسعافات الأولية",
           "skillsHint": "أدخل المهارات مفصولة بفواصل",
           "preferredLanguage": "اللغة المفضلة",
+          "countryOfResidence": "بلد الإقامة",
+          "targetMarket": "سوق التوظيف المستهدف",
+          "timezone": "المنطقة الزمنية",
+          "selectCountry": "اختر الدولة",
+          "selectTargetMarket": "اختر السوق",
+          "selectTimezone": "اختر المنطقة الزمنية",
           "passportDocument": "مستند جواز السفر / الهوية",
           "profilePhoto": "الصورة الشخصية"
         },
@@ -3414,8 +3429,14 @@
           "city": "المدينة",
           "permanentAddress": "العنوان الدائم",
           "preferredLanguage": "اللغة المفضلة",
+          "countryOfResidence": "بلد الإقامة",
+          "targetMarket": "سوق التوظيف المستهدف",
+          "timezone": "المنطقة الزمنية",
           "selectJobRolePlaceholder": "اختر المسمى الوظيفي",
           "selectNationalityPlaceholder": "اختر الجنسية",
+          "selectCountryPlaceholder": "اختر الدولة",
+          "selectTargetMarketPlaceholder": "اختر السوق",
+          "selectTimezonePlaceholder": "اختر المنطقة الزمنية",
           "addressPlaceholder": "عنوانك",
           "updateSuccess": "تم تحديث الملف الشخصي بنجاح!",
           "savingButton": "جارٍ الحفظ...",
