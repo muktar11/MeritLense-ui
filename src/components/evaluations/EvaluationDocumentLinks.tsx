@@ -6,25 +6,6 @@ import { Check, Download, Share2 } from "lucide-react";
 import type { CandidateScoreSummary } from "@/app/api/evaluations/types";
 import reportService from "@/app/api/reports/endpoints";
 
-// The certificate PDF is served from a public, unauthenticated URL (no API
-// wrapper needed) - fetched as a blob and force-downloaded the same way
-// reportService.downloadPdf() already does for reports, rather than relying
-// on a plain <a download> (browsers routinely ignore that attribute for
-// cross-origin URLs like this one, since the PDF lives on api.meritlense.com
-// while the dashboard is on meritlense.com).
-async function downloadFromUrl(url: string, filename: string) {
-  const response = await fetch(url);
-  const blob = await response.blob();
-  const downloadUrl = window.URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = downloadUrl;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  window.URL.revokeObjectURL(downloadUrl);
-}
-
 // Share prefers the native share sheet where available (mobile Safari/
 // Chrome) and falls back to copying the link, since the PDF is already
 // served from a public, unauthenticated URL - nothing extra to generate for
@@ -37,7 +18,10 @@ export function ArtifactActions({
   artifactLabel,
   onDownload,
 }: {
-  url: string;
+  // Omit for an artifact with no stable public URL (e.g. the authenticated
+  // documents-bundle zip) - the Share button hides itself rather than
+  // sharing/copying an empty link.
+  url?: string;
   candidateName: string;
   artifactLabel: string;
   onDownload?: () => Promise<void>;
@@ -59,6 +43,7 @@ export function ArtifactActions({
   };
 
   const handleShare = async () => {
+    if (!url) return;
     if (navigator.share) {
       try {
         await navigator.share({ title: `${candidateName}'s ${artifactLabel}`, url });
@@ -102,20 +87,27 @@ export function ArtifactActions({
           {t("download")}
         </a>
       )}
-      <button
-        type="button"
-        onClick={handleShare}
-        className="inline-flex items-center gap-1 text-gray-500 hover:text-purple-600"
-        title={t("shareTooltip", { label: artifactLabel })}
-      >
-        {copied ? <Check className="w-4 h-4 text-green-600" /> : <Share2 className="w-4 h-4" />}
-        {copied && <span className="text-green-600 text-xs">{t("copied")}</span>}
-      </button>
+      {url && (
+        <button
+          type="button"
+          onClick={handleShare}
+          className="inline-flex items-center gap-1 text-gray-500 hover:text-purple-600"
+          title={t("shareTooltip", { label: artifactLabel })}
+        >
+          {copied ? <Check className="w-4 h-4 text-green-600" /> : <Share2 className="w-4 h-4" />}
+          {copied && <span className="text-green-600 text-xs">{t("copied")}</span>}
+        </button>
+      )}
     </div>
   );
 }
 
-// Transcript + certificate rows for one specific evaluation.
+// One zipped download per evaluation: the transcript/evidence report PDF,
+// the certificate PDF (when one has been issued), a questions-and-answers
+// PDF, and an AI score & result PDF - bundled server-side (see
+// EvaluationReportService.build_documents_zip) rather than as separate
+// downloads, so a reviewer keeping records only has one file per evaluation
+// to save.
 function EvaluationDocumentsRow({
   evaluation,
   candidateName,
@@ -127,53 +119,33 @@ function EvaluationDocumentsRow({
 }) {
   const t = useTranslations("dashboard.business.score-management.table");
 
-  const downloadReport = async () => {
-    if (!evaluation.report?.pdf_url) return;
-    await reportService.downloadPdf(evaluation.report.report_id, `${evaluation.report.report_number}.pdf`);
-  };
-
-  const downloadCertificate = async () => {
-    if (!evaluation.certificate) return;
-    await downloadFromUrl(evaluation.certificate.pdf_url, `${evaluation.certificate.certificate_id}.pdf`);
+  const downloadBundle = async () => {
+    if (!evaluation.report?.report_id) return;
+    await reportService.downloadDocumentsBundle(
+      evaluation.report.report_id,
+      `${evaluation.report.report_number}-documents.zip`
+    );
   };
 
   return (
     <div className="p-4 bg-gray-50 rounded-lg">
       <p className="text-xs font-semibold text-gray-600 mb-2">{label}</p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div>
-          <span className="text-xs text-gray-500 mr-1">{t("transcript")}</span>
-          <div className="mt-1">
-            {evaluation.report?.pdf_url ? (
-              <ArtifactActions
-                url={evaluation.report.pdf_url}
-                candidateName={candidateName}
-                artifactLabel={t("transcriptReportLabel")}
-                onDownload={downloadReport}
-              />
-            ) : (
-              <span className="text-gray-400">{t("notAvailable")}</span>
-            )}
-          </div>
-          {evaluation.evaluation_tier === "SCREENING" && (
-            <p className="text-[11px] text-amber-600 mt-1">{t("screeningNote")}</p>
+      <div>
+        <span className="text-xs text-gray-500 mr-1">{t("documentsBundle")}</span>
+        <div className="mt-1">
+          {evaluation.report?.report_id ? (
+            <ArtifactActions
+              candidateName={candidateName}
+              artifactLabel={t("documentsBundleLabel")}
+              onDownload={downloadBundle}
+            />
+          ) : (
+            <span className="text-gray-400">{t("notAvailable")}</span>
           )}
         </div>
-        <div>
-          <span className="text-xs text-gray-500 mr-1">{t("certificate")}</span>
-          <div className="mt-1">
-            {evaluation.certificate ? (
-              <ArtifactActions
-                url={evaluation.certificate.pdf_url}
-                candidateName={candidateName}
-                artifactLabel={t("certificateLabel")}
-                onDownload={downloadCertificate}
-              />
-            ) : (
-              <span className="text-gray-400">{t("notAvailable")}</span>
-            )}
-          </div>
-        </div>
+        {evaluation.evaluation_tier === "SCREENING" && (
+          <p className="text-[11px] text-amber-600 mt-1">{t("screeningNote")}</p>
+        )}
       </div>
     </div>
   );

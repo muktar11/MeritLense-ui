@@ -19,25 +19,6 @@ interface DynamicScoreTableProps {
   onViewScores: (candidate: Candidate) => void;
 }
 
-// The certificate PDF is served from a public, unauthenticated URL (no API
-// wrapper needed) - fetched as a blob and force-downloaded the same way
-// reportService.downloadPdf() already does for reports, rather than relying
-// on a plain <a download> (browsers routinely ignore that attribute for
-// cross-origin URLs like this one, since the PDF lives on api.meritlense.com
-// while the dashboard is on meritlense.com).
-async function downloadFromUrl(url: string, filename: string) {
-  const response = await fetch(url);
-  const blob = await response.blob();
-  const downloadUrl = window.URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = downloadUrl;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  window.URL.revokeObjectURL(downloadUrl);
-}
-
 // Previously rendered one extra column per real competency code (built from
 // whatever ScoringRule.competency_code values actually appear in the score
 // data, replacing older per-job-role tables that hardcoded a fixed set of
@@ -77,13 +58,12 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
             const evaluations = scores[candidate.id];
             const summary = evaluations?.[0];
 
-            const downloadReport = async () => {
-              if (!summary?.report?.pdf_url) return;
-              await reportService.downloadPdf(summary.report.report_id, `${summary.report.report_number}.pdf`);
-            };
-            const downloadCertificate = async () => {
-              if (!summary?.certificate) return;
-              await downloadFromUrl(summary.certificate.pdf_url, `${summary.certificate.certificate_id}.pdf`);
+            const downloadBundle = async () => {
+              if (!summary?.report?.report_id) return;
+              await reportService.downloadDocumentsBundle(
+                summary.report.report_id,
+                `${summary.report.report_number}-documents.zip`
+              );
             };
 
             return (
@@ -114,38 +94,22 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
                   )}
                 </td>
                 <td className="px-4 sm:px-6 py-3">
-                  <div className="space-y-2">
-                    <div>
-                      <span className="text-xs text-gray-500 mr-1">{t("transcript")}</span>
-                      {summary?.report?.pdf_url ? (
-                        <ArtifactActions
-                          url={summary.report.pdf_url}
-                          candidateName={candidate.full_name}
-                          artifactLabel={t("transcriptReportLabel")}
-                          onDownload={downloadReport}
-                        />
-                      ) : (
-                        <span className="text-gray-400">{t("notAvailable")}</span>
-                      )}
-                      {summary?.evaluation_tier === "SCREENING" && (
-                        <p className="text-[11px] text-amber-600 mt-1 max-w-[220px]">
-                          {t("screeningNote")}
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <span className="text-xs text-gray-500 mr-1">{t("certificate")}</span>
-                      {summary?.certificate ? (
-                        <ArtifactActions
-                          url={summary.certificate.pdf_url}
-                          candidateName={candidate.full_name}
-                          artifactLabel={t("certificateLabel")}
-                          onDownload={downloadCertificate}
-                        />
-                      ) : (
-                        <span className="text-gray-400">{t("notAvailable")}</span>
-                      )}
-                    </div>
+                  <div>
+                    <span className="text-xs text-gray-500 mr-1">{t("documentsBundle")}</span>
+                    {summary?.report?.report_id ? (
+                      <ArtifactActions
+                        candidateName={candidate.full_name}
+                        artifactLabel={t("documentsBundleLabel")}
+                        onDownload={downloadBundle}
+                      />
+                    ) : (
+                      <span className="text-gray-400">{t("notAvailable")}</span>
+                    )}
+                    {summary?.evaluation_tier === "SCREENING" && (
+                      <p className="text-[11px] text-amber-600 mt-1 max-w-[220px]">
+                        {t("screeningNote")}
+                      </p>
+                    )}
                   </div>
                 </td>
                 <td className="px-4 sm:px-6 py-3">
@@ -170,13 +134,12 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
           const evaluations = scores[candidate.id];
           const summary = evaluations?.[0];
 
-          const downloadReport = async () => {
-            if (!summary?.report?.pdf_url) return;
-            await reportService.downloadPdf(summary.report.report_id, `${summary.report.report_number}.pdf`);
-          };
-          const downloadCertificate = async () => {
-            if (!summary?.certificate) return;
-            await downloadFromUrl(summary.certificate.pdf_url, `${summary.certificate.certificate_id}.pdf`);
+          const downloadBundle = async () => {
+            if (!summary?.report?.report_id) return;
+            await reportService.downloadDocumentsBundle(
+              summary.report.report_id,
+              `${summary.report.report_number}-documents.zip`
+            );
           };
 
           return (
@@ -211,13 +174,12 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
               )}
               <div className="mt-2 space-y-1">
                 <div className="flex items-center gap-1">
-                  <span className="text-xs text-gray-500">{t("transcript")}</span>
-                  {summary?.report?.pdf_url ? (
+                  <span className="text-xs text-gray-500">{t("documentsBundle")}</span>
+                  {summary?.report?.report_id ? (
                     <ArtifactActions
-                      url={summary.report.pdf_url}
                       candidateName={candidate.full_name}
-                      artifactLabel={t("transcriptReportLabel")}
-                      onDownload={downloadReport}
+                      artifactLabel={t("documentsBundleLabel")}
+                      onDownload={downloadBundle}
                     />
                   ) : (
                     <span className="text-gray-400 text-xs">{t("notAvailable")}</span>
@@ -226,19 +188,6 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
                 {summary?.evaluation_tier === "SCREENING" && (
                   <p className="text-[11px] text-amber-600">{t("screeningNote")}</p>
                 )}
-                <div className="flex items-center gap-1">
-                  <span className="text-xs text-gray-500">{t("certificate")}</span>
-                  {summary?.certificate ? (
-                    <ArtifactActions
-                      url={summary.certificate.pdf_url}
-                      candidateName={candidate.full_name}
-                      artifactLabel={t("certificateLabel")}
-                      onDownload={downloadCertificate}
-                    />
-                  ) : (
-                    <span className="text-gray-400 text-xs">{t("notAvailable")}</span>
-                  )}
-                </div>
               </div>
             </div>
           );
