@@ -12,6 +12,8 @@ import { Upload, Download, LogOut, Loader2, Plus, MoreVertical, Mail, UserCheck,
 import { useProfile } from "../../../../hooks/useProfile"
 import { useAuth } from "../../../../hooks/useAuth"
 import { LANGUAGES } from "../../../../api/auth/endpoints"
+import { COUNTRIES } from "@/lib/countries"
+import { getTimezoneOptions } from "@/lib/location-detection"
 import { ChangePassword } from "./change-password"
 import { InviteTeamModal } from "./invite-team-modal"
 import { PendingInvitations } from "./pending-invitations"
@@ -66,7 +68,8 @@ export function CompanyProfile() {
   const [activeTab, setActiveTab] = useState("profile")
   const [isEditing, setIsEditing] = useState(false)
   const [saveSuccess, setSaveSuccess] = useState(false)
-  
+  const [timezoneOptions] = useState<string[]>(getTimezoneOptions)
+
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
@@ -80,6 +83,8 @@ export function CompanyProfile() {
     industry: "",
     preferred_language: "EN",
     notification_preference: "email",
+    target_market: "",
+    timezone: "",
   })
 
   useEffect(() => {
@@ -97,6 +102,8 @@ export function CompanyProfile() {
         industry: profile.industry || "",
         preferred_language: profile.preferred_language || "EN",
         notification_preference: profile.notification_preference || "email",
+        target_market: profile.target_market || "",
+        timezone: profile.timezone || "",
       })
     }
   }, [profile])
@@ -536,13 +543,20 @@ export function CompanyProfile() {
                 <div>
                   <label className="text-xs text-muted-foreground">{t("country")}</label>
                   {isEditing ? (
-                    <input
-                      type="text"
+                    <select
                       name="country"
                       value={formData.country}
                       onChange={handleInputChange}
                       className="w-full mt-1 px-3 py-1 text-sm border rounded"
-                    />
+                    >
+                      <option value="">{t("selectCountry")}</option>
+                      {formData.country && !COUNTRIES.some((c) => c.label === formData.country) && (
+                        <option value={formData.country}>{formData.country}</option>
+                      )}
+                      {COUNTRIES.map((c) => (
+                        <option key={c.key} value={c.label}>{c.label}</option>
+                      ))}
+                    </select>
                   ) : (
                     <p className="text-sm font-medium truncate">{formData.country}</p>
                   )}
@@ -606,6 +620,47 @@ export function CompanyProfile() {
                     <p className="text-sm font-medium truncate">
                       {formData.preferred_language ? tLanguages(formData.preferred_language) : formData.preferred_language}
                     </p>
+                  )}
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground">{t("targetHiringMarket")}</label>
+                  {isEditing ? (
+                    <select
+                      name="target_market"
+                      value={formData.target_market}
+                      onChange={handleInputChange}
+                      className="w-full mt-1 px-3 py-1 text-sm border rounded"
+                    >
+                      <option value="">{t("selectMarket")}</option>
+                      {COUNTRIES.map((c) => (
+                        <option key={c.key} value={c.key}>{c.label}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <p className="text-sm font-medium truncate">
+                      {COUNTRIES.find((c) => c.key === formData.target_market)?.label || formData.target_market}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground">{t("timeZone")}</label>
+                  {isEditing ? (
+                    <select
+                      name="timezone"
+                      value={formData.timezone}
+                      onChange={handleInputChange}
+                      className="w-full mt-1 px-3 py-1 text-sm border rounded"
+                    >
+                      <option value="">{t("selectTimezone")}</option>
+                      {formData.timezone && !timezoneOptions.includes(formData.timezone) && (
+                        <option value={formData.timezone}>{formData.timezone}</option>
+                      )}
+                      {timezoneOptions.map((tz) => (
+                        <option key={tz} value={tz}>{tz}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <p className="text-sm font-medium truncate">{formData.timezone}</p>
                   )}
                 </div>
               </div>
