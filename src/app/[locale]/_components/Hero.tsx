@@ -67,7 +67,7 @@ export const Hero = forwardRef<HTMLElement, {}>(function Hero(_, heroRef) {
 
           <motion.div variants={fadeInUp} className="relative">
             <div className="relative w-full aspect-4/3 rounded-2xl overflow-hidden shadow-2xl border border-gray-200">
-              <Image src="/images/Hero.png" alt={t("image_alt")} fill sizes="w-[1200px]" className="object-cover z-10" priority />
+              <Image src="/images/Hero.jpg" alt={t("image_alt")} fill sizes="w-[1200px]" className="object-cover z-10" priority />
             </div>
             <div className="absolute -bottom-4 -right-4 w-32 h-22 sm:w-64 sm:h-64 bg-primary/40 rounded-full blur-3xl" />
             <div className="absolute -top-4 -left-4 w-32 h-32 sm:w-48 sm:h-48 bg-secondary/40 rounded-full blur-3xl" />
