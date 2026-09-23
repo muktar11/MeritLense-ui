@@ -16,8 +16,11 @@ export interface B2CRegistrationData {
   country_of_residence?: string
   target_market?: string
   timezone?: string
-  id_document: File
-  resume_document: File
+  // Optional - the upload UI is currently hidden on the registration form
+  // (see auth/register/candidate/page.tsx); B2C accounts can still upload
+  // these later from their profile/settings.
+  id_document?: File
+  resume_document?: File
 }
 
 export interface B2CRegistrationResponse {
