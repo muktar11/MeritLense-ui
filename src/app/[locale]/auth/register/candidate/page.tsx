@@ -129,8 +129,10 @@ export default function CandidateRegistrationPage() {
     if (!formData.job_role) errors.job_role = t("errors.jobRoleRequired")
     if (!formData.nationality) errors.nationality = t("errors.nationalityRequired")
     if (!formData.phone_number) errors.phone_number = t("errors.phoneRequired")
-    if (!formData.id_document) errors.id_document = t("errors.idDocumentRequired")
-    if (!formData.resume_document) errors.resume_document = t("errors.resumeRequired")
+    // ID/CV upload is hidden (see the commented-out Document Uploads
+    // section below) - no longer required at registration.
+    // if (!formData.id_document) errors.id_document = t("errors.idDocumentRequired")
+    // if (!formData.resume_document) errors.resume_document = t("errors.resumeRequired")
 
     setFormErrors(errors)
     return Object.keys(errors).length === 0
@@ -156,8 +158,8 @@ export default function CandidateRegistrationPage() {
       phone_number: formData.phone_number,
       date_of_birth: formData.date_of_birth || undefined,
       address: formData.address || undefined,
-      id_document: formData.id_document!,
-      resume_document: formData.resume_document!,
+      id_document: formData.id_document || undefined,
+      resume_document: formData.resume_document || undefined,
     }
 
     const success = await registerB2C(registrationData)
@@ -426,8 +428,10 @@ export default function CandidateRegistrationPage() {
               </div>
             </div>
 
-            {/* Document Uploads */}
-            <div className="space-y-4">
+            {/* Document Uploads - hidden per request; ID/CV are no longer
+                collected at registration (see B2CRegistrationSerializer,
+                now required=False). Uncomment to restore. */}
+            {/* <div className="space-y-4">
               <h2 className="text-lg font-semibold">{t("sections.documents")}</h2>
 
               <div className="grid grid-cols-2 gap-4">
@@ -490,7 +494,7 @@ export default function CandidateRegistrationPage() {
                   <FieldError field="resume_document" />
                 </div>
               </div>
-            </div>
+            </div> */}
 
             <Button
               type="submit"
