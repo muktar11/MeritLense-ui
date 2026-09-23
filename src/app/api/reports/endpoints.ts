@@ -58,6 +58,24 @@ class ReportService {
     window.URL.revokeObjectURL(downloadUrl);
   }
 
+  async downloadDocumentsBundle(reportId: string, filename?: string): Promise<void> {
+    const response = await authClient.get(`${this.reportsURL}/${reportId}/documents-bundle`, {
+      responseType: 'blob',
+    });
+
+    const blob = new Blob([response.data], {
+      type: response.headers['content-type'] || 'application/zip',
+    });
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = filename || this.filenameFromDisposition(response.headers['content-disposition']) || `${reportId}-documents.zip`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(downloadUrl);
+  }
+
   private filenameFromDisposition(contentDisposition?: string): string | null {
     if (!contentDisposition) return null;
 
