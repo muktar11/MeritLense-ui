@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { locales } from "@/config/locales";
 
 const BASE_URL = "https://meritlense.com";
-const OG_IMAGE = { url: "/images/Hero.png", width: 1024, height: 1024 };
+const OG_IMAGE = { url: "/images/Hero.jpg", width: 1248, height: 832 };
 
 // Next.js does NOT deep-merge a page's `openGraph`/`twitter`/`alternates`
 // with its parent layout's - whichever level sets the key replaces the
