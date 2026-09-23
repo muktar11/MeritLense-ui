@@ -25,6 +25,8 @@ import {
 import { checkPassportPhotoQuality, matchFaces, passportQualityMessage, isBlockingQualityStatus, ensureModelsLoaded, FaceMatchResult, PassportPhotoQualityResult, PASSPORT_PHOTO_MATCH_THRESHOLD } from "@/lib/face-detection"
 import { PASSPORT_PHOTO_GUIDELINES } from "@/lib/photo-guidelines"
 import { CANDIDATE_SKILLS_BY_ROLE, translateSkill } from "@/lib/candidate-skills"
+import { COUNTRIES } from "@/lib/countries"
+import { detectCountry, detectTimezone, getTimezoneOptions, suggestLanguageFromCountry } from "@/lib/location-detection"
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -70,6 +72,9 @@ export function CandidateModal({
     job_role: "",
     core_skills: "",
     preferred_language: "EN",
+    country_of_residence: "",
+    target_market: "",
+    timezone: "",
     passport_document: null,
     profile_photo: null,
     verification_photo: null,
@@ -77,6 +82,7 @@ export function CandidateModal({
 
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>({})
+  const [timezoneOptions] = useState<string[]>(getTimezoneOptions)
   const [previewPhoto, setPreviewPhoto] = useState<string | null>(null)
   const [previewDocument, setPreviewDocument] = useState<string | null>(null)
   const [skillsList, setSkillsList] = useState<string[]>([])
@@ -115,6 +121,9 @@ export function CandidateModal({
           job_role: candidate.job_role,
           core_skills: candidate.core_skills,
           preferred_language: candidate.preferred_language,
+          country_of_residence: candidate.country_of_residence || "",
+          target_market: candidate.target_market || "",
+          timezone: candidate.timezone || "",
           passport_document: null,
           profile_photo: null,
           verification_photo: null,
@@ -135,6 +144,12 @@ export function CandidateModal({
           job_role: "",
           core_skills: "",
           preferred_language: "EN",
+          country_of_residence: "",
+          target_market: "",
+          // Detected below (create mode only) - never applied when editing
+          // an existing candidate, since an empty field there could mean
+          // "intentionally left blank" rather than "never detected".
+          timezone: detectTimezone() || "",
           passport_document: null,
           profile_photo: null,
           verification_photo: null,
@@ -146,6 +161,16 @@ export function CandidateModal({
         setPhotoQualityChecking({ passport_document: false, profile_photo: false })
         setPassportMatch(null)
         setPassportMatchChecking(false)
+
+        detectCountry().then((detected) => {
+          if (!detected) return
+          setFormData((prev) => ({
+            ...prev,
+            country_of_residence: prev.country_of_residence || detected.countryCode,
+            target_market: prev.target_market || detected.countryCode,
+            preferred_language: suggestLanguageFromCountry(detected.countryCode) || prev.preferred_language,
+          }))
+        })
       }
       setErrors({})
       setTouchedFields({})
@@ -703,6 +728,85 @@ export function CandidateModal({
                       )}
                       {touchedFields.preferred_language && errors.preferred_language && (
                         <p className="mt-1 text-xs text-red-600">{errors.preferred_language}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        {t("fields.countryOfResidence")}
+                      </label>
+                      {isViewMode ? (
+                        <p className="text-gray-900 p-2 border rounded-lg bg-gray-50">
+                          {formData.country_of_residence
+                            ? COUNTRIES.find((c) => c.key === formData.country_of_residence)?.label || formData.country_of_residence
+                            : "-"}
+                        </p>
+                      ) : (
+                        <select
+                          name="country_of_residence"
+                          value={formData.country_of_residence}
+                          onChange={handleInputChange}
+                          disabled={!canEdit}
+                          className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 border-gray-300"
+                        >
+                          <option value="">{t("fields.selectCountry")}</option>
+                          {COUNTRIES.map((c) => (
+                            <option key={c.key} value={c.key}>{c.label}</option>
+                          ))}
+                        </select>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        {t("fields.targetMarket")}
+                      </label>
+                      {isViewMode ? (
+                        <p className="text-gray-900 p-2 border rounded-lg bg-gray-50">
+                          {formData.target_market
+                            ? COUNTRIES.find((c) => c.key === formData.target_market)?.label || formData.target_market
+                            : "-"}
+                        </p>
+                      ) : (
+                        <select
+                          name="target_market"
+                          value={formData.target_market}
+                          onChange={handleInputChange}
+                          disabled={!canEdit}
+                          className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 border-gray-300"
+                        >
+                          <option value="">{t("fields.selectTargetMarket")}</option>
+                          {COUNTRIES.map((c) => (
+                            <option key={c.key} value={c.key}>{c.label}</option>
+                          ))}
+                        </select>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        {t("fields.timezone")}
+                      </label>
+                      {isViewMode ? (
+                        <p className="text-gray-900 p-2 border rounded-lg bg-gray-50">
+                          {formData.timezone || "-"}
+                        </p>
+                      ) : (
+                        <select
+                          name="timezone"
+                          value={formData.timezone}
+                          onChange={handleInputChange}
+                          disabled={!canEdit}
+                          className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 border-gray-300"
+                        >
+                          <option value="">{t("fields.selectTimezone")}</option>
+                          {formData.timezone && !timezoneOptions.includes(formData.timezone) && (
+                            <option value={formData.timezone}>{formData.timezone}</option>
+                          )}
+                          {timezoneOptions.map((tz) => (
+                            <option key={tz} value={tz}>{tz}</option>
+                          ))}
+                        </select>
                       )}
                     </div>
                   </div>

@@ -11,6 +11,11 @@ export interface B2CRegistrationData {
   phone_number: string
   date_of_birth?: string
   address?: string
+  // Location & Localization - detected/suggested client-side, confirmed by
+  // the user, always optional (see src/lib/location-detection.ts).
+  country_of_residence?: string
+  target_market?: string
+  timezone?: string
   id_document: File
   resume_document: File
 }
@@ -91,6 +96,11 @@ export interface B2BRegistrationData {
   website?: string
   industry?: string
   address?: string
+  // Location & Localization - `country` above already serves as this
+  // account's country of residence; these two are new, optional, and
+  // detected/suggested client-side (see src/lib/location-detection.ts).
+  target_market?: string
+  timezone?: string
   registration_certificate: File
   resachetified_license: File
   tax_id_document?: File | null

@@ -816,7 +816,9 @@
         "address": "Address",
         "jobRole": "Job Role",
         "nationality": "Nationality",
-        "preferredLanguage": "Preferred Language"
+        "preferredLanguage": "Preferred Language",
+        "countryOfResidence": "Country of Residence",
+        "targetMarket": "Target Hiring Market"
       },
       "placeholders": {
         "email": "you@example.com",
@@ -828,7 +830,9 @@
         "phoneNumber": "+1234567890",
         "address": "Your address",
         "selectJobRole": "Select job role",
-        "selectNationality": "Select nationality"
+        "selectNationality": "Select nationality",
+        "selectCountry": "Select country",
+        "selectTargetMarket": "Select market"
       },
       "documents": {
         "idDocumentLabel": "ID Document",
@@ -2657,8 +2661,13 @@
             "industryPlaceholder": "e.g., Technology, Healthcare",
             "website": "Website",
             "country": "Country",
+            "selectCountry": "Select country",
             "city": "City",
             "preferredLanguage": "Preferred Language",
+            "targetMarket": "Target Hiring Market",
+            "selectTargetMarket": "Select market",
+            "timezone": "Time Zone",
+            "selectTimezone": "Select time zone",
             "address": "Address",
             "addressPlaceholder": "Company address"
           },
@@ -2895,6 +2904,12 @@
           "skillsPlaceholder": "e.g., Python, JavaScript, React (comma-separated)",
           "skillsHint": "Enter skills separated by commas",
           "preferredLanguage": "Preferred Language",
+          "countryOfResidence": "Country of Residence",
+          "targetMarket": "Target Employment Market",
+          "timezone": "Time Zone",
+          "selectCountry": "Select country",
+          "selectTargetMarket": "Select market",
+          "selectTimezone": "Select time zone",
           "passportDocument": "Passport/ID Document",
           "profilePhoto": "Profile Photo"
         },
@@ -3406,8 +3421,14 @@
           "city": "City",
           "permanentAddress": "Permanent Address",
           "preferredLanguage": "Preferred Language",
+          "countryOfResidence": "Country of Residence",
+          "targetMarket": "Target Hiring Market",
+          "timezone": "Time Zone",
           "selectJobRolePlaceholder": "Select job role",
           "selectNationalityPlaceholder": "Select nationality",
+          "selectCountryPlaceholder": "Select country",
+          "selectTargetMarketPlaceholder": "Select market",
+          "selectTimezonePlaceholder": "Select time zone",
           "addressPlaceholder": "Your address",
           "updateSuccess": "Profile updated successfully!",
           "savingButton": "Saving...",

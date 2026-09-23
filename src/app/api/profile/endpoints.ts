@@ -10,6 +10,9 @@ export interface B2CProfileData {
   job_role?: string
   nationality?: string
   preferred_language?: string
+  country_of_residence?: string
+  target_market?: string
+  timezone?: string
 }
 
 export interface B2BProfileData {
@@ -24,6 +27,8 @@ export interface B2BProfileData {
   industry?: string
   preferred_language?: string
   notification_preference?: string
+  target_market?: string
+  timezone?: string
 }
 
 export interface AdminProfileData {

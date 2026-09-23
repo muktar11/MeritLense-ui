@@ -6,6 +6,8 @@ import { useTranslations } from "next-intl"
 import { useProfile } from "../../../../../hooks/useProfile"
 import { Loader2 } from "lucide-react"
 import { JOB_ROLES, NATIONALITIES, LANGUAGES } from "../../../../../api/auth/endpoints"
+import { COUNTRIES } from "@/lib/countries"
+import { getTimezoneOptions } from "@/lib/location-detection"
 
 const PROFILE_PICTURE_MAX_BYTES = 5 * 1024 * 1024
 const PROFILE_PICTURE_ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"]
@@ -28,9 +30,13 @@ export default function EditProfileTab() {
     job_role: "",
     nationality: "",
     preferred_language: "EN",
+    country_of_residence: "",
+    target_market: "",
+    timezone: "",
   })
 
   const [saveSuccess, setSaveSuccess] = useState(false)
+  const [timezoneOptions] = useState<string[]>(getTimezoneOptions)
 
   // Load profile data when available
   useEffect(() => {
@@ -46,6 +52,9 @@ export default function EditProfileTab() {
         job_role: profile.job_role || "",
         nationality: profile.nationality || "",
         preferred_language: profile.preferred_language || "EN",
+        country_of_residence: profile.country_of_residence || "",
+        target_market: profile.target_market || "",
+        timezone: profile.timezone || "",
       })
     }
   }, [profile])
@@ -68,6 +77,9 @@ export default function EditProfileTab() {
       job_role: formData.job_role,
       nationality: formData.nationality,
       preferred_language: formData.preferred_language,
+      country_of_residence: formData.country_of_residence || undefined,
+      target_market: formData.target_market || undefined,
+      timezone: formData.timezone || undefined,
     })
 
     if (success) {
@@ -339,6 +351,63 @@ export default function EditProfileTab() {
               <option key={lang.key} value={lang.key}>
                 {t(`languages.${lang.key}`)}
               </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Country of Residence */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            {t("countryOfResidence")}
+          </label>
+          <select
+            name="country_of_residence"
+            value={formData.country_of_residence}
+            onChange={handleChange}
+            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="">{t("selectCountryPlaceholder")}</option>
+            {COUNTRIES.map((c) => (
+              <option key={c.key} value={c.key}>{c.label}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Target Employment/Hiring Market */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            {t("targetMarket")}
+          </label>
+          <select
+            name="target_market"
+            value={formData.target_market}
+            onChange={handleChange}
+            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="">{t("selectTargetMarketPlaceholder")}</option>
+            {COUNTRIES.map((c) => (
+              <option key={c.key} value={c.key}>{c.label}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Time Zone */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            {t("timezone")}
+          </label>
+          <select
+            name="timezone"
+            value={formData.timezone}
+            onChange={handleChange}
+            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="">{t("selectTimezonePlaceholder")}</option>
+            {formData.timezone && !timezoneOptions.includes(formData.timezone) && (
+              <option value={formData.timezone}>{formData.timezone}</option>
+            )}
+            {timezoneOptions.map((tz) => (
+              <option key={tz} value={tz}>{tz}</option>
             ))}
           </select>
         </div>
