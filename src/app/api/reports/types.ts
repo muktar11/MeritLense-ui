@@ -9,6 +9,10 @@ const READINESS_INDICATOR_LABELS: Record<string, string> = {
   'متوسط': 'Partially Ready',
   'غير جاهز': 'Readiness Gaps Identified',
   'توجد فجوات جاهزية': 'Readiness Gaps Identified',
+  // Distinct from "Readiness Gaps Identified" - insufficient assessment
+  // coverage means no readiness determination could be made at all, not
+  // that gaps were found (see Week6ScoringService._apply_evaluation_rollups).
+  'أدلة غير كافية': 'Insufficient Evidence',
 };
 
 export function readinessIndicatorLabel(indicator: string): string {
