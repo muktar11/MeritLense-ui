@@ -19,6 +19,8 @@ import {
   Candidate,
   CandidateFormData,
   CandidateModalMode,
+  CertificatePreview,
+  CertificateReuseResult,
   JOB_ROLES,
   LANGUAGES
 } from "../../../../../api/candidates/types"
@@ -81,6 +83,15 @@ export function CandidateModal({
   })
 
   const [errors, setErrors] = useState<Record<string, string>>({})
+  // Cross-account certificate reuse: passport_id already belongs to a
+  // DIFFERENT account's already-certified candidate (globally unique
+  // passport_id - see api/candidates/certificate_reuse_services.py).
+  // certificateOffer holds the preview from the 409 response; reuseResult
+  // holds the outcome once the user confirms and a Slot is actually spent.
+  const [certificateOffer, setCertificateOffer] = useState<CertificatePreview | null>(null)
+  const [reuseLoading, setReuseLoading] = useState(false)
+  const [reuseResult, setReuseResult] = useState<CertificateReuseResult | null>(null)
+  const [reuseError, setReuseError] = useState<string | null>(null)
   const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>({})
   const [timezoneOptions] = useState<string[]>(getTimezoneOptions)
   const [previewPhoto, setPreviewPhoto] = useState<string | null>(null)
@@ -174,6 +185,9 @@ export function CandidateModal({
       }
       setErrors({})
       setTouchedFields({})
+      setCertificateOffer(null)
+      setReuseResult(null)
+      setReuseError(null)
     }
 
     return () => {
@@ -384,6 +398,10 @@ export function CandidateModal({
         router.push(`/${locale}/dashboard/indivisual/payment`)
         return
       }
+      if (error.response?.data?.code === 'candidate_certificate_available') {
+        setCertificateOffer(error.response.data.certificate)
+        return
+      }
       if (error.response?.data) {
         const backendErrors: Record<string, string> = {}
         Object.entries(error.response.data).forEach(([key, value]) => {
@@ -424,6 +442,38 @@ export function CandidateModal({
     } finally {
       setDeleteLoading(false)
     }
+  }
+
+  const handleReuseCertificateConfirm = async () => {
+    setReuseLoading(true)
+    setReuseError(null)
+    try {
+      const result = await candidateService.reuseCertificate(formData.passport_id)
+      setReuseResult(result)
+    } catch (error: any) {
+      console.error('Failed to reuse certificate:', error)
+      if (error.response?.data?.code === 'no_slots_available') {
+        toast.error(t("certificateReuse.noSlotsTitle"), {
+          description: t("certificateReuse.noSlotsDescription"),
+        })
+        onClose()
+        router.push(`/${locale}/dashboard/indivisual/payment`)
+        return
+      }
+      setReuseError(t("certificateReuse.reuseFailed"))
+    } finally {
+      setReuseLoading(false)
+    }
+  }
+
+  const handleReuseCertificateCancel = () => {
+    setCertificateOffer(null)
+    setReuseError(null)
+  }
+
+  const handleReuseCertificateDone = () => {
+    if (onSuccess) onSuccess()
+    onClose()
   }
 
   const isViewMode = mode === 'view'
@@ -487,6 +537,80 @@ export function CandidateModal({
                   </button>
                 </div>
 
+                {reuseResult ? (
+                  <div className="space-y-4">
+                    <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                      <p className="text-sm font-medium text-green-800">{t("certificateReuse.successTitle")}</p>
+                      <p className="text-sm text-green-700 mt-1">
+                        {t("certificateReuse.successMessage", { remaining: reuseResult.slots_remaining ?? 0 })}
+                      </p>
+                    </div>
+                    <div className="flex justify-end gap-3">
+                      {reuseResult.pdf_url && (
+                        <a
+                          href={reuseResult.pdf_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition"
+                        >
+                          {t("certificateReuse.downloadButton")}
+                        </a>
+                      )}
+                      <button
+                        type="button"
+                        onClick={handleReuseCertificateDone}
+                        className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
+                      >
+                        {t("certificateReuse.doneButton")}
+                      </button>
+                    </div>
+                  </div>
+                ) : certificateOffer ? (
+                  <div className="space-y-4">
+                    {reuseError && (
+                      <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm">
+                        {reuseError}
+                      </div>
+                    )}
+                    <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg text-sm text-gray-700">
+                      <p>
+                        {t("certificateReuse.message", {
+                          role: certificateOffer.job_role,
+                          date: certificateOffer.issued_at
+                            ? new Date(certificateOffer.issued_at).toLocaleDateString()
+                            : "-",
+                        })}
+                      </p>
+                      <p className="mt-2 font-medium text-purple-800">{t("certificateReuse.slotWarning")}</p>
+                    </div>
+                    <div className="flex justify-end gap-3">
+                      <button
+                        type="button"
+                        onClick={handleReuseCertificateCancel}
+                        disabled={reuseLoading}
+                        className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition disabled:opacity-50"
+                      >
+                        {t("certificateReuse.cancelButton")}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleReuseCertificateConfirm}
+                        disabled={reuseLoading}
+                        className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition disabled:opacity-50 flex items-center gap-2"
+                      >
+                        {reuseLoading ? (
+                          <>
+                            <Loader2 size={16} className="animate-spin" />
+                            {t("certificateReuse.confirming")}
+                          </>
+                        ) : (
+                          t("certificateReuse.confirmButton")
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                <>
                 {errors.form && (
                   <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm">
                     {errors.form}
@@ -1070,6 +1194,8 @@ export function CandidateModal({
                     )}
                   </div>
                 </form>
+                </>
+                )}
               </Dialog.Panel>
             </Transition.Child>
           </div>

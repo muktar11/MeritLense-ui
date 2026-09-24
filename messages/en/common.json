@@ -2958,6 +2958,21 @@
           "limitReachedDescription": "Upgrade your plan to add more candidates. Redirecting you to packages...",
           "upgradeButton": "View Packages"
         },
+        "certificateReuse": {
+          "title": "Certificate Already Available",
+          "message": "A candidate with this passport ID already has an issued certificate for {role}, issued on {date}.",
+          "slotWarning": "Reusing it will deduct 1 Assessment Slot from your package instead of creating a new candidate.",
+          "cancelButton": "Cancel",
+          "confirmButton": "Reuse Certificate",
+          "confirming": "Processing...",
+          "successTitle": "Certificate Ready",
+          "successMessage": "1 Assessment Slot was deducted. {remaining} slot(s) remaining.",
+          "downloadButton": "Download Certificate",
+          "doneButton": "Done",
+          "noSlotsTitle": "No Assessment Slots available",
+          "noSlotsDescription": "Add more Assessment Slots to reuse this certificate. Redirecting you to packages...",
+          "reuseFailed": "Failed to reuse certificate. Please try again."
+        },
         "photo": {
           "label": "Photo",
           "replace": "Replace Photo",

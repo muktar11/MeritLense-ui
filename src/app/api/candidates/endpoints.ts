@@ -1,6 +1,6 @@
 import { apiClient } from '../auth/client';
 import { authClient, authFormDataClient, setAuthToken } from './client';
-import { Candidate, CandidateFormData } from './types';
+import { Candidate, CandidateFormData, CertificateReuseResult } from './types';
 import { API_BASE_URL } from '@/lib/config/env';
 
 class CandidateService {
@@ -104,6 +104,18 @@ class CandidateService {
   async getSharedWithMe(): Promise<Candidate[]> {
     this.ensureAuthToken();
     const response = await authClient.get(`${this.baseURL}/shared_with_me`);
+    return response.data;
+  }
+
+  // Confirms reusing a DIFFERENT account's already-issued certificate
+  // (offered via the 409 candidate_certificate_available response from
+  // createCandidate) instead of adding a new candidate - deducts 1
+  // Assessment Slot. See api/candidates/views.py's reuse_certificate action.
+  async reuseCertificate(passportId: string): Promise<CertificateReuseResult> {
+    this.ensureAuthToken();
+    const response = await authClient.post(`${this.baseURL}/reuse-certificate`, {
+      passport_id: passportId,
+    });
     return response.data;
   }
 
