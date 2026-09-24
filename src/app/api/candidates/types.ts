@@ -48,6 +48,37 @@ export interface CandidateFormData {
 
 export type CandidateModalMode = 'view' | 'edit' | 'create';
 
+// Returned (as the error response body, HTTP 409) when the passport_id on
+// a create attempt already belongs to a candidate under a DIFFERENT
+// account - passport_id is globally unique platform-wide, so a duplicate
+// Candidate row can never be created; see api/candidates/certificate_reuse_services.py.
+export interface CertificatePreview {
+  candidate_name: string;
+  job_role: string;
+  issued_at: string | null;
+  certificate_public_id: string;
+}
+
+export interface CandidateCertificateAvailableError {
+  detail: string;
+  code: 'candidate_certificate_available';
+  certificate: CertificatePreview;
+}
+
+export interface PassportIdTakenElsewhereError {
+  detail: string;
+  code: 'passport_id_taken_elsewhere';
+}
+
+export interface CertificateReuseResult {
+  certificate_id: string | null;
+  pdf_url: string | null;
+  issued_at: string | null;
+  candidate_name: string;
+  job_role: string;
+  slots_remaining: number | null;
+}
+
 export const JOB_ROLES = [
   { key: 'NA', label: 'Nanny' },
   { key: 'DR', label: 'Driver' },
