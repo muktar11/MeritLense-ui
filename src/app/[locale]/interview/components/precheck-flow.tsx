@@ -30,13 +30,17 @@ interface PrecheckFlowProps {
   // Drives which language this entire precheck flow (and the identity
   // verification step it ends on) renders in - see ../candidate-lang.ts.
   uiLanguage?: string | null;
+  // The candidate's own name on record, shown (not typed) on the consent
+  // step - the backend derives signatory_name from this same record
+  // regardless of what the client sends, so this is display-only.
+  candidateName?: string | null;
 }
 
 type Step = "loading" | "consent" | "privacy" | "device-check" | "verbal-confirmation" | "identity";
 
 const VERBAL_CONFIRMATION_MAX_SECONDS = 15;
 
-export function PrecheckFlow({ sessionId, token, onContinue, isLiveCall, uiLanguage }: PrecheckFlowProps) {
+export function PrecheckFlow({ sessionId, token, onContinue, isLiveCall, uiLanguage, candidateName }: PrecheckFlowProps) {
   const [step, setStep] = useState<Step>("loading");
   const [error, setError] = useState<string | null>(null);
   const t = getCandidateStrings(uiLanguage);
@@ -77,8 +81,9 @@ export function PrecheckFlow({ sessionId, token, onContinue, isLiveCall, uiLangu
         dir={dir}
         error={error}
         onError={setError}
-        onSubmit={async (signatoryName) => {
-          await interviewSessionService.captureConsent(sessionId, token, signatoryName);
+        candidateName={candidateName}
+        onSubmit={async () => {
+          await interviewSessionService.captureConsent(sessionId, token, candidateName ?? "");
           setError(null);
           setStep("privacy");
         }}
@@ -160,26 +165,28 @@ function ConsentStep({
   dir,
   error,
   onError,
+  candidateName,
   onSubmit,
 }: {
   t: CandidateStrings;
   dir: "ltr" | "rtl";
   error: string | null;
   onError: (message: string | null) => void;
-  onSubmit: (signatoryName: string) => Promise<void>;
+  candidateName?: string | null;
+  onSubmit: () => Promise<void>;
 }) {
-  const [fullName, setFullName] = useState("");
   const [agreed, setAgreed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const c = t.precheck.consent;
+  const hasName = Boolean(candidateName && candidateName.trim().length > 1);
 
-  const canSubmit = agreed && fullName.trim().length > 1 && !submitting;
+  const canSubmit = agreed && hasName && !submitting;
 
   const handleSubmit = async () => {
     if (!canSubmit) return;
     setSubmitting(true);
     try {
-      await onSubmit(fullName.trim());
+      await onSubmit();
     } catch {
       onError(c.errorGeneric);
     } finally {
@@ -207,14 +214,12 @@ function ConsentStep({
         <label htmlFor="consent-full-name" className="block text-sm font-medium text-gray-700 mb-1">
           {c.signLabel}
         </label>
-        <input
+        <div
           id="consent-full-name"
-          type="text"
-          value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
-          placeholder={c.namePlaceholder}
-          className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-        />
+          className="w-full px-4 py-2.5 border border-gray-200 bg-gray-50 rounded-lg text-gray-900"
+        >
+          {hasName ? candidateName : c.namePlaceholder}
+        </div>
       </div>
 
       <label className="flex items-start gap-2 text-start text-sm text-gray-700 mb-4 cursor-pointer">

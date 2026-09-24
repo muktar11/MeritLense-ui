@@ -415,6 +415,7 @@ function InterviewSessionContent() {
         onContinue={handlePrecheckContinue}
         isLiveCall={Boolean(session?.scheduled_start_at)}
         uiLanguage={session?.ui_language}
+        candidateName={session?.candidate_name}
       />
     );
   }
