@@ -225,8 +225,8 @@ const en: CandidateStrings = {
         "You have been invited to complete a workforce-readiness assessment through MeritLense. Taking part is voluntary, and by continuing you confirm that you choose to participate of your own free will.",
       paragraph2:
         "Your responses, audio, and identity-verification data will be processed to conduct this assessment, and the resulting report will be shared with the employer or organization that requested it. MeritLense does not make the hiring decision — the employer does.",
-      signLabel: "Type your full name to sign",
-      namePlaceholder: "Your full name",
+      signLabel: "Signing as",
+      namePlaceholder: "Your name is not available - please contact support",
       agreeLabel: "I consent to participate in this assessment and to my data being processed as described above.",
       submitLabel: "Sign & Continue",
       errorGeneric: "Something went wrong saving your consent. Please try again.",
@@ -465,8 +465,8 @@ const ar: CandidateStrings = {
         "لقد تمت دعوتك لإكمال تقييم جاهزية القوى العاملة عبر منصة ميريت لينس. المشاركة اختيارية، وبمتابعتك فإنك تؤكد أنك تختار المشاركة بمحض إرادتك.",
       paragraph2:
         "سيتم معالجة إجاباتك، والتسجيلات الصوتية، وبيانات التحقق من الهوية لإجراء هذا التقييم، وسيتم مشاركة التقرير الناتج مع صاحب العمل أو الجهة التي طلبت هذا التقييم. لا تتخذ ميريت لينس قرار التوظيف — يبقى ذلك من مسؤولية صاحب العمل.",
-      signLabel: "اكتب اسمك الكامل للتوقيع",
-      namePlaceholder: "اسمك الكامل",
+      signLabel: "التوقيع باسم",
+      namePlaceholder: "اسمك غير متوفر - يرجى التواصل مع الدعم",
       agreeLabel: "أوافق على المشاركة في هذا التقييم وعلى معالجة بياناتي كما هو موضح أعلاه.",
       submitLabel: "التوقيع والمتابعة",
       errorGeneric: "حدث خطأ أثناء حفظ موافقتك. يُرجى المحاولة مرة أخرى.",
