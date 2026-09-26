@@ -3131,6 +3131,7 @@
         },
         "oneTimeForm": {
           "stripeNotInitialized": "Stripe not initialized",
+          "paymentElementLoading": "Loading secure payment form...",
           "detailsHeading": "Package Details",
           "packageLabel": "Package: {name}",
           "priceLabel": "Price: {price} (one-time)",

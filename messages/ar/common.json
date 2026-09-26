@@ -3139,6 +3139,7 @@
         },
         "oneTimeForm": {
           "stripeNotInitialized": "لم يتم تهيئة Stripe",
+          "paymentElementLoading": "جارٍ تحميل نموذج الدفع الآمن...",
           "detailsHeading": "تفاصيل الباقة",
           "packageLabel": "الباقة: {name}",
           "priceLabel": "السعر: {price} (لمرة واحدة)",

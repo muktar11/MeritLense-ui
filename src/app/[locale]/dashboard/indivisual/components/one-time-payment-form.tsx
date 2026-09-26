@@ -71,7 +71,24 @@ export function OneTimePaymentForm({ price, onSuccess, onError }: OneTimePayment
         </p>
       </div>
 
-      <PaymentElement onReady={() => setPaymentElementReady(true)} />
+      <PaymentElement
+        onReady={() => {
+          setError(null);
+          setPaymentElementReady(true);
+        }}
+        onLoadError={({ error: loadError }) => {
+          const message = loadError.message || t('paymentFailedError');
+          setPaymentElementReady(false);
+          setError(message);
+          onError?.(message);
+        }}
+      />
+
+      {!paymentElementReady && !error && (
+        <p role="status" className="text-sm text-gray-500">
+          {t('paymentElementLoading')}
+        </p>
+      )}
 
       {error && (
         <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm flex items-start gap-2">
