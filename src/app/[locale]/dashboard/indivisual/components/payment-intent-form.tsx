@@ -27,31 +27,43 @@ export function PaymentIntentForm({
   const elements = useElements();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [paymentElementReady, setPaymentElementReady] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!stripe || !elements) return;
+    if (!stripe || !elements || !paymentElementReady) {
+      const message = 'The payment form is still loading. Please wait and try again.';
+      setError(message);
+      onError?.(message);
+      return;
+    }
 
     setLoading(true);
     setError(null);
 
-    const { error: submitError } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: `${window.location.origin}/${locale}/dashboard/indivisual/success`,
-      },
-      redirect: 'if_required',
-    });
+    try {
+      const { error: submitError } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: `${window.location.origin}/${locale}/dashboard/indivisual/success`,
+        },
+        redirect: 'if_required',
+      });
 
-    if (submitError) {
-      setError(submitError.message || 'An error occurred');
-      onError?.(submitError.message || 'An error occurred');
-    } else {
-      onSuccess?.();
+      if (submitError) {
+        setError(submitError.message || 'An error occurred');
+        onError?.(submitError.message || 'An error occurred');
+      } else {
+        onSuccess?.();
+      }
+    } catch (submitError) {
+      const message = submitError instanceof Error ? submitError.message : 'An error occurred';
+      setError(message);
+      onError?.(message);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (
@@ -68,7 +80,7 @@ export function PaymentIntentForm({
         </div>
       )}
 
-      <PaymentElement />
+      <PaymentElement onReady={() => setPaymentElementReady(true)} />
       
       {error && (
         <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm">
@@ -78,7 +90,7 @@ export function PaymentIntentForm({
 
       <button
         type="submit"
-        disabled={!stripe || loading}
+        disabled={!stripe || !elements || !paymentElementReady || loading}
         className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
         {loading ? (
