@@ -18,6 +18,27 @@ import { PlanCoverageChecklist } from "@/components/payments/PlanCoverageCheckli
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function getApiErrorMessage(error: unknown): string | undefined {
+  if (!isRecord(error)) return;
+
+  if (isRecord(error.response) && isRecord(error.response.data)) {
+    const data = error.response.data;
+    for (const key of ['detail', 'error', 'message']) {
+      if (key in data && typeof data[key] === 'string') return data[key];
+    }
+  }
+
+  for (const key of ['detail', 'error', 'message']) {
+    if (key in error && typeof error[key] === 'string') return error[key];
+  }
+
+  return;
+}
+
 export default function PaymentPage() {
   const t = useTranslations("dashboard.indivisual.payment");
   const tBilling = useTranslations("dashboard.indivisual.settings.billing-tab");
@@ -160,7 +181,7 @@ export default function PaymentPage() {
       setClientSecret(setupIntent.client_secret);
     } catch (error: any) {
       console.error('Failed to create setup intent:', error);
-      setError(error?.detail || t('errors.initFailed'));
+      setError(getApiErrorMessage(error) || t('errors.initFailed'));
       setProcessing(false);
     }
   };
@@ -175,7 +196,7 @@ export default function PaymentPage() {
       setClientSecret(intent.client_secret);
     } catch (error: any) {
       console.error('Failed to create payment intent:', error);
-      setError(error?.detail || t('errors.initFailed'));
+      setError(getApiErrorMessage(error) || t('errors.initFailed'));
       setProcessing(false);
     }
   };
