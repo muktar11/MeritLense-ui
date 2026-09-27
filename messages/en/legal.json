@@ -2,154 +2,182 @@
   "legal": {
     "privacy_terms": {
       "eyebrow": "Platform-Wide Policy",
-      "title": "Privacy Policy & Terms of Use",
-      "subtitle": "Applies to all users: candidates, individuals, and business employers.",
+      "title": "PRIVACY POLICY & TERMS OF USE",
+      "subtitle": "Applies to candidates, individual users, and business customers.",
       "last_updated_label": "Last Updated",
-      "last_updated": "2026-09-04",
+      "last_updated": "2026-09-27",
       "version_label": "Version",
-      "version": "v1.5",
+      "version": "v1.6",
       "jurisdiction_label": "Jurisdiction",
-      "jurisdiction": "Estonia",
-      "intro": "By using the MeritLense platform, services, or applications, you agree to all provisions contained in this document. Please read it in its entirety before use.",
+      "jurisdiction": "Estonia (EU)",
+      "intro": "This public, platform-wide document applies to candidates, individual users and business customers. By creating an account, requesting or participating in an assessment, or otherwise using the Services, the relevant user agrees to the Terms of Use. Privacy processing is governed by applicable law and this Privacy Policy; where consent is the lawful basis, consent is requested separately and may be withdrawn as described below.",
       "part_a_label": "Part A",
       "part_a_title": "Privacy Policy",
       "part_b_label": "Part B",
       "part_b_title": "Terms of Use",
       "toc_label": "On this page",
-      "updated_badge": "Updated in v1.5",
+      "updated_badge": "Updated in v1.6",
       "sections": [
         {
           "id": "0",
           "title": "Document Hierarchy & Related Agreements",
           "part": null,
-          "updated": true,
-          "body": "This Privacy Policy & Terms of Use is the general, platform-wide policy that applies to all users (candidates, B2C individuals, and B2B employers) and is accepted at registration. It works alongside the following separate, purpose-specific agreements, each governing its own subject matter:\n\n- AI Transparency & Disclosure Notice — explains the role of AI in the assessment process\n- B2B Agreement — the binding commercial agreement for business/agency employers, signed electronically\n- Data Processing Agreement (DPA) — governs MeritLense's processing of candidate personal data on behalf of B2B employers, signed together with the B2B Agreement\n- B2C Agreement — the binding commercial agreement for individual employers, signed electronically\n- Candidate Consent Form — signed by each candidate before an assessment session begins\n\nWhere this Policy refers to \"the Agreement\", it means the applicable B2B Agreement or B2C Agreement (as relevant to the user's account type), together with the DPA where applicable, which set out the specific services, fees, entitlements, term, and commercial conditions applicable to that user. For Custom Enterprise arrangements, a signed Pricing Addendum supplements and forms part of the B2B Agreement and governs the specific pricing, volume, and terms agreed for that account.\n\nIn case of any conflict between this Policy and the applicable signed Agreement on a matter specifically addressed in that Agreement, the signed Agreement shall prevail with respect to that matter."
+          "updated": false,
+          "body": "This Policy is the general platform-wide privacy and use framework. Purpose-specific agreements may also apply: the AI Transparency & Disclosure Notice; B2B Services Agreement; Data Processing Agreement (DPA) for Customer-controlled candidate processing; B2C Agreement; Candidate Consent / Privacy Notice; Refunds Policy; and, where applicable, a signed Enterprise Pricing Addendum. If a signed purpose-specific agreement conflicts with these Terms on a matter it specifically governs, that signed agreement prevails for that matter. For data-protection matters governed by a DPA, the DPA prevails to the extent required by applicable data-protection law."
         },
         {
           "id": "1",
-          "title": "Overview",
+          "title": "Scope and Roles",
           "part": "a",
           "updated": false,
-          "body": "The MeritLense platform places paramount importance on the privacy of its users' data and of the candidates evaluated through it. This Policy explains how personal data is collected, processed, used, and disclosed, in accordance with the European General Data Protection Regulation (GDPR) and the laws of the Republic of Estonia.\n\nThis Policy applies to all platform users, whether individuals (B2C) or companies and agencies (B2B), as well as to candidates whose data is collected in the context of evaluation processes.\n\nBy using the platform or any of its services, you agree to the terms and conditions set out in this Policy."
+          "body": "MeritLense provides digital workforce-readiness assessment and related reporting and verification services. MeritLense may act as an independent Controller for platform accounts, service administration, security, billing records, direct candidate interactions, and limited public certificate/report verification. For candidate Personal Data processed solely on documented instructions of a B2B Customer, the Customer is Controller and MeritLense is Processor under the applicable DPA."
         },
         {
           "id": "2",
-          "title": "Data We Collect",
+          "title": "Personal Data We Process",
           "part": "a",
           "updated": false,
-          "body": "Personal data may be collected from you directly through various means, including but not limited to:\n\nA. Data you provide directly\n\n- Upon registration and account creation: name, email, password, company data (for B2B users)\n- When requesting a candidate evaluation: candidate data provided by the user, including personal and professional information\n- When communicating with the support team: messages, inquiries, refund requests\n- When participating in platform surveys or questionnaires\n\nB. Data we collect automatically\n\n- Cookies: used to distinguish you as a unique user and enhance your experience. You may modify your browser settings to reject them, noting that this may affect some platform functions\n- IP address and device data: the server automatically records your IP address, browser type, and the date and time of your visit. This data does not personally identify you\n- Geographic location: you may be asked to provide your location to benefit from certain services\n- Browsing data: visit history, browser type, and how you accessed the platform"
+          "body": "Depending on the Service used, we may process: account and contact data; business and billing information; candidate identity and professional information supplied by the Customer or candidate; assessment responses; audio where voice assessment is enabled; transcripts and extracted evidence; assessment/readiness outputs; identity-verification status and supporting images/documents where enabled; support communications; payment status and transaction references (not full card credentials); and technical/security data such as IP address, device/browser information, timestamps, cookies and audit logs. Location data is processed only where a feature requires it and the user provides or enables it."
         },
         {
           "id": "3",
-          "title": "Purpose of Data Collection",
+          "title": "Purposes and Lawful Bases",
           "part": "a",
           "updated": false,
-          "body": "Personal data is collected and used for multiple purposes, including but not limited to:\n\n- Meeting legal, regulatory, and operational requirements related to digital assessment services\n- Operating assessment algorithms and generating reports and readiness indicators accurately and objectively\n- Understanding user needs in order to continuously improve platform products and services\n- Enabling users to access services, conduct evaluations, and manage their accounts\n- Issuing internal statistical and operational reports for platform development\n- Archiving information for future communication, per user preferences\n- Resolving inquiries and complaints and improving the user experience across the various communication channels\n- Complying with GDPR requirements and applicable Estonian data protection laws"
+          "body": "We process Personal Data only where a lawful basis applies. Depending on the activity, the basis may be: performance of a contract or steps requested before a contract; compliance with legal obligations; legitimate interests such as platform security, fraud prevention, service administration, auditability and proportionate service improvement, subject to applicable balancing requirements; or consent where consent is appropriate and specifically requested. Where MeritLense acts as Processor, the Customer determines the applicable lawful basis and MeritLense processes on documented instructions. We do not rely on a candidate’s acceptance of general Terms as a substitute for consent where GDPR requires valid consent."
         },
         {
           "id": "4",
-          "title": "Sharing Data with Third Parties",
+          "title": "AI-Assisted Processing and Assessment Outputs",
           "part": "a",
           "updated": false,
-          "body": "MeritLense may share user data with specific external parties, subject to the following controls:\n\n- Technology and infrastructure service providers: for legitimate operational purposes and under binding data processing agreements\n- Analytics and statistics services: to improve the platform — data is used in aggregated and anonymized form\n- Regulatory and governmental authorities: only where there is an explicit legal requirement\n- Identity verification service providers: to the extent necessary to conduct the required verification processes\n\nUser or candidate data is never sold to any third party for commercial or advertising purposes. All sharing is subject to binding data protection agreements ensuring the same level of protection applied by MeritLense. Where MeritLense processes candidate personal data on behalf of a B2B employer as a data processor, such processing is governed by the applicable Data Processing Agreement (DPA), signed together with the B2B Agreement."
+          "body": "Some Services may use AI-assisted tools for transcription, translation, language processing and evidence extraction. MeritLense’s assessment methodology and configured rules are then used to produce structured assessment outputs. AI-assisted processing does not itself make the Customer’s final hiring decision. Assessment outputs are decision-support information; the employer remains responsible for employment decisions and any human review required by law. MeritLense does not disclose proprietary prompts, algorithms, scoring logic, rule-engine configuration, indicator libraries, source code or trade secrets except where disclosure is legally required."
         },
         {
           "id": "5",
-          "title": "Candidate Data — Rights and Responsibilities",
+          "title": "Sharing and Service Providers",
           "part": "a",
           "updated": false,
-          "body": "Since MeritLense processes the data of third-party candidates, the following provisions apply specifically:\n\n- The user (employer or agency) is obliged to obtain explicit and informed consent from the candidate before entering any data relating to them\n- The candidate has the right at any time to access, correct, or request deletion of their data pursuant to the GDPR\n- Evaluation results are not shared with any party outside the direct relationship between the user and the candidate\n- The user bears full legal responsibility if candidate data is used without their explicit consent\n- Candidate data is automatically anonymized after evaluation expiry, pursuant to the data retention policy below\n- Formal candidate consent is captured separately via the Candidate Consent Form, signed by the candidate before each assessment session begins"
+          "body": "We may disclose Personal Data to service providers that support hosting/infrastructure, AI/speech/language functions, identity verification where enabled, transactional communications, support, analytics using aggregated or de-identified data where appropriate, and payment processing. Such providers receive only data reasonably necessary for their function and are subject to appropriate contractual/data-protection obligations. We may also disclose information where required by law or a competent authority. MeritLense does not sell candidate or user Personal Data for advertising or unrelated commercial purposes."
         },
         {
           "id": "6",
-          "title": "Data Retention Period",
+          "title": "International Transfers",
           "part": "a",
           "updated": false,
-          "body": "MeritLense retains users' personal data for a maximum period of 24 months from the date of the last interaction, unless there are legal or regulatory requirements necessitating retention for a longer period.\n\n- All data is automatically deleted after the expiry of this period unless the user requests early deletion\n- The user has the right to request deletion of their data at any time via email: info@meritlense.com\n- Candidate data: upon expiry of the associated evaluation, personally identifying data (name, contact details, photo / ID image) is deleted or anonymized. The underlying assessment record (readiness level, dates, certificate status) is retained in de-identified form for audit, verification, and legal record-keeping purposes. Candidates may request full deletion of identifying data at any time, subject to any overriding legal or regulatory retention requirement"
+          "body": "Some service providers may process Personal Data outside the EEA. Where GDPR Chapter V restricts a transfer, MeritLense uses an applicable lawful transfer mechanism, which may include an adequacy decision, the European Commission Standard Contractual Clauses, or another lawful safeguard, together with supplementary measures where required. Further information about applicable safeguards may be requested at the privacy contact above, subject to confidentiality and security restrictions."
         },
         {
           "id": "7",
-          "title": "Cybersecurity Measures",
+          "title": "Candidate and Data-Subject Rights",
           "part": "a",
           "updated": false,
-          "body": "MeritLense takes strict security measures to protect user and candidate data, including:\n\n- Encrypting data during transmission using SSL / TLS protocols\n- Storing data in a secure environment, with access restricted to authorized personnel only pursuant to RBAC (Role-Based Access Control)\n- Conducting regular reviews of security systems and updating them in accordance with the latest security standards\n- Continuous 24/7 monitoring and comprehensive audit logs for all operations\n- Security practices aligned with internationally recognized information security standards\n\nDespite taking all possible precautions, absolute security of information transmitted over the internet cannot be guaranteed. The user is responsible for maintaining the confidentiality of their account credentials."
+          "body": "Subject to GDPR and applicable exceptions, Data Subjects may have rights of access, rectification, erasure, restriction, objection, and data portability, and the right to withdraw consent at any time where processing is based on consent without affecting prior lawful processing. Requests may be sent to info@meritlense.com. Where MeritLense acts only as Processor, we may refer the request to the relevant Customer/Controller and assist that Customer as required. Data Subjects also have the right to lodge a complaint with a competent supervisory authority, including the Estonian Data Protection Inspectorate where it is competent."
         },
         {
           "id": "8",
-          "title": "Reporting Data Breaches",
+          "title": "Retention and Deletion",
           "part": "a",
           "updated": false,
-          "body": "In the event of any security breach affecting personal data, MeritLense commits to notifying the concerned users and the competent regulatory authorities within 72 hours of discovery, clarifying the nature of the breach and the measures taken to mitigate its effects."
+          "body": "We retain Personal Data only for as long as reasonably necessary for the relevant purpose, contractual service, auditability, security, dispute handling and legal obligations. Different data categories may have different retention periods. Candidate-identifying information is deleted or de-identified when no longer required for the applicable assessment/service, subject to Customer instructions where MeritLense acts as Processor and any overriding legal requirement. Limited de-identified assessment or verification records may be retained where reasonably necessary for audit, authenticity, fraud prevention or legal recordkeeping. Backup copies may persist temporarily until overwritten under normal backup cycles."
         },
         {
           "id": "9",
-          "title": "Platform Nature and Service Scope",
-          "part": "b",
-          "updated": true,
-          "body": "MeritLense is an independent digital evaluation platform specializing in assessing operational, technical, and non-academic competencies prior to employment. The platform is not a recruitment agency, an intermediary, or an employment appointer. Its role is strictly limited to providing technical assessment tools that help employers make better hiring decisions.\n\nThe contents of these pages are subject to change without prior notice. All intellectual property rights associated with the platform, its content, and its algorithms are reserved to MeritLense. MeritLense further retains all intellectual property rights related to its assessment methodologies, scoring models, reports, certificates, and evaluation frameworks. Copying, distributing, or republishing any content is prohibited without prior written permission.\n\nBusiness (B2B) employers select a package (Starter, Growth, Business, or Enterprise) and are presented with an auto-generated B2B Agreement and DPA reflecting their selected package, both of which must be reviewed and signed before the dashboard is unlocked. For Custom Enterprise arrangements with individually negotiated pricing or volume, an additional signed Pricing Addendum supplements the B2B Agreement and governs the specific commercial terms agreed for that account.\n\nIndividual (B2C) employers select a package and are presented with an auto-generated B2C Agreement, which must be signed before the dashboard is unlocked."
+          "title": "Security",
+          "part": "a",
+          "updated": false,
+          "body": "MeritLense maintains technical and organizational measures designed to protect Personal Data, taking into account the nature and risks of the processing. Measures may include access and authentication controls, role-based permissions, encryption in transit where appropriate, logging, infrastructure safeguards, confidentiality controls, monitoring and incident-response procedures. No internet-based service can guarantee absolute security, and users are responsible for protecting their account credentials."
         },
         {
           "id": "10",
-          "title": "User Obligations",
-          "part": "b",
+          "title": "Personal Data Breaches",
+          "part": "a",
           "updated": false,
-          "body": "- Use the platform for lawful purposes only, within the targeted operational sectors\n- Not use platform materials and information unlawfully or for purposes outside the scope of the applicable Agreement (see Section 0 — Document Hierarchy & Related Agreements)\n- Maintain the confidentiality of account credentials and not share them with third parties\n- Not attempt unauthorized access to platform sections or to other users' data\n- Comply with all applicable labor and privacy laws in their jurisdiction when using evaluation results\n- Use or registration is prohibited for individuals under the age of 18. Any account discovered to belong to a person under 18 is immediately suspended without prior notice. MeritLense services are intended for users aged 18 or older, unless otherwise permitted under applicable laws and accompanied by the required legal consent"
+          "body": "MeritLense handles Personal Data Breaches in accordance with applicable law. Where MeritLense acts as Controller, it will notify the competent supervisory authority without undue delay and, where feasible, within 72 hours after becoming aware of a breach when GDPR requires such notification. Affected Data Subjects will be informed without undue delay where GDPR requires communication because the breach is likely to result in a high risk to their rights and freedoms. Where MeritLense acts as Processor, it will notify the relevant Customer/Controller without undue delay after becoming aware of a Personal Data Breach affecting Customer Personal Data."
         },
         {
           "id": "11",
-          "title": "Limits of Platform Liability",
-          "part": "b",
+          "title": "Cookies and Technical Data",
+          "part": "a",
           "updated": false,
-          "body": "MeritLense provides structured assessment and readiness indicators, considered decision-support information that should not be relied upon on its own. The final hiring decision remains the sole responsibility of the employer.\n\n- The platform bears no legal or financial responsibility resulting from hiring decisions made by users based on evaluation results. Some platform functions may utilize artificial intelligence and automated analysis technologies; such outputs are intended to support decision-making and should not be interpreted as definitive professional, legal, or employment advice\n- The platform bears no responsibility for any failure resulting from causes beyond its control (force majeure), including technical malfunctions or communication interruptions\n- All figures and statistics in marketing materials are based on market assumptions and operational estimates and are not a guarantee\n- Reports reflect candidate performance at the time of evaluation and are not a guarantee of future performance"
+          "body": "The Platform may use cookies and similar technologies that are necessary for authentication, security and core functionality, and may use optional analytics technologies where permitted and appropriately disclosed. Users may control non-essential cookies through available settings where applicable. Technical logs may be retained for security, troubleshooting and audit purposes."
         },
         {
           "id": "12",
-          "title": "Payments, Fees & Refunds",
+          "title": "Platform Nature and Service Scope",
           "part": "b",
           "updated": false,
-          "body": "- MeritLense accepts electronic payment via credit and debit cards (Visa, MasterCard) in multiple currencies, as agreed\n- Payment card data will not be stored, sold, or shared with any third party for non-operational purposes\n- MeritLense reserves the right to modify prices and fees, provided that users are notified via email or platform notice 30 days prior to implementation\n\nRefunds: unused Assessment Slots and Points are non-refundable once any consumption has occurred on the applicable purchase or billing period. Full details are set out in MeritLense's [Refunds Policy (Section 12.1)](/refunds-policy), which forms part of these Terms. Custom Enterprise refund terms are governed exclusively by the signed Pricing Addendum."
+          "body": "MeritLense is an independent digital assessment platform focused on workforce readiness and operational, technical and non-academic competency assessment. MeritLense is not a recruitment agency, manpower supplier, immigration service, employer of candidates, or the party making the Customer’s hiring decision. The Services provide assessment and decision-support tools; they do not guarantee employment, candidate suitability, regulatory approval or future performance."
         },
         {
           "id": "13",
-          "title": "External Links and Associated Services",
+          "title": "Intellectual Property",
           "part": "b",
           "updated": false,
-          "body": "The platform may include links to external websites for informational and assistance purposes. MeritLense bears no responsibility for the accuracy of such sites' content or for their privacy policies. It is advisable to review the privacy policy of each external site."
+          "body": "All rights in the Platform and MeritLense materials, including assessment methodologies, question structures, indicator libraries, evaluation frameworks, scoring models, rule-engine logic and configuration, reports, certificate designs, software, branding and content, are reserved to MeritLense or its licensors. Users receive only the limited right to use the Services for the purpose permitted by the applicable Agreement. Copying, reverse engineering, extracting, republishing, benchmarking for replication, or using the Services or outputs to reproduce a competing assessment methodology is prohibited except to the extent such restriction is prohibited by mandatory law."
         },
         {
           "id": "14",
-          "title": "Policy Updates and User Notification",
+          "title": "User Obligations",
           "part": "b",
-          "updated": true,
-          "body": "MeritLense reserves the right to amend this Policy as needed. Users will be notified via email or platform notice 30 days prior to the implementation of any material amendment. Continued use of the service after this period constitutes implied acceptance of the amendments, unless the user declares a written objection within this period.\n\nWhere an update to this Policy or to any related Agreement occurs, users must re-accept or re-sign the updated document before their next action on the platform, per MeritLense's version update process. Historical accepted / signed versions are retained permanently and are never deleted or overwritten."
+          "updated": false,
+          "body": "Users must use the Services lawfully; provide information they are authorized to provide; protect account credentials; avoid unauthorized access, interference, scraping or misuse; comply with applicable employment, privacy and anti-discrimination laws when using assessment outputs; and comply with the applicable Agreement. Services are intended for adults aged 18 or over unless MeritLense expressly enables a lawful alternative workflow with required authorization."
         },
         {
           "id": "15",
-          "title": "Governing Law and Jurisdiction",
+          "title": "Assessment Outputs and Liability",
           "part": "b",
           "updated": false,
-          "body": "This Policy and these Terms of Use are governed by the laws of the Republic of Estonia and by European Union data protection regulations (GDPR). Any disputes shall be resolved by the competent courts in Estonia unless both parties agree on an alternative mechanism.\n\nIn the event any provision of these Terms is unenforceable or invalid, that provision shall be limited to the minimum extent necessary, and the remaining Terms shall remain in full force and effect. MeritLense's delay in enforcing any provision of these Terms shall not constitute a waiver thereof, nor affect its right to enforce it at a later time."
+          "body": "Reports and readiness indicators reflect the evidence available and candidate performance at the time of assessment. They are decision-support information and should not be treated as a guarantee of future performance, professional advice, legal advice or a final employment decision. To the maximum extent permitted by applicable law and subject to any signed Agreement, MeritLense is not responsible for hiring, rejection, placement, immigration or employment decisions made by users, or for events outside MeritLense’s reasonable control."
         },
         {
           "id": "16",
-          "title": "Contact and Problem Reporting",
+          "title": "Payments, Fees and Refunds",
           "part": "b",
           "updated": false,
-          "body": "You may contact the MeritLense team to report any problems or inquiries relating to this Policy or to data use via:\n\n- Email: info@meritlense.com\n- Registered office: MeritLense OÜ, Ruunaoja tn 3, 11415 Tallinn, Estonia\n- Certificate verification: meritlense.com/en/verify-certificate\n- Official communication channels announced on the platform\n- MeritLense sends its official notifications via email, SMS, or app notifications for confirmation purposes or material updates"
+          "body": "Available payment methods may include card payment, bank transfer or other methods shown in the applicable checkout, invoice or Agreement. Payment providers process payment credentials under their own applicable terms; MeritLense does not intentionally store full payment-card credentials. Prices, taxes, currency, package entitlements, payment timing and any volume terms are those shown at purchase or stated in the applicable Agreement, invoice or Pricing Addendum. Refund eligibility is governed by the Refunds Policy and any signed Agreement or Pricing Addendum; where they conflict, the signed purpose-specific commercial document governs the relevant account."
+        },
+        {
+          "id": "17",
+          "title": "External Services and Links",
+          "part": "b",
+          "updated": false,
+          "body": "The Platform may link to or interoperate with third-party services. Third parties are responsible for their own services, content and independent privacy practices. MeritLense is not responsible for third-party content or services outside its reasonable control, except to the extent applicable law or a signed Agreement provides otherwise."
+        },
+        {
+          "id": "18",
+          "title": "Changes and Versioning",
+          "part": "b",
+          "updated": false,
+          "body": "MeritLense may update this Policy and these Terms when reasonably necessary. Material changes will be communicated through the Platform, email or another appropriate channel before they take effect where required by law or contract. Where re-acceptance or re-signature is legally or contractually required, the Platform may require it before continued use of affected Services. Historical acceptance/signature records may be retained for legal, audit and evidentiary purposes in accordance with applicable retention requirements."
+        },
+        {
+          "id": "19",
+          "title": "Governing Law, Severability and No Waiver",
+          "part": "b",
+          "updated": false,
+          "body": "These Terms and this Policy are governed by the laws of the Republic of Estonia and applicable European Union law, without prejudice to mandatory rights that apply independently. Disputes are subject to the competent courts of Estonia unless mandatory law or a signed Agreement requires otherwise. If a provision is invalid or unenforceable, it will be limited to the minimum extent necessary and the remaining provisions remain effective. Delay in enforcing a provision is not a waiver."
+        },
+        {
+          "id": "20",
+          "title": "Contact and Language",
+          "part": "b",
+          "updated": false,
+          "body": "Privacy, data-rights and Terms inquiries: info@meritlense.com. Legal entity: MeritLense OÜ, registry code 17607462, registered address Ruunaoja tn 3, Lasnamäe linnaosa, Tallinn, Harju maakond, 11415, Estonia. MeritLense may provide translations for convenience. In the event of inconsistency between a translation and the English version, the English version controls to the extent permitted by applicable law.\n\nEND OF DOCUMENT — Version v1.6"
         }
       ]
     },
     "refunds_policy": {
-      "eyebrow": "Public Document — Part of the Terms of Use",
+      "eyebrow": "PART OF THE TERMS OF USE | PUBLIC DOCUMENT",
       "title": "Refunds Policy — Section 12.1",
       "subtitle": "Workforce Readiness Assessment Platform.",
       "last_updated_label": "Last Updated",
-      "last_updated": "2026-09-12",
+      "last_updated": "2026-09-27",
       "version_label": "Version",
-      "version": "v1.0",
+      "version": "v2.0",
       "jurisdiction_label": "Jurisdiction",
       "jurisdiction": "Estonia",
-      "intro": "This Refunds Policy forms part of MeritLense's Terms of Use and applies to all purchases made on the MeritLense platform. Please read it before making a purchase.",
+      "intro": "This Refunds Policy forms part of the MeritLense Terms of Use and applies to purchases made through the MeritLense platform. It must be read together with the applicable B2C Individual Services Agreement, B2B Services Agreement, Pricing Addendum (where applicable), and any mandatory rights available under applicable law.",
       "toc_label": "On this page",
       "sections": [
         {
@@ -157,42 +185,84 @@
           "title": "Individual Packages (B2C)",
           "part": null,
           "updated": false,
-          "body": "This applies to Basic, Essential, Advanced, and Premium packages, which are one-time purchases.\n\nYou are entitled to a full refund only if you have not used any part of your package — that is, no candidate assessment has been started and no add-on service has been delivered.\n\nOnce any part of the package has been used (even a single assessment or a single add-on), the entire package becomes non-refundable. This applies even if some Assessment Slots or Points remain unused.\n\nThere is no time limit for requesting a refund based on how long ago you purchased the package. As long as your account remains active, your unused balance does not expire, and eligibility depends only on whether you have used any part of it, not on how much time has passed. See our Terms of Use for what happens to any unused balance if your account is cancelled, deleted, or inactive for an extended period.\n\nWe do not offer partial refunds (for example, refunding only the value of remaining unused Slots). A package is either fully refundable or not refundable at all."
+          "body": "This section applies to one-time individual packages made available by MeritLense, including Basic, Essential, Advanced and Premium packages, where offered.\n\nSubject always to the mandatory consumer rights described in Section 6 below, MeritLense’s commercial refund policy is as follows: if no candidate assessment has been started and no paid add-on or other purchased service has begun or been delivered, the customer may request a full refund of the unused package.\n\nAfter an assessment, paid add-on or other purchased service has begun or been delivered, MeritLense does not provide a voluntary refund for the consumed portion merely because the customer later decides not to continue using the package. Any remaining rights to withdraw, obtain a proportionate reimbursement, terminate, obtain a price reduction, or receive another remedy under mandatory consumer law remain unaffected.\n\nUnused Assessment Slots or Points do not by themselves create an entitlement to a partial refund, except where a refund or other remedy is required by mandatory law or expressly agreed by MeritLense in writing."
         },
         {
           "id": "2",
-          "title": "Subscription Plans (B2B)",
+          "title": "Consumer Right of Withdrawal (B2C)",
           "part": null,
           "updated": false,
-          "body": "This applies to Growth and Business subscription plans, which are billed on a recurring monthly basis.\n\nOnce a monthly payment is confirmed, that billing period is not refundable, regardless of how much of your monthly allocation you actually use.\n\nIf you wish to stop being billed in the future, you may cancel your subscription at any time. Cancelling does not refund the current period you have already paid for — you may continue using your existing allocation until the end of that period, and you will not be billed again afterward."
+          "body": "Where the customer qualifies as a consumer and the contract is concluded at a distance, the customer may have a statutory right to withdraw from the contract within 14 days, subject to the conditions, exceptions and consequences provided by applicable consumer law.\n\nFor a service contract, if the consumer expressly requests that performance begin during the withdrawal period, MeritLense may begin performance before that period expires. If the consumer validly withdraws after performance has begun, the consumer may be required to pay an amount proportionate to the services supplied up to the time of withdrawal, where permitted by applicable law.\n\nWhere a transaction constitutes digital content not supplied on a tangible medium, any loss of the statutory withdrawal right will apply only where the legal requirements are satisfied, including the consumer’s prior express consent to begin performance during the withdrawal period, the consumer’s acknowledgement of the resulting loss of the withdrawal right, and the required contract confirmation.\n\nAcceptance of the general Terms of Use alone will not be treated as a substitute for any separate express consent or acknowledgement required by mandatory consumer law."
         },
         {
           "id": "3",
-          "title": "Custom Enterprise Plans",
+          "title": "Subscription Plans (B2B)",
           "part": null,
           "updated": false,
-          "body": "Refund terms for Custom Enterprise accounts are not covered by this general policy. They are governed exclusively by the specific Pricing Addendum signed between you and MeritLense."
+          "body": "This section applies to recurring business subscription plans, including Growth and Business plans, where offered to business customers.\n\nUnless the applicable B2B Services Agreement, order form or Pricing Addendum states otherwise, amounts already charged for a current billing period are non-refundable as a matter of MeritLense’s commercial policy. The customer may cancel future renewal in accordance with the applicable subscription terms and may continue using the paid allocation until the end of the current billing period.\n\nThis B2B section does not override any mandatory rights that may apply where a purchaser is legally treated as a consumer rather than a business customer."
         },
         {
           "id": "4",
-          "title": "Billing Errors",
+          "title": "Custom Enterprise Plans",
           "part": null,
           "updated": false,
-          "body": "If you believe you were charged incorrectly (for example, a duplicate charge or an incorrect amount) due to an error on MeritLense's part, this is treated as a billing correction rather than a standard refund request, and is not subject to the consumption-based rules above. Please contact us immediately using the details below."
+          "body": "Refund, cancellation, credit and reconciliation terms for Custom Enterprise arrangements are governed by the applicable B2B Services Agreement, order form and/or Pricing Addendum agreed between the customer and MeritLense. If those documents contain specific terms, those specific terms prevail over this general policy for that transaction."
         },
         {
           "id": "5",
-          "title": "How to Request a Refund",
+          "title": "Billing Errors and Duplicate Charges",
           "part": null,
           "updated": false,
-          "body": "To request a refund, please contact our support team at info@meritlense.com, including your account details and the reason for your request. Eligible refunds are reviewed and processed manually; we do not currently offer instant, automatic refunds through the platform."
+          "body": "If a customer believes that MeritLense charged an incorrect amount, processed a duplicate charge, or made another billing error, the matter will be handled as a billing correction rather than solely as a standard refund request. Consumption-based restrictions in this policy do not prevent correction of a verified billing error.\n\nCustomers should contact MeritLense promptly at info@meritlense.com and provide sufficient information to identify the transaction."
         },
         {
           "id": "6",
-          "title": "Your Legal Rights",
+          "title": "Mandatory Consumer Rights and Remedies",
           "part": null,
           "updated": false,
-          "body": "Nothing in this Refunds Policy limits or excludes any mandatory rights or remedies available to consumers under applicable law."
+          "body": "Nothing in this Refunds Policy excludes, restricts or waives any mandatory consumer right or remedy that cannot lawfully be excluded or limited. This includes, where applicable, statutory rights relating to withdrawal from distance contracts and remedies for digital content or digital services that do not conform to the contract.\n\nIf a mandatory rule conflicts with this Refunds Policy, the mandatory rule prevails to the extent of the conflict."
+        },
+        {
+          "id": "7",
+          "title": "How to Request a Refund or Exercise a Withdrawal Right",
+          "part": null,
+          "updated": false,
+          "body": "Requests may be sent to info@meritlense.com. Please include the account holder’s name, account email, transaction or invoice reference (if available), the package or service concerned, and the nature of the request.\n\nA consumer does not need to use a specific form to exercise a statutory withdrawal right where applicable; a clear statement communicating the decision to withdraw is sufficient, subject to applicable law. MeritLense will process valid refunds and reimbursements within the period required by applicable law."
+        },
+        {
+          "id": "8",
+          "title": "Payment Method and Refund Destination",
+          "part": null,
+          "updated": false,
+          "body": "Approved refunds will normally be returned through the original payment method where reasonably possible. Processing time after MeritLense initiates the refund may depend on the payment provider or financial institution."
+        },
+        {
+          "id": "9",
+          "title": "Account Closure and Unused Balances",
+          "part": null,
+          "updated": false,
+          "body": "Account closure, deletion or inactivity does not create a refund entitlement by itself. The treatment of unused balances is governed by the applicable agreement and Terms of Use, subject always to mandatory law."
+        },
+        {
+          "id": "10",
+          "title": "Provider Information",
+          "part": null,
+          "updated": false,
+          "body": "MeritLense OÜ\nRegistry Code: 17607462\nRegistered Address: Ruunaoja tn 3, Lasnamäe linnaosa, Tallinn, Harju maakond, 11415, Estonia\nEmail: info@meritlense.com"
+        },
+        {
+          "id": "11",
+          "title": "Language",
+          "part": null,
+          "updated": false,
+          "body": "This English version is the controlling version of this Refunds Policy. Any Arabic version is provided for convenience. In the event of any inconsistency or difference in interpretation, the English version will prevail to the extent permitted by applicable law."
+        },
+        {
+          "id": "12",
+          "title": "Effective Date",
+          "part": null,
+          "updated": false,
+          "body": "Effective date: 27 September 2026.\n\nMeritLense may update this policy from time to time. Any update will apply prospectively unless applicable law requires otherwise."
         }
       ]
     },
