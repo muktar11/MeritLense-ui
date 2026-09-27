@@ -4,7 +4,7 @@ import type React from "react"
 import { useEffect, useRef, useState } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import { useTranslations } from "next-intl"
-import { Upload, Loader2, FileText, CheckCircle, Eye, EyeOff } from "lucide-react"
+import { Loader2, Eye, EyeOff } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -45,8 +45,6 @@ export default function CandidateRegistrationPage() {
     phone_number: "",
     date_of_birth: "",
     address: "",
-    id_document: null as File | null,
-    resume_document: null as File | null,
   })
 
   const [formErrors, setFormErrors] = useState<Record<string, string>>({})
@@ -95,20 +93,6 @@ export default function CandidateRegistrationPage() {
     }
   }
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      setFormData((prev) => ({ ...prev, [field]: file }))
-      if (formErrors[field]) {
-        setFormErrors((prev) => {
-          const next = { ...prev }
-          delete next[field]
-          return next
-        })
-      }
-    }
-  }
-
   const validateForm = (): boolean => {
     const errors: Record<string, string> = {}
 
@@ -129,11 +113,6 @@ export default function CandidateRegistrationPage() {
     if (!formData.job_role) errors.job_role = t("errors.jobRoleRequired")
     if (!formData.nationality) errors.nationality = t("errors.nationalityRequired")
     if (!formData.phone_number) errors.phone_number = t("errors.phoneRequired")
-    // ID/CV upload is hidden (see the commented-out Document Uploads
-    // section below) - no longer required at registration.
-    // if (!formData.id_document) errors.id_document = t("errors.idDocumentRequired")
-    // if (!formData.resume_document) errors.resume_document = t("errors.resumeRequired")
-
     setFormErrors(errors)
     return Object.keys(errors).length === 0
   }
@@ -158,8 +137,6 @@ export default function CandidateRegistrationPage() {
       phone_number: formData.phone_number,
       date_of_birth: formData.date_of_birth || undefined,
       address: formData.address || undefined,
-      id_document: formData.id_document || undefined,
-      resume_document: formData.resume_document || undefined,
     }
 
     const success = await registerB2C(registrationData)
@@ -427,74 +404,6 @@ export default function CandidateRegistrationPage() {
                 </div>
               </div>
             </div>
-
-            {/* Document Uploads - hidden per request; ID/CV are no longer
-                collected at registration (see B2CRegistrationSerializer,
-                now required=False). Uncomment to restore. */}
-            {/* <div className="space-y-4">
-              <h2 className="text-lg font-semibold">{t("sections.documents")}</h2>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>{t("documents.idDocumentLabel")} *</Label>
-                  <label
-                    className={`flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-6 cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition ${
-                      formErrors.id_document ? "border-destructive" : "border-border"
-                    }`}
-                  >
-                    {formData.id_document ? (
-                      <>
-                        <CheckCircle className="w-6 h-6 text-green-600 mb-2" />
-                        <span className="text-sm text-green-600 text-center truncate max-w-full">
-                          {formData.id_document.name}
-                        </span>
-                      </>
-                    ) : (
-                      <>
-                        <Upload className="w-6 h-6 text-muted-foreground mb-2" />
-                        <span className="text-sm text-muted-foreground">{t("documents.idDocumentUpload")}</span>
-                      </>
-                    )}
-                    <input
-                      type="file"
-                      accept=".pdf,.jpg,.jpeg,.png"
-                      onChange={(e) => handleFileUpload(e, "id_document")}
-                      className="hidden"
-                    />
-                  </label>
-                  <FieldError field="id_document" />
-                </div>
-                <div className="space-y-2">
-                  <Label>{t("documents.resumeLabel")} *</Label>
-                  <label
-                    className={`flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-6 cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition ${
-                      formErrors.resume_document ? "border-destructive" : "border-border"
-                    }`}
-                  >
-                    {formData.resume_document ? (
-                      <>
-                        <CheckCircle className="w-6 h-6 text-green-600 mb-2" />
-                        <span className="text-sm text-green-600 text-center truncate max-w-full">
-                          {formData.resume_document.name}
-                        </span>
-                      </>
-                    ) : (
-                      <>
-                        <FileText className="w-6 h-6 text-muted-foreground mb-2" />
-                        <span className="text-sm text-muted-foreground">{t("documents.resumeUpload")}</span>
-                      </>
-                    )}
-                    <input
-                      type="file"
-                      accept=".pdf,.doc,.docx"
-                      onChange={(e) => handleFileUpload(e, "resume_document")}
-                      className="hidden"
-                    />
-                  </label>
-                  <FieldError field="resume_document" />
-                </div>
-              </div>
-            </div> */}
 
             <Button
               type="submit"

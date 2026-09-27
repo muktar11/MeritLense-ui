@@ -130,6 +130,20 @@ export const useAuth = (): UseAuthReturn => {
       localStorage.setItem('emailVerified', 'true')
       localStorage.setItem('userRole', response.role)
       setUserRole(response.role)
+
+      if (response.access && response.refresh && response.user_id) {
+        localStorage.setItem('accessToken', response.access)
+        localStorage.setItem('refreshToken', response.refresh)
+        localStorage.setItem('userData', JSON.stringify({
+          id: response.user_id,
+          full_name: response.full_name,
+          is_verified: response.is_verified,
+          documents_verified: response.documents_verified,
+        }))
+        setUserId(response.user_id)
+        setIsAuthenticated(true)
+        setAuthToken(response.access)
+      }
       
       return true
     } catch (err: any) {

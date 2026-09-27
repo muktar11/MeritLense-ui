@@ -69,7 +69,12 @@ export default function EmailVerifyPage() {
 
     const success = await verifyEmail({ email, code: fullCode })
     if (success) {
-      router.push(`/${locale}/auth/login`)
+      const registrationType = localStorage.getItem("registrationType")
+      router.push(
+        registrationType === "b2c"
+          ? `/${locale}/dashboard/indivisual`
+          : `/${locale}/auth/login`,
+      )
     }
   }
 

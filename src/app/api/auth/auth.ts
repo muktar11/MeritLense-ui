@@ -36,6 +36,14 @@ export interface EmailVerificationData {
 export interface EmailVerificationResponse {
   message: string
   role: string
+  access?: string
+  refresh?: string
+  user_id?: string
+  is_superuser?: boolean
+  is_staff?: boolean
+  is_verified?: boolean
+  documents_verified?: boolean
+  full_name?: string
 }
 
 export interface ResendVerificationData {
