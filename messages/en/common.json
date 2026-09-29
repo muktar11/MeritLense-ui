@@ -457,7 +457,7 @@
         "plans": [
           {
             "name": "Basic",
-            "candidates_count": "Screening assessment tier",
+            "candidates_count": "2 candidate assessments",
             "features": [
               "Screening assessment",
               "Structured assessment report",
@@ -466,7 +466,7 @@
           },
           {
             "name": "Essential",
-            "candidates_count": "Extended screening assessment tier",
+            "candidates_count": "4 candidate assessments",
             "features": [
               "Everything in Basic",
               "Extended screening assessment",
@@ -475,7 +475,7 @@
           },
           {
             "name": "Advanced",
-            "candidates_count": "Full assessment tier",
+            "candidates_count": "6 candidate assessments",
             "features": [
               "Everything in Essential",
               "Full workforce readiness assessment",
@@ -485,7 +485,7 @@
           },
           {
             "name": "Premium",
-            "candidates_count": "Expanded full assessment tier",
+            "candidates_count": "8 candidate assessments",
             "features": [
               "Everything in Advanced",
               "Expanded full assessment",
@@ -511,7 +511,7 @@
           },
           {
             "name": "Growth",
-            "candidates_count": "Full assessment tier",
+            "candidates_count": "100 candidate assessments/month",
             "features": [
               "Full workforce readiness assessment",
               "Workforce Readiness Level",
@@ -521,7 +521,7 @@
           },
           {
             "name": "Business",
-            "candidates_count": "Expanded full assessment tier",
+            "candidates_count": "200 candidate assessments/month",
             "features": [
               "Everything in Growth",
               "Task observation support",
