@@ -14,6 +14,10 @@ import { SubscriptionForm } from "./subscription-form";
 import { useSubscription } from "@/app/context/SubscriptionContext";
 import { UsageSummary } from "./usage-summary";
 import { PlanCoverageChecklist } from "@/components/payments/PlanCoverageChecklist";
+import { RequestPackageModal } from "./request-package-modal";
+import packageRequestService from "@/app/api/payments/package-requests/endpoints";
+import type { PackageRequest } from "@/app/api/payments/package-requests/types";
+import { Building2 } from "lucide-react";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -30,15 +34,29 @@ export function PlansTab() {
   const [selectedPlan, setSelectedPlan] = useState<Price | null>(null);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
+  const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
+  const [myRequests, setMyRequests] = useState<PackageRequest[]>([]);
 
   useEffect(() => {
     if (isAuthenticated) {
       fetchPlans();
+      if (userRole === 'B2B') {
+        fetchMyRequests();
+      }
     } else {
       setLoading(false);
       setError(t('errors.loginRequired'));
     }
   }, [isAuthenticated]);
+
+  const fetchMyRequests = async () => {
+    try {
+      const response = await packageRequestService.getMyRequests();
+      setMyRequests(response.results || []);
+    } catch (error) {
+      console.error('Failed to fetch package requests:', error);
+    }
+  };
 
   const fetchPlans = async () => {
     setLoading(true);
@@ -303,6 +321,20 @@ export function PlansTab() {
                 );
               })
             )}
+
+            {userRole === 'B2B' && (
+              <div className="rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 p-6 sm:p-8 flex flex-col items-center justify-center text-center">
+                <Building2 className="w-8 h-8 text-purple-500 mb-3" />
+                <h3 className="text-lg font-bold text-gray-900 mb-2">{t('requestPackage.cardTitle')}</h3>
+                <p className="text-sm text-gray-600 mb-6">{t('requestPackage.cardDescription')}</p>
+                <button
+                  onClick={() => setIsRequestModalOpen(true)}
+                  className="w-full font-semibold py-2 sm:py-3 px-3 sm:px-4 rounded-lg transition text-sm sm:text-base border-2 border-purple-500 text-purple-600 hover:bg-purple-50"
+                >
+                  {t('requestPackage.cardButton')}
+                </button>
+              </div>
+            )}
           </div>
         )}
 
@@ -311,7 +343,40 @@ export function PlansTab() {
             {error}
           </div>
         )}
+
+        {!selectedPlan && userRole === 'B2B' && myRequests.length > 0 && (
+          <div className="max-w-3xl mx-auto mt-8 text-left">
+            <h3 className="text-sm font-semibold text-gray-700 mb-3">{t('requestPackage.myRequestsTitle')}</h3>
+            <div className="space-y-2">
+              {myRequests.map((req) => (
+                <div key={req.id} className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg">
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">{req.deal_type_display}</p>
+                    <p className="text-xs text-gray-500">{new Date(req.created_at).toLocaleDateString()}</p>
+                  </div>
+                  <span
+                    className={`px-3 py-1 text-xs font-semibold rounded-full ${
+                      req.status === 'APPROVED'
+                        ? 'bg-green-100 text-green-800'
+                        : req.status === 'DENIED'
+                        ? 'bg-red-100 text-red-800'
+                        : 'bg-amber-100 text-amber-800'
+                    }`}
+                  >
+                    {t(`requestPackage.status.${req.status}`)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
+
+      <RequestPackageModal
+        isOpen={isRequestModalOpen}
+        onClose={() => setIsRequestModalOpen(false)}
+        onSubmitted={fetchMyRequests}
+      />
     </div>
   );
 }
