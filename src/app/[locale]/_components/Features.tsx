@@ -2,6 +2,7 @@
 
 import { forwardRef } from "react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { useInView } from "react-intersection-observer";
 import { Brain, CheckCircle2, Briefcase, Shield, Globe, Zap, Lock, FileCheck, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -49,10 +50,12 @@ export const Features = forwardRef<HTMLElement>(function Features(_, ref) {
 
           <div className="relative">
             <div className="relative w-full aspect-4/3 rounded-2xl overflow-hidden shadow-xl border border-gray-200">
-              <img
-                src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=900&fit=crop"
+              <Image
+                src="/images/SmartEvaluations.jpg"
                 alt={t("smart_evaluations.image_alt")}
-                className="object-cover w-full h-full"
+                fill
+                sizes="w-[1200px]"
+                className="object-cover"
               />
             </div>
           </div>
