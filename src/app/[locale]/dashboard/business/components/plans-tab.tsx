@@ -349,22 +349,36 @@ export function PlansTab() {
             <h3 className="text-sm font-semibold text-gray-700 mb-3">{t('requestPackage.myRequestsTitle')}</h3>
             <div className="space-y-2">
               {myRequests.map((req) => (
-                <div key={req.id} className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg">
+                <div key={req.id} className="flex flex-col gap-2 p-3 bg-white border border-gray-200 rounded-lg sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <p className="text-sm font-medium text-gray-900">{req.deal_type_display}</p>
                     <p className="text-xs text-gray-500">{new Date(req.created_at).toLocaleDateString()}</p>
                   </div>
-                  <span
-                    className={`px-3 py-1 text-xs font-semibold rounded-full ${
-                      req.status === 'APPROVED'
-                        ? 'bg-green-100 text-green-800'
-                        : req.status === 'DENIED'
-                        ? 'bg-red-100 text-red-800'
-                        : 'bg-amber-100 text-amber-800'
-                    }`}
-                  >
-                    {t(`requestPackage.status.${req.status}`)}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    {req.status === 'APPROVED' && req.stripe_payment_link_url && (
+                      <a
+                        href={req.stripe_payment_link_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-3 py-1 text-xs font-semibold rounded-full bg-purple-600 text-white hover:bg-purple-700"
+                      >
+                        {t('requestPackage.payNow')}
+                      </a>
+                    )}
+                    <span
+                      className={`px-3 py-1 text-xs font-semibold rounded-full ${
+                        req.status === 'PAID'
+                          ? 'bg-green-100 text-green-800'
+                          : req.status === 'APPROVED'
+                          ? 'bg-blue-100 text-blue-800'
+                          : req.status === 'DENIED'
+                          ? 'bg-red-100 text-red-800'
+                          : 'bg-amber-100 text-amber-800'
+                      }`}
+                    >
+                      {t(`requestPackage.status.${req.status}`)}
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>

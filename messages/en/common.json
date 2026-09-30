@@ -1670,6 +1670,7 @@
           "all": "All",
           "pending": "Pending",
           "approved": "Approved",
+          "paid": "Paid",
           "denied": "Denied"
         },
         "table": {
@@ -1684,7 +1685,8 @@
         },
         "status": {
           "PENDING": "Pending",
-          "APPROVED": "Approved",
+          "APPROVED": "Approved - Awaiting Payment",
+          "PAID": "Paid",
           "DENIED": "Denied"
         },
         "dealType": {
@@ -1705,12 +1707,22 @@
           "noMessage": "No message provided.",
           "alreadyDecided": "This request was already {status} on {date}.",
           "decisionReasonNote": "Reason: {reason}",
+          "paymentLink": {
+            "awaitingPayment": "Approved - awaiting payment. Share this link with the requester if needed:",
+            "copy": "Copy",
+            "paidConfirmed": "Payment received on {date}. This package is now active."
+          },
           "approveSection": {
             "heading": "Set the final agreed terms",
-            "note": "These are the actual numbers that will be granted - they don't have to match the request.",
+            "note": "These are the actual numbers that will be granted, and a Stripe payment link for this amount will be emailed to the requester - the package activates once they pay.",
             "slotGrant": "Assessment slots",
             "pointsGrant": "Points",
             "unitAmount": "Agreed price",
+            "billingType": "Billing Type",
+            "billingTypePlaceholder": "Select billing type",
+            "billingTypeOneTime": "One-Time Payment",
+            "billingTypeRecurring": "Recurring (Monthly)",
+            "billingTypeRequired": "Please select a billing type.",
             "currency": "Currency",
             "rolloverAllowed": "Allow unused balance to roll over",
             "addendumReference": "Addendum / contract reference",
@@ -3131,9 +3143,11 @@
           "cardDescription": "These plans are tailored to your organization. Send us a request and we'll get back to you.",
           "cardButton": "Request a Custom Package",
           "myRequestsTitle": "Your Package Requests",
+          "payNow": "Pay Now",
           "status": {
             "PENDING": "Pending Review",
-            "APPROVED": "Approved",
+            "APPROVED": "Payment Required",
+            "PAID": "Active",
             "DENIED": "Denied"
           },
           "title": "Request a Custom Package",
