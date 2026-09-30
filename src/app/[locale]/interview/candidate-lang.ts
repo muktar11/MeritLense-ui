@@ -161,6 +161,9 @@ interface CandidateStrings {
   };
   testTimer: {
     remaining: (mm: number, ss: string) => string;
+    warning5Min: string;
+    warning1Min: string;
+    warning30Sec: string;
   };
   liveCallRoom: {
     missingSessionId: string;
@@ -401,6 +404,9 @@ const en: CandidateStrings = {
   },
   testTimer: {
     remaining: (mm, ss) => `${mm}:${ss} remaining`,
+    warning5Min: "5 minutes remaining",
+    warning1Min: "1 minute remaining",
+    warning30Sec: "30 seconds remaining",
   },
   liveCallRoom: {
     missingSessionId: "Missing session ID.",
@@ -636,6 +642,9 @@ const ar: CandidateStrings = {
   },
   testTimer: {
     remaining: (mm, ss) => `${mm}:${ss} متبقٍ`,
+    warning5Min: "تبقّت 5 دقائق",
+    warning1Min: "تبقّت دقيقة واحدة",
+    warning30Sec: "تبقّت 30 ثانية",
   },
   liveCallRoom: {
     missingSessionId: "معرّف الجلسة مفقود.",
