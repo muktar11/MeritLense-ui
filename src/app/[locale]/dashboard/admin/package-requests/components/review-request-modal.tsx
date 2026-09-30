@@ -7,7 +7,8 @@ import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import type { PackageRequest, PackageRequestApprovePayload } from "@/app/api/admin/package-requests/types";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import type { PackageRequest, PackageRequestApprovePayload, PackageRequestBillingType } from "@/app/api/admin/package-requests/types";
 
 interface ReviewRequestModalProps {
   isOpen: boolean;
@@ -26,6 +27,7 @@ export function ReviewRequestModal({ isOpen, onClose, request, onApprove, onDeny
   const [slotGrant, setSlotGrant] = useState("");
   const [pointsGrant, setPointsGrant] = useState("");
   const [unitAmount, setUnitAmount] = useState("");
+  const [billingType, setBillingType] = useState<PackageRequestBillingType | "">("");
   const [currency, setCurrency] = useState("eur");
   const [rolloverAllowed, setRolloverAllowed] = useState(false);
   const [addendumReference, setAddendumReference] = useState("");
@@ -40,6 +42,7 @@ export function ReviewRequestModal({ isOpen, onClose, request, onApprove, onDeny
     setSlotGrant("");
     setPointsGrant("");
     setUnitAmount("");
+    setBillingType("");
     setCurrency("eur");
     setRolloverAllowed(false);
     setAddendumReference("");
@@ -60,6 +63,10 @@ export function ReviewRequestModal({ isOpen, onClose, request, onApprove, onDeny
       setError(t("modal.approveSection.unitAmount"));
       return;
     }
+    if (!billingType) {
+      setError(t("modal.approveSection.billingTypeRequired"));
+      return;
+    }
     setLoading(true);
     setError("");
     try {
@@ -67,6 +74,7 @@ export function ReviewRequestModal({ isOpen, onClose, request, onApprove, onDeny
         slot_grant: slotGrant.trim() ? Number(slotGrant) : null,
         points_grant: pointsGrant.trim() ? Number(pointsGrant) : null,
         unit_amount: unitAmount,
+        billing_type: billingType,
         currency,
         rollover_allowed: rolloverAllowed,
         addendum_reference: addendumReference,
@@ -159,6 +167,30 @@ export function ReviewRequestModal({ isOpen, onClose, request, onApprove, onDeny
                     </div>
                   )}
 
+                  {request.status === "APPROVED" && request.stripe_payment_link_url && (
+                    <div className="p-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-lg text-sm space-y-2">
+                      <p className="font-medium">{t("modal.paymentLink.awaitingPayment")}</p>
+                      <div className="flex items-center gap-2">
+                        <Input readOnly value={request.stripe_payment_link_url} className="text-xs bg-white" />
+                        <button
+                          type="button"
+                          onClick={() => navigator.clipboard?.writeText(request.stripe_payment_link_url)}
+                          className="shrink-0 px-3 py-2 text-xs font-medium border border-amber-300 rounded-lg hover:bg-amber-100"
+                        >
+                          {t("modal.paymentLink.copy")}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {request.status === "PAID" && (
+                    <div className="p-3 bg-green-50 border border-green-200 text-green-800 rounded-lg text-sm">
+                      {t("modal.paymentLink.paidConfirmed", {
+                        date: request.paid_at ? new Date(request.paid_at).toLocaleDateString() : "",
+                      })}
+                    </div>
+                  )}
+
                   {isPending && !action && (
                     <div className="flex justify-end gap-3 pt-2 border-t">
                       <button onClick={resetAndClose} className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50">
@@ -204,6 +236,18 @@ export function ReviewRequestModal({ isOpen, onClose, request, onApprove, onDeny
                           <label className="block text-xs font-medium text-gray-700 mb-1">{t("modal.approveSection.currency")}</label>
                           <Input value={currency} onChange={(e) => setCurrency(e.target.value.toLowerCase())} maxLength={3} />
                         </div>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">{t("modal.approveSection.billingType")} *</label>
+                        <Select value={billingType} onValueChange={(v) => setBillingType(v as PackageRequestBillingType)}>
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder={t("modal.approveSection.billingTypePlaceholder")} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="ONE_TIME">{t("modal.approveSection.billingTypeOneTime")}</SelectItem>
+                            <SelectItem value="RECURRING">{t("modal.approveSection.billingTypeRecurring")}</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                       <div>
                         <label className="block text-xs font-medium text-gray-700 mb-1">{t("modal.approveSection.addendumReference")}</label>

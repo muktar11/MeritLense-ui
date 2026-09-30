@@ -1,7 +1,8 @@
 // app/api/admin/package-requests/types.ts
 
 export type PackageRequestDealType = 'STARTER' | 'ENTERPRISE';
-export type PackageRequestStatus = 'PENDING' | 'APPROVED' | 'DENIED';
+export type PackageRequestStatus = 'PENDING' | 'APPROVED' | 'PAID' | 'DENIED';
+export type PackageRequestBillingType = 'ONE_TIME' | 'RECURRING';
 
 export interface PackageRequest {
   id: string;
@@ -21,6 +22,13 @@ export interface PackageRequest {
   reviewed_by: string | null;
   reviewed_by_name: string | null;
   reviewed_at: string | null;
+  billing_type: PackageRequestBillingType | '';
+  approved_slot_grant: number | null;
+  approved_points_grant: number | null;
+  unit_amount: string | number | null;
+  currency: string;
+  stripe_payment_link_url: string;
+  paid_at: string | null;
   deal_record_id: number | null;
   created_at: string;
   updated_at: string;
@@ -37,6 +45,7 @@ export interface PackageRequestApprovePayload {
   slot_grant?: number | null;
   points_grant?: number | null;
   unit_amount: string | number;
+  billing_type: PackageRequestBillingType;
   currency?: string;
   rollover_allowed?: boolean;
   addendum_reference?: string;

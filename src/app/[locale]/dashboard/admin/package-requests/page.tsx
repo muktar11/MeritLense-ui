@@ -11,7 +11,7 @@ import { ReviewRequestModal } from "./components/review-request-modal";
 import adminPackageRequestService from "@/app/api/admin/package-requests/endpoints";
 import type { PackageRequest, PackageRequestApprovePayload } from "@/app/api/admin/package-requests/types";
 
-const STATUS_FILTERS = ["all", "PENDING", "APPROVED", "DENIED"] as const;
+const STATUS_FILTERS = ["all", "PENDING", "APPROVED", "PAID", "DENIED"] as const;
 
 export default function PackageRequestsPage() {
   const t = useTranslations("dashboard.admin.packageRequests");
@@ -54,8 +54,10 @@ export default function PackageRequestsPage() {
 
   const statusBadgeClass = (status: string) => {
     switch (status) {
-      case "APPROVED":
+      case "PAID":
         return "bg-green-100 text-green-800";
+      case "APPROVED":
+        return "bg-blue-100 text-blue-800";
       case "DENIED":
         return "bg-red-100 text-red-800";
       default:
