@@ -21,6 +21,7 @@ import {
   SlidersHorizontal,
   Package,
   ClipboardList,
+  Inbox,
 } from "lucide-react";
 
 // Optional: locale code → human-readable name map
@@ -50,6 +51,12 @@ export default function AdminLayout({
         label: t("pages_list.package_management"),
         icon: Package,
         href: `/${locale}/dashboard/admin/packages`,
+      }] : []),
+
+      ...(userRole === 'SUPERADMIN' ? [{
+        label: t("pages_list.package_requests"),
+        icon: Inbox,
+        href: `/${locale}/dashboard/admin/package-requests`,
       }] : []),
 
       {

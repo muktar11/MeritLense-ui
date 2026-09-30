@@ -902,6 +902,7 @@
         "api_settings": "باقة الدفع",
         "multi_agency_panel": "الفواتير والاشتراكات",
         "package_management": "إدارة الباقات",
+        "package_requests": "طلبات الباقات",
         "interview_setup": "إعداد المقابلات"
       },
       "overview_page": {
@@ -1684,6 +1685,80 @@
             "prev": "السابق",
             "next": "التالي"
           }
+        }
+      },
+      "packageRequests": {
+        "title": "طلبات باقات Starter وEnterprise",
+        "subtitle": "مراجعة طلبات الباقات المقدَّمة من شركات B2B.",
+        "empty": "لا توجد طلبات باقات حتى الآن.",
+        "filters": {
+          "all": "الكل",
+          "pending": "قيد الانتظار",
+          "approved": "تمت الموافقة",
+          "denied": "مرفوض"
+        },
+        "table": {
+          "company": "الشركة",
+          "dealType": "الباقة",
+          "requested": "المطلوب",
+          "requestedBy": "مقدَّم من",
+          "submitted": "تاريخ التقديم",
+          "status": "الحالة",
+          "actions": "الإجراءات",
+          "review": "مراجعة"
+        },
+        "status": {
+          "PENDING": "قيد الانتظار",
+          "APPROVED": "تمت الموافقة",
+          "DENIED": "مرفوض"
+        },
+        "dealType": {
+          "STARTER": "Starter",
+          "ENTERPRISE": "Enterprise"
+        },
+        "slotsShort": "{count} تقييم",
+        "pointsShort": "{count} نقطة",
+        "notSpecified": "غير محدد",
+        "modal": {
+          "title": "مراجعة الطلب",
+          "companyLabel": "الشركة",
+          "requestedByLabel": "مقدَّم من",
+          "dealTypeLabel": "الباقة",
+          "requestedSlotsLabel": "عدد التقييمات المطلوبة",
+          "requestedPointsLabel": "النقاط المطلوبة",
+          "messageLabel": "رسالة من مقدّم الطلب",
+          "noMessage": "لم تُقدَّم أي رسالة.",
+          "alreadyDecided": "تم اتخاذ قرار بشأن هذا الطلب بالفعل: {status} بتاريخ {date}.",
+          "decisionReasonNote": "السبب: {reason}",
+          "approveSection": {
+            "heading": "حدد الشروط النهائية المتفق عليها",
+            "note": "هذه هي الأرقام الفعلية التي سيتم منحها - لا يجب أن تطابق الطلب الأصلي.",
+            "slotGrant": "عدد تقييمات المرشحين",
+            "pointsGrant": "النقاط",
+            "unitAmount": "السعر المتفق عليه",
+            "currency": "العملة",
+            "rolloverAllowed": "السماح بترحيل الرصيد غير المستخدم",
+            "addendumReference": "مرجع الملحق / العقد",
+            "addendumPlaceholder": "مثال: ADD-2026-014",
+            "decisionNote": "ملاحظة لمقدّم الطلب (اختياري)",
+            "decisionNotePlaceholder": "أي سياق تريد تضمينه في رسالة الموافقة..."
+          },
+          "denySection": {
+            "heading": "سبب الرفض",
+            "reasonPlaceholder": "اشرح سبب رفض هذا الطلب - سيتم تضمينه في الرسالة المرسلة إلى مقدّم الطلب...",
+            "reasonRequired": "السبب مطلوب."
+          },
+          "cancel": "إلغاء",
+          "back": "رجوع",
+          "approve": "موافقة",
+          "deny": "رفض",
+          "confirmApprove": "تأكيد الموافقة",
+          "confirmDeny": "تأكيد الرفض",
+          "processing": "جارٍ المعالجة..."
+        },
+        "errors": {
+          "loadFailed": "فشل تحميل طلبات الباقات.",
+          "decisionFailed": "فشل إرسال القرار. يرجى المحاولة مرة أخرى."
         }
       },
       "packages": {
@@ -3057,6 +3132,39 @@
         "getStarted": "ابدأ الآن",
         "finish": "إنهاء",
         "priceCustom": "مخصص",
+        "requestPackage": {
+          "cardTitle": "تحتاج إلى باقة Starter أو Enterprise؟",
+          "cardDescription": "هذه الباقات مصممة خصيصًا لمؤسستك. أرسل لنا طلبًا وسنعاود التواصل معك.",
+          "cardButton": "طلب باقة مخصصة",
+          "myRequestsTitle": "طلبات الباقات الخاصة بك",
+          "status": {
+            "PENDING": "قيد المراجعة",
+            "APPROVED": "تمت الموافقة",
+            "DENIED": "مرفوض"
+          },
+          "title": "طلب باقة مخصصة",
+          "description": "أخبرنا تقريبًا بما تحتاجه - سيتواصل معك فريقنا بالشروط النهائية.",
+          "dealTypeLabel": "الباقة",
+          "dealType": {
+            "STARTER": "Starter (حسب الاتفاقية)",
+            "ENTERPRISE": "Enterprise"
+          },
+          "slotsLabel": "عدد تقييمات المرشحين (تقريبًا)",
+          "slotsPlaceholder": "مثال: 100",
+          "pointsLabel": "النقاط (تقريبًا)",
+          "pointsPlaceholder": "مثال: 1000",
+          "messageLabel": "رسالة (اختياري)",
+          "messagePlaceholder": "أخبرنا عن حجم فريقك أو الجدول الزمني أو أي معلومات أخرى مفيدة...",
+          "cancel": "إلغاء",
+          "submit": "إرسال الطلب",
+          "submitting": "جارٍ الإرسال...",
+          "successTitle": "تم إرسال الطلب",
+          "successMessage": "سيراجع فريقنا طلبك ويرسل لك القرار عبر البريد الإلكتروني.",
+          "close": "إغلاق",
+          "errors": {
+            "submitFailed": "فشل إرسال طلبك. يرجى المحاولة مرة أخرى."
+          }
+        },
         "errors": {
           "loginRequired": "يرجى تسجيل الدخول لعرض الخطط",
           "fetchPlansFailed": "فشل جلب الخطط",

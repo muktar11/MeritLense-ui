@@ -901,6 +901,7 @@
         "api_settings": "Payment Package",
         "multi_agency_panel": "Billing and Subscription",
         "package_management": "Package Management",
+        "package_requests": "Package Requests",
         "interview_setup": "Interview Setup"
       },
       "overview_page": {
@@ -1657,6 +1658,80 @@
             "prev": "Prev",
             "next": "Next"
           }
+        }
+      },
+      "packageRequests": {
+        "title": "Starter & Enterprise Requests",
+        "subtitle": "Review package requests submitted by B2B companies.",
+        "empty": "No package requests yet.",
+        "filters": {
+          "all": "All",
+          "pending": "Pending",
+          "approved": "Approved",
+          "denied": "Denied"
+        },
+        "table": {
+          "company": "Company",
+          "dealType": "Package",
+          "requested": "Requested",
+          "requestedBy": "Requested By",
+          "submitted": "Submitted",
+          "status": "Status",
+          "actions": "Actions",
+          "review": "Review"
+        },
+        "status": {
+          "PENDING": "Pending",
+          "APPROVED": "Approved",
+          "DENIED": "Denied"
+        },
+        "dealType": {
+          "STARTER": "Starter",
+          "ENTERPRISE": "Enterprise"
+        },
+        "slotsShort": "{count} slots",
+        "pointsShort": "{count} points",
+        "notSpecified": "Not specified",
+        "modal": {
+          "title": "Review Request",
+          "companyLabel": "Company",
+          "requestedByLabel": "Requested by",
+          "dealTypeLabel": "Package",
+          "requestedSlotsLabel": "Requested slots",
+          "requestedPointsLabel": "Requested points",
+          "messageLabel": "Message from requester",
+          "noMessage": "No message provided.",
+          "alreadyDecided": "This request was already {status} on {date}.",
+          "decisionReasonNote": "Reason: {reason}",
+          "approveSection": {
+            "heading": "Set the final agreed terms",
+            "note": "These are the actual numbers that will be granted - they don't have to match the request.",
+            "slotGrant": "Assessment slots",
+            "pointsGrant": "Points",
+            "unitAmount": "Agreed price",
+            "currency": "Currency",
+            "rolloverAllowed": "Allow unused balance to roll over",
+            "addendumReference": "Addendum / contract reference",
+            "addendumPlaceholder": "e.g. ADD-2026-014",
+            "decisionNote": "Note to requester (optional)",
+            "decisionNotePlaceholder": "Any context to include in the approval email..."
+          },
+          "denySection": {
+            "heading": "Reason for denial",
+            "reasonPlaceholder": "Explain why this request is being denied - this is included in the email to the requester...",
+            "reasonRequired": "A reason is required."
+          },
+          "cancel": "Cancel",
+          "back": "Back",
+          "approve": "Approve",
+          "deny": "Deny",
+          "confirmApprove": "Confirm Approval",
+          "confirmDeny": "Confirm Denial",
+          "processing": "Processing..."
+        },
+        "errors": {
+          "loadFailed": "Failed to load package requests.",
+          "decisionFailed": "Failed to submit the decision. Please try again."
         }
       },
       "packages": {
@@ -3049,6 +3124,39 @@
         "getStarted": "Get Started",
         "finish": "Finish",
         "priceCustom": "Custom",
+        "requestPackage": {
+          "cardTitle": "Need Starter or Enterprise?",
+          "cardDescription": "These plans are tailored to your organization. Send us a request and we'll get back to you.",
+          "cardButton": "Request a Custom Package",
+          "myRequestsTitle": "Your Package Requests",
+          "status": {
+            "PENDING": "Pending Review",
+            "APPROVED": "Approved",
+            "DENIED": "Denied"
+          },
+          "title": "Request a Custom Package",
+          "description": "Tell us roughly what you need - our team will follow up with the final terms.",
+          "dealTypeLabel": "Package",
+          "dealType": {
+            "STARTER": "Starter (Per Agreement)",
+            "ENTERPRISE": "Enterprise"
+          },
+          "slotsLabel": "Assessment slots (approx.)",
+          "slotsPlaceholder": "e.g. 100",
+          "pointsLabel": "Points (approx.)",
+          "pointsPlaceholder": "e.g. 1000",
+          "messageLabel": "Message (optional)",
+          "messagePlaceholder": "Tell us about your team size, timeline, or anything else useful...",
+          "cancel": "Cancel",
+          "submit": "Submit Request",
+          "submitting": "Submitting...",
+          "successTitle": "Request Sent",
+          "successMessage": "Our team will review your request and email you with a decision.",
+          "close": "Close",
+          "errors": {
+            "submitFailed": "Failed to submit your request. Please try again."
+          }
+        },
         "errors": {
           "loginRequired": "Please log in to view plans",
           "fetchPlansFailed": "Failed to fetch plans",
