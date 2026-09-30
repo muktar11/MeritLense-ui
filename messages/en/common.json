@@ -461,7 +461,8 @@
             "features": [
               "Screening assessment",
               "Structured assessment report",
-              "Assessment Date"
+              "Assessment Date",
+              "Certificate eligibility based on assessment outcome"
             ]
           },
           {
@@ -470,7 +471,8 @@
             "features": [
               "Everything in Basic",
               "Extended screening assessment",
-              "Assessment Date"
+              "Assessment Date",
+              "Certificate eligibility based on assessment outcome"
             ]
           },
           {

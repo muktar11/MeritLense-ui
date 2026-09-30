@@ -567,7 +567,13 @@ export default function PaymentPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {oneTimePlans.map((plan) => {
                     const isPurchased = plan.id === currentOneTimePriceId;
-                    const coverage = planCoverageFlags(plan);
+                    // Every B2C one-time package is certificate-eligible
+                    // (subject to the same quality-bar checks at issuance),
+                    // regardless of which evaluation tier this specific
+                    // Price is labeled with - only Screening/Full coverage
+                    // still varies by package, so that part of the flag set
+                    // is left as-is.
+                    const coverage = { ...planCoverageFlags(plan), hasCertificate: true };
                     return (
                     <div
                       key={plan.id}
