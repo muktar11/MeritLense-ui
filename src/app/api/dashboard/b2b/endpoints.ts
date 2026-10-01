@@ -1,4 +1,4 @@
-import { apiClient } from '@/app/api/auth/client';
+import { apiClient, authClient } from '@/app/api/auth/client';
 import {
   DashboardStats,
   RecentCandidate,
@@ -11,7 +11,10 @@ import {
   MonthlyActivity,
   CandidateComparison,
   JobRoleDistribution,
-  EvaluationTimeRange
+  EvaluationTimeRange,
+  ComparisonRole,
+  ComparisonEligibleCandidate,
+  FullComparisonResult
 } from './types';
 import { API_BASE_URL } from '@/lib/config/env';
 
@@ -115,6 +118,62 @@ class B2BDashboardService {
     this.ensureAuthToken();
     const response = await apiClient.get(`${this.baseURL}evaluation-time-range`);
     return response.data;
+  }
+
+  // Role-based Candidate Comparison (Select Job Role -> Select 2-4 Eligible
+  // Candidates -> Compare). Step 1: which roles actually have comparable
+  // (scored) candidates.
+  async getComparisonRoles(): Promise<ComparisonRole[]> {
+    this.ensureAuthToken();
+    const response = await apiClient.get(`${this.baseURL}candidate-comparison/roles`);
+    return response.data;
+  }
+
+  // Step 2: candidates eligible for comparison under a chosen role.
+  async getComparisonEligibleCandidates(roleCode: string): Promise<ComparisonEligibleCandidate[]> {
+    this.ensureAuthToken();
+    const response = await apiClient.get(`${this.baseURL}candidate-comparison/eligible-candidates`, {
+      params: { role_code: roleCode },
+    });
+    return response.data;
+  }
+
+  // Steps 3+4: the real Candidate Summary + role-scoped Competency
+  // Comparison data for 2-4 selected, role-eligible candidates.
+  async getFullComparison(roleCode: string, candidateIds: string[], lang?: string): Promise<FullComparisonResult> {
+    this.ensureAuthToken();
+    const response = await apiClient.get(`${this.baseURL}candidate-comparison/full`, {
+      params: {
+        role_code: roleCode,
+        candidate_ids: candidateIds.join(','),
+        ...(lang ? { lang } : undefined),
+      },
+    });
+    return response.data;
+  }
+
+  // Spec item 8: backend-rendered bilingual Comparison PDF - Candidate
+  // Summary, Competency Comparison, Key Differences, Radar Chart.
+  async downloadComparisonPdf(roleCode: string, candidateIds: string[], lang?: string, filename?: string): Promise<void> {
+    const response = await authClient.get(`${this.baseURL}candidate-comparison/pdf`, {
+      params: {
+        role_code: roleCode,
+        candidate_ids: candidateIds.join(','),
+        ...(lang ? { lang } : undefined),
+      },
+      responseType: 'blob',
+    });
+    const blob = new Blob([response.data], {
+      type: response.headers['content-type'] || 'application/pdf',
+    });
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = filename || 'candidate-comparison.pdf';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(downloadUrl);
   }
 }
 

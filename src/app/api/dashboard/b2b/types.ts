@@ -97,6 +97,54 @@ export interface CandidateComparison {
   scores_by_area: Record<string, number>;
 }
 
+// Role-based Candidate Comparison (Select Job Role -> Select 2-4 Eligible
+// Candidates -> Compare), distinct from CandidateComparison above (the
+// dashboard-home leaderboard widget, which stays on the older
+// /candidate-comparison endpoint and is unaffected by any of this).
+export interface ComparisonRole {
+  role_code: string;
+  role_name: string;
+  candidate_count: number;
+}
+
+export interface ComparisonEligibleCandidate {
+  candidate_id: string;
+  candidate_name: string;
+  job_role: string;
+}
+
+export interface ComparisonCompetencyRow {
+  dimension_key: string;
+  label: string;
+  classification: 'CRITICAL' | 'NON_CRITICAL' | 'REQUIRED';
+  percentage: number;
+  status_label: string;
+  tone: string;
+}
+
+export interface ComparisonCandidateEntry {
+  candidate_id: string;
+  candidate_name: string;
+  evaluation_id: string;
+  readiness_status: string;
+  readiness_display: string;
+  assessment_coverage: number;
+  requires_human_review: boolean;
+  competencies: ComparisonCompetencyRow[];
+}
+
+export interface ComparisonKeyDifference {
+  label: string;
+  text: string;
+}
+
+export interface FullComparisonResult {
+  role_code: string;
+  role_name: string;
+  candidates: ComparisonCandidateEntry[];
+  key_differences: ComparisonKeyDifference[];
+}
+
 export interface JobRoleDistribution {
   job_role: string;
   job_role_display: string;
