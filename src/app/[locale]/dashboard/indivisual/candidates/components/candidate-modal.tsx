@@ -109,6 +109,7 @@ export function CandidateModal({
   })
   const [passportMatch, setPassportMatch] = useState<FaceMatchResult | null>(null)
   const [passportMatchChecking, setPassportMatchChecking] = useState(false)
+  const [extractingDocument, setExtractingDocument] = useState(false)
 
   useEffect(() => {
     if (isOpen) {
@@ -146,6 +147,7 @@ export function CandidateModal({
         setPhotoQualityChecking({ passport_document: false, profile_photo: false })
         setPassportMatch(null)
         setPassportMatchChecking(false)
+        setExtractingDocument(false)
       } else {
         setFormData({
           first_name: "",
@@ -172,6 +174,7 @@ export function CandidateModal({
         setPhotoQualityChecking({ passport_document: false, profile_photo: false })
         setPassportMatch(null)
         setPassportMatchChecking(false)
+        setExtractingDocument(false)
 
         detectCountry().then((detected) => {
           if (!detected) return
@@ -297,6 +300,25 @@ export function CandidateModal({
       checkPassportPhotoQuality(file)
         .then((result) => setPhotoQuality(prev => ({ ...prev, [field]: result })))
         .finally(() => setPhotoQualityChecking(prev => ({ ...prev, [field]: false })))
+
+      // Best-effort pre-fill from the document itself - only ever fills a
+      // field the user hasn't already typed into, and a failed/empty
+      // extraction (caught by the service layer, never thrown here) just
+      // leaves the fields exactly as they were for manual entry.
+      if (field === 'passport_document') {
+        setExtractingDocument(true)
+        candidateService.extractDocument(file)
+          .then((extracted) => {
+            setFormData(prev => ({
+              ...prev,
+              first_name: prev.first_name.trim() ? prev.first_name : (extracted.first_name || prev.first_name),
+              last_name: prev.last_name.trim() ? prev.last_name : (extracted.last_name || prev.last_name),
+              passport_id: prev.passport_id.trim() ? prev.passport_id : (extracted.passport_id || prev.passport_id),
+            }))
+          })
+          .catch(() => {})
+          .finally(() => setExtractingDocument(false))
+      }
     }
   }
 
@@ -687,6 +709,128 @@ export function CandidateModal({
                     )}
                   </div>
 
+                  <div className="grid grid-cols-1 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        {t("fields.passportDocument")} {mode === 'create' && '*'}
+                      </label>
+                      {isViewMode ? (
+                        candidate?.passport_document && (
+                          <a
+                            href={candidate.passport_document}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 p-2 border rounded-lg bg-gray-50 text-purple-600 hover:text-purple-700"
+                          >
+                            <FileText size={16} />
+                            <span className="text-sm">{t("viewDocument")}</span>
+                          </a>
+                        )
+                      ) : (
+                        <div>
+                          <label className={`block border-2 border-dashed rounded-lg p-4 text-center cursor-pointer hover:border-purple-500 transition ${
+                            errors.passport_document ? 'border-red-500' : 'border-gray-300'
+                          }`}>
+                            <Upload size={24} className="mx-auto mb-2 text-gray-400" />
+                            {formData.passport_document ? (
+                              <span className="text-sm text-green-600">{formData.passport_document.name}</span>
+                            ) : candidate?.passport_document ? (
+                              <span className="text-sm text-purple-600">{t("replaceDocument")}</span>
+                            ) : (
+                              <span className="text-sm text-gray-600">{t("uploadDocument")}</span>
+                            )}
+                            <input
+                              type="file"
+                              accept=".pdf,.jpg,.jpeg,.png"
+                              onChange={(e) => handleFileChange(e, 'passport_document')}
+                              className="hidden"
+                            />
+                          </label>
+                          <p className="mt-1 text-xs text-gray-500">{t("photo.documentFileHint")}</p>
+                          {touchedFields.passport_document && errors.passport_document && !passportQualityIssue && (
+                            <p className="mt-1 text-xs text-red-600">{errors.passport_document}</p>
+                          )}
+                          {photoQualityChecking.passport_document && (
+                            <p className="mt-1 text-xs text-gray-500 flex items-center gap-1">
+                              <Loader2 size={12} className="animate-spin" />
+                              {t("photo.checkingQuality")}
+                            </p>
+                          )}
+                          {!photoQualityChecking.passport_document && passportQualityIssue && (
+                            <p className={`mt-1 text-xs ${isBlockingQualityStatus(photoQuality.passport_document!.status) ? "text-red-600" : "text-amber-600"}`}>
+                              {passportQualityIssue}
+                            </p>
+                          )}
+                          {extractingDocument && (
+                            <p className="mt-1 text-xs text-gray-500 flex items-center gap-1">
+                              <Loader2 size={12} className="animate-spin" />
+                              {t("photo.extractingInfo")}
+                            </p>
+                          )}
+                          <div className="mt-2 rounded-lg bg-blue-50 border border-blue-100 p-2">
+                            <p className="text-xs font-medium text-blue-800 mb-1">{t("photo.guidelinesTitle")}</p>
+                            <ul className="text-xs text-blue-700 list-disc list-inside space-y-0.5">
+                              {PASSPORT_PHOTO_GUIDELINES.map((tip) => (
+                                <li key={tip}>{tip}</li>
+                              ))}
+                            </ul>
+                            <p className="text-xs text-blue-700 mt-1">
+                              {t("photo.matchTip")}
+                            </p>
+                          </div>
+                          {formData.passport_document && formData.profile_photo && (
+                            <div className="mt-2">
+                              {passportMatchChecking ? (
+                                <p className="text-xs text-gray-500 flex items-center gap-1">
+                                  <Loader2 size={12} className="animate-spin" />
+                                  {t("errors.passportMatchChecking")}
+                                </p>
+                              ) : passportMatch?.status === 'ok' && passportMatch.score !== null ? (
+                                <p className="text-xs text-green-600 flex items-center gap-1">
+                                  <CheckCircle2 size={12} />
+                                  {t("photo.matchSuccess", { score: passportMatch.score.toFixed(0) })}
+                                </p>
+                              ) : passportMatch?.status === 'no-face-a' ? (
+                                <p className="text-xs text-amber-600">
+                                  {t("photo.matchNoFaceA")}
+                                </p>
+                              ) : passportMatch?.status === 'no-face-b' ? (
+                                <p className="text-xs text-amber-600">
+                                  {t("photo.matchNoFaceB")}
+                                </p>
+                              ) : passportMatch?.status === 'skipped' ? (
+                                <p className="text-xs text-gray-500">
+                                  {t("photo.matchSkipped")}
+                                </p>
+                              ) : null}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {previewDocument && (
+                    <div className="mt-2">
+                      <p className="text-sm text-gray-600 mb-1">{t("documentPreview")}:</p>
+                      {previewDocument.endsWith('.pdf') ? (
+                        <iframe
+                          src={previewDocument}
+                          className="w-full h-40 border rounded-lg"
+                          title="Document preview"
+                        />
+                      ) : (
+                        <Image
+                          src={previewDocument}
+                          alt="Document preview"
+                          width={200}
+                          height={200}
+                          className="max-w-full h-auto border rounded-lg"
+                        />
+                      )}
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -1018,122 +1162,6 @@ export function CandidateModal({
                           </span>
                         ))}
                       </div>
-                    </div>
-                  )}
-
-                  <div className="grid grid-cols-1 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        {t("fields.passportDocument")} {mode === 'create' && '*'}
-                      </label>
-                      {isViewMode ? (
-                        candidate?.passport_document && (
-                          <a
-                            href={candidate.passport_document}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-2 p-2 border rounded-lg bg-gray-50 text-purple-600 hover:text-purple-700"
-                          >
-                            <FileText size={16} />
-                            <span className="text-sm">{t("viewDocument")}</span>
-                          </a>
-                        )
-                      ) : (
-                        <div>
-                          <label className={`block border-2 border-dashed rounded-lg p-4 text-center cursor-pointer hover:border-purple-500 transition ${
-                            errors.passport_document ? 'border-red-500' : 'border-gray-300'
-                          }`}>
-                            <Upload size={24} className="mx-auto mb-2 text-gray-400" />
-                            {formData.passport_document ? (
-                              <span className="text-sm text-green-600">{formData.passport_document.name}</span>
-                            ) : candidate?.passport_document ? (
-                              <span className="text-sm text-purple-600">{t("replaceDocument")}</span>
-                            ) : (
-                              <span className="text-sm text-gray-600">{t("uploadDocument")}</span>
-                            )}
-                            <input
-                              type="file"
-                              accept=".pdf,.jpg,.jpeg,.png"
-                              onChange={(e) => handleFileChange(e, 'passport_document')}
-                              className="hidden"
-                            />
-                          </label>
-                          <p className="mt-1 text-xs text-gray-500">{t("photo.documentFileHint")}</p>
-                          {touchedFields.passport_document && errors.passport_document && !passportQualityIssue && (
-                            <p className="mt-1 text-xs text-red-600">{errors.passport_document}</p>
-                          )}
-                          {photoQualityChecking.passport_document && (
-                            <p className="mt-1 text-xs text-gray-500 flex items-center gap-1">
-                              <Loader2 size={12} className="animate-spin" />
-                              {t("photo.checkingQuality")}
-                            </p>
-                          )}
-                          {!photoQualityChecking.passport_document && passportQualityIssue && (
-                            <p className={`mt-1 text-xs ${isBlockingQualityStatus(photoQuality.passport_document!.status) ? "text-red-600" : "text-amber-600"}`}>
-                              {passportQualityIssue}
-                            </p>
-                          )}
-                          <div className="mt-2 rounded-lg bg-blue-50 border border-blue-100 p-2">
-                            <p className="text-xs font-medium text-blue-800 mb-1">{t("photo.guidelinesTitle")}</p>
-                            <ul className="text-xs text-blue-700 list-disc list-inside space-y-0.5">
-                              {PASSPORT_PHOTO_GUIDELINES.map((tip) => (
-                                <li key={tip}>{tip}</li>
-                              ))}
-                            </ul>
-                            <p className="text-xs text-blue-700 mt-1">
-                              {t("photo.matchTip")}
-                            </p>
-                          </div>
-                          {formData.passport_document && formData.profile_photo && (
-                            <div className="mt-2">
-                              {passportMatchChecking ? (
-                                <p className="text-xs text-gray-500 flex items-center gap-1">
-                                  <Loader2 size={12} className="animate-spin" />
-                                  {t("errors.passportMatchChecking")}
-                                </p>
-                              ) : passportMatch?.status === 'ok' && passportMatch.score !== null ? (
-                                <p className="text-xs text-green-600 flex items-center gap-1">
-                                  <CheckCircle2 size={12} />
-                                  {t("photo.matchSuccess", { score: passportMatch.score.toFixed(0) })}
-                                </p>
-                              ) : passportMatch?.status === 'no-face-a' ? (
-                                <p className="text-xs text-amber-600">
-                                  {t("photo.matchNoFaceA")}
-                                </p>
-                              ) : passportMatch?.status === 'no-face-b' ? (
-                                <p className="text-xs text-amber-600">
-                                  {t("photo.matchNoFaceB")}
-                                </p>
-                              ) : passportMatch?.status === 'skipped' ? (
-                                <p className="text-xs text-gray-500">
-                                  {t("photo.matchSkipped")}
-                                </p>
-                              ) : null}
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {previewDocument && (
-                    <div className="mt-2">
-                      <p className="text-sm text-gray-600 mb-1">{t("documentPreview")}:</p>
-                      {previewDocument.endsWith('.pdf') ? (
-                        <iframe
-                          src={previewDocument}
-                          className="w-full h-40 border rounded-lg"
-                          title="Document preview"
-                        />
-                      ) : (
-                        <Image
-                          src={previewDocument}
-                          alt="Document preview"
-                          width={200}
-                          height={200}
-                          className="max-w-full h-auto border rounded-lg"
-                        />
-                      )}
                     </div>
                   )}
 

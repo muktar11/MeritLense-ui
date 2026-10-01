@@ -107,6 +107,20 @@ class CandidateService {
     return response.data;
   }
 
+  // Best-effort pre-fill for the Add Candidate form - extracts
+  // first_name/last_name/passport_id from the just-uploaded passport/ID
+  // document (image or PDF). Never throws a user-facing error the caller
+  // needs to handle specially; a failed/empty extraction just means no
+  // fields get pre-filled, so the caller can treat any rejection the same
+  // as "nothing extracted".
+  async extractDocument(file: File): Promise<{ first_name: string | null; last_name: string | null; passport_id: string | null }> {
+    this.ensureAuthToken();
+    const formData = new FormData();
+    formData.append('document', file);
+    const response = await authFormDataClient.post(`${this.baseURL}/extract-document`, formData);
+    return response.data;
+  }
+
   // Confirms reusing a DIFFERENT account's already-issued certificate
   // (offered via the 409 candidate_certificate_available response from
   // createCandidate) instead of adding a new candidate - deducts 1

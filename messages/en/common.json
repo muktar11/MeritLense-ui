@@ -3069,6 +3069,7 @@
           "fileHint": "JPG, JPEG or PNG (Max 5MB) — used to verify identity at interview time",
           "checkingQuality": "Checking photo quality...",
           "documentFileHint": "PDF, JPG, JPEG, or PNG (Max 10MB)",
+          "extractingInfo": "Reading name and ID number from the document...",
           "guidelinesTitle": "For a photo that verifies successfully:",
           "matchTip": "Tip: upload a JPG or PNG (not a PDF) so we can check this automatically before you submit.",
           "matchSuccess": "Matches uploaded photo ({score}%)",
