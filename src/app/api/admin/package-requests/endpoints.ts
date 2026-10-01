@@ -5,6 +5,7 @@ import {
   PackageRequest,
   PackageRequestApprovePayload,
   PackageRequestDenyPayload,
+  PackageRequestConfirmBankTransferPayload,
   PaginatedResponse,
 } from './types';
 
@@ -22,6 +23,14 @@ class AdminPackageRequestService {
   async getRequests(params?: { status?: string }): Promise<PaginatedResponse<PackageRequest>> {
     this.ensureAuthToken();
     const response = await apiClient.get(this.baseURL, { params });
+    // AdminPackageRequestViewSet has no pagination class configured, so it
+    // returns a bare array, not the {count, next, previous, results} shape
+    // this type implies - without this, response.results was always
+    // undefined and the page silently showed "No package requests yet."
+    // regardless of how many actually existed.
+    if (Array.isArray(response.data)) {
+      return { count: response.data.length, next: null, previous: null, results: response.data };
+    }
     return response.data;
   }
 
@@ -34,6 +43,12 @@ class AdminPackageRequestService {
   async deny(id: string, data: PackageRequestDenyPayload): Promise<PackageRequest> {
     this.ensureAuthToken();
     const response = await apiClient.post(`${this.baseURL}/${id}/deny`, data);
+    return response.data;
+  }
+
+  async confirmBankTransfer(id: string, data: PackageRequestConfirmBankTransferPayload): Promise<PackageRequest> {
+    this.ensureAuthToken();
+    const response = await apiClient.post(`${this.baseURL}/${id}/confirm-bank-transfer`, data);
     return response.data;
   }
 }

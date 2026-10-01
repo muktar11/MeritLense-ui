@@ -3,6 +3,7 @@
 export type PackageRequestDealType = 'STARTER' | 'ENTERPRISE';
 export type PackageRequestStatus = 'PENDING' | 'APPROVED' | 'PAID' | 'DENIED';
 export type PackageRequestBillingType = 'ONE_TIME' | 'RECURRING';
+export type PackageRequestPaymentMethod = 'STRIPE' | 'BANK_TRANSFER' | '';
 
 export interface PackageRequest {
   id: string;
@@ -29,6 +30,10 @@ export interface PackageRequest {
   currency: string;
   stripe_payment_link_url: string;
   paid_at: string | null;
+  payment_method: PackageRequestPaymentMethod;
+  payment_method_display: string;
+  confirmed_by_name: string | null;
+  confirmed_at: string | null;
   deal_record_id: number | null;
   created_at: string;
   updated_at: string;
@@ -54,6 +59,11 @@ export interface PackageRequestApprovePayload {
 
 export interface PackageRequestDenyPayload {
   decision_reason: string;
+}
+
+export interface PackageRequestConfirmBankTransferPayload {
+  payment_date?: string;
+  note?: string;
 }
 
 export interface PaginatedResponse<T> {
