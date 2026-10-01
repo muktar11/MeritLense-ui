@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { PackageRequest, PackageRequestApprovePayload, PackageRequestBillingType } from "@/app/api/admin/package-requests/types";
+import type { PackageRequest, PackageRequestApprovePayload, PackageRequestBillingType, PackageRequestConfirmBankTransferPayload } from "@/app/api/admin/package-requests/types";
 
 interface ReviewRequestModalProps {
   isOpen: boolean;
@@ -16,11 +16,12 @@ interface ReviewRequestModalProps {
   request: PackageRequest | null;
   onApprove: (id: string, data: PackageRequestApprovePayload) => Promise<void>;
   onDeny: (id: string, reason: string) => Promise<void>;
+  onConfirmBankTransfer: (id: string, data: PackageRequestConfirmBankTransferPayload) => Promise<void>;
 }
 
-export function ReviewRequestModal({ isOpen, onClose, request, onApprove, onDeny }: ReviewRequestModalProps) {
+export function ReviewRequestModal({ isOpen, onClose, request, onApprove, onDeny, onConfirmBankTransfer }: ReviewRequestModalProps) {
   const t = useTranslations("dashboard.admin.packageRequests");
-  const [action, setAction] = useState<"approve" | "deny" | null>(null);
+  const [action, setAction] = useState<"approve" | "deny" | "confirmPayment" | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -33,6 +34,8 @@ export function ReviewRequestModal({ isOpen, onClose, request, onApprove, onDeny
   const [addendumReference, setAddendumReference] = useState("");
   const [approveNote, setApproveNote] = useState("");
   const [denyReason, setDenyReason] = useState("");
+  const [paymentDate, setPaymentDate] = useState("");
+  const [paymentNote, setPaymentNote] = useState("");
 
   if (!request) return null;
 
@@ -48,6 +51,8 @@ export function ReviewRequestModal({ isOpen, onClose, request, onApprove, onDeny
     setAddendumReference("");
     setApproveNote("");
     setDenyReason("");
+    setPaymentDate("");
+    setPaymentNote("");
     onClose();
   };
 
@@ -97,6 +102,22 @@ export function ReviewRequestModal({ isOpen, onClose, request, onApprove, onDeny
     setError("");
     try {
       await onDeny(request.id, denyReason);
+      resetAndClose();
+    } catch {
+      setError(t("errors.decisionFailed"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleConfirmPayment = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      await onConfirmBankTransfer(request.id, {
+        payment_date: paymentDate || undefined,
+        note: paymentNote,
+      });
       resetAndClose();
     } catch {
       setError(t("errors.decisionFailed"));
@@ -180,14 +201,69 @@ export function ReviewRequestModal({ isOpen, onClose, request, onApprove, onDeny
                           {t("modal.paymentLink.copy")}
                         </button>
                       </div>
+                      {!action && (
+                        <button
+                          type="button"
+                          onClick={() => { setAction("confirmPayment"); setError(""); }}
+                          className="px-3 py-2 text-xs font-medium border border-amber-300 rounded-lg hover:bg-amber-100"
+                        >
+                          {t("modal.paymentLink.confirmBankTransfer")}
+                        </button>
+                      )}
                     </div>
                   )}
 
                   {request.status === "PAID" && (
-                    <div className="p-3 bg-green-50 border border-green-200 text-green-800 rounded-lg text-sm">
-                      {t("modal.paymentLink.paidConfirmed", {
-                        date: request.paid_at ? new Date(request.paid_at).toLocaleDateString() : "",
-                      })}
+                    <div className="p-3 bg-green-50 border border-green-200 text-green-800 rounded-lg text-sm space-y-1">
+                      <p>
+                        {t("modal.paymentLink.paidConfirmed", {
+                          date: request.paid_at ? new Date(request.paid_at).toLocaleDateString() : "",
+                        })}
+                      </p>
+                      {request.payment_method_display && (
+                        <p>{t("modal.paymentLink.methodLabel", { method: request.payment_method_display })}</p>
+                      )}
+                      {request.confirmed_by_name && (
+                        <p>
+                          {t("modal.paymentLink.confirmedByLabel", {
+                            name: request.confirmed_by_name,
+                            date: request.confirmed_at ? new Date(request.confirmed_at).toLocaleDateString() : "",
+                          })}
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {action === "confirmPayment" && (
+                    <div className="space-y-3 pt-2 border-t">
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{t("modal.confirmPaymentSection.heading")}</p>
+                        <p className="text-xs text-gray-500">{t("modal.confirmPaymentSection.note")}</p>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">{t("modal.confirmPaymentSection.paymentDateLabel")}</label>
+                        <Input type="date" value={paymentDate} onChange={(e) => setPaymentDate(e.target.value)} />
+                        <p className="text-xs text-gray-400 mt-1">{t("modal.confirmPaymentSection.paymentDateHint")}</p>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">{t("modal.confirmPaymentSection.noteLabel")}</label>
+                        <Textarea rows={2} value={paymentNote} onChange={(e) => setPaymentNote(e.target.value)} placeholder={t("modal.confirmPaymentSection.notePlaceholder")} />
+                      </div>
+
+                      {error && <p className="text-sm text-red-600">{error}</p>}
+
+                      <div className="flex justify-end gap-3 pt-2">
+                        <button onClick={() => setAction(null)} disabled={loading} className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50">
+                          {t("modal.back")}
+                        </button>
+                        <button
+                          onClick={handleConfirmPayment}
+                          disabled={loading}
+                          className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:opacity-50 flex items-center gap-2"
+                        >
+                          {loading ? <><Loader2 size={16} className="animate-spin" />{t("modal.processing")}</> : t("modal.confirmPaymentSection.confirmButton")}
+                        </button>
+                      </div>
                     </div>
                   )}
 

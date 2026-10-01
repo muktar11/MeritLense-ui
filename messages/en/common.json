@@ -1710,7 +1710,19 @@
           "paymentLink": {
             "awaitingPayment": "Approved - awaiting payment. Share this link with the requester if needed:",
             "copy": "Copy",
-            "paidConfirmed": "Payment received on {date}. This package is now active."
+            "confirmBankTransfer": "Confirm Bank Transfer",
+            "paidConfirmed": "Payment received on {date}. This package is now active.",
+            "methodLabel": "Payment method: {method}",
+            "confirmedByLabel": "Confirmed by {name} on {date}"
+          },
+          "confirmPaymentSection": {
+            "heading": "Confirm bank transfer payment",
+            "note": "Use this only after verifying the funds have actually arrived by bank transfer - this activates the package immediately and sends the updated paid invoice, the same as Pay Online does automatically.",
+            "paymentDateLabel": "Payment date",
+            "paymentDateHint": "Defaults to today if left blank.",
+            "noteLabel": "Internal note (optional)",
+            "notePlaceholder": "e.g. reconciled against October bank statement",
+            "confirmButton": "Confirm Payment Received"
           },
           "approveSection": {
             "heading": "Set the final agreed terms",

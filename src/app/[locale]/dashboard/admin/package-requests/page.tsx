@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Inbox, Eye } from "lucide-react";
 import { ReviewRequestModal } from "./components/review-request-modal";
 import adminPackageRequestService from "@/app/api/admin/package-requests/endpoints";
-import type { PackageRequest, PackageRequestApprovePayload } from "@/app/api/admin/package-requests/types";
+import type { PackageRequest, PackageRequestApprovePayload, PackageRequestConfirmBankTransferPayload } from "@/app/api/admin/package-requests/types";
 
 const STATUS_FILTERS = ["all", "PENDING", "APPROVED", "PAID", "DENIED"] as const;
 
@@ -49,6 +49,11 @@ export default function PackageRequestsPage() {
 
   const handleDeny = async (id: string, reason: string) => {
     await adminPackageRequestService.deny(id, { decision_reason: reason });
+    await fetchRequests();
+  };
+
+  const handleConfirmBankTransfer = async (id: string, data: PackageRequestConfirmBankTransferPayload) => {
+    await adminPackageRequestService.confirmBankTransfer(id, data);
     await fetchRequests();
   };
 
@@ -184,6 +189,7 @@ export default function PackageRequestsPage() {
         request={selected}
         onApprove={handleApprove}
         onDeny={handleDeny}
+        onConfirmBankTransfer={handleConfirmBankTransfer}
       />
     </div>
   );
