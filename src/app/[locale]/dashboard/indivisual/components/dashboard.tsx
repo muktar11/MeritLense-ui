@@ -149,21 +149,6 @@ export function Dashboard() {
     )
   }
 
-  // Remaining Points must come from stats.remaining_points (the real
-  // PackageBalance ledger via EntitlementService) - NOT from
-  // subscription.usage_percentages, which is keyed by each Price's own
-  // feature_limits (e.g. "points_granted" for real B2C packages, or
-  // "evaluation_limit" for a plan-level evaluation cap). Those are a
-  // different number under a different key, so reading them here always
-  // showed "No active plan" for every real B2C package.
-  const pointsUnlimited = stats?.points_unlimited ?? false
-  const remainingPoints = stats?.remaining_points ?? null
-  const pointsLimit = stats?.points_limit ?? null
-  const pointsUsedPercentage =
-    pointsLimit && pointsLimit > 0 && remainingPoints !== null
-      ? Math.round(((pointsLimit - remainingPoints) / pointsLimit) * 100)
-      : null
-
   // Available Slots (the headline figure) plus how many are Reserved for
   // an upcoming interview that hasn't started yet - Available alone can't
   // tell you that, since a Reserved slot is already deducted from it
@@ -237,18 +222,6 @@ export function Dashboard() {
               icon="📄"
             />
             <MetricCard
-              title={t("metrics.remainingPoints")}
-              value={pointsUnlimited ? "∞" : remainingPoints !== null ? remainingPoints.toString() : "-"}
-              change={
-                pointsUnlimited
-                  ? t("metrics.unlimitedPlan")
-                  : pointsUsedPercentage !== null
-                    ? t("metrics.usedThisMonth", { value: pointsUsedPercentage })
-                    : t("metrics.noActivePlan")
-              }
-              icon="🎯"
-            />
-            <MetricCard
               title={t("metrics.assessmentSlots")}
               value={slotsUnlimited ? "∞" : remainingSlots !== null ? remainingSlots.toString() : "-"}
               change={
@@ -275,7 +248,7 @@ export function Dashboard() {
                 className="w-full bg-purple-600 hover:bg-purple-700 text-white text-xs"
                 onClick={() => router.push(`/${locale}/dashboard/indivisual/payment`)}
               >
-                {t("buyPoints", { value: 100 })}
+                {t("buyMoreAssessments")}
               </Button>
               <Button
                 variant="outline"

@@ -3280,15 +3280,14 @@
           "transcriptIncluded": "تقرير نسخة كامل"
         },
         "oneTimeSection": {
-          "heading": "باقات النقاط لمرة واحدة",
-          "subtitle": "اشترِ نقاطًا لمرة واحدة — بدون اشتراك أو رسوم متكررة.",
-          "pointsLabel": "{count} نقطة",
+          "heading": "باقات تقييم لمرة واحدة",
+          "subtitle": "اشترِ تقييمات مرشحين لمرة واحدة — بدون اشتراك أو رسوم متكررة.",
           "screeningEvaluation": "تقييم فحص أولي",
           "fullEvaluation": "تقييم كامل",
           "oneTimeLabel": "لمرة واحدة",
           "buyNow": "اشترِ الآن",
           "purchasedBadge": "الباقة الحالية",
-          "slotsLabel": "{count} مقعد تقييم"
+          "slotsLabel": "{count} تقييم مرشح"
         },
         "subscriptionForm": {
           "stripeNotInitialized": "لم يتم تهيئة Stripe",
@@ -3374,12 +3373,11 @@
           "currentPlanLabel": "الباقة الحالية",
           "completedAiInterviews": "مقابلات الذكاء الاصطناعي المكتملة",
           "completedScheduledAssessments": "التقييمات المجدولة المكتملة",
-          "assessmentSlotsTitle": "مقاعد التقييم",
+          "assessmentSlotsTitle": "تقييمات المرشحين",
           "slotsRemainingOfLimit": "{remaining} من {limit} متبقٍ",
           "unlimitedValue": "غير محدود",
           "slotsReservedNote": "تم حجز {count} لتقييم قادم",
-          "pointsTitle": "النقاط",
-          "pointsRemainingOfLimit": "{remaining} من {limit} متبقٍ",
+          "nearestExpiryNote": "أقرب تاريخ انتهاء {date}",
           "moreAssessmentsAvailable": "يمكنك بدء {count} تقييم إضافي",
           "moreAssessmentsAvailablePlural": "يمكنك بدء {count} تقييمات إضافية",
           "moreAssessmentsUnlimited": "يمكنك بدء عدد غير محدود من التقييمات",
@@ -3951,8 +3949,7 @@
         "metrics": {
           "evaluationsCompleted": "التقييمات المكتملة",
           "certificatesIssued": "الشهادات الصادرة",
-          "remainingPoints": "النقاط المتبقية",
-          "assessmentSlots": "فتحات التقييم",
+          "assessmentSlots": "تقييمات المرشحين",
           "successRate": "نسبة النجاح",
           "thisMonth": "هذا الشهر",
           "thisMonthIncrease": "+{value}% هذا الشهر",
@@ -3966,7 +3963,7 @@
           "noneReserved": "لا يوجد محجوز"
         },
         "quickAction": "إجراء سريع",
-        "buyPoints": "شراء {value} نقاط",
+        "buyMoreAssessments": "شراء المزيد من التقييمات",
         "resumeSubscription": "استئناف الاشتراك",
         "notifications": {
           "pendingEvaluation": "تقييم معلق",
@@ -3974,7 +3971,7 @@
         }
       },
       "pointConsumption": {
-        "title": "استهلاك النقاط حسب الخدمة",
+        "title": "استهلاك التقييمات حسب الخدمة",
         "noData": "لا تتوفر بيانات للمسميات الوظيفية",
         "services": {
           "cleaner": "عامل تنظيف",
