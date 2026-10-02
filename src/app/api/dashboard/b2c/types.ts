@@ -13,6 +13,7 @@ export interface DashboardStats {
   reserved_slots: number | null;
   consumed_slots: number | null;
   pending_sessions: number | null;
+  nearest_slot_expiry: string | null;
   remaining_points: number | null;
   points_limit: number | null;
   points_unlimited: boolean;

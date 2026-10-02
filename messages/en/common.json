@@ -3274,15 +3274,14 @@
           "transcriptIncluded": "Full transcript report"
         },
         "oneTimeSection": {
-          "heading": "One-Time Points Packages",
-          "subtitle": "Buy points once — no subscription, no recurring charge.",
-          "pointsLabel": "{count} points",
+          "heading": "One-Time Assessment Packages",
+          "subtitle": "Buy candidate assessments once — no subscription, no recurring charge.",
           "screeningEvaluation": "Screening evaluation",
           "fullEvaluation": "Full evaluation",
           "oneTimeLabel": "one-time",
           "buyNow": "Buy Now",
           "purchasedBadge": "Current Package",
-          "slotsLabel": "{count} assessment slots"
+          "slotsLabel": "{count} Candidate Assessments"
         },
         "subscriptionForm": {
           "stripeNotInitialized": "Stripe not initialized",
@@ -3385,12 +3384,11 @@
           "currentPlanLabel": "Current Plan",
           "completedAiInterviews": "AI Interviews Completed",
           "completedScheduledAssessments": "Scheduled Assessments Completed",
-          "assessmentSlotsTitle": "Assessment Slots",
+          "assessmentSlotsTitle": "Candidate Assessments",
           "slotsRemainingOfLimit": "{remaining} of {limit} remaining",
           "unlimitedValue": "Unlimited",
           "slotsReservedNote": "{count} reserved for an upcoming assessment",
-          "pointsTitle": "Points",
-          "pointsRemainingOfLimit": "{remaining} of {limit} remaining",
+          "nearestExpiryNote": "earliest expiry {date}",
           "moreAssessmentsAvailable": "You can start {count} more assessment",
           "moreAssessmentsAvailablePlural": "You can start {count} more assessments",
           "moreAssessmentsUnlimited": "You can start unlimited assessments",
@@ -3962,8 +3960,7 @@
         "metrics": {
           "evaluationsCompleted": "Evaluations Completed",
           "certificatesIssued": "Certificates Issued",
-          "remainingPoints": "Remaining Points",
-          "assessmentSlots": "Assessment Slots",
+          "assessmentSlots": "Candidate Assessments",
           "successRate": "Success Rate",
           "thisMonth": "this month",
           "thisMonthIncrease": "+{value}% this month",
@@ -3977,7 +3974,7 @@
           "noneReserved": "None reserved"
         },
         "quickAction": "Quick Action",
-        "buyPoints": "Buy {value} points",
+        "buyMoreAssessments": "Buy More Assessments",
         "resumeSubscription": "Resume Subscription",
         "notifications": {
           "pendingEvaluation": "Pending Evaluation",
@@ -3985,7 +3982,7 @@
         }
       },
       "pointConsumption": {
-        "title": "Point Consumption by Service",
+        "title": "Assessment Consumption by Service",
         "noData": "No job role data available",
         "services": {
           "cleaner": "Cleaner",

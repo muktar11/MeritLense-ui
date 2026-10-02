@@ -605,19 +605,11 @@ export default function PaymentPage() {
                         {plan.slot_grant != null && (
                           <div className="flex items-start gap-2 sm:gap-3">
                             <Check className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 shrink-0 mt-1" />
-                            <span className="text-gray-700 text-xs sm:text-sm">
+                            <span className="text-gray-700 text-xs sm:text-sm font-semibold">
                               {t('oneTimeSection.slotsLabel', { count: plan.slot_grant })}
                             </span>
                           </div>
                         )}
-                        {plan.feature_limits?.points_granted ? (
-                          <div className="flex items-start gap-2 sm:gap-3">
-                            <Check className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 shrink-0 mt-1" />
-                            <span className="text-gray-700 text-xs sm:text-sm">
-                              {t('oneTimeSection.pointsLabel', { count: plan.feature_limits.points_granted })}
-                            </span>
-                          </div>
-                        ) : null}
                         <PlanCoverageChecklist t={t} coverage={coverage} />
                       </div>
 

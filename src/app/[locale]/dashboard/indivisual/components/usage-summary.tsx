@@ -38,20 +38,12 @@ export function UsageSummary() {
   const slotsUnlimited = stats.slots_unlimited;
   const remainingSlots = stats.remaining_slots;
   const reservedSlots = stats.reserved_slots;
-  const pointsUnlimited = stats.points_unlimited;
-  const remainingPoints = stats.remaining_points;
   const outOfSlots = !slotsUnlimited && remainingSlots !== null && remainingSlots <= 0;
 
   const slotsText = slotsUnlimited
     ? t("unlimitedValue")
     : remainingSlots !== null
       ? t("slotsRemainingOfLimit", { remaining: remainingSlots, limit: stats.slot_limit ?? remainingSlots })
-      : t("notAvailableShort");
-
-  const pointsText = pointsUnlimited
-    ? t("unlimitedValue")
-    : remainingPoints !== null
-      ? t("pointsRemainingOfLimit", { remaining: remainingPoints, limit: stats.points_limit ?? remainingPoints })
       : t("notAvailableShort");
 
   const moreText = slotsUnlimited
@@ -64,11 +56,14 @@ export function UsageSummary() {
             : t("moreAssessmentsAvailablePlural", { count: remainingSlots }))
         : t("noActivePlan");
 
+  const expiryNote = stats.nearest_slot_expiry
+    ? ` (${t("nearestExpiryNote", { date: new Date(stats.nearest_slot_expiry).toLocaleDateString() })})`
+    : "";
+
   const parts = [
     `${stats.completed_ai_interviews} ${t("completedAiInterviews")}`,
     `${stats.completed_scheduled_assessments} ${t("completedScheduledAssessments")}`,
-    `${t("assessmentSlotsTitle")}: ${slotsText}${reservedSlots ? ` (${t("slotsReservedNote", { count: reservedSlots })})` : ""}`,
-    `${t("pointsTitle")}: ${pointsText}`,
+    `${t("assessmentSlotsTitle")}: ${slotsText}${reservedSlots ? ` (${t("slotsReservedNote", { count: reservedSlots })})` : ""}${expiryNote}`,
   ];
 
   return (
