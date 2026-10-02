@@ -2927,6 +2927,39 @@
           "discount": "خصم",
           "multiAgency": "لوحة تنسيق متعددة الوكالات",
           "customFeatures": "جميع الميزات المخصصة"
+        },
+        "usageSection": {
+          "title": "استخدامك",
+          "completedAiInterviews": "مقابلات الذكاء الاصطناعي المكتملة",
+          "completedScheduledAssessments": "التقييمات المجدولة المكتملة",
+          "assessmentSlotsTitle": "تقييمات المرشحين",
+          "intervalWords": {
+            "monthly": "شهر",
+            "quarterly": "ربع سنة",
+            "yearly": "سنة"
+          },
+          "monthlyAllowanceLabel": "{limit} تقييم / {interval}",
+          "usedOfRemaining": "{used} مستخدم · {remaining} متبقٍ",
+          "unlimitedValue": "غير محدود",
+          "slotsReservedNote": "تم حجز {count} لتقييم قادم",
+          "billingPeriodLabel": "فترة الفوترة الحالية",
+          "billingPeriodRange": "{start} – {end}",
+          "statusLabel": "الحالة",
+          "subscriptionStatus": {
+            "active": "نشط",
+            "pastDue": "متأخر السداد",
+            "canceled": "ملغى",
+            "incomplete": "غير مكتمل",
+            "incompleteExpired": "منتهي الصلاحية",
+            "trialing": "تجريبي",
+            "unpaid": "غير مدفوع"
+          },
+          "moreAssessmentsAvailable": "يمكنك بدء {count} تقييم إضافي",
+          "moreAssessmentsAvailablePlural": "يمكنك بدء {count} تقييمات إضافية",
+          "moreAssessmentsUnlimited": "يمكنك بدء عدد غير محدود من التقييمات",
+          "noAssessmentsRemaining": "لا توجد مقاعد تقييم متبقية - قم بترقية باقتك للمتابعة",
+          "noActivePlan": "لا توجد باقة نشطة",
+          "notAvailableShort": "غير متاح"
         }
       },
       "candidate-evaluation": {
@@ -3266,8 +3299,7 @@
           "unlimitedEvaluations": "تقييمات غير محدودة",
           "upToTeamMembers": "حتى {count} أعضاء فريق",
           "unlimitedTeamMembers": "أعضاء فريق غير محدودين",
-          "assessmentSlotsPerPeriod": "{count} فتحة تقييم / شهريًا",
-          "pointsPerPeriod": "{count} نقطة / شهريًا",
+          "assessmentSlotsPerPeriod": "{count} تقييم مرشح / شهريًا",
           "processing": "جارٍ المعالجة...",
           "currentPlanButton": "الخطة الحالية",
           "currentPlanBadge": "خطتك",
