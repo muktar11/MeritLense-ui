@@ -446,8 +446,8 @@
       "image_alt": "Platform Workflow"
     },
     "pricing": {
-      "section_title": "Flexible, Transparent Pricing for Every Team",
-      "section_subtitle": "Choose the plan that fits your goals and elevate your hiring process with ease upgrade anytime.",
+      "section_title": "Assess. Compare. Decide with Better Evidence.",
+      "section_subtitle": "Choose the assessment capacity that fits your hiring needs — from individual candidate evaluation to workforce-scale assessment.",
       "popular_badge": "Most Popular",
       "cta_get_started": "Get Started",
       "cta_contact_sales": "Contact Sales",
@@ -459,40 +459,44 @@
             "name": "Basic",
             "candidates_count": "2 candidate assessments",
             "features": [
-              "Screening assessment",
-              "Structured assessment report",
-              "Assessment Date",
-              "Certificate eligibility based on assessment outcome"
+              "Choose Screening or Full Evaluation for each assessment",
+              "Structured assessment reporting",
+              "Candidate comparison",
+              "Public verification where applicable",
+              "Digital certificate for Full Evaluation, where eligible"
             ]
           },
           {
             "name": "Essential",
             "candidates_count": "4 candidate assessments",
             "features": [
-              "Everything in Basic",
-              "Extended screening assessment",
-              "Assessment Date",
-              "Certificate eligibility based on assessment outcome"
+              "Choose Screening or Full Evaluation for each assessment",
+              "Structured assessment reporting",
+              "Candidate comparison",
+              "Public verification where applicable",
+              "Digital certificate for Full Evaluation, where eligible"
             ]
           },
           {
             "name": "Advanced",
             "candidates_count": "6 candidate assessments",
             "features": [
-              "Everything in Essential",
-              "Full workforce readiness assessment",
-              "Workforce Readiness Level",
-              "Certificate eligibility based on assessment outcome"
+              "Choose Screening or Full Evaluation for each assessment",
+              "Structured assessment reporting",
+              "Candidate comparison",
+              "Public verification where applicable",
+              "Digital certificate for Full Evaluation, where eligible"
             ]
           },
           {
             "name": "Premium",
             "candidates_count": "8 candidate assessments",
             "features": [
-              "Everything in Advanced",
-              "Expanded full assessment",
-              "Workforce Readiness Level",
-              "Certificate eligibility based on assessment outcome"
+              "Choose Screening or Full Evaluation for each assessment",
+              "Structured assessment reporting",
+              "Candidate comparison",
+              "Public verification where applicable",
+              "Digital certificate for Full Evaluation, where eligible"
             ]
           }
         ]
@@ -500,14 +504,15 @@
       "organizations_agencies": {
         "title": "For Recruitment Agencies & Employers",
         "time_unit": "/month",
-        "per_agreement_label": "Per Agreement",
+        "per_agreement_label": "Based on Scope",
         "plans": [
           {
             "name": "Starter",
-            "candidates_count": "Screening assessment tier",
+            "candidates_count": "Defined by approved scope",
             "features": [
-              "Screening assessment",
-              "Structured assessment report",
+              "Screening evaluation",
+              "Structured assessment reporting",
+              "Candidate comparison",
               "Employer decision support"
             ]
           },
@@ -515,9 +520,12 @@
             "name": "Growth",
             "candidates_count": "100 candidate assessments/month",
             "features": [
-              "Full workforce readiness assessment",
-              "Workforce Readiness Level",
-              "Certificate eligibility based on assessment outcome",
+              "Screening or Full Evaluation",
+              "Structured assessment reporting",
+              "Workforce readiness outputs",
+              "Candidate comparison",
+              "Public verification where applicable",
+              "Digital certificate where eligible",
               "Assessment analytics"
             ]
           },
@@ -525,22 +533,40 @@
             "name": "Business",
             "candidates_count": "200 candidate assessments/month",
             "features": [
-              "Everything in Growth",
-              "Task observation support",
-              "Behavioral indicators",
-              "Audit trails"
+              "Screening or Full Evaluation",
+              "Structured assessment reporting",
+              "Workforce readiness outputs",
+              "Candidate comparison",
+              "Public verification where applicable",
+              "Digital certificate where eligible",
+              "Advanced assessment analytics",
+              "Audit trail",
+              "Priority support"
             ]
           },
           {
             "name": "Enterprise",
-            "candidates_count": "Tailored to your organization",
+            "candidates_count": "Custom assessment volume",
             "features": [
-              "Everything in Business",
-              "API access",
-              "Dedicated support"
+              "Screening or Full Evaluation",
+              "Structured assessment reporting",
+              "Workforce readiness outputs",
+              "Candidate comparison",
+              "Digital certificate where eligible",
+              "Advanced assessment analytics",
+              "API and integration access",
+              "Implementation support"
             ]
           }
         ]
+      },
+      "paid_pilot": {
+        "eyebrow": "Want to Validate MeritLense First?",
+        "heading": "Start with a Paid Pilot",
+        "description": "Run MeritLense with a defined candidate group before moving to a larger workforce assessment program.",
+        "scope_items": ["Defined Scope", "Defined Candidate Volume", "Defined Pilot Period"],
+        "pricing_label": "Pricing: Based on Pilot Scope",
+        "cta_label": "Request a Pilot"
       }
     },
     "cta": {

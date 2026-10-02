@@ -159,6 +159,24 @@ export const Pricing = forwardRef<HTMLElement, {}>(function Pricing(_, pricingRe
               );
             })}
           </div>
+
+          {/* Paid Pilot callout - a separate B2B entry option, not a fifth
+              standard package (Commercial Package Alignment, Section 9). */}
+          <motion.div variants={fadeInUp} className="max-w-3xl mx-auto mt-16 text-center p-10 rounded-2xl border border-secondary-700 bg-white">
+            <p className="text-sm font-semibold text-primary uppercase tracking-wide mb-2">{t("paid_pilot.eyebrow")}</p>
+            <h4 className="text-2xl font-bold text-foreground mb-3">{t("paid_pilot.heading")}</h4>
+            <p className="text-foreground-muted mb-4">{t("paid_pilot.description")}</p>
+            <p className="text-sm text-foreground-muted mb-6">
+              {t.raw("paid_pilot.scope_items").join(" · ")}
+            </p>
+            <p className="text-sm font-medium text-foreground mb-6">{t("paid_pilot.pricing_label")}</p>
+            <Button
+              className="rounded-full h-12 px-8 bg-white border border-secondary-700 text-secondary-700 hover:text-white hover:[background:var(--gradient-primary)]"
+              asChild
+            >
+              <Link href={`/${locale}/contact`}>{t("paid_pilot.cta_label")}</Link>
+            </Button>
+          </motion.div>
         </motion.div>
       </div>
     </section>
