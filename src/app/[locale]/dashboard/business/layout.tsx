@@ -17,6 +17,7 @@ import {
 import { LanguageSelector } from "@/components/app/LanguageSelector";
 import { useTranslations, useLocale } from "next-intl";
 import { useMemo } from "react";
+import { useAuth } from "@/app/hooks/useAuth";
 
 export default function AdminLayout({
   children,
@@ -25,8 +26,9 @@ export default function AdminLayout({
 }) {
   const t = useTranslations("dashboard.business");
   const locale = useLocale(); // ✅ current locale
+  const { userRole } = useAuth();
 
-  const agreementStatus = useB2BAgreementStatus();
+  const agreementStatus = useB2BAgreementStatus(userRole);
   // Company Profile stays reachable while unsigned - it hosts the "Sign
   // Agreements" entry point. Every other page is gated until the B2B
   // Agreement and DPA are both signed.

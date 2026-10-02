@@ -22,12 +22,27 @@ export type AgreementSignedState = "checking" | "signed" | "unsigned";
  * layout stays mounted across the sign-agreements -> dashboard transition
  * (both are children of the same layout), so a mount-only fetch would keep
  * reporting "unsigned" forever after a successful sign and bounce the user
- * straight back to Sign Agreements. */
-export function useB2BAgreementStatus(): AgreementSignedState {
+ * straight back to Sign Agreements.
+ *
+ * A B2B_TEAM_MEMBER is exempt entirely, not just scoped differently: the
+ * B2B Agreement and DPA are signed once by the company (the account owner),
+ * never per-member - GET /agreements/status only ever returns the
+ * *requesting user's own* Agreement rows, so a team member's own rows are
+ * always empty and this used to redirect every team member to
+ * sign-agreements permanently, regardless of the company's real status.
+ * A team member's access is controlled by their invite-time permissions
+ * instead (see team-member-profile.permissions), not by signing anything. */
+export function useB2BAgreementStatus(role?: string | null): AgreementSignedState {
   const [state, setState] = useState<AgreementSignedState>("checking");
   const pathname = usePathname();
+  const isTeamMember = role === "B2B_TEAM_MEMBER";
 
   useEffect(() => {
+    if (isTeamMember) {
+      setState("signed");
+      return;
+    }
+
     let active = true;
     agreementService
       .getStatus()
@@ -47,7 +62,7 @@ export function useB2BAgreementStatus(): AgreementSignedState {
     return () => {
       active = false;
     };
-  }, [pathname]);
+  }, [pathname, isTeamMember]);
 
   return state;
 }
