@@ -2921,6 +2921,39 @@
           "discount": "Discount",
           "multiAgency": "Multi-Agency Coordination Panel",
           "customFeatures": "All Custom Features"
+        },
+        "usageSection": {
+          "title": "Your Usage",
+          "completedAiInterviews": "AI Interviews Completed",
+          "completedScheduledAssessments": "Scheduled Assessments Completed",
+          "assessmentSlotsTitle": "Candidate Assessments",
+          "intervalWords": {
+            "monthly": "month",
+            "quarterly": "quarter",
+            "yearly": "year"
+          },
+          "monthlyAllowanceLabel": "{limit} Assessments/{interval}",
+          "usedOfRemaining": "{used} Used · {remaining} Remaining",
+          "unlimitedValue": "Unlimited",
+          "slotsReservedNote": "{count} reserved for an upcoming assessment",
+          "billingPeriodLabel": "Current Billing Period",
+          "billingPeriodRange": "{start} – {end}",
+          "statusLabel": "Status",
+          "subscriptionStatus": {
+            "active": "Active",
+            "pastDue": "Past Due",
+            "canceled": "Canceled",
+            "incomplete": "Incomplete",
+            "incompleteExpired": "Incomplete Expired",
+            "trialing": "Trialing",
+            "unpaid": "Unpaid"
+          },
+          "moreAssessmentsAvailable": "You can start {count} more assessment",
+          "moreAssessmentsAvailablePlural": "You can start {count} more assessments",
+          "moreAssessmentsUnlimited": "You can start unlimited assessments",
+          "noAssessmentsRemaining": "No assessment slots remaining - upgrade your plan to continue",
+          "noActivePlan": "No active plan",
+          "notAvailableShort": "N/A"
         }
       },
       "candidate-evaluation": {
@@ -3260,8 +3293,7 @@
           "unlimitedEvaluations": "Unlimited evaluations",
           "upToTeamMembers": "Up to {count} team members",
           "unlimitedTeamMembers": "Unlimited team members",
-          "assessmentSlotsPerPeriod": "{count} Assessment Slots / month",
-          "pointsPerPeriod": "{count} Points / month",
+          "assessmentSlotsPerPeriod": "{count} Candidate Assessments / month",
           "processing": "Processing...",
           "currentPlanButton": "Current Plan",
           "currentPlanBadge": "Your Plan",
