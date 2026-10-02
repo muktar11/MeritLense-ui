@@ -1,6 +1,7 @@
 import { apiClient } from '../auth/client';
 import {
   Price,
+  PublicPrice,
   Customer,
   PaymentMethod,
   Subscription,
@@ -43,6 +44,13 @@ class PaymentService {
   async getPrice(id: string): Promise<Price> {
     this.ensureAuthToken();
     const response = await apiClient.get(`${this.baseURL}prices/${id}`);
+    return response.data;
+  }
+
+  // No auth required - for the public marketing pricing page, before a
+  // visitor has signed up at all.
+  async getPublicPrices(): Promise<PublicPrice[]> {
+    const response = await apiClient.get(`${this.baseURL}prices/public`);
     return response.data;
   }
 

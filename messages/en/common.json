@@ -454,6 +454,7 @@
       "individual_employers": {
         "title": "For Individual Employers",
         "time_unit": "/one-time",
+        "candidates_count_dynamic": "{count} candidate assessments",
         "plans": [
           {
             "name": "Basic",
@@ -505,6 +506,7 @@
         "title": "For Recruitment Agencies & Employers",
         "time_unit": "/month",
         "per_agreement_label": "Based on Scope",
+        "candidates_count_dynamic": "{count} candidate assessments/month",
         "plans": [
           {
             "name": "Starter",

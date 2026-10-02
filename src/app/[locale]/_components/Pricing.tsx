@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,24 @@ import { Badge } from "@/components/ui/badge";
 import { useTranslations, useLocale } from "next-intl";
 import { useInView } from "react-intersection-observer";
 import { getStartedUrl } from "@/lib/getStartedUrl";
+import paymentService from "@/app/api/payments/endpoints";
+import type { PublicPrice } from "@/app/api/payments/types";
+
+const B2C_PACKAGE_CODES = ["basic", "essential", "advanced", "premium"];
+const B2B_PACKAGE_CODES = ["starter", "growth", "business", "enterprise"];
+
+// Whole-euro amounts render without decimals ("€60", "€2,000"), matching
+// this page's existing style - a genuinely fractional price (not expected
+// today, but the live data could in principle carry one) still shows cents.
+function formatWholeOrDecimal(amount: number, currency: string) {
+  const isWhole = Number.isInteger(amount);
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: currency.toUpperCase(),
+    minimumFractionDigits: isWhole ? 0 : 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+}
 
 const staggerContainer = {
   hidden: { opacity: 0 },
@@ -28,10 +46,38 @@ export const Pricing = forwardRef<HTMLElement, {}>(function Pricing(_, pricingRe
     if (pricingRef) (pricingRef as any).current = node;
   };
 
+  // Static fallback - used until the live fetch resolves, and permanently
+  // for Starter/Enterprise, which have no fixed Price row by design
+  // ("Based on Scope"/"Custom", not a fixed SKU).
   const pricesB2C = ["€60", "€100", "€150", "€200"];
   const pricesB2B = [t("organizations_agencies.per_agreement_label"), "€2,000", "€3,500", "Custom"];
   const popularIndexB2C = 1;
   const popularIndexB2B = 1;
+
+  // Commercial Package Alignment: price/capacity numbers come from the
+  // live Price records (GET /payments/prices/public, no auth needed - this
+  // is the public marketing page) instead of a separately hand-maintained
+  // copy that can drift out of sync with what checkout/invoices actually
+  // charge. Feature-bullet copy stays in translations - that's editorial
+  // content with no home on the Price model, not billing data.
+  const [publicPrices, setPublicPrices] = useState<PublicPrice[]>([]);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const data = await paymentService.getPublicPrices();
+        if (active) setPublicPrices(data);
+      } catch {
+        // Falls back to the static copy below - never blocks the page.
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const findLivePrice = (packageCode: string) => publicPrices.find((p) => p.package_code === packageCode);
 
   const getFeatures = (key: string, index: number) => {
     const arr = t.raw(key);
@@ -63,6 +109,13 @@ export const Pricing = forwardRef<HTMLElement, {}>(function Pricing(_, pricingRe
             {[0, 1, 2, 3].map((index) => {
               const isPopular = index === popularIndexB2C;
               const features = getFeatures("individual_employers.plans", index);
+              const livePrice = findLivePrice(B2C_PACKAGE_CODES[index]);
+              const priceLabel = livePrice
+                ? formatWholeOrDecimal(Number(livePrice.unit_amount), livePrice.currency)
+                : pricesB2C[index];
+              const capacityLabel = livePrice?.slot_grant != null
+                ? t("individual_employers.candidates_count_dynamic", { count: livePrice.slot_grant })
+                : t(`individual_employers.plans.${index}.candidates_count`);
 
               return (
                 <motion.div
@@ -78,10 +131,10 @@ export const Pricing = forwardRef<HTMLElement, {}>(function Pricing(_, pricingRe
                   <div className="mb-6">
                     <h3 className="text-2xl font-bold mb-2">{t(`individual_employers.plans.${index}.name`)}</h3>
                     <div className="flex items-baseline gap-1">
-                      <span className="text-4xl font-bold text-secondary-900">{pricesB2C[index]}</span>
+                      <span className="text-4xl font-bold text-secondary-900">{priceLabel}</span>
                       <span className="text-secondary-900">{t("individual_employers.time_unit")}</span>
                     </div>
-                    <div className="text-foreground-muted mt-1">{t(`individual_employers.plans.${index}.candidates_count`)}</div>
+                    <div className="text-foreground-muted mt-1">{capacityLabel}</div>
                   </div>
 
                   <ul className="space-y-3 mb-8">
@@ -114,6 +167,13 @@ export const Pricing = forwardRef<HTMLElement, {}>(function Pricing(_, pricingRe
             {[0, 1, 2, 3].map((index) => {
               const isPopular = index === popularIndexB2B;
               const features = getFeatures("organizations_agencies.plans", index);
+              const livePrice = findLivePrice(B2B_PACKAGE_CODES[index]);
+              const priceLabel = livePrice
+                ? formatWholeOrDecimal(Number(livePrice.unit_amount), livePrice.currency)
+                : pricesB2B[index];
+              const capacityLabel = livePrice?.slot_grant != null
+                ? t("organizations_agencies.candidates_count_dynamic", { count: livePrice.slot_grant })
+                : t(`organizations_agencies.plans.${index}.candidates_count`);
 
               return (
                 <motion.div
@@ -130,12 +190,12 @@ export const Pricing = forwardRef<HTMLElement, {}>(function Pricing(_, pricingRe
                   <div className="mb-6">
                     <h3 className="text-2xl font-bold mb-2">{t(`organizations_agencies.plans.${index}.name`)}</h3>
                     <div className="flex items-baseline gap-1">
-                      <span className="text-4xl font-bold text-secondary-900">{pricesB2B[index]}</span>
+                      <span className="text-4xl font-bold text-secondary-900">{priceLabel}</span>
                       {index !== 0 && (
                         <span className="text-secondary-900">{t("organizations_agencies.time_unit")}</span>
                       )}
                     </div>
-                    <div className="text-foreground-muted mt-1">{t(`organizations_agencies.plans.${index}.candidates_count`)}</div>
+                    <div className="text-foreground-muted mt-1">{capacityLabel}</div>
                   </div>
 
                   <ul className="space-y-3 mb-8">
