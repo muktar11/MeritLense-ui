@@ -90,6 +90,26 @@ export interface Price {
   created_at: string;
 }
 
+// The unauthenticated subset of Price served by GET /payments/prices/public
+// for the marketing pricing page - no stripe ids, no points_grant (internal
+// add-on currency, never customer-facing), no raw metadata (may carry
+// internal notes) - just package_code, used to match a live price to its
+// feature-bullet copy in the translation files.
+export interface PublicPrice {
+  id: string;
+  name: string;
+  target_user_type: 'B2C' | 'B2B' | 'BOTH';
+  unit_amount: number;
+  currency: string;
+  formatted_price: string;
+  billing_type: 'RECURRING' | 'ONE_TIME';
+  interval: BillingInterval;
+  interval_count: number;
+  evaluation_tier?: 'FULL' | 'SCREENING' | 'BOTH' | null;
+  slot_grant: number | null;
+  package_code: string;
+}
+
 // What a plan's evaluation_tier actually grants the account, for display on
 // plan cards. Mirrors the backend business rule already enforced at session
 // creation (InterviewSessionService.create_session / certificate_eligibility):
