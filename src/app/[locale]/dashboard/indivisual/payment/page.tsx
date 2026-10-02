@@ -535,10 +535,10 @@ export default function PaymentPage() {
                     <button
                       onClick={() => (currentSubscription ? handleUpgradePlan(plan) : handleSelectPlan(plan))}
                       disabled={processing || upgrading || isCurrentPlan}
-                      className={`w-full font-semibold py-2 sm:py-3 px-3 sm:px-4 rounded-lg transition text-sm sm:text-base disabled:opacity-50 ${
+                      className={`w-full font-semibold py-2 sm:py-3 px-3 sm:px-4 rounded-lg border-2 transition text-sm sm:text-base disabled:opacity-50 ${
                         isCurrentPlan
-                          ? "bg-green-100 text-green-800"
-                          : "bg-purple-500 hover:bg-purple-600 text-white"
+                          ? "bg-green-100 text-green-800 border-green-100"
+                          : "bg-transparent border-purple-500 text-purple-600 hover:bg-purple-500 hover:text-white"
                       }`}
                     >
                       {(processing || upgrading) && selectedPlan?.id === plan.id
@@ -624,7 +624,7 @@ export default function PaymentPage() {
                       <button
                         onClick={() => handleSelectOneTimePlan(plan)}
                         disabled={processing}
-                        className="w-full bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 sm:py-3 px-3 sm:px-4 rounded-lg transition text-sm sm:text-base disabled:opacity-50"
+                        className="w-full bg-transparent border-2 border-purple-500 text-purple-600 hover:bg-purple-500 hover:text-white font-semibold py-2 sm:py-3 px-3 sm:px-4 rounded-lg transition text-sm sm:text-base disabled:opacity-50"
                       >
                         {processing && selectedPlan?.id === plan.id ? t('plansGrid.processing') : t('oneTimeSection.buyNow')}
                       </button>
