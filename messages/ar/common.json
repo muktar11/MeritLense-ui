@@ -2697,8 +2697,8 @@
         "selectCountry": "اختر الدولة",
         "selectMarket": "اختر السوق",
         "selectTimezone": "اختر المنطقة الزمنية",
-        "manageUsers": "إدارة المستخدمين",
-        "addUser": "إضافة مستخدم",
+        "manageUsers": "إدارة الموظفين",
+        "addUser": "إضافة موظف",
         "noTeamMembers": "لا يوجد أعضاء فريق بعد. ادعُ أول عضو في فريقك!",
         "memberActive": "نشط",
         "memberInactive": "غير نشط",
@@ -2707,8 +2707,13 @@
         "removeMemberConfirm": "هل أنت متأكد أنك تريد إزالة عضو الفريق هذا؟",
         "downloadPdfTooltip": "تحميل PDF",
         "viewAuditTrailTooltip": "عرض سجل التدقيق",
+        "actions": {
+          "moreActions": "المزيد من الإجراءات",
+          "edit": "تعديل",
+          "delete": "حذف"
+        },
         "columns": {
-          "user": "المستخدم",
+          "user": "الموظف",
           "userRole": "دور المستخدم",
           "systemRole": "دور النظام",
           "permission": "الصلاحيات",
@@ -2769,6 +2774,13 @@
         "team": {
           "pendingInvitations": "الدعوات المعلقة",
           "expires": "تنتهي في",
+          "editModal": {
+            "title": "تعديل {name}",
+            "department": "القسم",
+            "save": "حفظ التغييرات",
+            "saving": "جارٍ الحفظ...",
+            "failedAlert": "فشل تحديث عضو الفريق. يرجى المحاولة مرة أخرى."
+          },
           "inviteModal": {
             "title": "دعوة عضو فريق",
             "email": "البريد الإلكتروني",
@@ -2777,6 +2789,7 @@
             "jobTitle": "المسمى الوظيفي",
             "phoneNumber": "رقم الهاتف",
             "permissions": "الصلاحيات",
+            "fullAccess": "وصول كامل",
             "inviteInfo": "سيتلقى عضو الفريق المدعو بريدًا إلكترونيًا يحتوي على تعليمات لإعداد حسابه. ستنتهي صلاحية الدعوة خلال 7 أيام.",
             "cancel": "إلغاء",
             "sendInvite": "إرسال الدعوة",

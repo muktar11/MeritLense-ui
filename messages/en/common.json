@@ -2690,8 +2690,8 @@
         "selectCountry": "Select country",
         "selectMarket": "Select market",
         "selectTimezone": "Select timezone",
-        "manageUsers": "Manage Users",
-        "addUser": "Add User",
+        "manageUsers": "Manage Staff",
+        "addUser": "Add Staff",
         "noTeamMembers": "No team members yet. Invite your first team member!",
         "memberActive": "Active",
         "memberInactive": "Inactive",
@@ -2700,8 +2700,13 @@
         "removeMemberConfirm": "Are you sure you want to remove this team member?",
         "downloadPdfTooltip": "Download PDF",
         "viewAuditTrailTooltip": "View Audit Trail",
+        "actions": {
+          "moreActions": "More actions",
+          "edit": "Edit",
+          "delete": "Delete"
+        },
         "columns": {
-          "user": "User",
+          "user": "Staff",
           "userRole": "User Role",
           "systemRole": "System Role",
           "permission": "Permission",
@@ -2761,6 +2766,13 @@
         "team": {
           "pendingInvitations": "Pending Invitations",
           "expires": "Expires",
+          "editModal": {
+            "title": "Edit {name}",
+            "department": "Department",
+            "save": "Save Changes",
+            "saving": "Saving...",
+            "failedAlert": "Failed to update team member. Please try again."
+          },
           "inviteModal": {
             "title": "Invite Team Member",
             "email": "Email Address",
@@ -2769,6 +2781,7 @@
             "jobTitle": "Job Title",
             "phoneNumber": "Phone Number",
             "permissions": "Permissions",
+            "fullAccess": "Full Access",
             "inviteInfo": "The invited team member will receive an email with instructions to set up their account. The invitation will expire in 7 days.",
             "cancel": "Cancel",
             "sendInvite": "Send Invitation",

@@ -61,6 +61,8 @@ export interface Permission {
 
 export interface UpdateTeamMemberData {
   job_title?: string;
+  department?: string;
+  phone_number?: string;
   permissions?: string[];
   is_active?: boolean;
 }

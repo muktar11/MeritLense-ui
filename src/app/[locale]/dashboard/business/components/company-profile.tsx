@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Upload, Download, LogOut, Loader2, Plus, MoreVertical, Mail, UserCheck, Clock, FileSignature, CheckCircle2, History } from "lucide-react"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Upload, Download, LogOut, Loader2, Plus, MoreVertical, Mail, UserCheck, Clock, FileSignature, CheckCircle2, History, Pencil, Trash2 } from "lucide-react"
 import { useProfile } from "../../../../hooks/useProfile"
 import { useAuth } from "../../../../hooks/useAuth"
 import { LANGUAGES } from "../../../../api/auth/endpoints"
@@ -16,6 +17,7 @@ import { COUNTRIES } from "@/lib/countries"
 import { getTimezoneOptions } from "@/lib/location-detection"
 import { ChangePassword } from "./change-password"
 import { InviteTeamModal } from "./invite-team-modal"
+import { EditTeamModal } from "./edit-team-modal"
 import { PendingInvitations } from "./pending-invitations"
 import { AuditTrailModal } from "@/components/agreements/AuditTrailModal"
 import teamService from "@/app/api/team/endpoints"
@@ -28,6 +30,28 @@ import { format } from "date-fns"
 import { ar } from "date-fns/locale"
 
 const REQUIRED_AGREEMENT_TYPES = ["B2B_AGREEMENT", "DPA"] as const
+
+// The real, backend-enforced permission codes (CompanyTeamPermissions,
+// validated by TeamMemberUpdateSerializer) - "Full Access"/"Standard"/
+// "Read-only" below are just convenience presets for this compact
+// dropdown, not stored values of their own. These used to be a
+// completely different, never-valid set of strings ('full_access',
+// 'manage_evaluations', 'manage_team'), so every permission update made
+// through this dropdown was silently rejected by the backend.
+const ALL_TEAM_PERMISSIONS = ["add_candidates", "set_evaluation", "set_scores", "set_payment"]
+const STANDARD_TEAM_PERMISSIONS = ["add_candidates", "set_evaluation"]
+
+function permissionPresetFor(permissions: string[]): "full-access" | "standard" | "read-only" {
+  if (ALL_TEAM_PERMISSIONS.every(p => permissions.includes(p))) return "full-access"
+  if (permissions.length > 0) return "standard"
+  return "read-only"
+}
+
+function permissionsForPreset(preset: string): string[] {
+  if (preset === "full-access") return ALL_TEAM_PERMISSIONS
+  if (preset === "standard") return STANDARD_TEAM_PERMISSIONS
+  return []
+}
 const TEAM_MEMBERS_PAGE_SIZE = 10
 const LOGO_ACCEPTED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"]
 const LOGO_MAX_BYTES = 5 * 1024 * 1024
@@ -64,6 +88,7 @@ export function CompanyProfile() {
   const [agreementsLoading, setAgreementsLoading] = useState(false)
   const [auditTarget, setAuditTarget] = useState<{ id: string; label: string } | null>(null)
   const [updatingMember, setUpdatingMember] = useState<number | null>(null)
+  const [editingMember, setEditingMember] = useState<TeamMember | null>(null)
   
   const [activeTab, setActiveTab] = useState("profile")
   const [isEditing, setIsEditing] = useState(false)
@@ -767,16 +792,8 @@ export function CompanyProfile() {
       </TableCell>
       <TableCell>
         <Select
-          defaultValue={member.permissions.includes('full_access') ? 'full-access' : 
-                       member.permissions.length > 1 ? 'standard' : 'read-only'}
-          onValueChange={(value) => {
-            const permissions = value === 'full-access' 
-              ? ['full_access', 'view_candidates', 'manage_evaluations', 'manage_team']
-              : value === 'standard'
-              ? ['view_candidates', 'manage_evaluations']
-              : ['view_candidates']
-            handleUpdateMemberPermission(member.id, permissions)
-          }}
+          defaultValue={permissionPresetFor(member.permissions)}
+          onValueChange={(value) => handleUpdateMemberPermission(member.id, permissionsForPreset(value))}
           disabled={updatingMember === member.id}
         >
           <SelectTrigger className="w-32 h-8 text-xs border-purple-200">
@@ -803,19 +820,33 @@ export function CompanyProfile() {
         )}
       </TableCell>
       <TableCell>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="h-8"
-          onClick={() => handleRemoveMember(member.id)}
-          disabled={updatingMember === member.id}
-        >
-          {updatingMember === member.id ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <MoreVertical className="w-4 h-4" />
-          )}
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8"
+              disabled={updatingMember === member.id}
+              title={t("actions.moreActions")}
+            >
+              {updatingMember === member.id ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <MoreVertical className="w-4 h-4" />
+              )}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => setEditingMember(member)}>
+              <Pencil className="w-4 h-4 mr-2" />
+              {t("actions.edit")}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleRemoveMember(member.id)} variant="destructive">
+              <Trash2 className="w-4 h-4 mr-2" />
+              {t("actions.delete")}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </TableCell>
     </TableRow>
   ))
@@ -855,19 +886,33 @@ export function CompanyProfile() {
                                     {t("memberInactive")}
                                   </span>
                                 )}
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-8"
-                                  onClick={() => handleRemoveMember(member.id)}
-                                  disabled={updatingMember === member.id}
-                                >
-                                  {updatingMember === member.id ? (
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                  ) : (
-                                    <MoreVertical className="w-4 h-4" />
-                                  )}
-                                </Button>
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-8"
+                                      disabled={updatingMember === member.id}
+                                      title={t("actions.moreActions")}
+                                    >
+                                      {updatingMember === member.id ? (
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                      ) : (
+                                        <MoreVertical className="w-4 h-4" />
+                                      )}
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end">
+                                    <DropdownMenuItem onClick={() => setEditingMember(member)}>
+                                      <Pencil className="w-4 h-4 mr-2" />
+                                      {t("actions.edit")}
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => handleRemoveMember(member.id)} variant="destructive">
+                                      <Trash2 className="w-4 h-4 mr-2" />
+                                      {t("actions.delete")}
+                                    </DropdownMenuItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
                               </div>
                             </div>
                             <div className="mt-2 flex gap-2">
@@ -894,16 +939,8 @@ export function CompanyProfile() {
                                 </SelectContent>
                               </Select>
                               <Select
-                                defaultValue={member.permissions.includes('full_access') ? 'full-access' :
-                                             member.permissions.length > 1 ? 'standard' : 'read-only'}
-                                onValueChange={(value) => {
-                                  const permissions = value === 'full-access'
-                                    ? ['full_access', 'view_candidates', 'manage_evaluations', 'manage_team']
-                                    : value === 'standard'
-                                    ? ['view_candidates', 'manage_evaluations']
-                                    : ['view_candidates']
-                                  handleUpdateMemberPermission(member.id, permissions)
-                                }}
+                                defaultValue={permissionPresetFor(member.permissions)}
+                                onValueChange={(value) => handleUpdateMemberPermission(member.id, permissionsForPreset(value))}
                                 disabled={updatingMember === member.id}
                               >
                                 <SelectTrigger className="flex-1 h-8 text-xs border-purple-200">
@@ -1127,6 +1164,15 @@ export function CompanyProfile() {
         onClose={() => setIsInviteModalOpen(false)}
         onSuccess={handleInviteSuccess}
       />
+
+      {editingMember && (
+        <EditTeamModal
+          member={editingMember}
+          isOpen={!!editingMember}
+          onClose={() => setEditingMember(null)}
+          onSuccess={fetchTeamData}
+        />
+      )}
 
       <AuditTrailModal
         agreementId={auditTarget?.id ?? null}
