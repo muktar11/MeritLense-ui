@@ -12,7 +12,6 @@ import {
   PlayCircle,
   FileText,
   RefreshCw,
-  Download,
   ShieldAlert,
 } from "lucide-react";
 import evaluationService from "@/app/api/evaluations/endpoints";
@@ -148,8 +147,6 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
   const [report, setReport] = useState<EvaluationReport | null>(null);
   const [reportError, setReportError] = useState<string | null>(null);
   const [generatingReport, setGeneratingReport] = useState(false);
-  const [exportingReport, setExportingReport] = useState(false);
-  const [downloadingReport, setDownloadingReport] = useState(false);
 
   const load = async (id: string) => {
     setLoading(true);
@@ -227,39 +224,6 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
       setReportError(msg);
     } finally {
       setGeneratingReport(false);
-    }
-  };
-
-  const handleExportReport = async () => {
-    if (!report) return;
-    setExportingReport(true);
-    try {
-      const payload = await reportService.exportPayload(report.id);
-      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `${report.report_number}.json`;
-      link.click();
-      URL.revokeObjectURL(url);
-    } catch {
-      setReportError(t("exportFailed"));
-    } finally {
-      setExportingReport(false);
-    }
-  };
-
-  const handleDownloadReport = async () => {
-    if (!report) return;
-    setDownloadingReport(true);
-    setReportError(null);
-    try {
-      await reportService.downloadPdf(report.id, `${report.report_number}.pdf`);
-    } catch (err: any) {
-      const msg = err?.detail ?? err?.response?.data?.detail ?? t("downloadFailed");
-      setReportError(msg);
-    } finally {
-      setDownloadingReport(false);
     }
   };
 
@@ -398,26 +362,6 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
                         </p>
                       </div>
                       <div className="flex flex-wrap items-center gap-2">
-                        {report.employer_pdf_url && (
-                          <button
-                            type="button"
-                            onClick={handleDownloadReport}
-                            disabled={downloadingReport}
-                            className="inline-flex items-center gap-1 px-2.5 py-1.5 border border-indigo-300 bg-white hover:bg-indigo-50 disabled:opacity-50 text-indigo-700 rounded-lg text-xs font-medium"
-                          >
-                            <Download className="w-3.5 h-3.5" />
-                            {downloadingReport ? t("downloading") : t("downloadPdf")}
-                          </button>
-                        )}
-                        <button
-                          type="button"
-                          onClick={handleExportReport}
-                          disabled={exportingReport}
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 border border-gray-300 bg-white hover:bg-gray-50 disabled:opacity-50 text-gray-700 rounded-lg text-xs font-medium"
-                        >
-                          {exportingReport ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
-                          {t("exportJson")}
-                        </button>
                         <button
                           type="button"
                           onClick={handleRegenerateReport}
