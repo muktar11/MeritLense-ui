@@ -73,7 +73,7 @@ export default function AdminLayout({
           ? profile.permissions
           : []);
         setPermissionsLoadError(false);
-        setCompanyLicenseVerified(profile.company_is_verified === true);
+        setCompanyLicenseVerified(profile.business_license_verified === true);
         setLicenseLoadError(false);
       }
     }).catch((error) => {

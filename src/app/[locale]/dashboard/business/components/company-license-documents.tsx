@@ -107,7 +107,7 @@ export function CompanyLicenseDocuments({
 
   const hasLicense = profile.trade_license_uploaded === true
   const verificationStatus = String(profile.documents_verification_status || "").toUpperCase()
-  const licenseApproved = profile.company_is_verified === true
+  const licenseApproved = profile.business_license_verified === true
   const pendingRequests = requests.filter((request) => request.status === "PENDING")
 
   return (

@@ -57,6 +57,7 @@ export interface UserProfile {
   role?: string
   permissions?: string[]
   company_is_verified?: boolean
+  business_license_verified?: boolean
   trade_license_uploaded?: boolean
   documents_verification_status?: string
   [key: string]: unknown

@@ -269,11 +269,11 @@ export function CompanyProfile() {
   }, [])
 
   useEffect(() => {
-    if (profile?.company_is_verified !== true) return
+    if (profile?.business_license_verified !== true) return
     fetchTeamData()
     fetchAgreements()
     fetchCompanyExtras()
-  }, [profile?.company_is_verified, fetchTeamData, fetchAgreements, fetchCompanyExtras])
+  }, [profile?.business_license_verified, fetchTeamData, fetchAgreements, fetchCompanyExtras])
 
   const handleInviteSuccess = () => {
     fetchTeamData()
@@ -352,7 +352,7 @@ export function CompanyProfile() {
     )
   }
 
-  if (profile?.company_is_verified !== true) {
+  if (profile?.business_license_verified !== true) {
     return (
       <div className="min-h-screen bg-background p-4 sm:p-6" dir={locale === "ar" ? "rtl" : "ltr"}>
         <div className="mx-auto max-w-3xl">

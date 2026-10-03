@@ -13,6 +13,7 @@ export interface CompanyProfile {
   admin_user_email: string;
   admin_name: string | null;
   is_verified: boolean;
+  business_license_verified: boolean;
   verified_at: string | null;
   team_member_count: number;
   stamp_image: string | null;
