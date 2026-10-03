@@ -23,7 +23,6 @@ interface CandidatesTableProps {
   onAdd: () => void;
   loading?: boolean;
   userRole: string;
-  currentUserId?: string;
 }
 
 export default function CandidatesTable({ 
@@ -34,7 +33,6 @@ export default function CandidatesTable({
   onAdd,
   loading,
   userRole = 'B2C',
-  currentUserId
 }: CandidatesTableProps) {
   const t = useTranslations("dashboard.candidates.table");
   const tSkills = useTranslations("shared.candidateSkills");
@@ -44,12 +42,7 @@ export default function CandidatesTable({
 
   const canShare = userRole === 'B2B';
   
-  const canEdit = (candidate: Candidate) => {
-  if (userRole === 'B2B_TEAM_MEMBER') {
-    return candidate.created_by === currentUserId;
-  }
-  return true;
-};
+  const canEdit = (_candidate: Candidate) => true;
 
   const filteredCandidates = candidates.filter(candidate => {
     const matchesSearch = 

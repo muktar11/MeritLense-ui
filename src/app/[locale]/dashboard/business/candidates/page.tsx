@@ -339,7 +339,6 @@ export default function CandidateComparison() {
             onAdd={handleAddCandidate}
             loading={loading}
             userRole={userRole || 'B2C'}
-            currentUserId={userId || undefined}
           />
         </div>
 

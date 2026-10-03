@@ -5,10 +5,12 @@ import { useState } from "react";
 import Link from "next/link";
 import { useLocale } from "next-intl";
 import NotificationsPanel from "./notifications";
+import { useAuth } from "@/app/hooks/useAuth";
 
 export default function DashboardHeader() {
   const [showNotifications, setShowNotifications] = useState(false);
   const locale = useLocale();
+  const { userRole } = useAuth();
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
@@ -44,12 +46,15 @@ export default function DashboardHeader() {
           </Link>
 
           {/* Profile / Settings */}
-          <Link
-            href={`/${locale}/dashboard/business/company-profile`}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            <Settings className="w-5 h-5 text-gray-600" />
-          </Link>
+          {userRole !== "B2B_TEAM_MEMBER" && (
+            <Link
+              href={`/${locale}/dashboard/business/company-profile`}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              aria-label="Company profile"
+            >
+              <Settings className="w-5 h-5 text-gray-600" />
+            </Link>
+          )}
 
           {/* Candidates */}
           <Link

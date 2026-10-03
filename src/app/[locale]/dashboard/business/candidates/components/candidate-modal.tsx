@@ -501,8 +501,9 @@ export function CandidateModal({
   const isViewMode = mode === 'view'
   const isEditMode = mode === 'edit'
   const isCreateMode = mode === 'create'
-  const canEdit = (isCreateMode || isEditMode) &&
-    (userRole !== 'B2B_TEAM_MEMBER' || candidate?.created_by === currentUserId)
+  const canEdit = isCreateMode || isEditMode
+  const canDelete = isViewMode && !!candidate &&
+    (userRole === 'B2B_TEAM_MEMBER' || candidate.created_by === currentUserId)
 
   // Shown as soon as the check completes, independent of touchedFields/
   // submit attempts - without this, a failed quality check produced zero
@@ -1175,7 +1176,7 @@ export function CandidateModal({
                   )}
 
                   <div className="flex justify-end gap-3 pt-4 border-t sticky bottom-0 bg-white pb-2">
-                    {isViewMode && candidate?.created_by === currentUserId && (
+                    {canDelete && (
                       <button
                         type="button"
                         onClick={handleDelete}

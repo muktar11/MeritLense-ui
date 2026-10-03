@@ -40,6 +40,7 @@ function requiredPermissionsForPath(path: string): string[] | null {
 }
 
 function canAccessPath(path: string, permissions: string[]): boolean {
+  if (path.includes("/dashboard/business/company-profile")) return false;
   const required = requiredPermissionsForPath(path);
   return required === null || required.every(permission => permissions.includes(permission));
 }
