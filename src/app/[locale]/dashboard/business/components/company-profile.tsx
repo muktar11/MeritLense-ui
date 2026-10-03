@@ -1140,23 +1140,6 @@ export function CompanyProfile() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-xs text-muted-foreground block mb-2">{t("language")}</label>
-                  <Select
-                    value={["EN", "AR"].includes(formData.preferred_language.toUpperCase())
-                      ? formData.preferred_language.toUpperCase()
-                      : locale.toUpperCase()}
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, preferred_language: value }))}
-                  >
-                    <SelectTrigger className="h-8 text-xs">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="EN">{t("english")}</SelectItem>
-                      <SelectItem value="AR">{t("arabic")}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
                   <label className="text-xs text-muted-foreground block mb-2">{t("notification")}</label>
                   <Select
                     value={formData.notification_preference}
