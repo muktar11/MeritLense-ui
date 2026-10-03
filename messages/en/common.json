@@ -2328,6 +2328,8 @@
         "system_configuration": "Company Profile"
       },
       "sidebarLocked": "Sign the B2B Services Agreement and DPA to unlock this page",
+      "accessDenied": "Your staff permissions do not grant access to this section.",
+      "permissionsLoadError": "Unable to load your staff permissions. Please refresh and try again.",
       "overview": {
         "package": {
           "expires": "Package expires in {days} days!",

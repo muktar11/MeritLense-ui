@@ -11,13 +11,38 @@ import {
   Building2,
   Settings,
   FileText,
-  Key,
   ClipboardList,
+  Loader2,
 } from "lucide-react";
 import { LanguageSelector } from "@/components/app/LanguageSelector";
 import { useTranslations, useLocale } from "next-intl";
-import { useMemo } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/app/hooks/useAuth";
+import { profileAPI } from "@/app/api/profile/endpoints";
+
+const TEAM_PERMISSIONS = {
+  candidates: "add_candidates",
+  evaluation: "set_evaluation",
+  scores: "set_scores",
+  payment: "set_payment",
+} as const;
+
+const ALL_TEAM_PERMISSIONS = Object.values(TEAM_PERMISSIONS);
+
+function requiredPermissionsForPath(path: string): string[] | null {
+  if (path.includes("/dashboard/business/company-profile")) return null;
+  if (path.includes("/dashboard/business/candidates")) return [TEAM_PERMISSIONS.candidates];
+  if (path.includes("/dashboard/business/candidate-evaluation")) return [TEAM_PERMISSIONS.evaluation];
+  if (path.includes("/dashboard/business/score-management")) return [TEAM_PERMISSIONS.scores];
+  if (path.includes("/dashboard/business/payment")) return [TEAM_PERMISSIONS.payment];
+  return ALL_TEAM_PERMISSIONS;
+}
+
+function canAccessPath(path: string, permissions: string[]): boolean {
+  const required = requiredPermissionsForPath(path);
+  return required === null || required.every(permission => permissions.includes(permission));
+}
 
 export default function AdminLayout({
   children,
@@ -26,7 +51,36 @@ export default function AdminLayout({
 }) {
   const t = useTranslations("dashboard.business");
   const locale = useLocale(); // ✅ current locale
+  const pathname = usePathname();
   const { userRole } = useAuth();
+  const [teamPermissions, setTeamPermissions] = useState<string[] | null>(null);
+  const [permissionsLoadError, setPermissionsLoadError] = useState(false);
+
+  useEffect(() => {
+    if (userRole !== "B2B_TEAM_MEMBER") {
+      setTeamPermissions([]);
+      setPermissionsLoadError(false);
+      return;
+    }
+
+    let cancelled = false;
+    profileAPI.getProfile().then((profile) => {
+      if (!cancelled) {
+        setTeamPermissions(Array.isArray(profile.permissions) ? profile.permissions : []);
+        setPermissionsLoadError(false);
+      }
+    }).catch((error) => {
+      console.error("Failed to fetch team member permissions:", error);
+      if (!cancelled) {
+        setTeamPermissions([]);
+        setPermissionsLoadError(true);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [userRole]);
 
   const agreementStatus = useB2BAgreementStatus(userRole);
   // Company Profile stays reachable while unsigned - it hosts the "Sign
@@ -35,8 +89,8 @@ export default function AdminLayout({
   const lockedUntilSigned = agreementStatus !== "signed";
   const disabledTooltip = t("sidebarLocked");
 
-  const ADMIN_SIDEBAR_ITEMS = useMemo(
-    () => [
+  const ADMIN_SIDEBAR_ITEMS = useMemo(() => {
+    const items = [
       {
         label: t("pages_list.overview"),
         icon: LayoutDashboard,
@@ -77,9 +131,15 @@ export default function AdminLayout({
         disabled: lockedUntilSigned,
         disabledTooltip,
       },
-    ],
-    [t, locale, lockedUntilSigned, disabledTooltip]
-  );
+    ];
+
+    if (userRole !== "B2B_TEAM_MEMBER" || teamPermissions === null) return items;
+    return items.filter(item => canAccessPath(item.href, teamPermissions));
+  }, [t, locale, lockedUntilSigned, disabledTooltip, userRole, teamPermissions]);
+
+  const permissionsReady = userRole !== "B2B_TEAM_MEMBER" || teamPermissions !== null;
+  const canAccessCurrentPath = userRole !== "B2B_TEAM_MEMBER"
+    || (teamPermissions !== null && canAccessPath(pathname, teamPermissions));
 
   return (
     <AuthGuard allowedRoles={["B2B", "B2B_TEAM_MEMBER"]}>
@@ -94,7 +154,19 @@ export default function AdminLayout({
               <Breadcrumb />
               <LanguageSelector />
             </div>
-            <div className="sm:px-8 px-4">{children}</div>
+            <div className="sm:px-8 px-4">
+              {!permissionsReady ? (
+                <div className="flex min-h-48 items-center justify-center" role="status">
+                  <Loader2 className="h-6 w-6 animate-spin text-purple-600" />
+                </div>
+              ) : permissionsLoadError ? (
+                <p className="py-8 text-center text-red-600">{t("permissionsLoadError")}</p>
+              ) : canAccessCurrentPath ? (
+                children
+              ) : (
+                <p className="py-8 text-center text-muted-foreground">{t("accessDenied")}</p>
+              )}
+            </div>
           </div>
         </DashboardLayout>
       </AgreementGuard>
