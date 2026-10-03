@@ -1,9 +1,9 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { usePathname, useRouter } from "next/navigation"
 import { useTranslations, useLocale } from "next-intl"
 import { useTheme } from "next-themes"
+import { usePathname, useRouter } from "@/i18n/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -346,7 +346,7 @@ export function CompanyProfile() {
           ? "en"
           : locale
       if (preferredLocale !== locale) {
-        router.replace(pathname.replace(/^\/(en|ar)(?=\/|$)/, `/${preferredLocale}`))
+        router.replace(pathname, { locale: preferredLocale })
       }
     }
   }
