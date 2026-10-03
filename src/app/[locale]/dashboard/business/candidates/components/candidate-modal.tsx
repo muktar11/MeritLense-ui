@@ -94,6 +94,7 @@ export function CandidateModal({
   const [reuseError, setReuseError] = useState<string | null>(null)
   const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>({})
   const [timezoneOptions] = useState<string[]>(getTimezoneOptions)
+  const [dropdownPortalContainer, setDropdownPortalContainer] = useState<HTMLElement | null>(null)
   const [previewPhoto, setPreviewPhoto] = useState<string | null>(null)
   const [previewDocument, setPreviewDocument] = useState<string | null>(null)
   const [skillsList, setSkillsList] = useState<string[]>([])
@@ -545,7 +546,10 @@ export function CandidateModal({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+              <Dialog.Panel
+                ref={setDropdownPortalContainer}
+                className="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
+              >
                 <div className="flex justify-between items-center mb-4">
                   <Dialog.Title as="h3" className="text-lg font-semibold text-gray-900">
                     {mode === 'create' && t("title.add")}
@@ -1117,7 +1121,10 @@ export function CandidateModal({
                               <ChevronDown className="w-4 h-4 text-gray-400 shrink-0" />
                             </button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent className="w-72 max-h-64 overflow-y-auto">
+                          <DropdownMenuContent
+                            portalContainer={dropdownPortalContainer}
+                            className="w-72 max-h-64 overflow-y-auto"
+                          >
                             <DropdownMenuLabel>{t("fields.coreSkills")}</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             {(CANDIDATE_SKILLS_BY_ROLE[formData.job_role] || []).map((skill) => (
