@@ -18,8 +18,10 @@ import { LanguageSelector } from "@/components/app/LanguageSelector";
 import { useTranslations, useLocale } from "next-intl";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/hooks/useAuth";
 import { profileAPI } from "@/app/api/profile/endpoints";
+import { Button } from "@/components/ui/button";
 
 const TEAM_PERMISSIONS = {
   candidates: "add_candidates",
@@ -39,8 +41,8 @@ function requiredPermissionsForPath(path: string): string[] | null {
   return ALL_TEAM_PERMISSIONS;
 }
 
-function canAccessPath(path: string, permissions: string[]): boolean {
-  if (path.includes("/dashboard/business/company-profile")) return false;
+function canAccessPath(path: string, permissions: string[], allowProfile = false): boolean {
+  if (path.includes("/dashboard/business/company-profile")) return allowProfile;
   const required = requiredPermissionsForPath(path);
   return required === null || required.every(permission => permissions.includes(permission));
 }
@@ -53,37 +55,44 @@ export default function AdminLayout({
   const t = useTranslations("dashboard.business");
   const locale = useLocale(); // ✅ current locale
   const pathname = usePathname();
+  const router = useRouter();
   const { userRole } = useAuth();
   const [teamPermissions, setTeamPermissions] = useState<string[] | null>(null);
   const [permissionsLoadError, setPermissionsLoadError] = useState(false);
+  const [companyLicenseVerified, setCompanyLicenseVerified] = useState<boolean | null>(null);
+  const [licenseLoadError, setLicenseLoadError] = useState(false);
+  const [profileAccessAttempt, setProfileAccessAttempt] = useState(0);
 
   useEffect(() => {
-    if (userRole !== "B2B_TEAM_MEMBER") {
-      setTeamPermissions([]);
-      setPermissionsLoadError(false);
-      return;
-    }
+    if (userRole !== "B2B" && userRole !== "B2B_TEAM_MEMBER") return;
 
     let cancelled = false;
     profileAPI.getProfile().then((profile) => {
       if (!cancelled) {
-        setTeamPermissions(Array.isArray(profile.permissions) ? profile.permissions : []);
+        setTeamPermissions(userRole === "B2B_TEAM_MEMBER" && Array.isArray(profile.permissions)
+          ? profile.permissions
+          : []);
         setPermissionsLoadError(false);
+        setCompanyLicenseVerified(profile.company_is_verified === true);
+        setLicenseLoadError(false);
       }
     }).catch((error) => {
-      console.error("Failed to fetch team member permissions:", error);
+      console.error("Failed to fetch business account access status:", error);
       if (!cancelled) {
         setTeamPermissions([]);
-        setPermissionsLoadError(true);
+        setPermissionsLoadError(userRole === "B2B_TEAM_MEMBER");
+        setCompanyLicenseVerified(null);
+        setLicenseLoadError(true);
       }
     });
 
     return () => {
       cancelled = true;
     };
-  }, [userRole]);
+  }, [userRole, profileAccessAttempt]);
 
-  const agreementStatus = useB2BAgreementStatus(userRole);
+  const agreementStatus = useB2BAgreementStatus(userRole, companyLicenseVerified === true);
+  const licenseLocked = licenseLoadError || companyLicenseVerified !== true;
   // Company Profile stays reachable while unsigned - it hosts the "Sign
   // Agreements" entry point. Every other page is gated until the B2B
   // Agreement and DPA are both signed.
@@ -134,43 +143,79 @@ export default function AdminLayout({
       },
     ];
 
+    if (licenseLocked) {
+      return items.filter(item => item.href.includes("/dashboard/business/company-profile"));
+    }
     if (userRole !== "B2B_TEAM_MEMBER" || teamPermissions === null) return items;
     return items.filter(item => canAccessPath(item.href, teamPermissions));
-  }, [t, locale, lockedUntilSigned, disabledTooltip, userRole, teamPermissions]);
+  }, [t, locale, lockedUntilSigned, disabledTooltip, userRole, teamPermissions, licenseLocked]);
 
   const permissionsReady = userRole !== "B2B_TEAM_MEMBER" || teamPermissions !== null;
-  const canAccessCurrentPath = userRole !== "B2B_TEAM_MEMBER"
-    || (teamPermissions !== null && canAccessPath(pathname, teamPermissions));
+  const isProfilePath = pathname.includes("/dashboard/business/company-profile");
+  const canAccessCurrentPath = licenseLocked
+    ? isProfilePath
+    : userRole !== "B2B_TEAM_MEMBER"
+      || (teamPermissions !== null && canAccessPath(pathname, teamPermissions));
 
   return (
     <AuthGuard allowedRoles={["B2B", "B2B_TEAM_MEMBER"]}>
       <Watermark />
-      <AgreementGuard status={agreementStatus}>
-        <DashboardLayout
-          sidebarItems={ADMIN_SIDEBAR_ITEMS}
-          userType={t("user_type")}
-        >
-          <div className="lg:px-8 px-0">
-            <div className="w-full bg-white h-16 rounded-b shadow-2xl/5 flex items-center justify-between pl-18 lg:pl-4 pr-4">
-              <Breadcrumb />
-              <LanguageSelector />
-            </div>
-            <div className="sm:px-8 px-4">
-              {!permissionsReady ? (
-                <div className="flex min-h-48 items-center justify-center" role="status">
-                  <Loader2 className="h-6 w-6 animate-spin text-purple-600" />
-                </div>
-              ) : permissionsLoadError ? (
-                <p className="py-8 text-center text-red-600">{t("permissionsLoadError")}</p>
-              ) : canAccessCurrentPath ? (
+      <DashboardLayout
+        sidebarItems={ADMIN_SIDEBAR_ITEMS}
+        userType={t("user_type")}
+      >
+        <div className="lg:px-8 px-0">
+          <div className="w-full bg-white h-16 rounded-b shadow-2xl/5 flex items-center justify-between pl-18 lg:pl-4 pr-4">
+            <Breadcrumb />
+            <LanguageSelector />
+          </div>
+          <div className="sm:px-8 px-4">
+            {companyLicenseVerified === null && !licenseLoadError ? (
+              <div className="flex min-h-48 items-center justify-center" role="status">
+                <Loader2 className="h-6 w-6 animate-spin text-purple-600" />
+              </div>
+            ) : licenseLoadError ? (
+              <div className="mx-auto max-w-2xl py-12 text-center">
+                <p className="mb-4 text-red-600">{t("licenseStatusLoadError")}</p>
+                <Button variant="outline" onClick={() => setProfileAccessAttempt((value) => value + 1)}>
+                  {t("retry")}
+                </Button>
+              </div>
+            ) : licenseLocked ? (
+              isProfilePath ? (
                 children
               ) : (
-                <p className="py-8 text-center text-muted-foreground">{t("accessDenied")}</p>
-              )}
-            </div>
+                <div className="mx-auto max-w-2xl py-12 text-center">
+                  <h1 className="mb-3 text-xl font-semibold">{t("licenseAccessTitle")}</h1>
+                  <p className="mb-5 text-muted-foreground">{t("licenseAccessDescription")}</p>
+                  <div className="flex justify-center gap-3">
+                    <Button variant="outline" onClick={() => setProfileAccessAttempt((value) => value + 1)}>
+                      {t("refreshCompanyStatus")}
+                    </Button>
+                    <Button onClick={() => router.push(`/${locale}/dashboard/business/company-profile`)}>
+                      {t("licenseProfileLink")}
+                    </Button>
+                  </div>
+                </div>
+              )
+            ) : (
+              <AgreementGuard status={agreementStatus}>
+                {!permissionsReady ? (
+                  <div className="flex min-h-48 items-center justify-center" role="status">
+                    <Loader2 className="h-6 w-6 animate-spin text-purple-600" />
+                  </div>
+                ) : permissionsLoadError ? (
+                  <p className="py-8 text-center text-red-600">{t("permissionsLoadError")}</p>
+                ) : canAccessCurrentPath ? (
+                  children
+                ) : (
+                  <p className="py-8 text-center text-muted-foreground">{t("accessDenied")}</p>
+                )}
+              </AgreementGuard>
+            )}
           </div>
-        </DashboardLayout>
-      </AgreementGuard>
+        </div>
+      </DashboardLayout>
     </AuthGuard>
   );
 }

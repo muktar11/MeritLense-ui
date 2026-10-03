@@ -69,6 +69,15 @@ class EmployerService {
     return response.data;
   }
 
+  async requestCompanyDocument(userId: string, name: string): Promise<{ message: string }> {
+    this.ensureAuthToken();
+    const response = await apiClient.post(`${this.baseURL}/request-document`, {
+      user_id: userId,
+      name,
+    });
+    return response.data;
+  }
+
   // Admin: create a new individual (B2C) employer account
   async createEmployerB2C(data: B2CRegistrationData): Promise<{ message: string; employer: Employer }> {
     this.ensureAuthToken();

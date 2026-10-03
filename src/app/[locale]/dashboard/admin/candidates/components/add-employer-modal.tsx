@@ -105,7 +105,6 @@ export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModa
     if (!b2b.city.trim()) newErrors.city = t("errors.cityRequired");
     if (!b2b.phone_number.trim()) newErrors.phone_number = t("errors.phoneRequired");
     if (!b2b.registration_certificate) newErrors.registration_certificate = t("errors.registrationCertificateRequired");
-    if (!b2b.resachetified_license) newErrors.resachetified_license = t("errors.licenseDocumentRequired");
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -529,7 +528,7 @@ export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModa
                           <label className={`flex items-center gap-2 border-2 border-dashed rounded-lg p-3 cursor-pointer hover:border-purple-500 transition ${errors.resachetified_license ? 'border-red-500' : 'border-gray-300'}`}>
                             <Upload size={16} className="text-gray-400" />
                             <span className="text-sm text-gray-600 truncate">
-                              {b2b.resachetified_license ? b2b.resachetified_license.name : t("clickToUpload")}
+                              {b2b.resachetified_license ? b2b.resachetified_license.name : t("clickToUploadOptional")}
                             </span>
                             <input
                               type="file"

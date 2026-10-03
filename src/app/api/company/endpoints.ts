@@ -2,6 +2,15 @@ import { apiClient, apiFormDataClient } from '../auth/client';
 import { CompanyProfile } from './types';
 import { API_BASE_URL } from '@/lib/config/env';
 
+export interface RequestedCompanyDocument {
+  id: number;
+  name: string;
+  status: 'PENDING' | 'UPLOADED';
+  document_url?: string | null;
+  requested_at?: string;
+  uploaded_at?: string | null;
+}
+
 class CompanyService {
   private baseURL = `${API_BASE_URL}/auth/companies/`;
 
@@ -26,6 +35,21 @@ class CompanyService {
 
   async updateRoles(roles: string[]): Promise<CompanyProfile> {
     const response = await apiClient.patch(`${this.baseURL}profile`, { roles });
+    return response.data;
+  }
+
+  async getDocumentRequests(): Promise<{ results: RequestedCompanyDocument[] }> {
+    const response = await apiClient.get(`${this.baseURL}document-requests`);
+    return response.data;
+  }
+
+  async uploadRequestedDocument(requestId: number, file: File): Promise<RequestedCompanyDocument> {
+    const formData = new FormData();
+    formData.append('document', file);
+    const response = await apiFormDataClient.post(
+      `${this.baseURL}document-requests/${requestId}/upload`,
+      formData
+    );
     return response.data;
   }
 }

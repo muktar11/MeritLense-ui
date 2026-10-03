@@ -113,7 +113,7 @@ export interface B2BRegistrationData {
   target_market?: string
   timezone?: string
   registration_certificate: File
-  resachetified_license: File
+  resachetified_license?: File
   tax_id_document?: File | null
 }
 

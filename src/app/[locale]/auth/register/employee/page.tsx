@@ -142,7 +142,6 @@ function EmployerRegistrationContent() {
     if (!formData.phone_number) errors.phone_number = "Phone number is required"
 
     if (!formData.registration_certificate) errors.registration_certificate = "Registration certificate is required"
-    if (!formData.resachetified_license) errors.resachetified_license = "License document is required"
 
     setFormErrors(errors)
     return Object.keys(errors).length === 0
@@ -171,7 +170,7 @@ function EmployerRegistrationContent() {
       industry: formData.industry || undefined,
       address: formData.address || undefined,
       registration_certificate: formData.registration_certificate!,
-      resachetified_license: formData.resachetified_license!,
+      resachetified_license: formData.resachetified_license || undefined,
       tax_id_document: formData.tax_id_document || undefined,
     }
 
@@ -508,6 +507,9 @@ function EmployerRegistrationContent() {
             {/* Document Uploads */}
             <div className="space-y-4">
               <h2 className="text-lg font-semibold">Document Uploads</h2>
+              <p className="text-sm text-muted-foreground">
+                You can upload your business license from Company Profile after registration. Platform access is enabled after admin approval.
+              </p>
 
               <div className="grid grid-cols-2 gap-4">
                 <FileUploadBox
@@ -519,6 +521,7 @@ function EmployerRegistrationContent() {
                   field="resachetified_license"
                   label="Business License"
                   file={formData.resachetified_license}
+                  required={false}
                 />
               </div>
 

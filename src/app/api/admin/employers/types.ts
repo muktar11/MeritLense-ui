@@ -11,7 +11,18 @@ export interface Employer {
   documents_verification_status: string;
   profile_details: B2CProfileDetails | B2BProfileDetails;
   documents_status: DocumentStatus;
+  documents?: Record<string, string | null>;
+  requested_documents?: RequestedDocument[];
   created_at: string;
+}
+
+export interface RequestedDocument {
+  id: number;
+  name: string;
+  status: 'PENDING' | 'UPLOADED';
+  document_url?: string | null;
+  requested_at?: string;
+  uploaded_at?: string | null;
 }
 
 export interface B2CProfileDetails {

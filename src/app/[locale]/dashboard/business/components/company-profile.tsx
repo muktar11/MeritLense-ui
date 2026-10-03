@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { useTranslations, useLocale } from "next-intl"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -19,6 +19,7 @@ import { ChangePassword } from "./change-password"
 import { InviteTeamModal } from "./invite-team-modal"
 import { EditTeamModal } from "./edit-team-modal"
 import { PendingInvitations } from "./pending-invitations"
+import { CompanyLicenseDocuments } from "./company-license-documents"
 import { AuditTrailModal } from "@/components/agreements/AuditTrailModal"
 import teamService from "@/app/api/team/endpoints"
 import type { TeamMember, TeamInvitation } from "@/app/api/team/types"
@@ -64,7 +65,7 @@ export function CompanyProfile() {
   const tAgreementDocs = useTranslations("dashboard.business.signAgreements.docLabels")
   const locale = useLocale()
   const router = useRouter()
-  const { profile, loading, error, updateProfile } = useProfile()
+  const { profile, loading, error, fetchProfile, updateProfile } = useProfile()
   const { logout, userRole } = useAuth()
 
   const [companyLogo, setCompanyLogo] = useState<string | null>(null)
@@ -133,13 +134,7 @@ export function CompanyProfile() {
     }
   }, [profile])
 
-  useEffect(() => {
-    fetchTeamData()
-    fetchAgreements()
-    fetchCompanyExtras()
-  }, [])
-
-  const fetchCompanyExtras = async () => {
+  const fetchCompanyExtras = useCallback(async () => {
     try {
       const company = await companyService.getProfile()
       setCompanyLogo(company.logo)
@@ -149,7 +144,7 @@ export function CompanyProfile() {
       // not an error worth surfacing, the logo/roles UI just stays read-only.
       console.error('Failed to fetch company profile extras:', fetchError)
     }
-  }
+  }, [])
 
   const handleLogoClick = () => {
     if (!isCompanyOwner || logoUploading) return
@@ -245,7 +240,7 @@ export function CompanyProfile() {
     }
   }
 
-  const fetchAgreements = async () => {
+  const fetchAgreements = useCallback(async () => {
     setAgreementsLoading(true)
     try {
       const data = await agreementService.getStatus()
@@ -255,9 +250,9 @@ export function CompanyProfile() {
     } finally {
       setAgreementsLoading(false)
     }
-  }
+  }, [t])
 
-  const fetchTeamData = async () => {
+  const fetchTeamData = useCallback(async () => {
     setTeamLoading(true)
     try {
       const [members, invitations] = await Promise.all([
@@ -271,7 +266,14 @@ export function CompanyProfile() {
     } finally {
       setTeamLoading(false)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    if (profile?.company_is_verified !== true) return
+    fetchTeamData()
+    fetchAgreements()
+    fetchCompanyExtras()
+  }, [profile?.company_is_verified, fetchTeamData, fetchAgreements, fetchCompanyExtras])
 
   const handleInviteSuccess = () => {
     fetchTeamData()
@@ -346,6 +348,24 @@ export function CompanyProfile() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+      </div>
+    )
+  }
+
+  if (profile?.company_is_verified !== true) {
+    return (
+      <div className="min-h-screen bg-background p-4 sm:p-6" dir={locale === "ar" ? "rtl" : "ltr"}>
+        <div className="mx-auto max-w-3xl">
+          <h1 className="text-2xl sm:text-3xl font-bold">{t("title")}</h1>
+          <CompanyLicenseDocuments
+            profile={profile || {}}
+            isCompanyOwner={isCompanyOwner}
+            canUploadRequestedDocuments={
+              isCompanyOwner || profile?.role === "B2B_TEAM_MEMBER"
+            }
+            onLicenseUploaded={fetchProfile}
+          />
+        </div>
       </div>
     )
   }
@@ -1005,23 +1025,12 @@ export function CompanyProfile() {
           </div>
 
           <div className="flex-1 space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">{t("candidatesStatus")}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="p-4 border-2 border-dashed rounded-lg flex flex-col items-center gap-2">
-                  <Download className="w-6 h-6 text-muted-foreground" />
-                  <p className="text-xs font-medium">{t("downloadFiles")}</p>
-                  <p className="text-xs text-muted-foreground">{t("downloadAllowed")}</p>
-                </div>
-                <div className="p-4 border-2 border-dashed rounded-lg flex flex-col items-center gap-2">
-                  <Upload className="w-6 h-6 text-muted-foreground" />
-                  <p className="text-xs font-medium">{t("uploadFiles")}</p>
-                  <p className="text-xs text-muted-foreground">{t("uploadCandidatesFile")}</p>
-                </div>
-              </CardContent>
-            </Card>
+            <CompanyLicenseDocuments
+              profile={profile || {}}
+              isCompanyOwner={isCompanyOwner}
+              canUploadRequestedDocuments={isCompanyOwner}
+              onLicenseUploaded={fetchProfile}
+            />
 
             <Card>
               <CardHeader>

@@ -13,6 +13,15 @@ import type { Agreement } from "@/app/api/agreements/types";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
 
+function getResponseErrorMessage(error: unknown): string | undefined {
+  if (typeof error !== "object" || error === null || !("response" in error)) return undefined;
+  const response = error.response;
+  if (typeof response !== "object" || response === null || !("data" in response)) return undefined;
+  const data = response.data;
+  if (typeof data !== "object" || data === null || !("error" in data)) return undefined;
+  return typeof data.error === "string" ? data.error : undefined;
+}
+
 interface EmployerDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -23,9 +32,10 @@ interface EmployerDetailModalProps {
 export function EmployerDetailModal({ isOpen, onClose, employer, onVerified }: EmployerDetailModalProps) {
   const t = useTranslations("dashboard.admin.candidateManagement");
   const locale = useLocale();
-  const [actionLoading, setActionLoading] = useState<'approve' | 'reject' | 'contact' | null>(null);
+  const [actionLoading, setActionLoading] = useState<'approve' | 'reject' | 'contact' | 'request-document' | null>(null);
   const [actionError, setActionError] = useState("");
   const [actionSuccess, setActionSuccess] = useState("");
+  const [requestedDocumentName, setRequestedDocumentName] = useState("");
   const [contracts, setContracts] = useState<Agreement[]>([]);
   const [contractsLoading, setContractsLoading] = useState(false);
 
@@ -98,6 +108,25 @@ export function EmployerDetailModal({ isOpen, onClose, employer, onVerified }: E
       setActionSuccess(t("detailModal.contactSuccess"));
     } catch (error: any) {
       setActionError(error?.response?.data?.error || t("detailModal.contactError"));
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleRequestDocument = async () => {
+    const name = requestedDocumentName.trim();
+    if (!name || employer.role !== "B2B") return;
+
+    setActionError("");
+    setActionSuccess("");
+    setActionLoading("request-document");
+    try {
+      await employerService.requestCompanyDocument(employer.id, name);
+      setRequestedDocumentName("");
+      setActionSuccess(t("detailModal.requestDocumentSuccess"));
+      onVerified();
+    } catch (error: unknown) {
+      setActionError(getResponseErrorMessage(error) || t("detailModal.requestDocumentError"));
     } finally {
       setActionLoading(null);
     }
@@ -322,6 +351,64 @@ export function EmployerDetailModal({ isOpen, onClose, employer, onVerified }: E
                       })}
                     </div>
                   </div>
+
+                  {!isB2C && (
+                    <>
+                      <div>
+                        <h4 className="mb-3 text-sm font-medium text-gray-700">{t("detailModal.documentFilesHeading")}</h4>
+                        <div className="space-y-2">
+                          {Object.entries(employer.documents || {}).filter(([, url]) => Boolean(url)).map(([name, url]) => (
+                            <div key={name} className="flex items-center justify-between rounded bg-gray-50 p-2">
+                              <span className="text-sm capitalize text-gray-600">{name.replace(/_/g, " ")}</span>
+                              <a
+                                href={url || undefined}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm font-medium text-purple-600 hover:text-purple-800"
+                              >
+                                {t("detailModal.viewDocument")}
+                              </a>
+                            </div>
+                          ))}
+                          {(employer.requested_documents || []).map((request) => (
+                            <div key={request.id} className="flex items-center justify-between rounded bg-gray-50 p-2">
+                              <span className="text-sm text-gray-600">{request.name} ({request.status.toLowerCase()})</span>
+                              {request.document_url && (
+                                <a
+                                  href={request.document_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-sm font-medium text-purple-600 hover:text-purple-800"
+                                >
+                                  {t("detailModal.viewDocument")}
+                                </a>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="space-y-2 rounded-lg border p-3">
+                        <h4 className="text-sm font-medium text-gray-700">{t("detailModal.requestDocumentHeading")}</h4>
+                        <div className="flex gap-2">
+                          <input
+                            value={requestedDocumentName}
+                            onChange={(event) => setRequestedDocumentName(event.target.value)}
+                            maxLength={200}
+                            placeholder={t("detailModal.requestDocumentPlaceholder")}
+                            className="min-w-0 flex-1 rounded-md border px-3 py-2 text-sm"
+                          />
+                          <button
+                            onClick={handleRequestDocument}
+                            disabled={!requestedDocumentName.trim() || actionLoading !== null}
+                            className="rounded-md bg-purple-600 px-3 py-2 text-sm text-white hover:bg-purple-700 disabled:opacity-50"
+                          >
+                            {actionLoading === "request-document" && <Loader2 className="mr-2 inline h-4 w-4 animate-spin" />}
+                            {t("detailModal.requestDocumentButton")}
+                          </button>
+                        </div>
+                      </div>
+                    </>
+                  )}
 
                   {/* Signed Contracts (B2B only) */}
                   {!isB2C && (

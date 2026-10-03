@@ -32,16 +32,20 @@ export type AgreementSignedState = "checking" | "signed" | "unsigned";
  * sign-agreements permanently, regardless of the company's real status.
  * A team member's access is controlled by their invite-time permissions
  * instead (see team-member-profile.permissions), not by signing anything. */
-export function useB2BAgreementStatus(role?: string | null): AgreementSignedState {
-  const [state, setState] = useState<AgreementSignedState>("checking");
+export function useB2BAgreementStatus(
+  role?: string | null,
+  enabled = true
+): AgreementSignedState {
+  const [result, setResult] = useState<{
+    pathname: string;
+    enabled: boolean;
+    status: AgreementSignedState;
+  }>({ pathname: "", enabled: false, status: "checking" });
   const pathname = usePathname();
   const isTeamMember = role === "B2B_TEAM_MEMBER";
 
   useEffect(() => {
-    if (isTeamMember) {
-      setState("signed");
-      return;
-    }
+    if (isTeamMember || !enabled) return;
 
     let active = true;
     agreementService
@@ -52,19 +56,22 @@ export function useB2BAgreementStatus(role?: string | null): AgreementSignedStat
           agreements.filter((a) => a.status === "SIGNED").map((a) => a.agreement_type)
         );
         const allSigned = REQUIRED_TYPES.every((type) => signedTypes.has(type));
-        setState(allSigned ? "signed" : "unsigned");
+        setResult({ pathname, enabled, status: allSigned ? "signed" : "unsigned" });
       })
       .catch(() => {
         // Fail open on a transient API error rather than locking an already
         // signed company out of their dashboard over a network blip.
-        if (active) setState("signed");
+        if (active) setResult({ pathname, enabled, status: "signed" });
       });
     return () => {
       active = false;
     };
-  }, [pathname, isTeamMember]);
+  }, [pathname, isTeamMember, enabled]);
 
-  return state;
+  if (isTeamMember || !enabled) return "signed";
+  return result.pathname === pathname && result.enabled === enabled
+    ? result.status
+    : "checking";
 }
 
 export function AgreementGuard({

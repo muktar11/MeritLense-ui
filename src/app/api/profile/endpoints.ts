@@ -53,12 +53,21 @@ export interface DocumentUploadResponse {
   profile: any
 }
 
+export interface UserProfile {
+  role?: string
+  permissions?: string[]
+  company_is_verified?: boolean
+  trade_license_uploaded?: boolean
+  documents_verification_status?: string
+  [key: string]: unknown
+}
+
 export interface ProfilePictureUploadResponse {
   profile_picture: string
 }
 
 export const profileAPI = {
-  getProfile: async () => {
+  getProfile: async (): Promise<UserProfile> => {
     const response = await profileClient.get('/me')
     return response.data
   },
