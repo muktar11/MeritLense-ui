@@ -29,16 +29,7 @@ import { PASSPORT_PHOTO_GUIDELINES } from "@/lib/photo-guidelines"
 import { CANDIDATE_SKILLS_BY_ROLE, translateSkill } from "@/lib/candidate-skills"
 import { COUNTRIES } from "@/lib/countries"
 import { detectCountry, detectTimezone, getTimezoneOptions, suggestLanguageFromCountry } from "@/lib/location-detection"
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuCheckboxItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu"
-import { ChevronDown } from "lucide-react"
+import { CoreSkillsDropdown } from "@/components/candidates/core-skills-dropdown"
 
 type PhotoField = 'passport_document' | 'profile_photo'
 
@@ -95,7 +86,6 @@ export function CandidateModal({
   const [reuseError, setReuseError] = useState<string | null>(null)
   const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>({})
   const [timezoneOptions] = useState<string[]>(getTimezoneOptions)
-  const [dropdownPortalContainer, setDropdownPortalContainer] = useState<HTMLElement | null>(null)
   const [previewPhoto, setPreviewPhoto] = useState<string | null>(null)
   const [previewDocument, setPreviewDocument] = useState<string | null>(null)
   const [skillsList, setSkillsList] = useState<string[]>([])
@@ -547,10 +537,7 @@ export function CandidateModal({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel
-                ref={setDropdownPortalContainer}
-                className="w-full max-w-3xl transform overflow-visible rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
-              >
+              <Dialog.Panel className="w-full max-w-3xl transform overflow-visible rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                 <div className="flex justify-between items-center mb-4">
                   <Dialog.Title as="h3" className="text-lg font-semibold text-gray-900">
                     {mode === 'create' && t("title.add")}
@@ -1102,50 +1089,23 @@ export function CandidateModal({
                       </div>
                     ) : (
                       <>
-                        <DropdownMenu modal={false}>
-                          <DropdownMenuTrigger asChild>
-                            <button
-                              type="button"
-                              disabled={!canEdit}
-                              onBlur={() => handleBlur('core_skills')}
-                              className={`w-full flex items-center justify-between px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white text-left disabled:bg-gray-50 disabled:text-gray-400 ${
-                                touchedFields.core_skills && errors.core_skills ? 'border-red-500' : 'border-gray-300'
-                              }`}
-                            >
-                              <span className={skillsList.length === 0 ? "text-gray-400" : "text-gray-900"}>
-                                {!formData.job_role
-                                  ? tSkills("selectRoleFirst")
-                                  : skillsList.length === 0
-                                    ? tSkills("selectSkillsPlaceholder")
-                                    : tSkills("selectedCount", { count: skillsList.length })}
-                              </span>
-                              <ChevronDown className="w-4 h-4 text-gray-400 shrink-0" />
-                            </button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent
-                            portalContainer={dropdownPortalContainer}
-                            className="w-72 max-h-64 overflow-y-auto"
-                          >
-                            <DropdownMenuLabel>{t("fields.coreSkills")}</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            {!formData.job_role ? (
-                              <DropdownMenuItem disabled>
-                                {tSkills("selectRoleFirst")}
-                              </DropdownMenuItem>
-                            ) : (
-                              (CANDIDATE_SKILLS_BY_ROLE[formData.job_role] || []).map((skill) => (
-                                <DropdownMenuCheckboxItem
-                                  key={skill}
-                                  checked={skillsList.includes(skill)}
-                                  onSelect={(e) => e.preventDefault()}
-                                  onCheckedChange={(checked) => toggleSkill(skill, checked === true)}
-                                >
-                                  {translateSkill(skill, tSkills)}
-                                </DropdownMenuCheckboxItem>
-                              ))
-                            )}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                        <CoreSkillsDropdown
+                          skills={(CANDIDATE_SKILLS_BY_ROLE[formData.job_role] || []).map((skill) => ({
+                            value: skill,
+                            label: translateSkill(skill, tSkills),
+                          }))}
+                          selectedSkills={skillsList}
+                          onToggle={(skill) => toggleSkill(skill, !skillsList.includes(skill))}
+                          menuLabel={t("fields.coreSkills")}
+                          placeholder={!formData.job_role ? tSkills("selectRoleFirst") : tSkills("selectSkillsPlaceholder")}
+                          selectedLabel={tSkills("selectedCount", { count: skillsList.length })}
+                          selectRoleLabel={tSkills("selectRoleFirst")}
+                          disabled={!canEdit}
+                          onBlur={() => handleBlur('core_skills')}
+                          className={`w-full flex items-center justify-between px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white text-left disabled:bg-gray-50 disabled:text-gray-400 ${
+                            touchedFields.core_skills && errors.core_skills ? 'border-red-500' : 'border-gray-300'
+                          }`}
+                        />
                         <p className="mt-1 text-xs text-gray-500">
                           {t("fields.skillsHint")}
                         </p>
