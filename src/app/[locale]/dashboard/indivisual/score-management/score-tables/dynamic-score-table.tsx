@@ -5,9 +5,8 @@ import { useTranslations } from "next-intl";
 import { Eye } from "lucide-react";
 import type { Candidate } from "@/app/api/candidates/types";
 import type { CandidateScoreSummary } from "@/app/api/evaluations/types";
-import reportService from "@/app/api/reports/endpoints";
 import TablePagination from "@/components/ui/table-pagination";
-import { ArtifactActions } from "@/components/evaluations/EvaluationDocumentLinks";
+import { EvaluationDocumentsRow } from "@/components/evaluations/EvaluationDocumentLinks";
 
 const PAGE_SIZE = 10;
 
@@ -58,14 +57,6 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
             const evaluations = scores[candidate.id];
             const summary = evaluations?.[0];
 
-            const downloadBundle = async () => {
-              if (!summary?.report?.report_id) return;
-              await reportService.downloadDocumentsBundle(
-                summary.report.report_id,
-                `${summary.report.report_number}-documents.zip`
-              );
-            };
-
             return (
               <tr key={candidate.id} className="border-b border-gray-100 hover:bg-gray-50">
                 <td className="px-4 sm:px-6 py-3">
@@ -94,23 +85,15 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
                   )}
                 </td>
                 <td className="px-4 sm:px-6 py-3">
-                  <div>
-                    <span className="text-xs text-gray-500 mr-1">{t("documentsBundle")}</span>
-                    {summary?.report?.report_id ? (
-                      <ArtifactActions
-                        candidateName={candidate.full_name}
-                        artifactLabel={t("documentsBundleLabel")}
-                        onDownload={downloadBundle}
-                      />
-                    ) : (
-                      <span className="text-gray-400">{t("notAvailable")}</span>
-                    )}
-                    {summary?.evaluation_tier === "SCREENING" && (
-                      <p className="text-[11px] text-amber-600 mt-1 max-w-[220px]">
-                        {t("screeningNote")}
-                      </p>
-                    )}
-                  </div>
+                  {summary ? (
+                    <EvaluationDocumentsRow
+                      evaluation={summary}
+                      candidateName={candidate.full_name}
+                      label={t("documentsHeading")}
+                    />
+                  ) : (
+                    <span className="text-gray-400">{t("notAvailable")}</span>
+                  )}
                 </td>
                 <td className="px-4 sm:px-6 py-3">
                   <button
@@ -133,14 +116,6 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
         {paginatedCandidates.map((candidate) => {
           const evaluations = scores[candidate.id];
           const summary = evaluations?.[0];
-
-          const downloadBundle = async () => {
-            if (!summary?.report?.report_id) return;
-            await reportService.downloadDocumentsBundle(
-              summary.report.report_id,
-              `${summary.report.report_number}-documents.zip`
-            );
-          };
 
           return (
             <div key={candidate.id} className="py-3">
@@ -173,20 +148,14 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
                 </p>
               )}
               <div className="mt-2 space-y-1">
-                <div className="flex items-center gap-1">
-                  <span className="text-xs text-gray-500">{t("documentsBundle")}</span>
-                  {summary?.report?.report_id ? (
-                    <ArtifactActions
-                      candidateName={candidate.full_name}
-                      artifactLabel={t("documentsBundleLabel")}
-                      onDownload={downloadBundle}
-                    />
-                  ) : (
-                    <span className="text-gray-400 text-xs">{t("notAvailable")}</span>
-                  )}
-                </div>
-                {summary?.evaluation_tier === "SCREENING" && (
-                  <p className="text-[11px] text-amber-600">{t("screeningNote")}</p>
+                {summary ? (
+                  <EvaluationDocumentsRow
+                    evaluation={summary}
+                    candidateName={candidate.full_name}
+                    label={t("documentsHeading")}
+                  />
+                ) : (
+                  <span className="text-xs text-gray-400">{t("notAvailable")}</span>
                 )}
               </div>
             </div>

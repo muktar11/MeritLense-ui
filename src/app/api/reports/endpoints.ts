@@ -58,18 +58,18 @@ class ReportService {
     window.URL.revokeObjectURL(downloadUrl);
   }
 
-  async downloadDocumentsBundle(reportId: string, filename?: string): Promise<void> {
-    const response = await authClient.get(`${this.reportsURL}/${reportId}/documents-bundle`, {
+  async downloadAiAnalysisPdf(reportId: string, filename?: string): Promise<void> {
+    const response = await authClient.get(`${this.reportsURL}/${reportId}/ai-analysis-pdf`, {
       responseType: 'blob',
     });
 
     const blob = new Blob([response.data], {
-      type: response.headers['content-type'] || 'application/zip',
+      type: response.headers['content-type'] || 'application/pdf',
     });
     const downloadUrl = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = downloadUrl;
-    link.download = filename || this.filenameFromDisposition(response.headers['content-disposition']) || `${reportId}-documents.zip`;
+    link.download = filename || this.filenameFromDisposition(response.headers['content-disposition']) || `${reportId}-ai-analysis.pdf`;
     document.body.appendChild(link);
     link.click();
     link.remove();

@@ -18,9 +18,8 @@ export function ArtifactActions({
   artifactLabel,
   onDownload,
 }: {
-  // Omit for an artifact with no stable public URL (e.g. the authenticated
-  // documents-bundle zip) - the Share button hides itself rather than
-  // sharing/copying an empty link.
+  // Omit for authenticated downloads; the Share button hides rather than
+  // sharing an empty link.
   url?: string;
   candidateName: string;
   artifactLabel: string;
@@ -102,13 +101,7 @@ export function ArtifactActions({
   );
 }
 
-// One zipped download per evaluation: the transcript/evidence report PDF,
-// the certificate PDF (when one has been issued), a questions-and-answers
-// PDF, and an AI score & result PDF - bundled server-side (see
-// EvaluationReportService.build_documents_zip) rather than as separate
-// downloads, so a reviewer keeping records only has one file per evaluation
-// to save.
-function EvaluationDocumentsRow({
+export function EvaluationDocumentsRow({
   evaluation,
   candidateName,
   label,
@@ -119,34 +112,52 @@ function EvaluationDocumentsRow({
 }) {
   const t = useTranslations("dashboard.business.score-management.table");
 
-  const downloadBundle = async () => {
-    if (!evaluation.report?.report_id) return;
-    await reportService.downloadDocumentsBundle(
-      evaluation.report.report_id,
-      `${evaluation.report.report_number}-documents.zip`
-    );
-  };
+  const reportId = evaluation.report?.report_id;
+  const reportNumber = evaluation.report?.report_number;
+  const hasTranscript = Boolean(reportId && reportNumber);
+  const hasAiAnalysis = Boolean(hasTranscript && evaluation.evaluation_id);
 
   return (
-    <div className="p-4 bg-gray-50 rounded-lg">
-      <p className="text-xs font-semibold text-gray-600 mb-2">{label}</p>
-      <div>
-        <span className="text-xs text-gray-500 mr-1">{t("documentsBundle")}</span>
-        <div className="mt-1">
-          {evaluation.report?.report_id ? (
+    <div className="rounded-lg bg-gray-50 p-4">
+      <p className="mb-3 text-xs font-semibold text-gray-600">{label}</p>
+      <div className="flex flex-wrap gap-x-5 gap-y-3">
+        {hasTranscript && reportId && reportNumber && (
+          <div>
+            <p className="mb-1 text-xs text-gray-600">{t("transcript")}</p>
             <ArtifactActions
               candidateName={candidateName}
-              artifactLabel={t("documentsBundleLabel")}
-              onDownload={downloadBundle}
+              artifactLabel={t("transcriptReportLabel")}
+              onDownload={() => reportService.downloadPdf(reportId, `${reportNumber}-transcript.pdf`)}
             />
-          ) : (
-            <span className="text-gray-400">{t("notAvailable")}</span>
-          )}
-        </div>
-        {evaluation.evaluation_tier === "SCREENING" && (
-          <p className="text-[11px] text-amber-600 mt-1">{t("screeningNote")}</p>
+          </div>
+        )}
+        {evaluation.certificate?.pdf_url && (
+          <div>
+            <p className="mb-1 text-xs text-gray-600">{t("certificate")}</p>
+            <ArtifactActions
+              url={evaluation.certificate.pdf_url}
+              candidateName={candidateName}
+              artifactLabel={t("certificateLabel")}
+            />
+          </div>
+        )}
+        {hasAiAnalysis && reportId && reportNumber && (
+          <div>
+            <p className="mb-1 text-xs text-gray-600">{t("aiAnalysisLabel")}</p>
+            <ArtifactActions
+              candidateName={candidateName}
+              artifactLabel={t("aiAnalysisLabel")}
+              onDownload={() => reportService.downloadAiAnalysisPdf(reportId, `${reportNumber}-ai-analysis.pdf`)}
+            />
+          </div>
+        )}
+        {!hasTranscript && !evaluation.certificate?.pdf_url && !hasAiAnalysis && (
+          <span className="text-sm text-gray-400">{t("notAvailable")}</span>
         )}
       </div>
+      {evaluation.evaluation_tier === "SCREENING" && (
+        <p className="mt-2 text-[11px] text-amber-600">{t("screeningNote")}</p>
+      )}
     </div>
   );
 }
