@@ -2612,12 +2612,41 @@
         "pageHeading": "Candidate Score Management",
         "pageSubtitle": "View candidate scores categorized by job role",
         "searchByNameEmail": "Search candidates by name or email...",
+        "summary": {
+          "totalCandidates": "Total candidates",
+          "assessedCandidates": "Candidates assessed"
+        },
+        "roleSection": {
+          "title": "Browse scores by role",
+          "description": "Choose a role, search candidates, or narrow the list by assessment date."
+        },
+        "filters": {
+          "dateFrom": "Assessment date from",
+          "dateTo": "Assessment date to"
+        },
         "loadingCandidatesAndScores": "Loading candidates and scores...",
         "noCandidatesForRole": "No candidates found for this role",
         "candidatesHeading": "{role} Candidates",
         "jobRoleTabs": {
           "selectPlaceholder": "Select a job role",
           "unassessed": "Not Yet Assessed"
+        },
+        "assessedTable": {
+          "title": "All assessed candidates",
+          "description": "Search and filter completed assessments by date. View a candidate's full score breakdown from the actions column.",
+          "searchLabel": "Search assessed candidates",
+          "searchPlaceholder": "Search name, email, passport ID, or role...",
+          "dateFrom": "Assessment date from",
+          "dateTo": "Assessment date to",
+          "clearFilters": "Clear filters",
+          "candidate": "Candidate",
+          "role": "Assessed role",
+          "assessmentDate": "Assessment date",
+          "score": "Overall score",
+          "actions": "Actions",
+          "viewScores": "View scores",
+          "empty": "No assessed candidates match your search and date filters.",
+          "itemLabel": "assessed candidates"
         },
         "viewModal": {
           "title": "Score Details",

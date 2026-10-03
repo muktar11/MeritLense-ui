@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { Search } from "lucide-react";
+import { CalendarDays, ClipboardCheck, Search, Users } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Candidate } from "@/app/api/candidates/types";
 import { CandidateScoreSummary } from "@/app/api/evaluations/types";
@@ -11,6 +11,7 @@ import { JobRoleTabs, UNASSESSED_ROLE_BUCKET } from "./job-role-tabs";
 import { ScoreViewModal } from "./score-view-modal";
 import candidateService from "@/app/api/candidates/endpoints";
 import evaluationService from "@/app/api/evaluations/endpoints";
+import { AssessedCandidatesTable } from "@/components/evaluations/assessed-candidates-table";
 
 export function ScoreManagement() {
   const t = useTranslations("dashboard.business.score-management");
@@ -30,51 +31,55 @@ export function ScoreManagement() {
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
 
   const [searchTerm, setSearchTerm] = useState("");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    let cancelled = false;
 
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const [candidatesData, summaries] = await Promise.all([
-        candidateService.getCandidates(),
-        evaluationService.getCandidateScores(),
-      ]);
-      setCandidates(candidatesData);
+    const loadData = async () => {
+      try {
+        const [candidatesData, summaries] = await Promise.all([
+          candidateService.getCandidates(),
+          evaluationService.getCandidateScores(),
+        ]);
+        if (cancelled) return;
 
-      const scoresMap: Record<string, CandidateScoreSummary[]> = {};
-      summaries.forEach(summary => {
-        (scoresMap[summary.candidate_id] ??= []).push(summary);
-      });
-      setCandidateScores(scoresMap);
+        setCandidates(candidatesData);
 
-      // Bucketed by the role_code of the candidate's most recent evaluation
-      // (the granular 21-role taxonomy scoring actually runs on), not the
-      // older Candidate.job_role field - a candidate never assessed yet has
-      // no evaluation to derive that from, so they land in a dedicated
-      // "not yet assessed" bucket instead of a misleading role guess.
-      const grouped: Record<string, Candidate[]> = {};
-      candidatesData.forEach(candidate => {
-        const role = scoresMap[candidate.id]?.[0]?.role_code || UNASSESSED_ROLE_BUCKET;
-        if (!grouped[role]) {
-          grouped[role] = [];
+        const scoresMap: Record<string, CandidateScoreSummary[]> = {};
+        summaries.forEach(summary => {
+          (scoresMap[summary.candidate_id] ??= []).push(summary);
+        });
+        Object.values(scoresMap).forEach(evaluations => {
+          evaluations.sort((a, b) => Date.parse(b.generated_at) - Date.parse(a.generated_at));
+        });
+        setCandidateScores(scoresMap);
+
+        const grouped: Record<string, Candidate[]> = {};
+        candidatesData.forEach(candidate => {
+          const role = scoresMap[candidate.id]?.[0]?.role_code || UNASSESSED_ROLE_BUCKET;
+          if (!grouped[role]) grouped[role] = [];
+          grouped[role].push(candidate);
+        });
+        setCandidatesByRole(grouped);
+
+        const availableRoles = Object.keys(grouped);
+        if (availableRoles.length > 0 && !grouped[UNASSESSED_ROLE_BUCKET]) {
+          setSelectedRole(availableRoles[0]);
         }
-        grouped[role].push(candidate);
-      });
-      setCandidatesByRole(grouped);
-
-      const availableRoles = Object.keys(grouped);
-      if (availableRoles.length > 0 && !grouped[selectedRole]) {
-        setSelectedRole(availableRoles[0]);
+      } catch (error) {
+        if (!cancelled) console.error("Failed to fetch candidate scores:", error);
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-    } catch (error) {
-      console.error('Failed to fetch data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+
+    void loadData();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleViewScores = (candidate: Candidate) => {
     setSelectedCandidate(candidate);
@@ -83,15 +88,26 @@ export function ScoreManagement() {
 
   const getFilteredCandidates = () => {
     const roleCandidates = candidatesByRole[selectedRole] || [];
+    const term = searchTerm.trim().toLocaleLowerCase();
 
-    if (!searchTerm) return roleCandidates;
+    return roleCandidates.filter(candidate => {
+      const evaluation = candidateScores[candidate.id]?.[0];
+      if ((dateFrom || dateTo) && !evaluation?.evaluation_id) return false;
+      if (evaluation?.evaluation_id) {
+        const assessedAt = new Date(evaluation.generated_at);
+        if (dateFrom && assessedAt < new Date(`${dateFrom}T00:00:00`)) return false;
+        if (dateTo && assessedAt > new Date(`${dateTo}T23:59:59.999`)) return false;
+      }
+      if (!term) return true;
 
-    const term = searchTerm.toLowerCase();
-    return roleCandidates.filter(c =>
-      c.first_name.toLowerCase().includes(term) ||
-      c.last_name.toLowerCase().includes(term) ||
-      c.email.toLowerCase().includes(term)
-    );
+      return [
+        candidate.first_name,
+        candidate.last_name,
+        candidate.full_name,
+        candidate.email,
+        candidate.passport_id,
+      ].some(value => value?.toLocaleLowerCase().includes(term));
+    });
   };
 
   const roleCounts = Object.keys(candidatesByRole).reduce((acc, role) => {
@@ -104,9 +120,12 @@ export function ScoreManagement() {
     return tRoles.has(role) ? tRoles(role) : role;
   };
 
-  const renderTable = () => {
-    const filteredCandidates = getFilteredCandidates();
+  const filteredCandidates = getFilteredCandidates();
+  const assessedCandidateCount = candidates.filter(candidate =>
+    candidateScores[candidate.id]?.some(evaluation => evaluation.evaluation_id)
+  ).length;
 
+  const renderTable = () => {
     if (filteredCandidates.length === 0) {
       return (
         <div className="text-center py-8 text-gray-500">
@@ -142,40 +161,92 @@ export function ScoreManagement() {
         <p className="text-gray-600">{t("pageSubtitle")}</p>
       </div>
 
-      <div className="bg-white rounded-lg p-4 mb-6 shadow-sm">
-        <div className="flex items-center gap-2 max-w-md">
-          <Search className="w-5 h-5 text-gray-400" />
-          <Input
-            type="text"
-            placeholder={t("searchByNameEmail")}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="flex-1"
+      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="flex items-center gap-3 rounded-xl border border-purple-100 bg-white p-4 shadow-sm">
+          <div className="rounded-lg bg-purple-50 p-2.5 text-purple-700"><Users className="h-5 w-5" /></div>
+          <div>
+            <p className="text-sm text-gray-600">{t("summary.totalCandidates")}</p>
+            <p className="text-2xl font-semibold text-gray-900">{candidates.length}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3 rounded-xl border border-green-100 bg-white p-4 shadow-sm">
+          <div className="rounded-lg bg-green-50 p-2.5 text-green-700"><ClipboardCheck className="h-5 w-5" /></div>
+          <div>
+            <p className="text-sm text-gray-600">{t("summary.assessedCandidates")}</p>
+            <p className="text-2xl font-semibold text-gray-900">{assessedCandidateCount}</p>
+          </div>
+        </div>
+      </div>
+
+      <section className="mb-8 rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
+        <div className="mb-4">
+          <h2 className="text-lg font-semibold text-gray-900">{t("roleSection.title")}</h2>
+          <p className="mt-1 text-sm text-gray-600">{t("roleSection.description")}</p>
+        </div>
+
+        <div className="mb-4 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
+          <label className="relative block xl:col-span-2">
+            <span className="sr-only">{t("searchByNameEmail")}</span>
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 rtl:left-auto rtl:right-3" />
+            <Input
+              type="search"
+              placeholder={t("searchByNameEmail")}
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              className="pl-9 rtl:pl-3 rtl:pr-9"
+            />
+          </label>
+          <label className="block">
+            <span className="mb-1 block text-xs font-medium text-gray-600">{t("filters.dateFrom")}</span>
+            <span className="relative block">
+              <CalendarDays className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 rtl:left-auto rtl:right-3" />
+              <Input
+                type="date"
+                value={dateFrom}
+                max={dateTo || undefined}
+                onChange={(event) => setDateFrom(event.target.value)}
+                className="pl-9 rtl:pl-3 rtl:pr-9"
+              />
+            </span>
+          </label>
+          <label className="block">
+            <span className="mb-1 block text-xs font-medium text-gray-600">{t("filters.dateTo")}</span>
+            <span className="relative block">
+              <CalendarDays className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 rtl:left-auto rtl:right-3" />
+              <Input
+                type="date"
+                value={dateTo}
+                min={dateFrom || undefined}
+                onChange={(event) => setDateTo(event.target.value)}
+                className="pl-9 rtl:pl-3 rtl:pr-9"
+              />
+            </span>
+          </label>
+        </div>
+
+        <div className="mb-4">
+          <JobRoleTabs
+            selectedRole={selectedRole}
+            onRoleChange={setSelectedRole}
+            roleCounts={roleCounts}
           />
         </div>
-      </div>
 
-      <JobRoleTabs
-        selectedRole={selectedRole}
-        onRoleChange={setSelectedRole}
-        roleCounts={roleCounts}
-      />
-
-      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-        <div className="p-4 border-b border-gray-200 bg-gray-50">
-          <h2 className="text-lg font-semibold text-gray-900">
-            {t("candidatesHeading", { role: roleHeading(selectedRole) })}
-          </h2>
-        </div>
-
-        {renderTable()}
-
-        {getFilteredCandidates().length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-500">{t("noCandidatesForRole")}</p>
+        <div className="overflow-hidden rounded-lg border border-gray-200">
+          <div className="border-b border-gray-200 bg-gray-50 px-4 py-3">
+            <h3 className="font-semibold text-gray-900">
+              {t("candidatesHeading", { role: roleHeading(selectedRole) })}
+            </h3>
           </div>
-        )}
-      </div>
+          {renderTable()}
+        </div>
+      </section>
+
+      <AssessedCandidatesTable
+        candidates={candidates}
+        scores={candidateScores}
+        onViewScores={handleViewScores}
+      />
 
       <ScoreViewModal
         isOpen={isModalOpen}
