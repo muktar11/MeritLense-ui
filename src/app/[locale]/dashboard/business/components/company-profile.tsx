@@ -1,8 +1,9 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { useTranslations, useLocale } from "next-intl"
+import { useTheme } from "next-themes"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -64,7 +65,9 @@ export function CompanyProfile() {
   const tLanguages = useTranslations("dashboard.indivisual.settings.edit-profile-tab.languages")
   const tAgreementDocs = useTranslations("dashboard.business.signAgreements.docLabels")
   const locale = useLocale()
+  const pathname = usePathname()
   const router = useRouter()
+  const { theme, setTheme } = useTheme()
   const { profile, loading, error, fetchProfile, updateProfile } = useProfile()
   const { logout, userRole } = useAuth()
 
@@ -337,6 +340,14 @@ export function CompanyProfile() {
       setSaveSuccess(true)
       setIsEditing(false)
       setTimeout(() => setSaveSuccess(false), 3000)
+      const preferredLocale = formData.preferred_language.toUpperCase() === "AR"
+        ? "ar"
+        : formData.preferred_language.toUpperCase() === "EN"
+          ? "en"
+          : locale
+      if (preferredLocale !== locale) {
+        router.replace(pathname.replace(/^\/(en|ar)(?=\/|$)/, `/${preferredLocale}`))
+      }
     }
   }
 
@@ -1115,7 +1126,10 @@ export function CompanyProfile() {
               <CardContent className="space-y-3">
                 <div>
                   <label className="text-xs text-muted-foreground block mb-2">{t("theme")}</label>
-                  <Select defaultValue="light">
+                  <Select
+                    value={theme === "dark" ? "dark" : "light"}
+                    onValueChange={(value) => setTheme(value)}
+                  >
                     <SelectTrigger className="h-8 text-xs">
                       <SelectValue />
                     </SelectTrigger>
@@ -1127,15 +1141,18 @@ export function CompanyProfile() {
                 </div>
                 <div>
                   <label className="text-xs text-muted-foreground block mb-2">{t("language")}</label>
-                  <Select defaultValue="eng">
+                  <Select
+                    value={["EN", "AR"].includes(formData.preferred_language.toUpperCase())
+                      ? formData.preferred_language.toUpperCase()
+                      : locale.toUpperCase()}
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, preferred_language: value }))}
+                  >
                     <SelectTrigger className="h-8 text-xs">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="eng">{t("english")}</SelectItem>
-                      <SelectItem value="es">{t("spanish")}</SelectItem>
-                      <SelectItem value="ar">{t("arabic")}</SelectItem>
-                      <SelectItem value="fr">{t("french")}</SelectItem>
+                      <SelectItem value="EN">{t("english")}</SelectItem>
+                      <SelectItem value="AR">{t("arabic")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
