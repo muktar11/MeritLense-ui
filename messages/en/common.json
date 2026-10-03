@@ -2932,6 +2932,7 @@
           "nameRequired": "Please enter your full legal name.",
           "authRequired": "Please confirm you are authorized to legally bind this organization.",
           "sendCodeFailed": "Failed to send the verification code.",
+          "codeEmailFailed": "The verification code email could not be sent. Please try again.",
           "resendFailed": "Failed to resend the code.",
           "codeIncomplete": "Please enter the full 6-digit code.",
           "incorrectCode": "Incorrect or expired code.",

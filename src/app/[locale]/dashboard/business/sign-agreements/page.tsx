@@ -167,6 +167,10 @@ export default function SignAgreementsPage() {
         authorized_signatory_confirmed: true,
         language: docLang,
       });
+      if (!res.email_dispatched) {
+        setError(t("errors.codeEmailFailed"));
+        return;
+      }
       setOtpReference(res.otp_reference);
       setSentTo(res.sent_to);
       setCode(["", "", "", "", "", ""]);
@@ -188,6 +192,14 @@ export default function SignAgreementsPage() {
     setError(null);
     try {
       const res = await agreementService.resendCode({ otp_reference: otpReference });
+      if (!res.email_dispatched) {
+        setCode(["", "", "", "", "", ""]);
+        setSecondsLeft(0);
+        setResendCooldown(60);
+        if (typeof res.resends_remaining === "number") setResendsRemaining(res.resends_remaining);
+        setError(t("errors.codeEmailFailed"));
+        return;
+      }
       setSentTo(res.sent_to);
       setCode(["", "", "", "", "", ""]);
       setSecondsLeft(600);
