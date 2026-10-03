@@ -1,9 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { useLocale, useTranslations } from "next-intl"
-import { Copy, Eye, Calendar, XCircle, CheckCircle, Edit, Mic, BarChart3, Video, MoreHorizontal } from "lucide-react"
+import { Copy, Eye, Calendar, XCircle, CheckCircle, Edit, Mic, BarChart3, MoreHorizontal } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -104,7 +103,6 @@ export default function EvaluationTable({
   const tType = useTranslations("dashboard.indivisual.evaluationManagement.types")
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
-  const router = useRouter()
   const locale = useLocale()
 
   // Upstream filters/search (in the parent page) replace `data` wholesale -
@@ -119,11 +117,6 @@ export default function EvaluationTable({
   const totalPages = Math.max(1, Math.ceil(data.length / PAGE_SIZE))
   const safePage = Math.min(currentPage, totalPages)
   const paginatedData = data.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
-
-  const handleJoinLiveInterview = (evaluation: EvaluationListItem) => {
-    if (!evaluation.session_id) return
-    router.push(`/${locale}/dashboard/business/live-call?sessionId=${evaluation.session_id}`)
-  }
 
   const handleCopyMeetingLink = async (evaluation: EvaluationListItem) => {
     if (!evaluation.meeting_link) return
@@ -219,18 +212,6 @@ export default function EvaluationTable({
                         <BarChart3 className="w-4 h-4" />
                       </button>
                     )}
-
-                    {item.evaluation_type === 'INTERVIEW' &&
-                      item.session_id &&
-                      ['SCHEDULED', 'RESCHEDULED', 'IN_PROGRESS'].includes(item.status) && (
-                        <button
-                          onClick={() => handleJoinLiveInterview(item)}
-                          className="p-1 hover:bg-gray-100 rounded transition-colors text-gray-500 hover:text-purple-600"
-                          title={t("actions.joinInterview")}
-                        >
-                          <Video className="w-4 h-4" />
-                        </button>
-                      )}
 
                     {(item.status === 'SCHEDULED' || item.status === 'RESCHEDULED') && item.meeting_link && (
                       <button
@@ -351,18 +332,6 @@ export default function EvaluationTable({
                         <BarChart3 className="w-4 h-4" />
                       </button>
                     )}
-
-                    {item.evaluation_type === 'INTERVIEW' &&
-                      item.session_id &&
-                      ['SCHEDULED', 'RESCHEDULED', 'IN_PROGRESS'].includes(item.status) && (
-                        <button
-                          onClick={() => handleJoinLiveInterview(item)}
-                          className="p-1 hover:bg-gray-100 rounded transition-colors text-gray-500 hover:text-purple-600"
-                          title={t("actions.joinInterview")}
-                        >
-                          <Video className="w-4 h-4" />
-                        </button>
-                      )}
 
                     {(item.status === 'SCHEDULED' || item.status === 'RESCHEDULED') && item.meeting_link && (
                       <button
