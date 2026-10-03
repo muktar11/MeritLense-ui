@@ -1102,7 +1102,7 @@ export function CandidateModal({
                       </div>
                     ) : (
                       <>
-                        <DropdownMenu>
+                        <DropdownMenu modal={false}>
                           <DropdownMenuTrigger asChild>
                             <button
                               type="button"
