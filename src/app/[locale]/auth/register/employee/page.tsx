@@ -3,7 +3,7 @@
 import type React from "react"
 import { Suspense, useEffect, useRef, useState } from "react"
 import { useRouter, usePathname } from "next/navigation"
-import { Upload, Loader2, CheckCircle, Eye, EyeOff } from "lucide-react"
+import { Loader2, Eye, EyeOff } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -53,9 +53,6 @@ function EmployerRegistrationContent() {
     website: "",
     industry: "",
     address: "",
-    registration_certificate: null as File | null,
-    resachetified_license: null as File | null,
-    tax_id_document: null as File | null,
   })
 
   const [formErrors, setFormErrors] = useState<Record<string, string>>({})
@@ -104,20 +101,6 @@ function EmployerRegistrationContent() {
     }
   }
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      setFormData((prev) => ({ ...prev, [field]: file }))
-      if (formErrors[field]) {
-        setFormErrors((prev) => {
-          const next = { ...prev }
-          delete next[field]
-          return next
-        })
-      }
-    }
-  }
-
   const validateForm = (): boolean => {
     const errors: Record<string, string> = {}
 
@@ -140,8 +123,6 @@ function EmployerRegistrationContent() {
     if (!formData.country) errors.country = "Country is required"
     if (!formData.city) errors.city = "City is required"
     if (!formData.phone_number) errors.phone_number = "Phone number is required"
-
-    if (!formData.registration_certificate) errors.registration_certificate = "Registration certificate is required"
 
     setFormErrors(errors)
     return Object.keys(errors).length === 0
@@ -169,9 +150,6 @@ function EmployerRegistrationContent() {
       website: formData.website || undefined,
       industry: formData.industry || undefined,
       address: formData.address || undefined,
-      registration_certificate: formData.registration_certificate!,
-      resachetified_license: formData.resachetified_license || undefined,
-      tax_id_document: formData.tax_id_document || undefined,
     }
 
     const success = await registerB2B(registrationData)
@@ -183,46 +161,6 @@ function EmployerRegistrationContent() {
 
   const FieldError = ({ field }: { field: string }) =>
     formErrors[field] ? <p className="mt-1 text-xs text-destructive">{formErrors[field]}</p> : null
-
-  const FileUploadBox = ({
-    field,
-    label,
-    file,
-    required = true,
-  }: {
-    field: string
-    label: string
-    file: File | null
-    required?: boolean
-  }) => (
-    <div className="space-y-2">
-      <Label>{label} {required && "*"}</Label>
-      <label
-        className={`flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-6 cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition ${
-          formErrors[field] ? "border-destructive" : "border-border"
-        }`}
-      >
-        {file ? (
-          <>
-            <CheckCircle className="w-6 h-6 text-green-600 mb-2" />
-            <span className="text-sm text-green-600 text-center truncate max-w-full">{file.name}</span>
-          </>
-        ) : (
-          <>
-            <Upload className="w-6 h-6 text-muted-foreground mb-2" />
-            <span className="text-sm text-muted-foreground">Click to upload</span>
-          </>
-        )}
-        <input
-          type="file"
-          accept=".pdf,.jpg,.jpeg,.png"
-          onChange={(e) => handleFileUpload(e, field)}
-          className="hidden"
-        />
-      </label>
-      <FieldError field={field} />
-    </div>
-  )
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -504,34 +442,9 @@ function EmployerRegistrationContent() {
               </div>
             </div>
 
-            {/* Document Uploads */}
-            <div className="space-y-4">
-              <h2 className="text-lg font-semibold">Document Uploads</h2>
-              <p className="text-sm text-muted-foreground">
-                You can upload your business license from Company Profile after registration. Platform access is enabled after admin approval.
-              </p>
-
-              <div className="grid grid-cols-2 gap-4">
-                <FileUploadBox
-                  field="registration_certificate"
-                  label="Registration Certificate"
-                  file={formData.registration_certificate}
-                />
-                <FileUploadBox
-                  field="resachetified_license"
-                  label="Business License"
-                  file={formData.resachetified_license}
-                  required={false}
-                />
-              </div>
-
-              <FileUploadBox
-                field="tax_id_document"
-                label="Tax ID Document"
-                file={formData.tax_id_document}
-                required={false}
-              />
-            </div>
+            <p className="text-sm text-muted-foreground">
+              You can upload your registration certificate and other company documents from Company Profile after registration. Platform access is enabled after admin approval.
+            </p>
 
             <Button
               type="submit"
