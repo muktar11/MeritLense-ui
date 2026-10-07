@@ -2926,7 +2926,14 @@
           "reviewBothPrompt": "Review both documents to enable signing:",
           "reviewNowButton": "Review now",
           "authConfirmLabel": "I confirm I am authorized to legally bind this organization.",
-          "sendCodeButton": "Send Verification Code"
+          "sendCodeButton": "Send Verification Code",
+          "remainingStepsPrompt": "Complete these steps to send the verification code:",
+          "steps": {
+            "reviewDocs": "Review both documents (scroll to the bottom of each)",
+            "enterName": "Enter your full legal name",
+            "uploadStamp": "Upload your company stamp",
+            "confirmAuth": "Check the authorization confirmation box"
+          }
         },
         "errors": {
           "nameRequired": "Please enter your full legal name.",

@@ -108,6 +108,18 @@ export default function SignAgreementsPage() {
 
   const currentDoc = DOC_ORDER[activeDocIndex];
   const allDocsReviewed = DOC_ORDER.every((d) => scrolledToBottom[d.type]);
+  const hasName = signatoryName.trim().length > 0;
+  // Every condition handleSendCode actually enforces, surfaced together so
+  // the button's disabled state is never a mystery - stamp and name look
+  // "done" to the user while authConfirmed/allDocsReviewed stay unmet with
+  // no visual tie-in otherwise (the DPA tab in particular only starts its
+  // own review timer once the user actually clicks over to it).
+  const remainingSteps = [
+    !allDocsReviewed && { key: "reviewDocs", label: t("review.steps.reviewDocs") },
+    !hasName && { key: "name", label: t("review.steps.enterName") },
+    !stampUploaded && { key: "stamp", label: t("review.steps.uploadStamp") },
+    !authConfirmed && { key: "authConfirm", label: t("review.steps.confirmAuth") },
+  ].filter(Boolean) as Array<{ key: string; label: string }>;
 
   const handleIframeScroll = (docType: string) => (e: React.SyntheticEvent<HTMLIFrameElement>) => {
     const win = e.currentTarget.contentWindow;
@@ -521,9 +533,21 @@ export default function SignAgreementsPage() {
             </div>
           )}
 
+          {remainingSteps.length > 0 && (
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 space-y-1.5">
+              <p className="text-sm font-medium text-amber-800">{t("review.remainingStepsPrompt")}</p>
+              {remainingSteps.map((step) => (
+                <div key={step.key} className="flex items-center gap-2 text-sm text-gray-700">
+                  <Circle className="w-4 h-4 text-amber-400 shrink-0" />
+                  {step.label}
+                </div>
+              ))}
+            </div>
+          )}
+
           <button
             onClick={handleSendCode}
-            disabled={sending || !allDocsReviewed || !authConfirmed || !stampUploaded}
+            disabled={sending || !allDocsReviewed || !authConfirmed || !stampUploaded || !hasName}
             className="w-full bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-2.5 rounded-lg flex items-center justify-center gap-2"
           >
             {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : null}

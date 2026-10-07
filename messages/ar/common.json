@@ -2932,7 +2932,14 @@
           "reviewBothPrompt": "راجع كلا المستندين لتفعيل التوقيع:",
           "reviewNowButton": "راجع الآن",
           "authConfirmLabel": "أؤكد أنني مخوَّل قانونيًا لإلزام هذه المؤسسة.",
-          "sendCodeButton": "إرسال رمز التحقق"
+          "sendCodeButton": "إرسال رمز التحقق",
+          "remainingStepsPrompt": "أكمل هذه الخطوات لإرسال رمز التحقق:",
+          "steps": {
+            "reviewDocs": "راجع كلا المستندين (مرّر إلى أسفل كل منهما)",
+            "enterName": "أدخل اسمك القانوني الكامل",
+            "uploadStamp": "ارفع ختم شركتك",
+            "confirmAuth": "ضع علامة على مربع تأكيد التفويض"
+          }
         },
         "errors": {
           "nameRequired": "يرجى إدخال اسمك القانوني الكامل.",
