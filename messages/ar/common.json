@@ -2681,9 +2681,12 @@
           "certificateLabel": "شهادة MeritLense",
           "aiAnalysisLabel": "تحليل التقييم بالذكاء الاصطناعي",
           "downloadTooltip": "تحميل {label}",
+          "viewTooltip": "عرض {label}",
           "shareTooltip": "مشاركة رابط {label}",
           "downloading": "جارٍ التحميل...",
           "download": "تحميل",
+          "viewing": "جارٍ الفتح...",
+          "view": "عرض",
           "copied": "تم النسخ!",
           "itemLabelPlural": "مرشحين",
           "moreEvaluations": "{count, plural, one {+# سابق} other {+# سابقة}}"

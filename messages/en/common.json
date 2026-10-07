@@ -2673,9 +2673,12 @@
           "certificateLabel": "MeritLense Certificate",
           "aiAnalysisLabel": "AI Assessment Analysis",
           "downloadTooltip": "Download {label}",
+          "viewTooltip": "View {label}",
           "shareTooltip": "Share {label} link",
           "downloading": "Downloading...",
           "download": "Download",
+          "viewing": "Opening...",
+          "view": "View",
           "copied": "Copied!",
           "itemLabelPlural": "candidates",
           "moreEvaluations": "{count, plural, one {+# earlier} other {+# earlier}}"
