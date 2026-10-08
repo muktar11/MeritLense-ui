@@ -1,153 +1,84 @@
 // app/dashboard/business/overview/components/dashboard.tsx
 "use client";
 
-import { useState, useEffect } from "react";
-import { Search, AlertCircle } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { AlertCircle, BarChart3, LayoutGrid, Loader2, SlidersHorizontal } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { format } from "date-fns";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { MetricCard } from "./metric-card";
-import { CandidateEvaluationTable } from "./candidate-evaluation-table";
-import { PerformanceChart } from "./performance-chart";
-import { PointConsumptionChart } from "./point-consumption-chart";
-import { ScoreDistributionChart } from "./score-distribution-chart";
-import { AgeDistributionChart } from "./age-distribution-chart";
-import { ReadinessIndexChart } from "./readiness-index-chart";
-import { LanguageDistributionChart } from "./language-distribution-chart";
-import { RecentActivityTable } from "./recent-activity-table";
-import { EvaluationTrendChart } from "./evaluation-trend-chart";
-import { StatusDistributionChart } from "./status-distribution-chart";
-import { CandidateComparison } from "./candidate-comparison";
-import { JobRoleDistributionChart } from "./job-role-distribution-chart";
-import { TimeRangeChart } from "./time-range-chart";
+import { CustomizeDashboardDialog } from "./widgets/customize-dashboard-dialog";
+import { DEFAULT_WIDGETS, WidgetGrid, isWidgetId, type WidgetId } from "./widgets/widget-registry";
 import b2bDashboardService from "@/app/api/dashboard/b2b/endpoints";
 import paymentService from "@/app/api/payments/endpoints";
-import type {
-  DashboardStats,
-  RecentEvaluation,
-  ScoreDistribution,
-  EvaluationTrend,
-  LanguageDistribution,
-  PerformanceMetric,
-  EvaluationStatusDistribution,
-  MonthlyActivity,
-  JobRoleDistribution,
-  EvaluationTimeRange
-} from "@/app/api/dashboard/b2b/types";
+import type { DashboardLayout, DashboardStats } from "@/app/api/dashboard/b2b/types";
 import type { Subscription } from "@/app/api/payments/types";
-import { Loader2 } from "lucide-react";
+
+function visibleWidgets(layout: DashboardLayout | null): WidgetId[] {
+  return layout ? layout.widgets.filter(isWidgetId) : [...DEFAULT_WIDGETS];
+}
 
 export function Dashboard() {
   const t = useTranslations("dashboard.business.overview");
   const locale = useLocale();
 
-  const [loading, setLoading] = useState(true);
+  const [statsLoading, setStatsLoading] = useState(true);
   const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [recentEvaluations, setRecentEvaluations] = useState<RecentEvaluation[]>([]);
-  const [scoreDistribution, setScoreDistribution] = useState<ScoreDistribution[]>([]);
-  const [evaluationTrend, setEvaluationTrend] = useState<EvaluationTrend[]>([]);
-  const [languageDistribution, setLanguageDistribution] = useState<LanguageDistribution[]>([]);
-  const [performanceMetrics, setPerformanceMetrics] = useState<PerformanceMetric[]>([]);
-  const [statusDistribution, setStatusDistribution] = useState<EvaluationStatusDistribution[]>([]);
-  const [monthlyActivity, setMonthlyActivity] = useState<MonthlyActivity[]>([]);
-  const [jobRoleDistribution, setJobRoleDistribution] = useState<JobRoleDistribution[]>([]);
-  const [evaluationTimeRange, setEvaluationTimeRange] = useState<EvaluationTimeRange[]>([]);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
+  // null = not loaded (or failed to load): render the default layout, so
+  // the dashboard is fully usable without any customization.
+  const [layout, setLayout] = useState<DashboardLayout | null>(null);
+  const [layoutReady, setLayoutReady] = useState(false);
+  const [customizeOpen, setCustomizeOpen] = useState(false);
 
   useEffect(() => {
-    fetchDashboardData();
+    b2bDashboardService.getStats()
+      .then(setStats)
+      .catch((error) => console.error("Failed to fetch dashboard stats:", error))
+      .finally(() => setStatsLoading(false));
+
+    b2bDashboardService.getDashboardLayout()
+      .then(setLayout)
+      .catch((error) => console.error("Failed to fetch dashboard layout:", error))
+      .finally(() => setLayoutReady(true));
+
+    paymentService.getActiveSubscriptions()
+      .then(async (active) => {
+        setSubscription(active.length > 0 ? await paymentService.getSubscription(active[0].id) : null);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch subscription:", error);
+        setSubscription(null);
+      });
   }, []);
 
-  const fetchDashboardData = async () => {
-    setLoading(true);
+  const saveLayout = async (widgets: WidgetId[]) => {
     try {
-      const [
-        statsData,
-        recentEvalsData,
-        scoreDistData,
-        trendData,
-        langDistData,
-        metricsData,
-        statusDistData,
-        monthlyData,
-        jobRoleDistData,
-        timeRangeData
-      ] = await Promise.all([
-        b2bDashboardService.getStats(),
-        b2bDashboardService.getRecentEvaluations(10),
-        b2bDashboardService.getScoreDistribution(),
-        b2bDashboardService.getEvaluationTrend(30),
-        b2bDashboardService.getLanguageDistribution(),
-        b2bDashboardService.getPerformanceMetrics(6),
-        b2bDashboardService.getStatusDistribution(),
-        b2bDashboardService.getMonthlyActivity(6),
-        b2bDashboardService.getJobRoleDistribution(),
-        b2bDashboardService.getEvaluationTimeRange()
-      ]);
-
-      setStats(statsData);
-      setRecentEvaluations(recentEvalsData);
-      setScoreDistribution(scoreDistData);
-      setEvaluationTrend(trendData);
-      setLanguageDistribution(langDistData);
-      setPerformanceMetrics(metricsData);
-      setStatusDistribution(statusDistData);
-      setMonthlyActivity(monthlyData);
-      setJobRoleDistribution(jobRoleDistData);
-      setEvaluationTimeRange(timeRangeData);
+      setLayout(await b2bDashboardService.saveDashboardLayout(widgets));
+      toast.success(t("customize.saved"));
     } catch (error) {
-      console.error('Failed to fetch dashboard data:', error);
-    } finally {
-      setLoading(false);
-    }
-
-    fetchSubscription();
-  };
-
-  const fetchSubscription = async () => {
-    try {
-      const activeSubscriptions = await paymentService.getActiveSubscriptions();
-      if (activeSubscriptions.length > 0) {
-        const fullSubscription = await paymentService.getSubscription(activeSubscriptions[0].id);
-        setSubscription(fullSubscription);
-      } else {
-        setSubscription(null);
-      }
-    } catch (error) {
-      console.error('Failed to fetch subscription:', error);
-      setSubscription(null);
+      console.error("Failed to save dashboard layout:", error);
+      toast.error(t("customize.saveError"));
+      throw error;
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#f8f9fc] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-purple-500" />
-      </div>
-    );
-  }
+  const resetLayout = async () => {
+    try {
+      setLayout(await b2bDashboardService.resetDashboardLayout());
+      toast.success(t("customize.resetDone"));
+    } catch (error) {
+      console.error("Failed to reset dashboard layout:", error);
+      toast.error(t("customize.saveError"));
+      throw error;
+    }
+  };
 
-  // Format performance metrics for the chart
-  const performanceChartData = performanceMetrics.map(metric => ({
-    month: format(new Date(metric.period + '-01'), 'MMM'),
-    value: metric.average_score
-  }));
-
-  // Format score distribution for the chart
-  const scoreChartData = scoreDistribution.map(item => ({
-    role: item.job_role,
-    roleLabel: item.job_role_display,
-    score: item.average_score
-  }));
-
-  // Format language distribution for the chart
-  const languageChartData = languageDistribution.map(item => ({
-    key: item.language.toLowerCase(),
-    language: item.language_display,
-    value: item.percentage
-  }));
+  // Memoized: the customize dialog re-seeds its draft when this changes.
+  const widgets = useMemo(() => visibleWidgets(layout), [layout]);
+  const canCustomize = layout?.can_edit === true;
 
   const evalsPerCandidate = stats && stats.total_candidates > 0
     ? (stats.total_evaluations / stats.total_candidates).toFixed(1)
@@ -169,7 +100,7 @@ export function Dashboard() {
     <div dir={locale === "ar" ? "rtl" : "ltr"} className="min-h-screen bg-[#f8f9fc]">
       {/* Package Banner */}
       {subscription && subscription.days_remaining > 0 && (
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 px-4 sm:px-6 py-3">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 px-4 sm:px-6 pt-3">
           <div className="bg-amber-400 text-amber-900 px-4 py-1.5 rounded-full text-sm font-medium">
             {t("package.expires", { days: subscription.days_remaining })}
           </div>
@@ -180,30 +111,38 @@ export function Dashboard() {
           >
             {t("package.renew")}
           </Button>
-
-          <div className="flex-1" />
         </div>
       )}
 
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 px-4 sm:px-6 py-3">
-        <div className="flex-1" />
-
-        <div className="relative w-full sm:w-auto">
-          <Search className="absolute left-3 rtl:right-3 rtl:left-auto top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
-          <input
-            type="text"
-            placeholder={t("search.placeholder")}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 rtl:pr-10 rtl:pl-4 pr-4 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-64"
-          />
-        </div>
-      </div>
-
-      {/* Main Content */}
       <main className="p-4 sm:p-6 md:p-6 space-y-6">
+        {/* Header */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h1 className="text-xl font-semibold text-gray-900">{t("header.title")}</h1>
+            <p className="text-sm text-gray-500">{t("header.subtitle")}</p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button asChild variant="outline" size="sm" className="gap-1.5 bg-white">
+              <Link href={`/${locale}/dashboard/business/analytics`}>
+                <BarChart3 className="h-4 w-4" />
+                {t("header.analytics")}
+              </Link>
+            </Button>
+            {canCustomize && (
+              <Button size="sm" className="gap-1.5" onClick={() => setCustomizeOpen(true)}>
+                <SlidersHorizontal className="h-4 w-4" />
+                {t("customize.button")}
+              </Button>
+            )}
+          </div>
+        </div>
+
         {/* Metrics */}
-        {stats && (
+        {statsLoading ? (
+          <div className="flex h-24 items-center justify-center" role="status">
+            <Loader2 className="w-6 h-6 animate-spin text-purple-500" />
+          </div>
+        ) : stats && (
           <div className="flex flex-wrap gap-4">
             <MetricCard
               title={t("metrics.evaluationsCompleted")}
@@ -275,49 +214,37 @@ export function Dashboard() {
           </div>
         )}
 
-        {/* Candidate Evaluation & Recent Activity */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div className="col-span-12 lg:col-span-8">
-            <CandidateEvaluationTable
-              evaluations={recentEvaluations}
-              searchTerm={searchTerm}
-            />
+        {/* Widgets */}
+        {!layoutReady ? (
+          <div className="flex h-48 items-center justify-center" role="status">
+            <Loader2 className="w-6 h-6 animate-spin text-purple-500" />
           </div>
-
-          <div className="col-span-12 lg:col-span-4 flex flex-col gap-6">
-            <PerformanceChart data={performanceChartData} />
-            <StatusDistributionChart data={statusDistribution} />
-          </div>
-        </div>
-
-        {/* Charts Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6">
-          <div className="col-span-12 md:col-span-1 lg:col-span-4">
-            <ScoreDistributionChart data={scoreChartData} />
-          </div>
-          <div className="col-span-12 md:col-span-1 lg:col-span-4">
-            <EvaluationTrendChart data={evaluationTrend} />
-          </div>
-          <div className="col-span-12 md:col-span-2 lg:col-span-4 flex flex-col gap-6">
-            <ReadinessIndexChart data={statusDistribution} />
-            <LanguageDistributionChart data={languageChartData} />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <JobRoleDistributionChart data={jobRoleDistribution} />
-          <TimeRangeChart data={evaluationTimeRange} />
-        </div>
-
-        {/* Monthly Activity */}
-        {monthlyActivity.length > 0 && (
-          <div className="mt-6">
-            <RecentActivityTable activities={monthlyActivity} />
+        ) : widgets.length > 0 ? (
+          <WidgetGrid widgets={widgets} />
+        ) : (
+          <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-gray-200 bg-white px-6 py-12 text-center">
+            <LayoutGrid className="h-8 w-8 text-gray-300" />
+            <p className="text-sm font-medium text-gray-700">{t("emptyLayout.title")}</p>
+            <p className="max-w-md text-sm text-gray-500">{t("emptyLayout.description")}</p>
+            {canCustomize && (
+              <Button size="sm" className="mt-1 gap-1.5" onClick={() => setCustomizeOpen(true)}>
+                <SlidersHorizontal className="h-4 w-4" />
+                {t("customize.button")}
+              </Button>
+            )}
           </div>
         )}
-
-        <CandidateComparison />
       </main>
+
+      {canCustomize && (
+        <CustomizeDashboardDialog
+          open={customizeOpen}
+          onOpenChange={setCustomizeOpen}
+          widgets={widgets}
+          onSave={saveLayout}
+          onReset={resetLayout}
+        />
+      )}
     </div>
   );
 }

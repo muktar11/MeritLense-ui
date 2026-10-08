@@ -7,6 +7,7 @@ import { Watermark } from "@/components/app/Watermark";
 import { AgreementGuard, useB2BAgreementStatus } from "./components/agreement-guard";
 import {
   LayoutDashboard,
+  BarChart3,
   Users,
   Building2,
   Settings,
@@ -105,6 +106,13 @@ export default function AdminLayout({
         label: t("pages_list.overview"),
         icon: LayoutDashboard,
         href: `/${locale}/dashboard/business`,
+        disabled: lockedUntilSigned,
+        disabledTooltip,
+      },
+      {
+        label: t("pages_list.analytics_insights"),
+        icon: BarChart3,
+        href: `/${locale}/dashboard/business/analytics`,
         disabled: lockedUntilSigned,
         disabledTooltip,
       },
