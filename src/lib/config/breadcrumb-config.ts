@@ -13,6 +13,7 @@ export const ADMIN_BREADCRUMB_CONFIG: Record<string, string[]> = {
 
 export const BUSINESS_BREADCRUMB_CONFIG: Record<string, string[]> = {
   '/dashboard/business': ['page_type', 'pages_list.overview'],
+  '/dashboard/business/analytics': ['page_type', 'pages_list.analytics_insights'],
  
   
   '/dashboard/business/candidate-evaluation': ['page_type', 'pages_list.multi_agency_panel'],

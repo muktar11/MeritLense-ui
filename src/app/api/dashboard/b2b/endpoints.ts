@@ -14,7 +14,10 @@ import {
   EvaluationTimeRange,
   ComparisonRole,
   ComparisonEligibleCandidate,
-  FullComparisonResult
+  FullComparisonResult,
+  DashboardLayout,
+  ReadinessDistribution,
+  RequiresAttention
 } from './types';
 import { API_BASE_URL } from '@/lib/config/env';
 
@@ -117,6 +120,38 @@ class B2BDashboardService {
   async getEvaluationTimeRange(): Promise<EvaluationTimeRange[]> {
     this.ensureAuthToken();
     const response = await apiClient.get(`${this.baseURL}evaluation-time-range`);
+    return response.data;
+  }
+
+  async getDashboardLayout(): Promise<DashboardLayout> {
+    this.ensureAuthToken();
+    const response = await apiClient.get(`${this.baseURL}dashboard-layout`);
+    return response.data;
+  }
+
+  async saveDashboardLayout(widgets: string[]): Promise<DashboardLayout> {
+    this.ensureAuthToken();
+    const response = await apiClient.put(`${this.baseURL}dashboard-layout`, { widgets });
+    return response.data;
+  }
+
+  async resetDashboardLayout(): Promise<DashboardLayout> {
+    this.ensureAuthToken();
+    const response = await apiClient.put(`${this.baseURL}dashboard-layout`, { reset: true });
+    return response.data;
+  }
+
+  async getReadinessDistribution(): Promise<ReadinessDistribution> {
+    this.ensureAuthToken();
+    const response = await apiClient.get(`${this.baseURL}readiness-distribution`);
+    return response.data;
+  }
+
+  async getRequiresAttention(limit: number = 5): Promise<RequiresAttention> {
+    this.ensureAuthToken();
+    const response = await apiClient.get(`${this.baseURL}requires-attention`, {
+      params: { limit }
+    });
     return response.data;
   }
 

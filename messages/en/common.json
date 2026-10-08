@@ -105,6 +105,10 @@
       "faq": {
         "title": "Frequently Asked Questions",
         "description": "Answers to common questions about how MeritLense works, the Readiness Standard, reports and certificates, and pricing."
+      },
+      "b2bAnalytics": {
+        "title": "Analytics & Insights - MeritLense",
+        "description": "Detailed evaluation, readiness and candidate analytics for your company"
       }
     },
     "tablePagination": {
@@ -2436,6 +2440,100 @@
           "tooltip": {
             "usage": "Usage %"
           }
+        },
+        "header": {
+          "title": "Overview",
+          "subtitle": "What needs your attention and how your candidates are performing.",
+          "analytics": "View Analytics"
+        },
+        "widgetError": "This widget could not be loaded.",
+        "retry": "Retry",
+        "emptyLayout": {
+          "title": "Your dashboard has no widgets",
+          "description": "All widgets are hidden. Add widgets back, or open Analytics & Insights to see every chart."
+        },
+        "requiresAttention": {
+          "title": "Requires Attention",
+          "subtitle": "Completed evaluations that need a human decision",
+          "reasons": {
+            "HUMAN_REVIEW": "Human review required",
+            "INSUFFICIENT_EVIDENCE": "Insufficient evidence"
+          },
+          "review": "Review",
+          "empty": "Nothing needs your attention right now",
+          "emptyHint": "Evaluations flagged for review will appear here.",
+          "moreCount": "+{count} more",
+          "viewAll": "View all evaluations"
+        },
+        "customize": {
+          "button": "Customize Dashboard",
+          "title": "Customize Dashboard",
+          "description": "Choose which widgets appear on your company dashboard and set their order. Changes apply to everyone in your company.",
+          "visible": "Shown on dashboard",
+          "available": "Add widgets",
+          "emptyVisible": "No widgets selected. Add widgets from the list below.",
+          "allAdded": "All widgets are already on your dashboard.",
+          "add": "Add",
+          "addWidget": "Add {widget}",
+          "hide": "Hide {widget}",
+          "moveUp": "Move {widget} up",
+          "moveDown": "Move {widget} down",
+          "reset": "Reset to default",
+          "cancel": "Cancel",
+          "save": "Save",
+          "saved": "Dashboard updated",
+          "resetDone": "Dashboard reset to the default layout",
+          "saveError": "Could not save the dashboard layout. Please try again."
+        },
+        "widgets": {
+          "requires_attention": {
+            "title": "Requires Attention",
+            "description": "Evaluations flagged for human review or missing evidence"
+          },
+          "recent_evaluations": {
+            "title": "Recent Evaluations",
+            "description": "Latest evaluations and their status"
+          },
+          "readiness_index": {
+            "title": "Overall Readiness Index",
+            "description": "Completed evaluations by readiness outcome"
+          },
+          "evaluation_status": {
+            "title": "Evaluation Status",
+            "description": "Scheduled, completed and cancelled evaluations"
+          },
+          "evaluation_trend": {
+            "title": "Evaluation Trends",
+            "description": "Daily evaluation activity over the last 30 days"
+          },
+          "performance_trend": {
+            "title": "Performance Metrics",
+            "description": "Average score by month"
+          },
+          "score_by_role": {
+            "title": "Average Scores by Role",
+            "description": "Average evaluation score per job role"
+          },
+          "job_role_distribution": {
+            "title": "Job Role Distribution",
+            "description": "Evaluations by job role"
+          },
+          "language_distribution": {
+            "title": "Language Distribution",
+            "description": "Evaluations by interview language"
+          },
+          "time_of_day": {
+            "title": "Evaluation Time of Day",
+            "description": "When evaluations take place"
+          },
+          "monthly_activity": {
+            "title": "Monthly Activity",
+            "description": "Candidates, evaluations and certificates per month"
+          },
+          "candidate_comparison": {
+            "title": "Candidate Comparison",
+            "description": "Compare candidates for the same role"
+          }
         }
       },
       "candidateEvaluation": {
@@ -2502,7 +2600,17 @@
           "ready": "Ready",
           "nearReady": "Near-Ready",
           "lowReadiness": "Low Readiness"
-        }
+        },
+        "status": {
+          "READY": "Ready",
+          "PARTIALLY_READY": "Partially Ready",
+          "NOT_READY": "Not Ready",
+          "INCOMPLETE": "Insufficient Evidence",
+          "PENDING": "Result Pending"
+        },
+        "readyRate": "Ready rate",
+        "basedOn": "Based on {count} completed evaluations",
+        "empty": "No completed evaluations yet. Readiness results will appear here."
       },
       "languageDistributionChart": {
         "title": "Evaluation Language Distribution",
@@ -3070,6 +3178,10 @@
           "arabic": "Arabic",
           "spanish": "Spanish"
         }
+      },
+      "analytics": {
+        "title": "Analytics & Insights",
+        "subtitle": "Detailed evaluation, readiness and candidate analytics for your company."
       }
     },
     "candidates": {
