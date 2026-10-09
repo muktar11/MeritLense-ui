@@ -20,6 +20,7 @@ import { IntegrityMonitor } from "./components/integrity-monitor";
 import { TestTimer } from "./components/test-timer";
 import { LANGUAGES } from "@/lib/languages";
 import { candidateDir, getCandidateStrings, resolveCandidateLanguage } from "./candidate-lang";
+import { speakWithBrowser, stopBrowserSpeech } from "./browser-speech";
 
 type PageState =
   | "loading"
@@ -71,6 +72,7 @@ function InterviewSessionContent() {
   const [answerMode, setAnswerMode] = useState<AnswerMode>("audio");
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [loadingAudio, setLoadingAudio] = useState(false);
+  const [audioNotice, setAudioNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [readAloudLanguage, setReadAloudLanguage] = useState("en-US");
   const [answerLanguage, setAnswerLanguage] = useState("en-US");
@@ -83,6 +85,8 @@ function InterviewSessionContent() {
 
   const loadCurrentQuestion = useCallback(async () => {
     setAudioUrl(null);
+    setAudioNotice(null);
+    stopBrowserSpeech();
     try {
       const result = await interviewSessionService.getCurrentQuestion(sessionId, token);
       if (isSessionCompleted(result)) {
@@ -293,20 +297,45 @@ function InterviewSessionContent() {
     }
   };
 
+  // The on-screen question is in the session's candidate language, so the
+  // browser voice can only stand in when the read-aloud language matches it.
+  const fallBackToBrowserVoice = async () => {
+    const questionLang = LANGUAGES.find((lang) => lang.key === session?.candidate_language)?.code ?? "en-US";
+    const sameLanguage = questionLang.split("-")[0] === readAloudLanguage.split("-")[0];
+    const spoke = question && sameLanguage ? await speakWithBrowser(question.question_text, readAloudLanguage) : false;
+    setAudioNotice(spoke ? null : getCandidateStrings(session?.ui_language).questionCard.audioUnavailable);
+  };
+
   const handlePlayAudio = async () => {
     setLoadingAudio(true);
+    setAudioNotice(null);
+    stopBrowserSpeech();
     try {
       const artifact = await interviewSessionService.getQuestionAudio(sessionId, token, readAloudLanguage);
-      setAudioUrl(artifact.audio_url);
+      if (artifact.audio_url) {
+        setAudioUrl(artifact.audio_url);
+      } else {
+        await fallBackToBrowserVoice();
+      }
     } catch {
-      // audio is optional — silently ignore, candidate can still read the question
+      // Server voice unavailable (e.g. the speech provider refused the
+      // request) - use the browser's own voice rather than doing nothing.
+      await fallBackToBrowserVoice();
     } finally {
       setLoadingAudio(false);
     }
   };
 
+  // The audio file itself failed to load or play.
+  const handleAudioError = () => {
+    setAudioUrl(null);
+    void fallBackToBrowserVoice();
+  };
+
   const handleReadAloudLanguageChange = (languageCode: string) => {
     setReadAloudLanguage(languageCode);
+    setAudioNotice(null);
+    stopBrowserSpeech();
     // Clear any already-playing audio from the previous language selection -
     // it doesn't match the new choice, and would otherwise keep showing/
     // playing until the candidate clicks play again.
@@ -529,6 +558,8 @@ function InterviewSessionContent() {
             totalQuestions={totalQuestions}
             onPlayAudio={handlePlayAudio}
             audioUrl={audioUrl}
+            audioNotice={audioNotice}
+            onAudioError={handleAudioError}
             loadingAudio={loadingAudio}
             readAloudLanguage={readAloudLanguage}
             onReadAloudLanguageChange={handleReadAloudLanguageChange}

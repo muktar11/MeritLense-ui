@@ -138,6 +138,7 @@ interface CandidateStrings {
     skillTagLabel: (skill: string) => string;
     readAloudTitle: string;
     listenTitle: string;
+    audioUnavailable: string;
   };
   answerRecorder: {
     micError: string;
@@ -381,6 +382,7 @@ const en: CandidateStrings = {
     skillTagLabel: (skill) => `Skill Tag: ${skill}`,
     readAloudTitle: "Read-aloud language",
     listenTitle: "Listen to question",
+    audioUnavailable: "Audio isn't available for this question right now. Please read the question on screen.",
   },
   answerRecorder: {
     micError: "Couldn't access your microphone. Please allow microphone access and try again.",
@@ -619,6 +621,7 @@ const ar: CandidateStrings = {
     skillTagLabel: (skill) => `المهارة: ${skill}`,
     readAloudTitle: "لغة القراءة الصوتية",
     listenTitle: "الاستماع إلى السؤال",
+    audioUnavailable: "الصوت غير متاح لهذا السؤال حاليًا. يُرجى قراءة السؤال على الشاشة.",
   },
   answerRecorder: {
     micError: "تعذّر الوصول إلى الميكروفون. يُرجى السماح بالوصول إلى الميكروفون والمحاولة مرة أخرى.",
