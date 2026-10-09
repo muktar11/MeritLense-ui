@@ -171,6 +171,9 @@ export interface InterviewSession {
   total_questions: number;
   progress_percent: number;
   access_token: string;
+  /** Only on the create response: the full candidate link and its short, shareable redirect. */
+  interview_link?: string;
+  short_link?: string;
   linked_evaluation_id: string | null;
   latest_scoring_summary: unknown | null;
   started_at: string | null;

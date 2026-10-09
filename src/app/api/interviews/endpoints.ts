@@ -97,9 +97,9 @@ class InterviewService {
     await apiClient.delete(`${this.questionTemplatesURL}/${id}/`);
   }
 
-  async createSession(data: CreateSessionData): Promise<InterviewSession> {
+  async createSession(data: CreateSessionData, locale?: string): Promise<InterviewSession> {
     setToken();
-    const response = await apiClient.post(`${this.sessionsURL}/`, data);
+    const response = await apiClient.post(`${this.sessionsURL}/`, data, locale ? { params: { locale } } : undefined);
     return response.data;
   }
 
