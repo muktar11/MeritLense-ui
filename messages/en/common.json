@@ -345,7 +345,8 @@
         "features": "Features",
         "how_it_works": "How It Works",
         "pricing": "Pricing",
-        "faq": "FAQ"
+        "faq": "FAQ",
+        "contact": "Contact Us"
       },
       "actions": {
         "sign_in": "Sign In",
