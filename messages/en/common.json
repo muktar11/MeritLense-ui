@@ -946,7 +946,18 @@
         "multi_agency_panel": "Billing and Subscription",
         "package_management": "Package Management",
         "package_requests": "Package Requests",
-        "interview_setup": "Interview Setup"
+        "interview_setup": "Interview Setup",
+        "candidate_comparison": "Candidate Comparison"
+      },
+      "candidateComparison": {
+        "title": "Candidate Comparison",
+        "subtitle": "Choose an account, then a job role, then 2-4 candidates with comparable assessment results.",
+        "selectAccount": "Select Account",
+        "chooseAccount": "Choose a business or individual account...",
+        "searchAccounts": "Search accounts",
+        "noAccounts": "No account has scored candidates yet.",
+        "businessAccounts": "Business accounts",
+        "individualAccounts": "Individual accounts"
       },
       "overview_page": {
         "title": "Dashboard Overview",
