@@ -3762,6 +3762,43 @@
           "scheduledDateTimeLabel": "Scheduled Date & Time",
           "closeTimePicker": "Close",
           "aiLinkNote": "An AI interview link will be generated automatically once this is scheduled, and emailed to the candidate along with the date and time.",
+          "subtitle": "Set the details and we'll automatically create and email the assessment link to the candidate.",
+          "steps": {
+            "candidate": {
+              "title": "Select Candidate",
+              "subtitle": "Choose the candidate to evaluate"
+            },
+            "details": {
+              "title": "Evaluation Details",
+              "subtitle": "Select the assessment type and duration"
+            },
+            "schedule": {
+              "title": "Schedule Date & Time",
+              "subtitle": "Choose when the evaluation will take place"
+            }
+          },
+          "dateLabel": "Date",
+          "timeLabel": "Time",
+          "timeZoneLabel": "Time Zone:",
+          "searchCandidates": "Search by name or email",
+          "noCandidatesFound": "No candidates found",
+          "preview": {
+            "title": "Assessment Preview",
+            "subtitle": "Review the details before saving",
+            "candidate": "Candidate",
+            "dateTime": "Date & Time",
+            "notSelected": "No candidate selected",
+            "notSet": "Not set",
+            "aiBadge": "AI"
+          },
+          "nextSteps": {
+            "title": "What happens next?",
+            "link": "A unique assessment link will be created",
+            "email": "The candidate will receive an email invitation",
+            "dateTime": "The email will include the date and time",
+            "join": "The candidate can join at the scheduled time"
+          },
+          "scheduleButton": "Schedule Evaluation",
           "online": "Online",
           "inPersonOption": "In-Person",
           "meetingLinkPlaceholder": "https://meet.google.com/...",
