@@ -22,6 +22,7 @@ import {
   Package,
   ClipboardList,
   Inbox,
+  GitCompare,
 } from "lucide-react";
 
 // Optional: locale code → human-readable name map
@@ -75,6 +76,12 @@ export default function AdminLayout({
         label: t("pages_list.candidate_management"),
         icon: UserCheck,
         href: `/${locale}/dashboard/admin/candidates`,
+      },
+
+      {
+        label: t("pages_list.candidate_comparison"),
+        icon: GitCompare,
+        href: `/${locale}/dashboard/admin/candidate-comparison`,
       },
 
       {

@@ -947,7 +947,18 @@
         "multi_agency_panel": "الفواتير والاشتراكات",
         "package_management": "إدارة الباقات",
         "package_requests": "طلبات الباقات",
-        "interview_setup": "إعداد المقابلات"
+        "interview_setup": "إعداد المقابلات",
+        "candidate_comparison": "مقارنة المرشحين"
+      },
+      "candidateComparison": {
+        "title": "مقارنة المرشحين",
+        "subtitle": "اختر حسابًا، ثم مسمى وظيفيًا، ثم من 2 إلى 4 مرشحين لديهم نتائج تقييم قابلة للمقارنة.",
+        "selectAccount": "اختر الحساب",
+        "chooseAccount": "اختر حساب شركة أو حسابًا فرديًا...",
+        "searchAccounts": "البحث في الحسابات",
+        "noAccounts": "لا يوجد حساب لديه مرشحون تم تقييمهم بعد.",
+        "businessAccounts": "حسابات الشركات",
+        "individualAccounts": "الحسابات الفردية"
       },
       "overview_page": {
         "title": "نظرة عامة على لوحة القيادة",
