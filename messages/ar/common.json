@@ -149,7 +149,7 @@
     },
     "startSessionModal": {
       "headerTitle": "إنشاء تقييم جاهزية القوى العاملة",
-      "headerSubtitle": "اختر باقة الدور وأنشئ رابط المرشح",
+      "headerSubtitle": "اختر باقة الدور لإنشاء رابط المرشح",
       "successTitle": "تم إنشاء الجلسة",
       "successMessagePrefix": "تقييم جاهزية القوى العاملة لـ",
       "successMessageSuffix": "جاهز الآن.",
@@ -190,6 +190,30 @@
       "createAssessmentLink": "إنشاء رابط التقييم",
       "selectCandidateAndPackageError": "يرجى اختيار مرشح وباقة دور.",
       "createSessionFailedError": "فشل إنشاء جلسة التقييم. يرجى المحاولة مرة أخرى.",
+      "searchPlaceholder": "ابحث عن دور (مثل: مقدم رعاية، سائق، عامل نظافة…)",
+      "assessmentTypeAll": "جميع أنواع التقييم",
+      "assessmentTypeFull": "تقييم كامل",
+      "assessmentTypeScreening": "تقييم أولي",
+      "assessmentTypeBoth": "كامل + أولي",
+      "allRoles": "جميع الأدوار",
+      "roleCount": "{count, plural, one {دور واحد} two {دوران} few {# أدوار} many {# دورًا} other {# دور}}",
+      "noRolesMatch": "لا توجد أدوار تطابق بحثك.",
+      "selectedRoleLabel": "الدور المختار:",
+      "assessmentTypeLabel": "نوع التقييم:",
+      "footerDurationLabel": "المدة:",
+      "durationMinutes": "{value} دقيقة",
+      "notSelected": "—",
+      "categories": {
+        "healthcare": "الرعاية الصحية",
+        "home_care": "الرعاية المنزلية",
+        "hospitality": "الضيافة",
+        "security": "الأمن",
+        "facility": "إدارة المرافق",
+        "logistics": "الخدمات اللوجستية والنقل",
+        "trades": "الحرف الماهرة والعمالة",
+        "agriculture": "الزراعة والعمل الخارجي",
+        "other": "أدوار أخرى"
+      },
       "roles": {
         "domestic_worker": "عامل منزلي (مدبرة منزل)",
         "child_caregiver": "مربية أطفال",
@@ -561,7 +585,11 @@
         "eyebrow": "تريد تجربة MeritLense أولاً؟",
         "heading": "ابدأ ببرنامج تجريبي مدفوع",
         "description": "جرّب MeritLense مع مجموعة محددة من المرشحين قبل الانتقال إلى برنامج تقييم أوسع للقوى العاملة.",
-        "scope_items": ["نطاق محدد", "عدد مرشحين محدد", "فترة تجريبية محددة"],
+        "scope_items": [
+          "نطاق محدد",
+          "عدد مرشحين محدد",
+          "فترة تجريبية محددة"
+        ],
         "pricing_label": "التسعير: حسب نطاق البرنامج التجريبي",
         "cta_label": "طلب برنامج تجريبي"
       }

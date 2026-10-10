@@ -149,7 +149,7 @@
     },
     "startSessionModal": {
       "headerTitle": "Create Workforce Readiness Assessment",
-      "headerSubtitle": "Select a role package and create the candidate link",
+      "headerSubtitle": "Select a role package to create the candidate link",
       "successTitle": "Session Created",
       "successMessagePrefix": "Workforce Readiness Assessment for",
       "successMessageSuffix": "is ready.",
@@ -190,6 +190,30 @@
       "createAssessmentLink": "Create Assessment Link",
       "selectCandidateAndPackageError": "Please select a candidate and a role package.",
       "createSessionFailedError": "Failed to create the assessment session. Please try again.",
+      "searchPlaceholder": "Search for a role (e.g. caregiver, driver, cleaner…)",
+      "assessmentTypeAll": "All Assessment Types",
+      "assessmentTypeFull": "Full Assessment",
+      "assessmentTypeScreening": "Screening Assessment",
+      "assessmentTypeBoth": "Full + Screening",
+      "allRoles": "All Roles",
+      "roleCount": "{count, plural, one {# role} other {# roles}}",
+      "noRolesMatch": "No roles match your search.",
+      "selectedRoleLabel": "Selected Role:",
+      "assessmentTypeLabel": "Assessment Type:",
+      "footerDurationLabel": "Duration:",
+      "durationMinutes": "{value} minutes",
+      "notSelected": "—",
+      "categories": {
+        "healthcare": "Healthcare",
+        "home_care": "Home Care & Domestic",
+        "hospitality": "Hospitality",
+        "security": "Security",
+        "facility": "Facility Management",
+        "logistics": "Logistics & Transport",
+        "trades": "Skilled Trades & Labor",
+        "agriculture": "Agriculture & Outdoor",
+        "other": "Other Roles"
+      },
       "roles": {
         "domestic_worker": "Domestic Worker (Housekeeper)",
         "child_caregiver": "Child Caregiver",
@@ -561,7 +585,11 @@
         "eyebrow": "Want to Validate MeritLense First?",
         "heading": "Start with a Paid Pilot",
         "description": "Run MeritLense with a defined candidate group before moving to a larger workforce assessment program.",
-        "scope_items": ["Defined Scope", "Defined Candidate Volume", "Defined Pilot Period"],
+        "scope_items": [
+          "Defined Scope",
+          "Defined Candidate Volume",
+          "Defined Pilot Period"
+        ],
         "pricing_label": "Pricing: Based on Pilot Scope",
         "cta_label": "Request a Pilot"
       }
