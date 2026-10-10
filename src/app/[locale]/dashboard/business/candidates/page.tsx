@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import {
   RadarChart,
   PolarGrid,
@@ -11,7 +11,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import DashboardHeader from "../components/dashboard-header";
-import { Download, FileText, Link2, Loader2, FileSearch } from "lucide-react";
+import { Download, FileText, Link2, GitCompare, Loader2, FileSearch } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import {CandidateModal} from "../candidates/components/candidate-modal";
 import CandidatesTable from "../candidates/components/candidates-table";
@@ -133,33 +133,45 @@ export default function CandidateComparison() {
     return () => { active = false; };
   }, [selectedRoleCode]);
 
-  // Step 2 -> Step 3: auto-compare once 2-4 candidates are selected.
-  useEffect(() => {
-    if (!selectedRoleCode || selectedCandidateIds.length < 2) {
-      setComparison(null);
-      return;
-    }
-    let active = true;
+  // Step 2 -> Step 3: runs only when the user presses Compare. Any change
+  // to the selection clears the previous result (and ignores a request still
+  // in flight), so the comparison shown always matches the current picks.
+  const [compareError, setCompareError] = useState(false);
+  const compareRequestRef = useRef(0);
+
+  const resetComparison = () => {
+    compareRequestRef.current++;
+    setComparison(null);
+    setCompareError(false);
+    setLoadingComparison(false);
+  };
+
+  const handleCompare = async () => {
+    if (!selectedRoleCode || selectedCandidateIds.length < 2) return;
+    const requestId = ++compareRequestRef.current;
+    setComparison(null);
+    setCompareError(false);
     setLoadingComparison(true);
-    b2bDashboardService
-      .getFullComparison(selectedRoleCode, selectedCandidateIds, locale)
-      .then((data) => { if (active) setComparison(data); })
-      .catch((error) => {
-        console.error('Failed to fetch full comparison:', error);
-        if (active) setComparison(null);
-      })
-      .finally(() => { if (active) setLoadingComparison(false); });
-    return () => { active = false; };
-  }, [selectedRoleCode, selectedCandidateIds, locale]);
+    try {
+      const data = await b2bDashboardService.getFullComparison(selectedRoleCode, selectedCandidateIds, locale);
+      if (requestId === compareRequestRef.current) setComparison(data);
+    } catch (error) {
+      console.error('Failed to fetch full comparison:', error);
+      if (requestId === compareRequestRef.current) setCompareError(true);
+    } finally {
+      if (requestId === compareRequestRef.current) setLoadingComparison(false);
+    }
+  };
 
   const handleSelectRole = (roleCode: string) => {
     if (roleCode === selectedRoleCode) return;
     setSelectedRoleCode(roleCode);
     setSelectedCandidateIds([]);
-    setComparison(null);
+    resetComparison();
   };
 
   const toggleCandidate = (id: string) => {
+    resetComparison();
     if (selectedCandidateIds.includes(id)) {
       setSelectedCandidateIds(selectedCandidateIds.filter((c) => c !== id));
     } else if (selectedCandidateIds.length < 4) {
@@ -410,11 +422,21 @@ export default function CandidateComparison() {
               {selectedCandidateIds.length > 0 && selectedCandidateIds.length < 2 && (
                 <p className="text-xs text-amber-600 mt-2">{t("needMoreCandidates")}</p>
               )}
+              {eligibleCandidates.length > 0 && (
+                <button
+                  onClick={handleCompare}
+                  disabled={selectedCandidateIds.length < 2 || loadingComparison}
+                  className="mt-4 flex items-center gap-2 px-5 py-2.5 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loadingComparison ? <Loader2 size={16} className="animate-spin" /> : <GitCompare size={16} />}
+                  {loadingComparison ? t("comparing") : t("compareButton", { count: selectedCandidateIds.length })}
+                </button>
+              )}
             </div>
           )}
 
           {/* Step 3: Compare */}
-          {selectedRoleCode && selectedCandidateIds.length >= 2 && (
+          {selectedRoleCode && (loadingComparison || comparison || compareError) && (
             <div className="border-t border-gray-100 pt-6">
               {loadingComparison ? (
                 <div className="flex items-center gap-2 text-gray-400 text-sm">
@@ -548,6 +570,8 @@ export default function CandidateComparison() {
                     </button>
                   </div>
                 </>
+              ) : compareError ? (
+                <p className="text-sm text-red-600">{t("compareFailed")}</p>
               ) : null}
             </div>
           )}
