@@ -50,6 +50,13 @@ export default function AdminLayout({
         disabledTooltip,
       },
       {
+        label: t("pages_list.analytics_insights"),
+        icon: BarChart3,
+        href: `/${locale}/dashboard/indivisual/analytics`,
+        disabled: lockedUntilSigned,
+        disabledTooltip,
+      },
+      {
         label: t("pages_list.profile_management"),
         icon: Building2,
         href: `/${locale}/dashboard/indivisual/profile`,
@@ -65,13 +72,6 @@ export default function AdminLayout({
         label: t("pages_list.evaluation_setup"),
         icon: ClipboardList,
         href: `/${locale}/dashboard/indivisual/evaluations`,
-        disabled: lockedUntilSigned,
-        disabledTooltip,
-      },
-      {
-        label: t("pages_list.analytics_insights"),
-        icon: BarChart3,
-        href: `/${locale}/dashboard/indivisual/analytics`,
         disabled: lockedUntilSigned,
         disabledTooltip,
       },
