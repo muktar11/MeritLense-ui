@@ -109,6 +109,10 @@
       "b2bAnalytics": {
         "title": "Analytics & Insights - MeritLense",
         "description": "Detailed evaluation, readiness and candidate analytics for your company"
+      },
+      "b2cAnalytics": {
+        "title": "Analytics & Insights - MeritLense",
+        "description": "Detailed evaluation, readiness and candidate analytics for your candidates"
       }
     },
     "tablePagination": {
@@ -947,7 +951,8 @@
         "package_management": "Package Management",
         "package_requests": "Package Requests",
         "interview_setup": "Interview Setup",
-        "candidate_comparison": "Candidate Comparison"
+        "candidate_comparison": "Candidate Comparison",
+        "analytics_insights": "Analytics & Insights"
       },
       "candidateComparison": {
         "title": "Candidate Comparison",
@@ -986,7 +991,10 @@
           "userGrowthTrend": "User Growth Trend",
           "evaluationTypesDistribution": "Evaluation Types Distribution",
           "packageContribution": "Subscription Package Contribution",
-          "revenueTrend": "Revenue Trend"
+          "revenueTrend": "Revenue Trend",
+          "evaluationStatus": "Evaluation Status Distribution",
+          "userTypeDistribution": "Users by Account Type",
+          "geographicDistribution": "Companies by Country"
         },
         "totalRevenue": "Total Revenue",
         "paymentRevenue": "One-time Payments",
@@ -1024,6 +1032,15 @@
           "Advanced": "Advanced",
           "Essential": "Essential",
           "Premium": "Premium"
+        },
+        "viewAnalytics": "View Analytics",
+        "noData": "No data yet",
+        "userTypes": {
+          "B2C": "Individual (B2C)",
+          "B2B": "Company (B2B)",
+          "B2B_TEAM": "Team Member",
+          "ADMIN": "Admin",
+          "SUPERADMIN": "Super Admin"
         }
       },
       "userRoleManagement": {
@@ -2320,6 +2337,10 @@
             "UNCOLLECTIBLE": "Uncollectible"
           }
         }
+      },
+      "analytics": {
+        "title": "Analytics & Insights",
+        "subtitle": "Platform-wide evaluation, readiness, user and revenue analytics."
       }
     },
     "business": {
@@ -3414,7 +3435,8 @@
         "reports_certificates": "Reports & Certificates",
         "profile_management": "Profile",
         "packages_subscription": "Packages & Subscription",
-        "notifications": "Notifications"
+        "notifications": "Notifications",
+        "analytics_insights": "Analytics & Insights"
       },
       "sidebarLocked": "Sign the B2C Individual Services Agreement to unlock this page",
       "payment": {
@@ -4265,7 +4287,8 @@
         "notifications": {
           "pendingEvaluation": "Pending Evaluation",
           "newReport": "New Report Ready"
-        }
+        },
+        "viewAnalytics": "View Analytics"
       },
       "pointConsumption": {
         "title": "Assessment Consumption by Service",
@@ -4440,6 +4463,10 @@
           "incorrectCode": "Incorrect or expired code.",
           "restartingReview": "{message} Restarting from document review."
         }
+      },
+      "analytics": {
+        "title": "Analytics & Insights",
+        "subtitle": "Detailed evaluation, readiness and candidate analytics for your candidates."
       }
     }
   },

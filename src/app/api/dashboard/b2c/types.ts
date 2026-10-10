@@ -146,3 +146,6 @@ export interface MonthlyActivity {
   evaluations_completed: number;
   certificates_issued: number;
 }
+
+// Same shape as the B2B readiness-distribution response.
+export type { ReadinessDistribution, ReadinessStatus } from '@/app/api/dashboard/b2b/types';

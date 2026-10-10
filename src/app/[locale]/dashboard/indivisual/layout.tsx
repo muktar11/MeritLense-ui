@@ -69,6 +69,13 @@ export default function AdminLayout({
         disabledTooltip,
       },
       {
+        label: t("pages_list.analytics_insights"),
+        icon: BarChart3,
+        href: `/${locale}/dashboard/indivisual/analytics`,
+        disabled: lockedUntilSigned,
+        disabledTooltip,
+      },
+      {
         label: t("pages_list.assessments_monitor"),
         icon: Building2,
         href: `/${locale}/dashboard/indivisual/score-management`,
