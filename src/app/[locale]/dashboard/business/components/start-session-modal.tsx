@@ -3,13 +3,15 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useLocale, useTranslations } from "next-intl"
+import Image from "next/image"
 import {
-  X, Loader2, AlertCircle, CheckCircle2, Copy, Check, Search, ChevronDown, LayoutGrid, Users,
+  X, Loader2, AlertCircle, Search, ChevronDown, LayoutGrid, Users,
   User, FileText, Clock, Link2, Stethoscope, House, ConciergeBell, Shield, Settings, Truck,
   Wrench, Leaf, Briefcase, Brush, Baby, UserRound, Accessibility, HeartHandshake, Pill,
   HeartPulse, BedDouble, UtensilsCrossed, Ticket, SprayCan, Factory, Package, Car, HardHat,
   Wheat, PawPrint, ClipboardList, type LucideIcon,
 } from "lucide-react"
+import SessionCreatedPanel from "./session-created-panel"
 import type { Candidate } from "@/app/api/candidates/types"
 import interviewService from "@/app/api/interviews/endpoints"
 import paymentService from "@/app/api/payments/endpoints"
@@ -92,7 +94,6 @@ export default function StartSessionModal({
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState("")
   const [createdSession, setCreatedSession] = useState<InterviewSession | null>(null)
-  const [linkCopied, setLinkCopied] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [tierFilter, setTierFilter] = useState<EvaluationTier | "ALL">("ALL")
   const [activeCategory, setActiveCategory] = useState<string>("all")
@@ -263,7 +264,7 @@ export default function StartSessionModal({
       const session = await interviewService.createSession({
         candidate_id: selectedCandidateId,
         config_id: selectedConfigId,
-      })
+      }, locale)
       // The candidate starts the assessment only after completing consent,
       // device, verbal-confirmation, privacy, and identity prechecks.
       setCreatedSession(session)
@@ -279,16 +280,13 @@ export default function StartSessionModal({
     }
   }
 
+  // Prefer the short link the backend returns (it redirects to the full
+  // interview link); fall back to building the full link locally.
   const sessionLink = createdSession
-    ? `${window.location.origin}/${locale}/interview?sessionId=${createdSession.id}&token=${createdSession.access_token}`
+    ? createdSession.short_link ||
+      createdSession.interview_link ||
+      `${window.location.origin}/${locale}/interview?sessionId=${createdSession.id}&token=${createdSession.access_token}`
     : ""
-
-  const handleCopyLink = async () => {
-    if (!sessionLink) return
-    await navigator.clipboard.writeText(sessionLink)
-    setLinkCopied(true)
-    setTimeout(() => setLinkCopied(false), 2000)
-  }
 
   if (!isOpen) return null
 
@@ -319,59 +317,42 @@ export default function StartSessionModal({
       >
         {/* Header */}
         <div className="flex items-start justify-between gap-4 px-4 sm:px-6 pt-5 pb-4 border-b border-gray-100 shrink-0">
-          <div className="flex items-center gap-4 min-w-0">
-            <div className="hidden sm:flex w-14 h-14 rounded-2xl bg-purple-100 items-center justify-center shrink-0">
-              <Users className="w-7 h-7 text-purple-600" />
+          {createdSession ? (
+            <div className="flex items-center gap-3">
+              <Image src="/logo.png" alt="MeritLense" width={506} height={459} className="h-10 w-auto" />
+              <div>
+                <h2 className="text-lg font-bold text-gray-900 leading-tight">MeritLense</h2>
+                <p className="text-sm text-gray-500">{t("brandTagline")}</p>
+              </div>
             </div>
-            <div className="min-w-0">
-              <h2 className="text-lg sm:text-2xl font-bold text-gray-900">{t("headerTitle")}</h2>
-              <p className="text-sm sm:text-base text-gray-500 mt-0.5">{t("headerSubtitle")}</p>
+          ) : (
+            <div className="flex items-center gap-4 min-w-0">
+              <div className="hidden sm:flex w-14 h-14 rounded-2xl bg-purple-100 items-center justify-center shrink-0">
+                <Users className="w-7 h-7 text-purple-600" />
+              </div>
+              <div className="min-w-0">
+                <h2 className="text-lg sm:text-2xl font-bold text-gray-900">{t("headerTitle")}</h2>
+                <p className="text-sm sm:text-base text-gray-500 mt-0.5">{t("headerSubtitle")}</p>
+              </div>
             </div>
-          </div>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 transition-colors p-1 shrink-0">
+          )}
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 transition-colors p-1 shrink-0" aria-label={t("close")}>
             <X className="w-6 h-6" />
           </button>
         </div>
 
         {/* Success state */}
         {createdSession ? (
-          <div className="text-center py-8 px-6 overflow-y-auto">
-            <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">{t("successTitle")}</h3>
-            <p className="text-sm text-gray-600 mb-1">
-              {t("successMessagePrefix")}{" "}
-              <span className="font-medium">{activeCandidateObj?.full_name}</span> {t("successMessageSuffix")}
-            </p>
-            <p className="text-xs text-gray-500 mb-6">
-              {t("roleCoverageLabel", { role: selectedRole ? roleLabel(selectedRole) : "" })}{" "}
-              <span
-                className={`px-1.5 py-0.5 rounded-full text-xs font-semibold ${
-                  getCoverageColor(selectedRole?.coverage ?? null)
-                }`}
-              >
-                {coverageLabel(selectedRole?.coverage ?? null)}
-              </span>
-            </p>
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 text-xs text-gray-600 mb-6 text-start">
-              <p className="font-medium text-gray-700 mb-1">{t("interviewLinkLabel")}</p>
-              <div className="flex items-center gap-2">
-                <p className="font-mono break-all flex-1" dir="ltr">{sessionLink}</p>
-                <button
-                  type="button"
-                  onClick={handleCopyLink}
-                  className="shrink-0 p-1.5 rounded-md bg-white border border-gray-200 text-gray-500 hover:text-purple-600 hover:border-purple-300"
-                  title={t("copyLinkTooltip")}
-                >
-                  {linkCopied ? <Check className="w-3.5 h-3.5 text-green-600" /> : <Copy className="w-3.5 h-3.5" />}
-                </button>
-              </div>
-            </div>
-            <button
-              onClick={onClose}
-              className="px-5 py-2 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700"
-            >
-              {t("close")}
-            </button>
+          <div className="px-6 pb-6 pt-4 overflow-y-auto">
+            <SessionCreatedPanel
+              candidateName={activeCandidateObj?.full_name ?? createdSession.candidate_name}
+              candidateEmail={activeCandidateObj?.email}
+              roleName={selectedRole ? roleLabel(selectedRole) : createdSession.role_name}
+              coverageLabel={coverageLabel(selectedRole?.coverage ?? null)}
+              coverageClassName={getCoverageColor(selectedRole?.coverage ?? null)}
+              link={sessionLink}
+              onClose={onClose}
+            />
           </div>
         ) : (
           <>

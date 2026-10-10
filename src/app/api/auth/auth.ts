@@ -112,7 +112,9 @@ export interface B2BRegistrationData {
   // detected/suggested client-side (see src/lib/location-detection.ts).
   target_market?: string
   timezone?: string
-  registration_certificate: File
+  // All three are collected later from Company Profile, not at signup -
+  // see the "Document Uploads" removal in the registration form.
+  registration_certificate?: File
   resachetified_license?: File
   tax_id_document?: File | null
 }

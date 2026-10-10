@@ -14,7 +14,8 @@ import {
   MonthlyActivity,
   ComparisonRole,
   ComparisonEligibleCandidate,
-  FullComparisonResult
+  FullComparisonResult,
+  ReadinessDistribution
 } from './types';
 import { API_BASE_URL } from '@/lib/config/env';
 
@@ -69,6 +70,14 @@ class B2CDashboardService {
   async getEvaluationTimeRange(): Promise<EvaluationTimeRange[]> {
     this.ensureAuthToken();
     const response = await apiClient.get(`${this.baseURL}evaluation-time-range`);
+    return response.data;
+  }
+
+  // Overall Readiness Index: completed evaluations by their actual
+  // readiness outcome (same calculation as the B2B dashboard's).
+  async getReadinessDistribution(): Promise<ReadinessDistribution> {
+    this.ensureAuthToken();
+    const response = await apiClient.get(`${this.baseURL}readiness-distribution`);
     return response.data;
   }
 

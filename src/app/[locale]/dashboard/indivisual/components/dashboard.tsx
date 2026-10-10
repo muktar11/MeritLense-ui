@@ -4,7 +4,8 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useLocale } from "next-intl"
-import { Search, Bell, Loader2 } from "lucide-react"
+import Link from "next/link"
+import { Search, Bell, Loader2, BarChart3 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { MetricCard } from "./metric-card"
@@ -14,7 +15,7 @@ import { TimeRangeChart } from "./time-range-chart"
 import { EvaluationManagement } from "./evaluation-management"
 import { CandidateComparison } from "./candidate-comparison"
 import { StatusDistributionChart } from "./status-distribution-chart"
-import { ReadinessIndexChart } from "./readiness-index-chart"
+import { ReadinessIndexChart } from "../../business/components/readiness-index-chart"
 import { LanguageDistributionChart } from "./language-distribution-chart"
 import { EvaluationTrendChart } from "./evaluation-trend-chart"
 import { RecentActivityTable } from "./recent-activity-table"
@@ -31,7 +32,8 @@ import type {
   ScoreTrend,
   LanguageDistribution,
   EvaluationTrend,
-  MonthlyActivity
+  MonthlyActivity,
+  ReadinessDistribution
 } from "@/app/api/dashboard/b2c/types"
 import type { Subscription } from "@/app/api/payments/types"
 import { ScoreTrendChart } from "./score-trend-chart"
@@ -48,6 +50,7 @@ export function Dashboard() {
   const [recentEvaluations, setRecentEvaluations] = useState<RecentEvaluation[]>([])
   const [timeRange, setTimeRange] = useState<EvaluationTimeRange[]>([])
   const [statusDistribution, setStatusDistribution] = useState<EvaluationStatusDistribution[]>([])
+  const [readiness, setReadiness] = useState<ReadinessDistribution | null>(null)
   const [jobRoleDistribution, setJobRoleDistribution] = useState<JobRoleDistribution[]>([])
   const [scoreTrend, setScoreTrend] = useState<ScoreTrend[]>([])
   const [languageDistribution, setLanguageDistribution] = useState<LanguageDistribution[]>([])
@@ -79,7 +82,8 @@ export function Dashboard() {
         scoreTrendData,
         langDistData,
         trendData,
-        monthlyData
+        monthlyData,
+        readinessData
       ] = await Promise.all([
         b2cDashboardService.getStats(),
         b2cDashboardService.getRecentCandidates(10),
@@ -89,7 +93,8 @@ export function Dashboard() {
         b2cDashboardService.getScoreTrend(30),
         b2cDashboardService.getLanguageDistribution(),
         b2cDashboardService.getEvaluationTrend(30),
-        b2cDashboardService.getMonthlyActivity(6)
+        b2cDashboardService.getMonthlyActivity(6),
+        b2cDashboardService.getReadinessDistribution()
       ])
 
       setStats(statsData)
@@ -101,6 +106,7 @@ export function Dashboard() {
       setLanguageDistribution(langDistData)
       setEvaluationTrend(trendData)
       setMonthlyActivity(monthlyData)
+      setReadiness(readinessData)
 
       // Fetch initial evaluations
       await fetchEvaluationsByStatus()
@@ -193,6 +199,12 @@ export function Dashboard() {
           </div>
 
           <div className="flex items-center justify-end gap-4">
+            <Button asChild variant="outline" size="sm" className="gap-1.5 bg-white">
+              <Link href={`/${locale}/dashboard/indivisual/analytics`}>
+                <BarChart3 className="h-4 w-4" />
+                {t("viewAnalytics")}
+              </Link>
+            </Button>
             <button className="relative">
               <Bell className="w-5 h-5 text-muted-foreground hover:text-foreground" />
               <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full" />
@@ -304,7 +316,7 @@ export function Dashboard() {
               </CardContent>
             </Card>
 
-            <ReadinessIndexChart data={statusDistribution} />
+            {readiness && <ReadinessIndexChart data={readiness} />}
             <PointConsumptionChart data={jobRoleDistribution} />
             <TimeRangeChart data={timeRange} />
             <LanguageDistributionChart data={languageChartData} />

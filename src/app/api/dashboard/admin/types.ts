@@ -95,3 +95,23 @@ export interface GeographicDistribution {
   country: string;
   count: number;
 }
+
+// Candidate Comparison: the admin first picks whose candidates to compare
+// (a B2B company or a B2C user) - comparison never mixes accounts. The
+// later steps return exactly the same shapes as the B2B/B2C dashboards.
+export type { ReadinessDistribution, ReadinessStatus } from '@/app/api/dashboard/b2b/types';
+
+export type {
+  ComparisonRole,
+  ComparisonEligibleCandidate,
+  FullComparisonResult,
+} from '@/app/api/dashboard/b2b/types';
+
+export interface ComparisonAccount {
+  owner_type: 'COMPANY' | 'USER';
+  owner_id: string;
+  name: string;
+  email: string;
+  // Comparable candidates across all of the account's roles.
+  candidate_count: number;
+}

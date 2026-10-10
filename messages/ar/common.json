@@ -105,6 +105,14 @@
       "faq": {
         "title": "الأسئلة الشائعة",
         "description": "إجابات عن الأسئلة الشائعة حول كيفية عمل MeritLense، ومعيار الجاهزية، والتقارير والشهادات، والتسعير."
+      },
+      "b2bAnalytics": {
+        "title": "التحليلات والرؤى - MeritLense",
+        "description": "تحليلات تفصيلية للتقييمات والجاهزية والمرشحين في شركتك"
+      },
+      "b2cAnalytics": {
+        "title": "التحليلات والرؤى - MeritLense",
+        "description": "تحليلات تفصيلية للتقييمات والجاهزية والمرشحين الخاصين بك"
       }
     },
     "tablePagination": {
@@ -148,6 +156,20 @@
       }
     },
     "startSessionModal": {
+      "brandTagline": "جاهزية القوى العاملة، بقياس دقيق.",
+      "roleShort": "الدور",
+      "coverageShort": "التغطية",
+      "interviewLinkTitle": "رابط المقابلة",
+      "interviewLinkSubtitle": "شارك هذا الرابط مع المرشح لبدء التقييم.",
+      "copyLink": "نسخ الرابط",
+      "linkCopied": "تم النسخ!",
+      "shareEmail": "مشاركة عبر البريد",
+      "shareWhatsApp": "مشاركة عبر واتساب",
+      "showQr": "عرض رمز QR",
+      "hideQr": "إخفاء رمز QR",
+      "qrHint": "امسح الرمز لفتح التقييم على الهاتف.",
+      "emailSubject": "رابط تقييم MeritLense الخاص بك",
+      "shareMessage": "مرحبًا {name}، هذا رابط تقييم جاهزية القوى العاملة الخاص بك على MeritLense: {link}",
       "headerTitle": "إنشاء تقييم جاهزية القوى العاملة",
       "headerSubtitle": "اختر باقة الدور لإنشاء رابط المرشح",
       "successTitle": "تم إنشاء الجلسة",
@@ -365,7 +387,8 @@
         "features": "الميزات",
         "how_it_works": "كيف يعمل",
         "pricing": "التسعير",
-        "faq": "الأسئلة الشائعة"
+        "faq": "الأسئلة الشائعة",
+        "contact": "تواصل معنا"
       },
       "actions": {
         "sign_in": "تسجيل الدخول",
@@ -956,7 +979,19 @@
         "multi_agency_panel": "الفواتير والاشتراكات",
         "package_management": "إدارة الباقات",
         "package_requests": "طلبات الباقات",
-        "interview_setup": "إعداد المقابلات"
+        "interview_setup": "إعداد المقابلات",
+        "candidate_comparison": "مقارنة المرشحين",
+        "analytics_insights": "التحليلات والرؤى"
+      },
+      "candidateComparison": {
+        "title": "مقارنة المرشحين",
+        "subtitle": "اختر حسابًا، ثم مسمى وظيفيًا، ثم من 2 إلى 4 مرشحين لديهم نتائج تقييم قابلة للمقارنة.",
+        "selectAccount": "اختر الحساب",
+        "chooseAccount": "اختر حساب شركة أو حسابًا فرديًا...",
+        "searchAccounts": "البحث في الحسابات",
+        "noAccounts": "لا يوجد حساب لديه مرشحون تم تقييمهم بعد.",
+        "businessAccounts": "حسابات الشركات",
+        "individualAccounts": "الحسابات الفردية"
       },
       "overview_page": {
         "title": "نظرة عامة على لوحة القيادة",
@@ -993,7 +1028,10 @@
           "userGrowthTrend": "اتجاه نمو المستخدمين",
           "evaluationTypesDistribution": "توزيع أنواع التقييم",
           "packageContribution": "مساهمة باقات الاشتراك",
-          "revenueTrend": "اتجاه الإيرادات"
+          "revenueTrend": "اتجاه الإيرادات",
+          "evaluationStatus": "توزيع حالات التقييم",
+          "userTypeDistribution": "المستخدمون حسب نوع الحساب",
+          "geographicDistribution": "الشركات حسب الدولة"
         },
         "months": {
           "1": "يناير",
@@ -1035,6 +1073,15 @@
           "Advanced": "متقدم",
           "Essential": "ضروري",
           "Premium": "مميز"
+        },
+        "viewAnalytics": "عرض التحليلات",
+        "noData": "لا توجد بيانات بعد",
+        "userTypes": {
+          "B2C": "فرد (B2C)",
+          "B2B": "شركة (B2B)",
+          "B2B_TEAM": "عضو فريق",
+          "ADMIN": "مسؤول",
+          "SUPERADMIN": "مسؤول أعلى"
         }
       },
       "userRoleManagement": {
@@ -2345,6 +2392,10 @@
             "UNCOLLECTIBLE": "غير قابلة للتحصيل"
           }
         }
+      },
+      "analytics": {
+        "title": "التحليلات والرؤى",
+        "subtitle": "تحليلات المنصة بالكامل للتقييمات والجاهزية والمستخدمين والإيرادات."
       }
     },
     "business": {
@@ -2472,6 +2523,100 @@
           "tooltip": {
             "usage": "نسبة الاستخدام٪"
           }
+        },
+        "header": {
+          "title": "نظرة عامة",
+          "subtitle": "ما يحتاج إلى انتباهك، وأداء المرشحين لديك.",
+          "analytics": "عرض التحليلات"
+        },
+        "widgetError": "تعذّر تحميل هذه الأداة.",
+        "retry": "إعادة المحاولة",
+        "emptyLayout": {
+          "title": "لا توجد أدوات في لوحة التحكم",
+          "description": "جميع الأدوات مخفية. أضف الأدوات مجددًا، أو افتح صفحة التحليلات والرؤى لعرض جميع الرسوم البيانية."
+        },
+        "requiresAttention": {
+          "title": "يتطلب الانتباه",
+          "subtitle": "تقييمات مكتملة تحتاج إلى قرار بشري",
+          "reasons": {
+            "HUMAN_REVIEW": "تتطلب مراجعة بشرية",
+            "INSUFFICIENT_EVIDENCE": "أدلة غير كافية"
+          },
+          "review": "مراجعة",
+          "empty": "لا يوجد ما يحتاج إلى انتباهك حاليًا",
+          "emptyHint": "ستظهر هنا التقييمات التي تحتاج إلى مراجعة.",
+          "moreCount": "+{count} أخرى",
+          "viewAll": "عرض جميع التقييمات"
+        },
+        "customize": {
+          "button": "تخصيص لوحة التحكم",
+          "title": "تخصيص لوحة التحكم",
+          "description": "اختر الأدوات التي تظهر في لوحة تحكم شركتك وحدّد ترتيبها. تُطبَّق التغييرات على جميع مستخدمي شركتك.",
+          "visible": "معروضة في لوحة التحكم",
+          "available": "إضافة أدوات",
+          "emptyVisible": "لم يتم اختيار أي أداة. أضف أدوات من القائمة أدناه.",
+          "allAdded": "جميع الأدوات معروضة بالفعل في لوحة التحكم.",
+          "add": "إضافة",
+          "addWidget": "إضافة {widget}",
+          "hide": "إخفاء {widget}",
+          "moveUp": "نقل {widget} إلى الأعلى",
+          "moveDown": "نقل {widget} إلى الأسفل",
+          "reset": "استعادة الإعدادات الافتراضية",
+          "cancel": "إلغاء",
+          "save": "حفظ",
+          "saved": "تم تحديث لوحة التحكم",
+          "resetDone": "تمت استعادة التخطيط الافتراضي للوحة التحكم",
+          "saveError": "تعذّر حفظ تخطيط لوحة التحكم. يرجى المحاولة مرة أخرى."
+        },
+        "widgets": {
+          "requires_attention": {
+            "title": "يتطلب الانتباه",
+            "description": "تقييمات تحتاج إلى مراجعة بشرية أو تنقصها الأدلة"
+          },
+          "recent_evaluations": {
+            "title": "أحدث التقييمات",
+            "description": "آخر التقييمات وحالتها"
+          },
+          "readiness_index": {
+            "title": "مؤشر الجاهزية العام",
+            "description": "التقييمات المكتملة حسب نتيجة الجاهزية"
+          },
+          "evaluation_status": {
+            "title": "حالة التقييمات",
+            "description": "التقييمات المجدولة والمكتملة والملغاة"
+          },
+          "evaluation_trend": {
+            "title": "اتجاهات التقييم",
+            "description": "نشاط التقييم اليومي خلال آخر 30 يومًا"
+          },
+          "performance_trend": {
+            "title": "مقاييس الأداء",
+            "description": "متوسط الدرجات حسب الشهر"
+          },
+          "score_by_role": {
+            "title": "متوسط الدرجات حسب الوظيفة",
+            "description": "متوسط درجة التقييم لكل وظيفة"
+          },
+          "job_role_distribution": {
+            "title": "توزيع الوظائف",
+            "description": "التقييمات حسب الوظيفة"
+          },
+          "language_distribution": {
+            "title": "توزيع اللغات",
+            "description": "التقييمات حسب لغة المقابلة"
+          },
+          "time_of_day": {
+            "title": "توقيت التقييمات خلال اليوم",
+            "description": "الأوقات التي تُجرى فيها التقييمات"
+          },
+          "monthly_activity": {
+            "title": "النشاط الشهري",
+            "description": "المرشحون والتقييمات والشهادات شهريًا"
+          },
+          "candidate_comparison": {
+            "title": "مقارنة المرشحين",
+            "description": "مقارنة المرشحين المتقدمين للوظيفة نفسها"
+          }
         }
       },
       "candidateEvaluation": {
@@ -2538,7 +2683,17 @@
           "ready": "جاهز",
           "nearReady": "قريب من الجاهزية",
           "lowReadiness": "جاهزية منخفضة"
-        }
+        },
+        "status": {
+          "READY": "جاهز",
+          "PARTIALLY_READY": "جاهز جزئيًا",
+          "NOT_READY": "غير جاهز",
+          "INCOMPLETE": "أدلة غير كافية",
+          "PENDING": "النتيجة قيد الإعداد"
+        },
+        "readyRate": "نسبة الجاهزية",
+        "basedOn": "بناءً على {count} من التقييمات المكتملة",
+        "empty": "لا توجد تقييمات مكتملة بعد. ستظهر نتائج الجاهزية هنا."
       },
       "languageDistributionChart": {
         "title": "توزيع لغات التقييم",
@@ -2709,9 +2864,12 @@
           "certificateLabel": "شهادة MeritLense",
           "aiAnalysisLabel": "تحليل التقييم بالذكاء الاصطناعي",
           "downloadTooltip": "تحميل {label}",
+          "viewTooltip": "عرض {label}",
           "shareTooltip": "مشاركة رابط {label}",
           "downloading": "جارٍ التحميل...",
           "download": "تحميل",
+          "viewing": "جارٍ الفتح...",
+          "view": "عرض",
           "copied": "تم النسخ!",
           "itemLabelPlural": "مرشحين",
           "moreEvaluations": "{count, plural, one {+# سابق} other {+# سابقة}}"
@@ -2960,7 +3118,14 @@
           "reviewBothPrompt": "راجع كلا المستندين لتفعيل التوقيع:",
           "reviewNowButton": "راجع الآن",
           "authConfirmLabel": "أؤكد أنني مخوَّل قانونيًا لإلزام هذه المؤسسة.",
-          "sendCodeButton": "إرسال رمز التحقق"
+          "sendCodeButton": "إرسال رمز التحقق",
+          "remainingStepsPrompt": "أكمل هذه الخطوات لإرسال رمز التحقق:",
+          "steps": {
+            "reviewDocs": "راجع كلا المستندين (مرّر إلى أسفل كل منهما)",
+            "enterName": "أدخل اسمك القانوني الكامل",
+            "uploadStamp": "ارفع ختم شركتك",
+            "confirmAuth": "ضع علامة على مربع تأكيد التفويض"
+          }
         },
         "errors": {
           "nameRequired": "يرجى إدخال اسمك القانوني الكامل.",
@@ -3094,6 +3259,10 @@
           "arabic": "العربية",
           "spanish": "الإسبانية"
         }
+      },
+      "analytics": {
+        "title": "التحليلات والرؤى",
+        "subtitle": "تحليلات تفصيلية للتقييمات والجاهزية والمرشحين في شركتك."
       }
     },
     "candidates": {
@@ -3300,7 +3469,8 @@
         "reports_certificates": "التقارير والشهادات",
         "profile_management": "الملف الشخصي",
         "packages_subscription": "الباقات والاشتراك",
-        "notifications": "الإشعارات"
+        "notifications": "الإشعارات",
+        "analytics_insights": "التحليلات والرؤى"
       },
       "sidebarLocked": "وقّع اتفاقية خدمات الأفراد (B2C) لفتح هذه الصفحة",
       "payment": {
@@ -3631,6 +3801,43 @@
           "scheduledDateTimeLabel": "تاريخ ووقت الجدولة",
           "closeTimePicker": "إغلاق",
           "aiLinkNote": "سيتم إنشاء رابط مقابلة بالذكاء الاصطناعي تلقائيًا بمجرد جدولة هذا التقييم، وإرساله بالبريد الإلكتروني إلى المرشح مع التاريخ والوقت.",
+          "subtitle": "حدّد التفاصيل وسنُنشئ رابط التقييم تلقائيًا ونرسله إلى المرشح بالبريد الإلكتروني.",
+          "steps": {
+            "candidate": {
+              "title": "اختر المرشح",
+              "subtitle": "اختر المرشح الذي تريد تقييمه"
+            },
+            "details": {
+              "title": "تفاصيل التقييم",
+              "subtitle": "اختر نوع التقييم ومدته"
+            },
+            "schedule": {
+              "title": "تاريخ ووقت التقييم",
+              "subtitle": "اختر موعد إجراء التقييم"
+            }
+          },
+          "dateLabel": "التاريخ",
+          "timeLabel": "الوقت",
+          "timeZoneLabel": "المنطقة الزمنية:",
+          "searchCandidates": "ابحث بالاسم أو البريد الإلكتروني",
+          "noCandidatesFound": "لا يوجد مرشحون مطابقون",
+          "preview": {
+            "title": "معاينة التقييم",
+            "subtitle": "راجع التفاصيل قبل الحفظ",
+            "candidate": "المرشح",
+            "dateTime": "التاريخ والوقت",
+            "notSelected": "لم يتم اختيار مرشح",
+            "notSet": "غير محدد",
+            "aiBadge": "ذكاء اصطناعي"
+          },
+          "nextSteps": {
+            "title": "ماذا سيحدث بعد ذلك؟",
+            "link": "سيتم إنشاء رابط تقييم خاص",
+            "email": "سيتلقى المرشح دعوة عبر البريد الإلكتروني",
+            "dateTime": "ستتضمن الرسالة التاريخ والوقت",
+            "join": "يمكن للمرشح الانضمام في الموعد المحدد"
+          },
+          "scheduleButton": "جدولة التقييم",
           "online": "عبر الإنترنت",
           "inPersonOption": "حضوري",
           "meetingLinkPlaceholder": "https://meet.google.com/...",
@@ -4097,7 +4304,8 @@
         "notifications": {
           "pendingEvaluation": "تقييم معلق",
           "newReport": "تقرير جديد جاهز"
-        }
+        },
+        "viewAnalytics": "عرض التحليلات"
       },
       "pointConsumption": {
         "title": "استهلاك التقييمات حسب الخدمة",
@@ -4272,6 +4480,10 @@
           "incorrectCode": "رمز غير صحيح أو منتهي الصلاحية.",
           "restartingReview": "{message} جارٍ إعادة البدء من مراجعة المستند."
         }
+      },
+      "analytics": {
+        "title": "التحليلات والرؤى",
+        "subtitle": "تحليلات تفصيلية للتقييمات والجاهزية والمرشحين الخاصين بك."
       }
     }
   },

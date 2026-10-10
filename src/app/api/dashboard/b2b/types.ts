@@ -156,3 +156,49 @@ export interface EvaluationTimeRange {
   range: string;
   count: number;
 }
+
+// Company-level overview dashboard customization. `widgets` is the
+// ordered list of visible widget ids; anything else is hidden (and stays
+// reachable from the Analytics page).
+export interface DashboardLayout {
+  widgets: string[];
+  is_default: boolean;
+  available_widgets: string[];
+  default_widgets: string[];
+  can_edit: boolean;
+}
+
+export type ReadinessStatus = 'READY' | 'PARTIALLY_READY' | 'NOT_READY' | 'INCOMPLETE' | 'PENDING';
+
+export interface ReadinessDistribution {
+  total: number;
+  // READY / (READY + PARTIALLY_READY + NOT_READY); null until any decided evaluation exists.
+  ready_rate: number | null;
+  distribution: {
+    status: ReadinessStatus;
+    status_display: string;
+    count: number;
+    percentage: number;
+  }[];
+}
+
+export type AttentionReason = 'HUMAN_REVIEW' | 'INSUFFICIENT_EVIDENCE';
+
+export interface RequiresAttentionItem {
+  // Evaluation public_id - what evaluationService.getEvaluation() expects.
+  evaluation_id: string;
+  candidate_name: string;
+  job_role: string;
+  job_role_display: string;
+  readiness_status: ReadinessStatus;
+  score: number | null;
+  reasons: AttentionReason[];
+  activity_at: string;
+}
+
+export interface RequiresAttention {
+  total: number;
+  human_review: number;
+  insufficient_evidence: number;
+  items: RequiresAttentionItem[];
+}

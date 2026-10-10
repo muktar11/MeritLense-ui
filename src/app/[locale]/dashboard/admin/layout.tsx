@@ -22,6 +22,8 @@ import {
   Package,
   ClipboardList,
   Inbox,
+  GitCompare,
+  BarChart3,
 } from "lucide-react";
 
 // Optional: locale code → human-readable name map
@@ -45,6 +47,12 @@ export default function AdminLayout({
         label: t("pages_list.overview"),
         icon: LayoutDashboard,
         href: `/${locale}/dashboard/admin`,
+      },
+
+      {
+        label: t("pages_list.analytics_insights"),
+        icon: BarChart3,
+        href: `/${locale}/dashboard/admin/analytics`,
       },
 
       ...(userRole === 'SUPERADMIN' ? [{
@@ -75,6 +83,12 @@ export default function AdminLayout({
         label: t("pages_list.candidate_management"),
         icon: UserCheck,
         href: `/${locale}/dashboard/admin/candidates`,
+      },
+
+      {
+        label: t("pages_list.candidate_comparison"),
+        icon: GitCompare,
+        href: `/${locale}/dashboard/admin/candidate-comparison`,
       },
 
       {

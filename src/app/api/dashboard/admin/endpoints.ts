@@ -1,5 +1,10 @@
-import { apiClient } from '@/app/api/auth/client';
+import { apiClient, authClient } from '@/app/api/auth/client';
 import {
+  ComparisonAccount,
+  ReadinessDistribution,
+  ComparisonRole,
+  ComparisonEligibleCandidate,
+  FullComparisonResult,
   AdminDashboardStats,
   SystemLoadData,
   UserGrowthData,
@@ -65,6 +70,13 @@ class AdminDashboardService {
     return response.data;
   }
 
+  // Platform-wide Overall Readiness Index (same calculation as B2B/B2C).
+  async getReadinessDistribution(): Promise<ReadinessDistribution> {
+    this.ensureAuthToken();
+    const response = await apiClient.get(`${this.baseURL}readiness-distribution`);
+    return response.data;
+  }
+
   async getUserTypeDistribution(): Promise<UserTypeDistribution[]> {
     this.ensureAuthToken();
     const response = await apiClient.get(`${this.baseURL}user-type-distribution`);
@@ -118,6 +130,70 @@ class AdminDashboardService {
       return (num / 1000).toFixed(1) + 'K';
     }
     return num.toString();
+  }
+
+  // Candidate Comparison (Select Account -> Select Job Role -> Select 2-4
+  // Eligible Candidates -> Compare). Step 0: accounts with scored candidates.
+  async getComparisonAccounts(): Promise<ComparisonAccount[]> {
+    this.ensureAuthToken();
+    const response = await apiClient.get(`${this.baseURL}candidate-comparison/accounts`);
+    return response.data;
+  }
+
+  private ownerParams(account: ComparisonAccount) {
+    return { owner_type: account.owner_type, owner_id: account.owner_id };
+  }
+
+  async getComparisonRoles(account: ComparisonAccount): Promise<ComparisonRole[]> {
+    this.ensureAuthToken();
+    const response = await apiClient.get(`${this.baseURL}candidate-comparison/roles`, {
+      params: this.ownerParams(account),
+    });
+    return response.data;
+  }
+
+  async getComparisonEligibleCandidates(account: ComparisonAccount, roleCode: string): Promise<ComparisonEligibleCandidate[]> {
+    this.ensureAuthToken();
+    const response = await apiClient.get(`${this.baseURL}candidate-comparison/eligible-candidates`, {
+      params: { ...this.ownerParams(account), role_code: roleCode },
+    });
+    return response.data;
+  }
+
+  async getFullComparison(account: ComparisonAccount, roleCode: string, candidateIds: string[], lang?: string): Promise<FullComparisonResult> {
+    this.ensureAuthToken();
+    const response = await apiClient.get(`${this.baseURL}candidate-comparison/full`, {
+      params: {
+        ...this.ownerParams(account),
+        role_code: roleCode,
+        candidate_ids: candidateIds.join(','),
+        ...(lang ? { lang } : undefined),
+      },
+    });
+    return response.data;
+  }
+
+  async downloadComparisonPdf(account: ComparisonAccount, roleCode: string, candidateIds: string[], lang?: string, filename?: string): Promise<void> {
+    const response = await authClient.get(`${this.baseURL}candidate-comparison/pdf`, {
+      params: {
+        ...this.ownerParams(account),
+        role_code: roleCode,
+        candidate_ids: candidateIds.join(','),
+        ...(lang ? { lang } : undefined),
+      },
+      responseType: 'blob',
+    });
+    const blob = new Blob([response.data], {
+      type: response.headers['content-type'] || 'application/pdf',
+    });
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = filename || 'candidate-comparison.pdf';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(downloadUrl);
   }
 }
 

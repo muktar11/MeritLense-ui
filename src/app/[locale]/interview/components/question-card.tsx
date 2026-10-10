@@ -11,6 +11,8 @@ interface QuestionCardProps {
   totalQuestions: number;
   onPlayAudio: () => void;
   audioUrl: string | null;
+  audioNotice?: string | null;
+  onAudioError?: () => void;
   loadingAudio: boolean;
   readAloudLanguage: string;
   onReadAloudLanguageChange: (languageCode: string) => void;
@@ -23,6 +25,8 @@ export function QuestionCard({
   totalQuestions,
   onPlayAudio,
   audioUrl,
+  audioNotice,
+  onAudioError,
   loadingAudio,
   readAloudLanguage,
   onReadAloudLanguageChange,
@@ -91,7 +95,13 @@ export function QuestionCard({
 
       {audioUrl && (
         // eslint-disable-next-line jsx-a11y/media-has-caption
-        <audio className="w-full mt-4" src={audioUrl} controls autoPlay />
+        <audio className="w-full mt-4" src={audioUrl} controls autoPlay onError={onAudioError} />
+      )}
+
+      {audioNotice && (
+        <p className="mt-3 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2" role="status">
+          {audioNotice}
+        </p>
       )}
     </div>
   );

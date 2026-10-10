@@ -105,6 +105,14 @@
       "faq": {
         "title": "Frequently Asked Questions",
         "description": "Answers to common questions about how MeritLense works, the Readiness Standard, reports and certificates, and pricing."
+      },
+      "b2bAnalytics": {
+        "title": "Analytics & Insights - MeritLense",
+        "description": "Detailed evaluation, readiness and candidate analytics for your company"
+      },
+      "b2cAnalytics": {
+        "title": "Analytics & Insights - MeritLense",
+        "description": "Detailed evaluation, readiness and candidate analytics for your candidates"
       }
     },
     "tablePagination": {
@@ -148,6 +156,20 @@
       }
     },
     "startSessionModal": {
+      "brandTagline": "Workforce Readiness, Measured.",
+      "roleShort": "Role",
+      "coverageShort": "Coverage",
+      "interviewLinkTitle": "Interview link",
+      "interviewLinkSubtitle": "Share this link with the candidate to start the assessment.",
+      "copyLink": "Copy Link",
+      "linkCopied": "Copied!",
+      "shareEmail": "Share via Email",
+      "shareWhatsApp": "Share via WhatsApp",
+      "showQr": "Show QR Code",
+      "hideQr": "Hide QR Code",
+      "qrHint": "Scan to open the assessment on a phone.",
+      "emailSubject": "Your MeritLense assessment link",
+      "shareMessage": "Hello {name}, here is your MeritLense workforce readiness assessment link: {link}",
       "headerTitle": "Create Workforce Readiness Assessment",
       "headerSubtitle": "Select a role package to create the candidate link",
       "successTitle": "Session Created",
@@ -365,7 +387,8 @@
         "features": "Features",
         "how_it_works": "How It Works",
         "pricing": "Pricing",
-        "faq": "FAQ"
+        "faq": "FAQ",
+        "contact": "Contact Us"
       },
       "actions": {
         "sign_in": "Sign In",
@@ -955,7 +978,19 @@
         "multi_agency_panel": "Billing and Subscription",
         "package_management": "Package Management",
         "package_requests": "Package Requests",
-        "interview_setup": "Interview Setup"
+        "interview_setup": "Interview Setup",
+        "candidate_comparison": "Candidate Comparison",
+        "analytics_insights": "Analytics & Insights"
+      },
+      "candidateComparison": {
+        "title": "Candidate Comparison",
+        "subtitle": "Choose an account, then a job role, then 2-4 candidates with comparable assessment results.",
+        "selectAccount": "Select Account",
+        "chooseAccount": "Choose a business or individual account...",
+        "searchAccounts": "Search accounts",
+        "noAccounts": "No account has scored candidates yet.",
+        "businessAccounts": "Business accounts",
+        "individualAccounts": "Individual accounts"
       },
       "overview_page": {
         "title": "Dashboard Overview",
@@ -984,7 +1019,10 @@
           "userGrowthTrend": "User Growth Trend",
           "evaluationTypesDistribution": "Evaluation Types Distribution",
           "packageContribution": "Subscription Package Contribution",
-          "revenueTrend": "Revenue Trend"
+          "revenueTrend": "Revenue Trend",
+          "evaluationStatus": "Evaluation Status Distribution",
+          "userTypeDistribution": "Users by Account Type",
+          "geographicDistribution": "Companies by Country"
         },
         "totalRevenue": "Total Revenue",
         "paymentRevenue": "One-time Payments",
@@ -1022,6 +1060,15 @@
           "Advanced": "Advanced",
           "Essential": "Essential",
           "Premium": "Premium"
+        },
+        "viewAnalytics": "View Analytics",
+        "noData": "No data yet",
+        "userTypes": {
+          "B2C": "Individual (B2C)",
+          "B2B": "Company (B2B)",
+          "B2B_TEAM": "Team Member",
+          "ADMIN": "Admin",
+          "SUPERADMIN": "Super Admin"
         }
       },
       "userRoleManagement": {
@@ -2318,6 +2365,10 @@
             "UNCOLLECTIBLE": "Uncollectible"
           }
         }
+      },
+      "analytics": {
+        "title": "Analytics & Insights",
+        "subtitle": "Platform-wide evaluation, readiness, user and revenue analytics."
       }
     },
     "business": {
@@ -2464,6 +2515,100 @@
           "tooltip": {
             "usage": "Usage %"
           }
+        },
+        "header": {
+          "title": "Overview",
+          "subtitle": "What needs your attention and how your candidates are performing.",
+          "analytics": "View Analytics"
+        },
+        "widgetError": "This widget could not be loaded.",
+        "retry": "Retry",
+        "emptyLayout": {
+          "title": "Your dashboard has no widgets",
+          "description": "All widgets are hidden. Add widgets back, or open Analytics & Insights to see every chart."
+        },
+        "requiresAttention": {
+          "title": "Requires Attention",
+          "subtitle": "Completed evaluations that need a human decision",
+          "reasons": {
+            "HUMAN_REVIEW": "Human review required",
+            "INSUFFICIENT_EVIDENCE": "Insufficient evidence"
+          },
+          "review": "Review",
+          "empty": "Nothing needs your attention right now",
+          "emptyHint": "Evaluations flagged for review will appear here.",
+          "moreCount": "+{count} more",
+          "viewAll": "View all evaluations"
+        },
+        "customize": {
+          "button": "Customize Dashboard",
+          "title": "Customize Dashboard",
+          "description": "Choose which widgets appear on your company dashboard and set their order. Changes apply to everyone in your company.",
+          "visible": "Shown on dashboard",
+          "available": "Add widgets",
+          "emptyVisible": "No widgets selected. Add widgets from the list below.",
+          "allAdded": "All widgets are already on your dashboard.",
+          "add": "Add",
+          "addWidget": "Add {widget}",
+          "hide": "Hide {widget}",
+          "moveUp": "Move {widget} up",
+          "moveDown": "Move {widget} down",
+          "reset": "Reset to default",
+          "cancel": "Cancel",
+          "save": "Save",
+          "saved": "Dashboard updated",
+          "resetDone": "Dashboard reset to the default layout",
+          "saveError": "Could not save the dashboard layout. Please try again."
+        },
+        "widgets": {
+          "requires_attention": {
+            "title": "Requires Attention",
+            "description": "Evaluations flagged for human review or missing evidence"
+          },
+          "recent_evaluations": {
+            "title": "Recent Evaluations",
+            "description": "Latest evaluations and their status"
+          },
+          "readiness_index": {
+            "title": "Overall Readiness Index",
+            "description": "Completed evaluations by readiness outcome"
+          },
+          "evaluation_status": {
+            "title": "Evaluation Status",
+            "description": "Scheduled, completed and cancelled evaluations"
+          },
+          "evaluation_trend": {
+            "title": "Evaluation Trends",
+            "description": "Daily evaluation activity over the last 30 days"
+          },
+          "performance_trend": {
+            "title": "Performance Metrics",
+            "description": "Average score by month"
+          },
+          "score_by_role": {
+            "title": "Average Scores by Role",
+            "description": "Average evaluation score per job role"
+          },
+          "job_role_distribution": {
+            "title": "Job Role Distribution",
+            "description": "Evaluations by job role"
+          },
+          "language_distribution": {
+            "title": "Language Distribution",
+            "description": "Evaluations by interview language"
+          },
+          "time_of_day": {
+            "title": "Evaluation Time of Day",
+            "description": "When evaluations take place"
+          },
+          "monthly_activity": {
+            "title": "Monthly Activity",
+            "description": "Candidates, evaluations and certificates per month"
+          },
+          "candidate_comparison": {
+            "title": "Candidate Comparison",
+            "description": "Compare candidates for the same role"
+          }
         }
       },
       "candidateEvaluation": {
@@ -2530,7 +2675,17 @@
           "ready": "Ready",
           "nearReady": "Near-Ready",
           "lowReadiness": "Low Readiness"
-        }
+        },
+        "status": {
+          "READY": "Ready",
+          "PARTIALLY_READY": "Partially Ready",
+          "NOT_READY": "Not Ready",
+          "INCOMPLETE": "Insufficient Evidence",
+          "PENDING": "Result Pending"
+        },
+        "readyRate": "Ready rate",
+        "basedOn": "Based on {count} completed evaluations",
+        "empty": "No completed evaluations yet. Readiness results will appear here."
       },
       "languageDistributionChart": {
         "title": "Evaluation Language Distribution",
@@ -2701,9 +2856,12 @@
           "certificateLabel": "MeritLense Certificate",
           "aiAnalysisLabel": "AI Assessment Analysis",
           "downloadTooltip": "Download {label}",
+          "viewTooltip": "View {label}",
           "shareTooltip": "Share {label} link",
           "downloading": "Downloading...",
           "download": "Download",
+          "viewing": "Opening...",
+          "view": "View",
           "copied": "Copied!",
           "itemLabelPlural": "candidates",
           "moreEvaluations": "{count, plural, one {+# earlier} other {+# earlier}}"
@@ -2954,7 +3112,14 @@
           "reviewBothPrompt": "Review both documents to enable signing:",
           "reviewNowButton": "Review now",
           "authConfirmLabel": "I confirm I am authorized to legally bind this organization.",
-          "sendCodeButton": "Send Verification Code"
+          "sendCodeButton": "Send Verification Code",
+          "remainingStepsPrompt": "Complete these steps to send the verification code:",
+          "steps": {
+            "reviewDocs": "Review both documents (scroll to the bottom of each)",
+            "enterName": "Enter your full legal name",
+            "uploadStamp": "Upload your company stamp",
+            "confirmAuth": "Check the authorization confirmation box"
+          }
         },
         "errors": {
           "nameRequired": "Please enter your full legal name.",
@@ -3088,6 +3253,10 @@
           "arabic": "Arabic",
           "spanish": "Spanish"
         }
+      },
+      "analytics": {
+        "title": "Analytics & Insights",
+        "subtitle": "Detailed evaluation, readiness and candidate analytics for your company."
       }
     },
     "candidates": {
@@ -3294,7 +3463,8 @@
         "reports_certificates": "Reports & Certificates",
         "profile_management": "Profile",
         "packages_subscription": "Packages & Subscription",
-        "notifications": "Notifications"
+        "notifications": "Notifications",
+        "analytics_insights": "Analytics & Insights"
       },
       "sidebarLocked": "Sign the B2C Individual Services Agreement to unlock this page",
       "payment": {
@@ -3642,6 +3812,43 @@
           "scheduledDateTimeLabel": "Scheduled Date & Time",
           "closeTimePicker": "Close",
           "aiLinkNote": "An AI interview link will be generated automatically once this is scheduled, and emailed to the candidate along with the date and time.",
+          "subtitle": "Set the details and we'll automatically create and email the assessment link to the candidate.",
+          "steps": {
+            "candidate": {
+              "title": "Select Candidate",
+              "subtitle": "Choose the candidate to evaluate"
+            },
+            "details": {
+              "title": "Evaluation Details",
+              "subtitle": "Select the assessment type and duration"
+            },
+            "schedule": {
+              "title": "Schedule Date & Time",
+              "subtitle": "Choose when the evaluation will take place"
+            }
+          },
+          "dateLabel": "Date",
+          "timeLabel": "Time",
+          "timeZoneLabel": "Time Zone:",
+          "searchCandidates": "Search by name or email",
+          "noCandidatesFound": "No candidates found",
+          "preview": {
+            "title": "Assessment Preview",
+            "subtitle": "Review the details before saving",
+            "candidate": "Candidate",
+            "dateTime": "Date & Time",
+            "notSelected": "No candidate selected",
+            "notSet": "Not set",
+            "aiBadge": "AI"
+          },
+          "nextSteps": {
+            "title": "What happens next?",
+            "link": "A unique assessment link will be created",
+            "email": "The candidate will receive an email invitation",
+            "dateTime": "The email will include the date and time",
+            "join": "The candidate can join at the scheduled time"
+          },
+          "scheduleButton": "Schedule Evaluation",
           "online": "Online",
           "inPersonOption": "In-Person",
           "meetingLinkPlaceholder": "https://meet.google.com/...",
@@ -4108,7 +4315,8 @@
         "notifications": {
           "pendingEvaluation": "Pending Evaluation",
           "newReport": "New Report Ready"
-        }
+        },
+        "viewAnalytics": "View Analytics"
       },
       "pointConsumption": {
         "title": "Assessment Consumption by Service",
@@ -4283,6 +4491,10 @@
           "incorrectCode": "Incorrect or expired code.",
           "restartingReview": "{message} Restarting from document review."
         }
+      },
+      "analytics": {
+        "title": "Analytics & Insights",
+        "subtitle": "Detailed evaluation, readiness and candidate analytics for your candidates."
       }
     }
   },

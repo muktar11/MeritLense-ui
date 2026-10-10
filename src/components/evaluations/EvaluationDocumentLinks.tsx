@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Check, Download, Share2 } from "lucide-react";
+import { Check, Download, Eye, Share2 } from "lucide-react";
 import type { CandidateScoreSummary } from "@/app/api/evaluations/types";
 import reportService from "@/app/api/reports/endpoints";
 
@@ -17,6 +17,7 @@ export function ArtifactActions({
   candidateName,
   artifactLabel,
   onDownload,
+  onView,
 }: {
   // Omit for authenticated downloads; the Share button hides rather than
   // sharing an empty link.
@@ -24,10 +25,17 @@ export function ArtifactActions({
   candidateName: string;
   artifactLabel: string;
   onDownload?: () => Promise<void>;
+  // Only meaningful alongside onDownload - the artifact needs an
+  // authenticated fetch either way, so "view" just opens the same blob in
+  // a new tab instead of saving it. The url-based branch below (the
+  // certificate, already a plain public link) gets its own View link
+  // directly rather than going through this prop.
+  onView?: () => Promise<void>;
 }) {
   const t = useTranslations("dashboard.business.score-management.table");
   const [copied, setCopied] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [viewing, setViewing] = useState(false);
 
   const handleDownload = async () => {
     if (!onDownload) {
@@ -38,6 +46,18 @@ export function ArtifactActions({
       await onDownload();
     } finally {
       setDownloading(false);
+    }
+  };
+
+  const handleView = async () => {
+    if (!onView) {
+      return;
+    }
+    setViewing(true);
+    try {
+      await onView();
+    } finally {
+      setViewing(false);
     }
   };
 
@@ -63,28 +83,54 @@ export function ArtifactActions({
   return (
     <div className="flex items-center gap-3">
       {onDownload ? (
-        <button
-          type="button"
-          onClick={handleDownload}
-          disabled={downloading}
-          className="inline-flex items-center gap-1 text-purple-600 hover:text-purple-700 disabled:opacity-50 font-medium"
-          title={t("downloadTooltip", { label: artifactLabel })}
-        >
-          <Download className="w-4 h-4" />
-          {downloading ? t("downloading") : t("download")}
-        </button>
+        <>
+          {onView && (
+            <button
+              type="button"
+              onClick={handleView}
+              disabled={viewing}
+              className="inline-flex items-center gap-1 text-purple-600 hover:text-purple-700 disabled:opacity-50 font-medium"
+              title={t("viewTooltip", { label: artifactLabel })}
+            >
+              <Eye className="w-4 h-4" />
+              {viewing ? t("viewing") : t("view")}
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={handleDownload}
+            disabled={downloading}
+            className="inline-flex items-center gap-1 text-purple-600 hover:text-purple-700 disabled:opacity-50 font-medium"
+            title={t("downloadTooltip", { label: artifactLabel })}
+          >
+            <Download className="w-4 h-4" />
+            {downloading ? t("downloading") : t("download")}
+          </button>
+        </>
       ) : (
-        <a
-          href={url}
-          download
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 text-purple-600 hover:text-purple-700 font-medium"
-          title={t("downloadTooltip", { label: artifactLabel })}
-        >
-          <Download className="w-4 h-4" />
-          {t("download")}
-        </a>
+        <>
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-purple-600 hover:text-purple-700 font-medium"
+            title={t("viewTooltip", { label: artifactLabel })}
+          >
+            <Eye className="w-4 h-4" />
+            {t("view")}
+          </a>
+          <a
+            href={url}
+            download
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-purple-600 hover:text-purple-700 font-medium"
+            title={t("downloadTooltip", { label: artifactLabel })}
+          >
+            <Download className="w-4 h-4" />
+            {t("download")}
+          </a>
+        </>
       )}
       {url && (
         <button
@@ -128,6 +174,7 @@ export function EvaluationDocumentsRow({
               candidateName={candidateName}
               artifactLabel={t("transcriptReportLabel")}
               onDownload={() => reportService.downloadPdf(reportId, `${reportNumber}-transcript.pdf`)}
+              onView={() => reportService.viewPdf(reportId)}
             />
           </div>
         )}
@@ -148,6 +195,7 @@ export function EvaluationDocumentsRow({
               candidateName={candidateName}
               artifactLabel={t("aiAnalysisLabel")}
               onDownload={() => reportService.downloadAiAnalysisPdf(reportId, `${reportNumber}-ai-analysis.pdf`)}
+              onView={() => reportService.viewAiAnalysisPdf(reportId)}
             />
           </div>
         )}

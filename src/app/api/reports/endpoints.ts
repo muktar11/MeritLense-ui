@@ -76,6 +76,32 @@ class ReportService {
     window.URL.revokeObjectURL(downloadUrl);
   }
 
+  // Both PDFs require an authenticated request (no plain public URL to
+  // target="_blank" to), so "view" fetches the same blob download does but
+  // opens it in a new tab instead of forcing a save - the object URL is
+  // intentionally left unrevoked since the new tab keeps reading it after
+  // this function returns, unlike the download flows above which can
+  // revoke immediately after the synthetic click fires.
+  async viewPdf(reportId: string): Promise<void> {
+    const response = await authClient.get(`${this.reportsURL}/${reportId}/export-pdf`, {
+      responseType: 'blob',
+    });
+    const blob = new Blob([response.data], {
+      type: response.headers['content-type'] || 'application/pdf',
+    });
+    window.open(window.URL.createObjectURL(blob), '_blank', 'noopener,noreferrer');
+  }
+
+  async viewAiAnalysisPdf(reportId: string): Promise<void> {
+    const response = await authClient.get(`${this.reportsURL}/${reportId}/ai-analysis-pdf`, {
+      responseType: 'blob',
+    });
+    const blob = new Blob([response.data], {
+      type: response.headers['content-type'] || 'application/pdf',
+    });
+    window.open(window.URL.createObjectURL(blob), '_blank', 'noopener,noreferrer');
+  }
+
   private filenameFromDisposition(contentDisposition?: string): string | null {
     if (!contentDisposition) return null;
 
