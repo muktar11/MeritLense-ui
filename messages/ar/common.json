@@ -109,6 +109,10 @@
       "b2bAnalytics": {
         "title": "التحليلات والرؤى - MeritLense",
         "description": "تحليلات تفصيلية للتقييمات والجاهزية والمرشحين في شركتك"
+      },
+      "b2cAnalytics": {
+        "title": "التحليلات والرؤى - MeritLense",
+        "description": "تحليلات تفصيلية للتقييمات والجاهزية والمرشحين الخاصين بك"
       }
     },
     "tablePagination": {
@@ -948,7 +952,8 @@
         "package_management": "إدارة الباقات",
         "package_requests": "طلبات الباقات",
         "interview_setup": "إعداد المقابلات",
-        "candidate_comparison": "مقارنة المرشحين"
+        "candidate_comparison": "مقارنة المرشحين",
+        "analytics_insights": "التحليلات والرؤى"
       },
       "candidateComparison": {
         "title": "مقارنة المرشحين",
@@ -995,7 +1000,10 @@
           "userGrowthTrend": "اتجاه نمو المستخدمين",
           "evaluationTypesDistribution": "توزيع أنواع التقييم",
           "packageContribution": "مساهمة باقات الاشتراك",
-          "revenueTrend": "اتجاه الإيرادات"
+          "revenueTrend": "اتجاه الإيرادات",
+          "evaluationStatus": "توزيع حالات التقييم",
+          "userTypeDistribution": "المستخدمون حسب نوع الحساب",
+          "geographicDistribution": "الشركات حسب الدولة"
         },
         "months": {
           "1": "يناير",
@@ -1037,6 +1045,15 @@
           "Advanced": "متقدم",
           "Essential": "ضروري",
           "Premium": "مميز"
+        },
+        "viewAnalytics": "عرض التحليلات",
+        "noData": "لا توجد بيانات بعد",
+        "userTypes": {
+          "B2C": "فرد (B2C)",
+          "B2B": "شركة (B2B)",
+          "B2B_TEAM": "عضو فريق",
+          "ADMIN": "مسؤول",
+          "SUPERADMIN": "مسؤول أعلى"
         }
       },
       "userRoleManagement": {
@@ -2347,6 +2364,10 @@
             "UNCOLLECTIBLE": "غير قابلة للتحصيل"
           }
         }
+      },
+      "analytics": {
+        "title": "التحليلات والرؤى",
+        "subtitle": "تحليلات المنصة بالكامل للتقييمات والجاهزية والمستخدمين والإيرادات."
       }
     },
     "business": {
@@ -3420,7 +3441,8 @@
         "reports_certificates": "التقارير والشهادات",
         "profile_management": "الملف الشخصي",
         "packages_subscription": "الباقات والاشتراك",
-        "notifications": "الإشعارات"
+        "notifications": "الإشعارات",
+        "analytics_insights": "التحليلات والرؤى"
       },
       "sidebarLocked": "وقّع اتفاقية خدمات الأفراد (B2C) لفتح هذه الصفحة",
       "payment": {
@@ -4254,7 +4276,8 @@
         "notifications": {
           "pendingEvaluation": "تقييم معلق",
           "newReport": "تقرير جديد جاهز"
-        }
+        },
+        "viewAnalytics": "عرض التحليلات"
       },
       "pointConsumption": {
         "title": "استهلاك التقييمات حسب الخدمة",
@@ -4429,6 +4452,10 @@
           "incorrectCode": "رمز غير صحيح أو منتهي الصلاحية.",
           "restartingReview": "{message} جارٍ إعادة البدء من مراجعة المستند."
         }
+      },
+      "analytics": {
+        "title": "التحليلات والرؤى",
+        "subtitle": "تحليلات تفصيلية للتقييمات والجاهزية والمرشحين الخاصين بك."
       }
     }
   },

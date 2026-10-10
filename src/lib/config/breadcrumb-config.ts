@@ -2,6 +2,7 @@ export const ADMIN_BREADCRUMB_CONFIG: Record<string, string[]> = {
   '/dashboard/admin': ['page_type', 'pages_list.overview'],
   '/dashboard/admin/role': ['page_type', 'pages_list.user_management'],
   '/dashboard/admin/candidates': ['page_type', 'pages_list.candidate_management'],
+  '/dashboard/admin/analytics': ['page_type', 'pages_list.analytics_insights'],
   '/dashboard/admin/candidate-comparison': ['page_type', 'pages_list.candidate_comparison'],
  '/dashboard/admin/users': ['page_type', 'pages_list.business_management'],
   '/dashboard/admin/system-config': ['page_type', 'pages_list.system_configuration'],
@@ -31,6 +32,7 @@ export const BUSINESS_BREADCRUMB_CONFIG: Record<string, string[]> = {
 
 export const INDIVISUAL_BREADCRUMB_CONFIG: Record<string, string[]> = {
   '/dashboard/indivisual': ['page_type', 'pages_list.overview'],
+  '/dashboard/indivisual/analytics': ['page_type', 'pages_list.analytics_insights'],
   '/dashboard/indivisual/candidates': ['page_type', 'pages_list.candidate_management'],
   '/dashboard/indivisual/evaluations': ['page_type', 'pages_list.evaluation_setup'],
   '/dashboard/indivisual/assessments': ['page_type', 'pages_list.assessments_monitor'],

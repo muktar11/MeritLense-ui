@@ -1,6 +1,7 @@
 import { apiClient, authClient } from '@/app/api/auth/client';
 import {
   ComparisonAccount,
+  ReadinessDistribution,
   ComparisonRole,
   ComparisonEligibleCandidate,
   FullComparisonResult,
@@ -66,6 +67,13 @@ class AdminDashboardService {
   async getStatusDistribution(): Promise<EvaluationStatusDistribution[]> {
     this.ensureAuthToken();
     const response = await apiClient.get(`${this.baseURL}status-distribution`);
+    return response.data;
+  }
+
+  // Platform-wide Overall Readiness Index (same calculation as B2B/B2C).
+  async getReadinessDistribution(): Promise<ReadinessDistribution> {
+    this.ensureAuthToken();
+    const response = await apiClient.get(`${this.baseURL}readiness-distribution`);
     return response.data;
   }
 
