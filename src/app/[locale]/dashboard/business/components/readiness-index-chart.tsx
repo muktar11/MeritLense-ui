@@ -8,6 +8,10 @@ import type { ReadinessDistribution, ReadinessStatus } from "@/app/api/dashboard
 
 interface ReadinessIndexChartProps {
   data: ReadinessDistribution;
+  // Stretch to the parent's height - right for equal-height widget grids,
+  // wrong inside a stacked column (space-y), where a 100%-tall card pushes
+  // its siblings out over whatever sits below the column.
+  fillHeight?: boolean;
 }
 
 const COLORS: Record<ReadinessStatus, string> = {
@@ -21,7 +25,7 @@ const COLORS: Record<ReadinessStatus, string> = {
 // Completed evaluations by their actual readiness outcome (Ready /
 // Partially Ready / Not Ready / Insufficient Evidence) - including any
 // recorded readiness correction - rather than by evaluation status.
-export function ReadinessIndexChart({ data }: ReadinessIndexChartProps) {
+export function ReadinessIndexChart({ data, fillHeight = true }: ReadinessIndexChartProps) {
   const t = useTranslations("dashboard.business.readinessIndexChart");
   const locale = useLocale();
 
@@ -38,14 +42,17 @@ export function ReadinessIndexChart({ data }: ReadinessIndexChartProps) {
   const hasData = data.total > 0;
 
   return (
-    <Card className="bg-white border-gray-100 h-full" dir={locale === "ar" ? "rtl" : "ltr"}>
+    <Card className={`bg-white border-gray-100 ${fillHeight ? "h-full" : ""}`} dir={locale === "ar" ? "rtl" : "ltr"}>
       <CardHeader className="pb-2">
         <CardTitle className="text-base font-semibold text-gray-900">{t("title")}</CardTitle>
       </CardHeader>
 
-      <CardContent>
+      {/* Sized by the card's own width, not the viewport: in a narrow
+          sidebar column the legend stacks under the donut instead of being
+          squeezed beside it and spilling past the card's edge. */}
+      <CardContent className="@container">
         {hasData ? (
-          <div className="flex flex-col sm:flex-row items-center gap-6">
+          <div className="flex flex-col @sm:flex-row items-center gap-6">
             <div className="relative w-40 h-40 shrink-0">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>

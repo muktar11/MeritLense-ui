@@ -316,7 +316,7 @@ export function Dashboard() {
               </CardContent>
             </Card>
 
-            {readiness && <ReadinessIndexChart data={readiness} />}
+            {readiness && <ReadinessIndexChart data={readiness} fillHeight={false} />}
             <PointConsumptionChart data={jobRoleDistribution} />
             <TimeRangeChart data={timeRange} />
             <LanguageDistributionChart data={languageChartData} />
