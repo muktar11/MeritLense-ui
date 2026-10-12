@@ -205,6 +205,10 @@ export interface CandidateScoreSummary {
   evaluation_tier: 'FULL' | 'SCREENING' | 'BOTH' | null;
   overall_percentage: number;
   status: SessionEvaluationStatus;
+  // AI_SCORING: AI interview scored by the rule engine. EVALUATOR_RATING:
+  // scheduled interview rated by a person (overall = average of the rated
+  // competencies). Optional so older API responses still type-check.
+  source?: 'AI_SCORING' | 'EVALUATOR_RATING';
   generated_at: string;
   competencies: CandidateScoreCompetency[];
   // Null when this evaluation's tier doesn't issue certificates, or
