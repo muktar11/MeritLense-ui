@@ -56,6 +56,48 @@ function combineDateTimeLocalValue(date: string, time: string): string {
   return date && time ? `${date}T${time}` : "";
 }
 
+// A native <input type="time"> has no dropdown at all in Firefox and Safari,
+// and in Chrome it only opens from its own picker icon - clicking the field
+// or the chevron did nothing, which read as "the time picker doesn't work".
+// Offer a plain <select> of 15-minute slots instead, which opens the same
+// way in every browser.
+const TIME_STEP_MINUTES = 15;
+
+function timeSlots(current: string): string[] {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const slots: string[] = [];
+  for (let minutes = 0; minutes < 24 * 60; minutes += TIME_STEP_MINUTES) {
+    slots.push(`${pad(Math.floor(minutes / 60))}:${pad(minutes % 60)}`);
+  }
+  // Keep an existing evaluation's own off-grid time selectable.
+  if (current && !slots.includes(current)) {
+    slots.push(current);
+    slots.sort();
+  }
+  return slots;
+}
+
+function timeSlotLabel(slot: string, options?: { locale: typeof ar }): string {
+  const [hours, minutes] = slot.split(':').map(Number);
+  return format(new Date(2000, 0, 1, hours, minutes), 'hh:mm a', options);
+}
+
+// One hour from now, rounded up to the next slot so it appears in the list.
+function defaultScheduledValue(): string {
+  const step = TIME_STEP_MINUTES * 60 * 1000;
+  return toDateTimeLocalValue(new Date(Math.ceil((Date.now() + 60 * 60 * 1000) / step) * step));
+}
+
+// The native date input only opens its calendar from its own icon; open it
+// from anywhere in the field too.
+function openNativePicker(e: React.MouseEvent<HTMLInputElement>) {
+  try {
+    e.currentTarget.showPicker?.();
+  } catch {
+    // Not supported (or not allowed) here - the field is still editable.
+  }
+}
+
 // Validation allows 15-60 minutes; offer those in 15-minute steps, plus an
 // existing evaluation's own value if it was saved as something in between.
 const DURATION_OPTIONS = [15, 30, 45, 60];
@@ -113,7 +155,7 @@ export default function EvaluationModal({
   const [formData, setFormData] = useState<CreateEvaluationData>({
     candidate: "",
     evaluation_type: "INTERVIEW",
-    scheduled_date: toDateTimeLocalValue(new Date(new Date().setHours(new Date().getHours() + 1))),
+    scheduled_date: defaultScheduledValue(),
     duration_minutes: 60,
     meeting_link: "",
     meeting_id: "",
@@ -129,11 +171,6 @@ export default function EvaluationModal({
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [meetingType, setMeetingType] = useState<'online' | 'inperson'>('online');
-  // A fixed auto-close delay can't tell "done picking" from "still
-  // deciding" - it either closes too quickly mid-interaction or lingers.
-  // Give the user an explicit close/confirm action instead of guessing.
-  const timeInputRef = useRef<HTMLInputElement | null>(null)
-  const rescheduleTimeInputRef = useRef<HTMLInputElement | null>(null)
   const [candidateMenuOpen, setCandidateMenuOpen] = useState(false)
   const [candidateSearch, setCandidateSearch] = useState("")
   const candidateMenuRef = useRef<HTMLDivElement | null>(null)
@@ -171,7 +208,7 @@ export default function EvaluationModal({
         setFormData({
           candidate: candidates[0]?.id || "",
           evaluation_type: "INTERVIEW",
-          scheduled_date: toDateTimeLocalValue(new Date(new Date().setHours(new Date().getHours() + 1))),
+          scheduled_date: defaultScheduledValue(),
           duration_minutes: 60,
           meeting_link: "",
           meeting_id: "",
@@ -272,7 +309,7 @@ export default function EvaluationModal({
     setFormData({
       candidate: candidates[0]?.id || "",
       evaluation_type: "INTERVIEW",
-      scheduled_date: toDateTimeLocalValue(new Date(new Date().setHours(new Date().getHours() + 1))),
+      scheduled_date: defaultScheduledValue(),
       duration_minutes: 60,
       meeting_link: "",
       meeting_id: "",
@@ -520,6 +557,7 @@ export default function EvaluationModal({
                           <input
                             type="date"
                             value={dateValue}
+                            onClick={openNativePicker}
                             onChange={(e) => setFormData({ ...formData, scheduled_date: combineDateTimeLocalValue(e.target.value, timeValue) })}
                             className={`${inputBase} ps-12 pe-3 ${errors.scheduled_date ? 'border-red-500' : 'border-gray-300'}`}
                           />
@@ -529,25 +567,18 @@ export default function EvaluationModal({
                         <label className="block text-sm font-semibold text-gray-700 mb-1.5">{t("timeLabel")} *</label>
                         <div className="relative">
                           <Clock className="pointer-events-none absolute start-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-600" />
-                          <input
-                            ref={timeInputRef}
-                            type="time"
+                          <select
                             value={timeValue}
                             onChange={(e) => setFormData({ ...formData, scheduled_date: combineDateTimeLocalValue(dateValue, e.target.value) })}
-                            className={`${inputBase} ps-12 pe-10 [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer ${errors.scheduled_date ? 'border-red-500' : 'border-gray-300'}`}
-                          />
+                            className={`${inputBase} appearance-none ps-12 pe-10 ${errors.scheduled_date ? 'border-red-500' : 'border-gray-300'}`}
+                          >
+                            {!timeValue && <option value="" disabled>--:--</option>}
+                            {timeSlots(timeValue).map((slot) => (
+                              <option key={slot} value={slot}>{timeSlotLabel(slot, dateLocale)}</option>
+                            ))}
+                          </select>
                           <ChevronDown className="pointer-events-none absolute end-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                         </div>
-                        {/* Mobile time pickers have no visible confirm step -
-                            keep an explicit close action there. */}
-                        <button
-                          type="button"
-                          onClick={() => timeInputRef.current?.blur()}
-                          className="sm:hidden mt-1 ms-auto text-xs font-medium text-purple-600 hover:text-purple-700 flex items-center gap-1"
-                        >
-                          <Check className="w-3.5 h-3.5" />
-                          {t("closeTimePicker")}
-                        </button>
                       </div>
                     </div>
                     {errors.scheduled_date && <p className="text-xs text-red-600">{errors.scheduled_date}</p>}
@@ -949,6 +980,7 @@ export default function EvaluationModal({
                 <input
                   type="date"
                   value={splitDateTimeLocalValue(rescheduleData.new_date).date}
+                  onClick={openNativePicker}
                   onChange={(e) => setRescheduleData({
                     ...rescheduleData,
                     new_date: combineDateTimeLocalValue(e.target.value, splitDateTimeLocalValue(rescheduleData.new_date).time),
@@ -957,29 +989,21 @@ export default function EvaluationModal({
                     errors.new_date ? 'border-red-500' : 'border-gray-300'
                   }`}
                 />
-                <input
-                  ref={rescheduleTimeInputRef}
-                  type="time"
+                <select
                   value={splitDateTimeLocalValue(rescheduleData.new_date).time}
                   onChange={(e) => setRescheduleData({
                     ...rescheduleData,
                     new_date: combineDateTimeLocalValue(splitDateTimeLocalValue(rescheduleData.new_date).date, e.target.value),
                   })}
-                  className={`w-full px-4 py-2 border rounded-lg text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                  className={`w-full px-4 py-2 border rounded-lg bg-white text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 ${
                     errors.new_date ? 'border-red-500' : 'border-gray-300'
                   }`}
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div />
-                <button
-                  type="button"
-                  onClick={() => rescheduleTimeInputRef.current?.blur()}
-                  className="mt-1 justify-self-end text-xs font-medium text-purple-600 hover:text-purple-700 flex items-center gap-1"
                 >
-                  <Check className="w-3.5 h-3.5" />
-                  {t("closeTimePicker")}
-                </button>
+                  {!splitDateTimeLocalValue(rescheduleData.new_date).time && <option value="" disabled>--:--</option>}
+                  {timeSlots(splitDateTimeLocalValue(rescheduleData.new_date).time).map((slot) => (
+                    <option key={slot} value={slot}>{timeSlotLabel(slot, locale === 'ar' ? { locale: ar } : undefined)}</option>
+                  ))}
+                </select>
               </div>
               {errors.new_date && (
                 <p className="mt-1 text-xs text-red-600">{errors.new_date}</p>
