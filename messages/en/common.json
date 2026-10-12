@@ -378,6 +378,10 @@
       "recordBeat": "Tap here to record your turn when it's your turn to speak.",
       "languageBeat": "Set the language you speak and the one you want to hear here.",
       "gotIt": "Got it"
+    },
+    "scoreSource": {
+      "evaluatorRating": "Evaluator rating",
+      "evaluatorRatingHint": "Scheduled interview rated by an evaluator. The score is the average of the rated competencies."
     }
   },
   "landing-page": {
