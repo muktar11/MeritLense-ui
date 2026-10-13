@@ -421,7 +421,7 @@
       "title": "We value your privacy",
       "body": "We use necessary cookies and similar storage to keep you signed in and the site working. With your permission we would also use optional analytics and marketing cookies; none are active today. You can change your choice at any time from Cookie settings at the bottom of the page.",
       "policyLink": "Privacy Policy",
-      "acceptAll": "Accept all",
+      "acceptAll": "Accept All",
       "rejectOptional": "Reject optional",
       "preferences": "Preferences",
       "preferencesTitle": "Cookie preferences",
@@ -435,7 +435,10 @@
       "marketing": "Marketing",
       "marketingDescription": "Would let us measure our campaigns and show relevant content elsewhere.",
       "settingsLink": "Cookie settings",
-      "saved": "Your cookie choice was saved."
+      "saved": "Your cookie choice was saved.",
+      "justThisTime": "Just This Time",
+      "reject": "Reject",
+      "managePreferences": "Manage preferences"
     }
   },
   "landing-page": {
@@ -4821,7 +4824,69 @@
       "exportPdf": "Export PDF report",
       "exportingPdf": "Generating PDF…",
       "limitations": "About this comparison",
-      "openPage": "Compare candidates"
+      "openPage": "Compare candidates",
+      "subtitleShort": "Select a job role and compare 2–4 candidates with their assessment results.",
+      "howItWorks": "How it works",
+      "close": "Close",
+      "loading": "Loading…",
+      "steps": {
+        "role": "Select Job Role",
+        "roleHint": "Choose the role to compare",
+        "candidates": "Select Candidates",
+        "candidatesHint": "Choose 2–4 candidates",
+        "view": "View Comparison",
+        "viewHint": "Analyse results and insights",
+        "export": "Export Report",
+        "exportHint": "Download or share"
+      },
+      "filters": {
+        "role": "Job Role",
+        "chooseRole": "Choose a job role",
+        "dateRange": "Date Range",
+        "optional": "Optional",
+        "type": "Assessment Type",
+        "allTypes": "All Types",
+        "roleNote": "Only candidates assessed for the selected role ({role}) will be shown.",
+        "ranges": {
+          "any": "Any time",
+          "30d": "Last 30 days",
+          "3m": "Last 3 months",
+          "6m": "Last 6 months",
+          "12m": "Last 12 months",
+          "custom": "Custom range"
+        }
+      },
+      "list": {
+        "title": "Select Candidates (2–4)",
+        "chooseRoleFirst": "Choose a job role to see the candidates assessed for it.",
+        "attempt": "Assessment for {name}"
+      },
+      "tabs": {
+        "overview": "Comparison Overview",
+        "detailed": "Detailed Scores",
+        "insights": "Key Insights",
+        "reports": "Reports"
+      },
+      "results": {
+        "empty": "Select 2–4 candidates and press Compare Candidates to see the results here.",
+        "overall": "Overall Comparison",
+        "overallHint": "Side-by-side comparison of the selected candidates for the {role} role",
+        "viewAs": "View as:",
+        "noDifferences": "No notable differences between the selected candidates."
+      },
+      "reports": {
+        "pdfHint": "Branded report with scores, charts, dates and limitations.",
+        "pngTitle": "Download chart (PNG)",
+        "pngHint": "The chart currently shown in the overview.",
+        "fullReports": "Full assessment reports"
+      },
+      "how": {
+        "0": "Choose the job role. Only candidates assessed for that exact role appear.",
+        "1": "Optionally narrow by date range or assessment type.",
+        "2": "Tick 2–4 candidates. If a candidate was assessed more than once, choose which assessment to use.",
+        "3": "Screening and Full Assessment results are never compared together - once you pick one type, the other is locked.",
+        "4": "Press Compare Candidates, review the tabs, and export the PDF report. The comparison shows recorded results only; it makes no new readiness decision."
+      }
     }
   },
   "zodErrors": {
