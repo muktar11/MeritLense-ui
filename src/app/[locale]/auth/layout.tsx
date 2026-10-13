@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import { LanguageSelector } from "@/components/app/LanguageSelector";
 
 export default function AuthLayout({
   children,
@@ -29,13 +30,16 @@ export default function AuthLayout({
               priority
             />
           </Link>
-          <Link
-            href={`/${locale}`}
-            className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-          >
-            <ArrowLeft size={16} />
-            {tCommon("back_to_home")}
-          </Link>
+          <div className="flex items-center gap-3 sm:gap-5">
+            <LanguageSelector />
+            <Link
+              href={`/${locale}`}
+              className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+            >
+              <ArrowLeft size={16} className="rtl:rotate-180" />
+              <span className="hidden sm:inline">{tCommon("back_to_home")}</span>
+            </Link>
+          </div>
         </div>
       </div>
       {children}
