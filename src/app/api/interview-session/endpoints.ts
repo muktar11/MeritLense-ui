@@ -133,11 +133,17 @@ class InterviewSessionClientService {
   async submitVerbalConfirmation(
     sessionId: string,
     token: string,
-    recordingBlob: Blob
+    recordingBlob: Blob,
+    statement?: { text: string; language: string }
   ): Promise<VerbalConfirmationResult> {
     const formData = new FormData();
     formData.append('token', token);
     formData.append('recording_file', recordingBlob, 'verbal-confirmation.webm');
+    // Keep, with the recording, exactly which statement the candidate read.
+    if (statement) {
+      formData.append('statement', statement.text);
+      formData.append('statement_language', statement.language);
+    }
     const response = await interviewSessionClient.post(
       `/${sessionId}/prechecks/verbal-confirmation/`,
       formData,

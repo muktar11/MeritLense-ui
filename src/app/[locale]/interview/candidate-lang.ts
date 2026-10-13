@@ -58,7 +58,14 @@ interface CandidateStrings {
     verbalConfirmation: {
       title: string;
       subtitle: string;
+      subtitleNote: string;
+      statementLabel: string;
       phrase: string;
+      listenButton: string;
+      stopListening: string;
+      audioUnavailable: string;
+      info: string;
+      micDenied: string;
       startButton: string;
       recording: (seconds: number) => string;
       stopButton: string;
@@ -264,8 +271,15 @@ const en: CandidateStrings = {
     },
     verbalConfirmation: {
       title: "Verbal Confirmation",
-      subtitle: "Please read the following out loud and record yourself saying it:",
-      phrase: "I confirm that I am the person completing this interview and that my answers are my own.",
+      subtitle: "Please read the statement below and record your voice.",
+      subtitleNote: "This confirms that you are the person completing this assessment.",
+      statementLabel: "English (Original)",
+      phrase: "I confirm that I am completing this assessment myself and that these are my own answers.",
+      listenButton: "Listen in English",
+      stopListening: "Stop",
+      audioUnavailable: "Audio playback isn't available on this device. Please read the statement on screen.",
+      info: "You can listen to the statement, re-record if needed, and then submit to continue.",
+      micDenied: "We couldn't access your microphone. Please allow microphone access in your browser and try again.",
       startButton: "Start Recording",
       recording: (seconds) => `Recording… ${seconds}s`,
       stopButton: "Stop Recording",
@@ -508,8 +522,15 @@ const ar: CandidateStrings = {
     },
     verbalConfirmation: {
       title: "التأكيد الصوتي",
-      subtitle: "يُرجى قراءة النص التالي بصوت عالٍ وتسجيل نفسك وأنت تقوله:",
-      phrase: "أؤكد أنني الشخص الذي يُكمل هذه المقابلة وأن إجاباتي هي إجاباتي الخاصة.",
+      subtitle: "يُرجى قراءة النص أدناه وتسجيل صوتك.",
+      subtitleNote: "يؤكد ذلك أنك الشخص الذي يُجري هذا التقييم.",
+      statementLabel: "العربية (النص المعتمد)",
+      phrase: "أؤكد أنني أجري هذا التقييم بنفسي، وأن الإجابات التي أقدمها هي إجاباتي الشخصية.",
+      listenButton: "استمع بالعربية",
+      stopListening: "إيقاف",
+      audioUnavailable: "تشغيل الصوت غير متاح على هذا الجهاز. يُرجى قراءة النص الظاهر على الشاشة.",
+      info: "يمكنك الاستماع إلى النص، وإعادة التسجيل عند الحاجة، ثم الإرسال للمتابعة.",
+      micDenied: "تعذّر الوصول إلى الميكروفون. يُرجى السماح للمتصفح باستخدام الميكروفون والمحاولة مرة أخرى.",
       startButton: "بدء التسجيل",
       recording: (seconds) => `جارٍ التسجيل… ${seconds} ث`,
       stopButton: "إيقاف التسجيل",

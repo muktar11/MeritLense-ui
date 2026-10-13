@@ -7,11 +7,13 @@ import {
   CheckCircle2,
   Loader2,
   Mic,
-  Play,
   RotateCcw,
+  Info,
+  Send,
   ShieldCheck,
   Square,
   Video,
+  Volume2,
 } from "lucide-react";
 import interviewSessionService from "@/app/api/interview-session/endpoints";
 import type { PrecheckStatus } from "@/app/api/interview-session/types";
@@ -128,8 +130,8 @@ export function PrecheckFlow({ sessionId, token, onContinue, isLiveCall, uiLangu
         dir={dir}
         error={error}
         onError={setError}
-        onSubmit={async (blob) => {
-          await interviewSessionService.submitVerbalConfirmation(sessionId, token, blob);
+        onSubmit={async (blob, statement) => {
+          await interviewSessionService.submitVerbalConfirmation(sessionId, token, blob, statement);
           setError(null);
           setStep("identity");
         }}
@@ -437,6 +439,47 @@ function DeviceCheckStep({
   );
 }
 
+// Reads the statement aloud with the browser's own speech engine (no server
+// audio needed). `supported` is false when this device has no voice for the
+// language, so the button can say so instead of silently doing nothing.
+function useStatementSpeech(lang: "en" | "ar") {
+  const available = typeof window !== "undefined" && "speechSynthesis" in window;
+  const [supported, setSupported] = useState<boolean | null>(available ? null : false);
+  const [speaking, setSpeaking] = useState(false);
+  useEffect(() => {
+    if (!available) return;
+    // Voices load asynchronously in most browsers; check once loaded.
+    const check = () => setSupported(window.speechSynthesis.getVoices().some((v) => v.lang.toLowerCase().startsWith(lang)));
+    const timer = window.setTimeout(check, 0);
+    window.speechSynthesis.addEventListener("voiceschanged", check);
+    return () => {
+      window.clearTimeout(timer);
+      window.speechSynthesis.removeEventListener("voiceschanged", check);
+      window.speechSynthesis.cancel();
+    };
+  }, [available, lang]);
+  const speak = (text: string) => {
+    if (!supported) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = lang === "ar" ? "ar-SA" : "en-US";
+    const voice = window.speechSynthesis.getVoices().find((v) => v.lang.toLowerCase().startsWith(lang));
+    if (voice) utterance.voice = voice;
+    utterance.rate = 0.95;
+    utterance.onend = () => setSpeaking(false);
+    utterance.onerror = () => setSpeaking(false);
+    setSpeaking(true);
+    window.speechSynthesis.speak(utterance);
+  };
+  const stop = () => {
+    if (typeof window !== "undefined") window.speechSynthesis?.cancel();
+    setSpeaking(false);
+  };
+  return { supported, speaking, speak, stop };
+}
+
+const WAVE_BARS = 18;
+
 function VerbalConfirmationStep({
   error,
   onError,
@@ -446,35 +489,73 @@ function VerbalConfirmationStep({
 }: {
   error: string | null;
   onError: (message: string | null) => void;
-  onSubmit: (blob: Blob) => Promise<void>;
+  onSubmit: (blob: Blob, statement: { text: string; language: string }) => Promise<void>;
   t: CandidateStrings;
   dir: "ltr" | "rtl";
 }) {
   const v = t.precheck.verbalConfirmation;
+  const lang = dir === "rtl" ? "ar" : "en";
+  const speech = useStatementSpeech(lang);
   const [state, setState] = useState<"idle" | "recording" | "recorded" | "submitting">("idle");
-  const [countdown, setCountdown] = useState(VERBAL_CONFIRMATION_MAX_SECONDS);
+  const [elapsed, setElapsed] = useState(0);
+  const [levels, setLevels] = useState<number[]>(() => Array(WAVE_BARS).fill(0.15));
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [speechNote, setSpeechNote] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const blobRef = useRef<Blob | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const frameRef = useRef<number | null>(null);
+
+  const stopMeter = () => {
+    if (frameRef.current) cancelAnimationFrame(frameRef.current);
+    frameRef.current = null;
+    audioCtxRef.current?.close().catch(() => {});
+    audioCtxRef.current = null;
+  };
 
   useEffect(() => {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
-      streamRef.current?.getTracks().forEach((t) => t.stop());
+      stopMeter();
+      streamRef.current?.getTracks().forEach((track) => track.stop());
       if (audioUrl) URL.revokeObjectURL(audioUrl);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Live input level, so the candidate can see the microphone hears them.
+  const startMeter = (stream: MediaStream) => {
+    try {
+      const ctx = new AudioContext();
+      const analyser = ctx.createAnalyser();
+      analyser.fftSize = 64;
+      ctx.createMediaStreamSource(stream).connect(analyser);
+      audioCtxRef.current = ctx;
+      const data = new Uint8Array(analyser.frequencyBinCount);
+      const tick = () => {
+        analyser.getByteFrequencyData(data);
+        const step = Math.max(1, Math.floor(data.length / WAVE_BARS));
+        setLevels(Array.from({ length: WAVE_BARS }, (_, i) => Math.max(0.12, (data[i * step] || 0) / 255)));
+        frameRef.current = requestAnimationFrame(tick);
+      };
+      tick();
+    } catch {
+      // No level meter - recording still works.
+    }
+  };
+
   const stopRecording = () => {
     if (intervalRef.current) clearInterval(intervalRef.current);
+    stopMeter();
     mediaRecorderRef.current?.stop();
   };
 
   const startRecording = async () => {
+    speech.stop();
+    onError(null);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
@@ -488,24 +569,25 @@ function VerbalConfirmationStep({
         const blob = new Blob(chunksRef.current, { type: "audio/webm" });
         blobRef.current = blob;
         setAudioUrl(URL.createObjectURL(blob));
-        stream.getTracks().forEach((t) => t.stop());
+        stream.getTracks().forEach((track) => track.stop());
         setState("recorded");
       };
       recorder.start();
+      startMeter(stream);
       setState("recording");
-      setCountdown(VERBAL_CONFIRMATION_MAX_SECONDS);
+      setElapsed(0);
       const startedAt = Date.now();
       intervalRef.current = setInterval(() => {
-        const elapsed = Math.floor((Date.now() - startedAt) / 1000);
-        const remaining = VERBAL_CONFIRMATION_MAX_SECONDS - elapsed;
-        if (remaining <= 0) {
+        const seconds = Math.floor((Date.now() - startedAt) / 1000);
+        if (seconds >= VERBAL_CONFIRMATION_MAX_SECONDS) {
           stopRecording();
         } else {
-          setCountdown(remaining);
+          setElapsed(seconds);
         }
       }, 250);
     } catch {
       setState("idle");
+      onError(v.micDenied);
     }
   };
 
@@ -520,50 +602,81 @@ function VerbalConfirmationStep({
     if (!blobRef.current) return;
     setState("submitting");
     try {
-      await onSubmit(blobRef.current);
+      await onSubmit(blobRef.current, { text: v.phrase, language: lang });
     } catch {
       onError(v.errorGeneric);
       setState("recorded");
     }
   };
 
+  const handleListen = () => {
+    if (speech.speaking) return speech.stop();
+    if (!speech.supported) return setSpeechNote(true);
+    speech.speak(v.phrase);
+  };
+
   return (
     <CenteredCard wide dir={dir}>
-      <Mic className="w-12 h-12 text-purple-500 mx-auto mb-3" />
-      <h1 className="text-xl font-bold text-gray-900 mb-2">{v.title}</h1>
-      <p className="text-gray-600 text-sm mb-4">{v.subtitle}</p>
+      <span className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-purple-50">
+        <Mic className="h-8 w-8 text-purple-600" />
+      </span>
+      <h1 className="text-2xl font-bold text-gray-900">{v.title}</h1>
+      <p className="mt-1 text-sm text-gray-600">{v.subtitle}</p>
+      <p className="mb-5 text-xs text-gray-500">{v.subtitleNote}</p>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded-lg text-sm mb-4 text-start">
-          {error}
+        <div className="mb-4 flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-start text-sm text-red-600">
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+          <span>{error}</span>
         </div>
       )}
 
-      <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4 text-sm font-medium text-purple-900">
-        &ldquo;{v.phrase}&rdquo;
+      <div className="mb-4 rounded-xl bg-purple-50/70 p-4 text-start">
+        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+          <span className="rounded-md bg-purple-100 px-2 py-0.5 text-xs font-semibold text-purple-800">{v.statementLabel}</span>
+          <button
+            type="button"
+            onClick={handleListen}
+            disabled={state === "recording"}
+            aria-pressed={speech.speaking}
+            className="flex items-center gap-1.5 rounded-full border border-purple-200 bg-white px-3 py-1 text-xs font-medium text-purple-800 hover:bg-purple-50 disabled:opacity-50"
+          >
+            {speech.speaking ? <Square className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5 rtl:-scale-x-100" />}
+            {speech.speaking ? v.stopListening : v.listenButton}
+          </button>
+        </div>
+        <p className="text-base font-medium leading-relaxed text-gray-900" lang={lang}>&ldquo;{v.phrase}&rdquo;</p>
+        {speechNote && <p className="mt-2 text-xs text-gray-500">{v.audioUnavailable}</p>}
       </div>
 
       {state === "idle" && (
         <button
           type="button"
           onClick={startRecording}
-          className="w-full flex items-center justify-center gap-2 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium"
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-purple-600 py-3 text-sm font-semibold text-white hover:bg-purple-700"
         >
-          <Mic className="w-4 h-4" /> {v.startButton}
+          <Mic className="h-4 w-4" /> {v.startButton}
         </button>
       )}
 
       {state === "recording" && (
-        <div className="space-y-3">
-          <div className="flex items-center justify-center gap-2 text-sm text-red-600 font-medium py-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" /> {v.recording(countdown)}
+        <div className="space-y-3 rounded-xl border border-dashed border-purple-300 p-4">
+          <div className="flex items-center justify-center gap-3">
+            <span className="flex items-center gap-2 text-sm font-medium text-red-600">
+              <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-red-500" /> {v.recording(elapsed)}
+            </span>
+            <span className="flex h-8 items-center gap-0.5" aria-hidden="true" dir="ltr">
+              {levels.map((level, i) => (
+                <span key={i} className="w-1 rounded-full bg-purple-500" style={{ height: `${Math.round(level * 100)}%` }} />
+              ))}
+            </span>
           </div>
           <button
             type="button"
             onClick={stopRecording}
-            className="w-full flex items-center justify-center gap-2 py-3 bg-gray-800 hover:bg-gray-900 text-white rounded-lg text-sm font-medium"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-800 py-3 text-sm font-semibold text-white hover:bg-gray-900"
           >
-            <Square className="w-4 h-4" /> {v.stopButton}
+            <Square className="h-4 w-4" /> {v.stopButton}
           </button>
         </div>
       )}
@@ -578,22 +691,27 @@ function VerbalConfirmationStep({
               type="button"
               onClick={handleRetry}
               disabled={state === "submitting"}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 border border-gray-300 hover:bg-gray-50 disabled:opacity-50 text-gray-700 rounded-lg text-sm font-medium"
+              className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-gray-300 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
             >
-              <RotateCcw className="w-4 h-4" /> {v.retryButton}
+              <RotateCcw className="h-4 w-4" /> {v.retryButton}
             </button>
             <button
               type="button"
               onClick={handleSubmit}
               disabled={state === "submitting"}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 text-white rounded-lg text-sm font-medium"
+              className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-purple-600 py-2.5 text-sm font-semibold text-white hover:bg-purple-700 disabled:bg-gray-300"
             >
-              {state === "submitting" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
+              {state === "submitting" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4 rtl:-scale-x-100" />}
               {v.submitButton}
             </button>
           </div>
         </div>
       )}
+
+      <p className="mt-4 flex items-start gap-2 rounded-lg bg-purple-50/60 px-3 py-2 text-start text-xs text-gray-600">
+        <Info className="mt-0.5 h-4 w-4 shrink-0 text-purple-600" />
+        {v.info}
+      </p>
     </CenteredCard>
   );
 }
