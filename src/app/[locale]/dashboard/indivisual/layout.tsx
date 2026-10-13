@@ -19,6 +19,7 @@ import {
   Package,
   Bell,
   Activity,
+  GitCompare,
 } from "lucide-react";
 
 import { LanguageSelector } from "@/components/app/LanguageSelector";
@@ -83,6 +84,13 @@ export default function AdminLayout({
         disabledTooltip,
       },
 
+      {
+        label: t("pages_list.compare_candidates"),
+        icon: GitCompare,
+        href: `/${locale}/dashboard/indivisual/compare-candidates`,
+        disabled: lockedUntilSigned,
+        disabledTooltip,
+      },
     {
         label: t("pages_list.packages_subscription"),
         icon: Package,

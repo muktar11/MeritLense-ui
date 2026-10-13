@@ -113,6 +113,10 @@
       "b2cAnalytics": {
         "title": "Analytics & Insights - MeritLense",
         "description": "Detailed evaluation, readiness and candidate analytics for your candidates"
+      },
+      "compareCandidates": {
+        "title": "Compare Candidates - MeritLense",
+        "description": "Compare candidates assessed for the same role, side by side."
       }
     },
     "tablePagination": {
@@ -2590,7 +2594,8 @@
         "business_management": "Assessment Results",
         "audit_logs": "Billing & Payments",
         "notifications": "Notifications & Alerts",
-        "system_configuration": "Company Profile"
+        "system_configuration": "Company Profile",
+        "compare_candidates": "Compare Candidates"
       },
       "sidebarLocked": "Sign the B2B Services Agreement and DPA to unlock this page",
       "accessDenied": "Your staff permissions do not grant access to this section.",
@@ -3648,7 +3653,8 @@
         "profile_management": "Profile",
         "packages_subscription": "Billing & Payments",
         "notifications": "Notifications",
-        "analytics_insights": "Analytics & Insights"
+        "analytics_insights": "Analytics & Insights",
+        "compare_candidates": "Compare Candidates"
       },
       "sidebarLocked": "Sign the B2C Individual Services Agreement to unlock this page",
       "payment": {
@@ -4743,7 +4749,79 @@
       "ADMIN": "Administrator",
       "SUPERADMIN": "Super Administrator"
     },
-    "accountMenu": "Account menu"
+    "accountMenu": "Account menu",
+    "compareCandidates": {
+      "title": "Compare Candidates",
+      "subtitle": "Compare 2–4 candidates assessed for the same role, side by side, using their recorded assessment results.",
+      "loadFailed": "Couldn't load this list. Please refresh the page.",
+      "step1": {
+        "title": "Choose the job role",
+        "hint": "Only candidates assessed for this exact role can be compared.",
+        "noRoles": "No candidates have comparable assessment results yet.",
+        "typeLabel": "Assessment type",
+        "typeHint": "Screening and Full Assessment results are never compared together."
+      },
+      "step2": {
+        "title": "Choose the assessments",
+        "hint": "{role} · {type}. Pick one assessment per candidate; 2–4 candidates.",
+        "search": "Search candidates",
+        "from": "From",
+        "to": "To",
+        "selected": "{count} of {max} selected",
+        "remove": "Remove {name}",
+        "empty": "No assessments match these filters.",
+        "attempts": "{count} assessments",
+        "needTwo": "Select at least 2 candidates."
+      },
+      "step3": {
+        "title": "Comparison results"
+      },
+      "tier": {
+        "FULL": "Full Assessment",
+        "SCREENING": "Screening"
+      },
+      "status": {
+        "COMPLETE": "Complete",
+        "HUMAN_REVIEW": "Human review"
+      },
+      "readiness": {
+        "READY": "Ready",
+        "PARTIALLY_READY": "Partially Ready",
+        "NOT_READY": "Readiness Gaps Identified",
+        "INCOMPLETE": "Insufficient Evidence",
+        "PENDING": "Pending"
+      },
+      "compare": "{count, plural, =0 {Compare} =1 {Compare} other {Compare # candidates}}",
+      "comparing": "Comparing…",
+      "compareFailed": "Couldn't load the comparison. Please try again.",
+      "incompatible": "These assessments can't be compared together. Choose assessments of the same type.",
+      "overallScore": "Overall score",
+      "scoreWithheld": "Withheld until human review is completed",
+      "readinessLevel": "Readiness level",
+      "criticalIndicators": "Critical indicators",
+      "criticalAllMet": "All met",
+      "criticalNotMet": "{count, plural, =1 {1 not met} other {# not met}}",
+      "assessmentCoverage": "Assessment coverage",
+      "humanReviewRequired": "Human review required",
+      "viewFullReport": "View full report",
+      "competencyComparison": "Competency comparison",
+      "competency": "Competency",
+      "classification": "Classification",
+      "classificationLabel": {
+        "CRITICAL": "Critical",
+        "NON_CRITICAL": "Non-Critical",
+        "REQUIRED": "Required"
+      },
+      "keyDifferences": "Key differences",
+      "radarChart": "Radar chart",
+      "barChart": "Bar chart",
+      "notEnoughForRadar": "A radar chart needs at least 3 comparable competencies.",
+      "exportPng": "PNG",
+      "exportPdf": "Export PDF report",
+      "exportingPdf": "Generating PDF…",
+      "limitations": "About this comparison",
+      "openPage": "Compare candidates"
+    }
   },
   "zodErrors": {
     "email_required": "Email is required",

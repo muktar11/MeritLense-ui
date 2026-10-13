@@ -1,0 +1,12 @@
+import { getTranslations } from "next-intl/server";
+import { CompareCandidates } from "@/components/comparison/CompareCandidates";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "shared.pageMeta.compareCandidates" });
+  return { title: t("title"), description: t("description") };
+}
+
+export default function Page() {
+  return <CompareCandidates scope="b2b" />;
+}
