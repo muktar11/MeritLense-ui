@@ -245,7 +245,9 @@ export function IntegrityMonitor({ sessionId, token, onSessionStatusChange, uiLa
           autoPlay
           playsInline
           muted
-          style={{ transform: "scaleX(-1)" }}
+          // Subtle blur on the on-screen preview only: CSS filters change
+          // what's displayed, not the frames face detection reads.
+          style={{ transform: "scaleX(-1)", filter: "blur(3px)" }}
           className="w-full h-full object-cover"
         />
       </div>

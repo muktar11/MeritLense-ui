@@ -287,7 +287,8 @@
       "selectCandidateError": "Select the candidate first.",
       "selectAssessmentTypeError": "Choose Screening or Full assessment.",
       "selectRoleError": "Select the role for this assessment.",
-      "noSetupForLanguageError": "This role isn't set up in {language} for the chosen assessment type yet."
+      "noSetupForLanguageError": "This role isn't set up in {language} for the chosen assessment type yet.",
+      "languageTranslatedFor": "The candidate's language is {language}: they will see each question in the approved {source} version with a {language} translation, and can answer in {language}."
     },
     "evaluationResultsModal": {
       "title": "Workforce Readiness Assessment Results",

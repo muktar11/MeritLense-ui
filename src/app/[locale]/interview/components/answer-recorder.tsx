@@ -8,12 +8,16 @@ interface AnswerRecorderProps {
   onSubmit: (blob: Blob, durationSeconds: number) => Promise<void>;
   submitting: boolean;
   submitLabel: string;
+  /** Called just before the microphone opens - stops any question audio. */
+  onRecordingStart?: () => void;
+  /** e.g. "Recording will be in: Amharic". */
+  recordingLanguageLabel?: string;
   uiLanguage?: string | null;
 }
 
 type RecorderState = "idle" | "recording" | "recorded" | "error";
 
-export function AnswerRecorder({ onSubmit, submitting, submitLabel, uiLanguage }: AnswerRecorderProps) {
+export function AnswerRecorder({ onSubmit, submitting, submitLabel, onRecordingStart, recordingLanguageLabel, uiLanguage }: AnswerRecorderProps) {
   const t = getCandidateStrings(uiLanguage).answerRecorder;
   const [state, setState] = useState<RecorderState>("idle");
   const [error, setError] = useState<string | null>(null);
@@ -49,6 +53,7 @@ export function AnswerRecorder({ onSubmit, submitting, submitLabel, uiLanguage }
 
   const handleRecord = async () => {
     setError(null);
+    onRecordingStart?.();
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
@@ -110,6 +115,7 @@ export function AnswerRecorder({ onSubmit, submitting, submitLabel, uiLanguage }
         >
           <Mic className="w-8 h-8" />
           <span className="text-sm font-medium">{t.tapToRecord}</span>
+          {recordingLanguageLabel && <span className="text-xs text-gray-500">{recordingLanguageLabel}</span>}
         </button>
       ) : null}
 

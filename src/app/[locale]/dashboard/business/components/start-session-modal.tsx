@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useLocale, useTranslations } from "next-intl"
+import { LANGUAGES } from "@/lib/languages"
 import Image from "next/image"
 import {
   X, Loader2, AlertCircle, Search, ChevronDown, LayoutGrid, Users,
@@ -66,6 +67,17 @@ const ROLE_LUCIDE_ICONS: Record<string, LucideIcon> = {
 const TIER_ORDER: EvaluationTier[] = ["FULL", "SCREENING", "BOTH"]
 type AssessmentType = Exclude<EvaluationTier, "BOTH">
 const LANGUAGE_ORDER = ["EN", "AR"]
+
+// Any supported candidate language, named in the dashboard's language
+// ("FIL" -> "Filipino"), for the translation hint below.
+function spokenLanguageName(key: string, locale: string): string {
+  const code = LANGUAGES.find(lang => lang.key === key)?.code ?? key
+  try {
+    return new Intl.DisplayNames([locale], { type: "language" }).of(code.split("-")[0].toLowerCase()) ?? key
+  } catch {
+    return LANGUAGES.find(lang => lang.key === key)?.label ?? key
+  }
+}
 
 interface StartSessionModalProps {
   isOpen: boolean
@@ -601,6 +613,14 @@ export default function StartSessionModal({
                         {t("languageInfoLink")}
                         {preferredLanguage && availableLanguages.includes(preferredLanguage) && (
                           <span className="block text-xs text-gray-500 mt-1">{t("languageFromProfile")}</span>
+                        )}
+                        {preferredLanguage && !LANGUAGE_ORDER.includes(preferredLanguage) && effectiveLanguage && (
+                          <span className="block text-xs text-purple-800 mt-1">
+                            {t("languageTranslatedFor", {
+                              language: spokenLanguageName(preferredLanguage, locale),
+                              source: languageName(effectiveLanguage),
+                            })}
+                          </span>
                         )}
                       </span>
                     </div>

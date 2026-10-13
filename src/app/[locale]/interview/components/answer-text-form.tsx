@@ -8,9 +8,11 @@ interface AnswerTextFormProps {
   onSubmit: (text: string) => Promise<void>;
   submitting: boolean;
   uiLanguage?: string | null;
+  /** Answer language key (e.g. "AM") - sets the text box's lang/direction. */
+  textLanguage?: string;
 }
 
-export function AnswerTextForm({ onSubmit, submitting, uiLanguage }: AnswerTextFormProps) {
+export function AnswerTextForm({ onSubmit, submitting, uiLanguage, textLanguage }: AnswerTextFormProps) {
   const [text, setText] = useState("");
   const t = getCandidateStrings(uiLanguage).answerTextForm;
 
@@ -27,6 +29,8 @@ export function AnswerTextForm({ onSubmit, submitting, uiLanguage }: AnswerTextF
         onChange={(e) => setText(e.target.value)}
         placeholder={t.placeholder}
         rows={5}
+        dir="auto"
+        lang={textLanguage?.toLowerCase()}
         disabled={submitting}
         className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50"
       />

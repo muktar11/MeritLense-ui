@@ -287,7 +287,8 @@
       "selectCandidateError": "اختر المرشح أولًا.",
       "selectAssessmentTypeError": "اختر تقييم الفحص الأولي أو التقييم الكامل.",
       "selectRoleError": "اختر الدور الوظيفي لهذا التقييم.",
-      "noSetupForLanguageError": "هذا الدور غير مُعد بلغة {language} لنوع التقييم المختار بعد."
+      "noSetupForLanguageError": "هذا الدور غير مُعد بلغة {language} لنوع التقييم المختار بعد.",
+      "languageTranslatedFor": "لغة المرشح هي {language}: سيرى كل سؤال بنسخته المعتمدة باللغة {source} مع ترجمة إلى {language}، ويمكنه الإجابة بـ{language}."
     },
     "evaluationResultsModal": {
       "title": "نتائج تقييم جاهزية القوى العاملة",
