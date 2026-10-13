@@ -1,7 +1,5 @@
 "use client";
 
-import type { ComponentType } from "react";
-import { useTranslations } from "next-intl";
 import { format } from "date-fns";
 import {
   AlertTriangle,
@@ -16,11 +14,9 @@ import {
   PieChart,
   TrendingUp,
   Users,
-  type LucideIcon,
 } from "lucide-react";
 import b2bDashboardService from "@/app/api/dashboard/b2b/endpoints";
-import { useWidgetData } from "./use-widget-data";
-import { WidgetFrame } from "./widget-frame";
+import { DashboardWidgetGrid, makeDataWidget as makeWidget, type WidgetCatalog, type WidgetDefinition } from "./widget-grid";
 import { RequiresAttentionPanel } from "../requires-attention";
 import { ReadinessIndexChart } from "../readiness-index-chart";
 import { CandidateEvaluationTable } from "../candidate-evaluation-table";
@@ -63,31 +59,10 @@ export function isWidgetId(value: string): value is WidgetId {
   return (ALL_WIDGETS as readonly string[]).includes(value);
 }
 
-interface WidgetDefinition {
-  // "half" widgets sit two to a row on large screens; "full" spans the row.
-  span: "half" | "full";
-  icon: LucideIcon;
-  Component: ComponentType;
-}
+const TITLES = "dashboard.business.overview.widgets";
 
-function useWidgetTitle(id: WidgetId) {
-  const t = useTranslations("dashboard.business.overview.widgets");
-  return t(`${id}.title`);
-}
-
-// Small helper: load data for a widget and render it once ready.
 function makeDataWidget<T>(id: WidgetId, fetcher: () => Promise<T>, render: (data: T) => React.ReactNode) {
-  function DataWidget() {
-    const title = useWidgetTitle(id);
-    const { data, loading, error, retry } = useWidgetData(fetcher);
-    return (
-      <WidgetFrame title={title} loading={loading} error={error} onRetry={retry}>
-        {() => render(data as T)}
-      </WidgetFrame>
-    );
-  }
-  DataWidget.displayName = `Widget(${id})`;
-  return DataWidget;
+  return makeWidget(TITLES, id, fetcher, render);
 }
 
 export const WIDGETS: Record<WidgetId, WidgetDefinition> = {
@@ -221,42 +196,13 @@ export const WIDGETS: Record<WidgetId, WidgetDefinition> = {
   },
 };
 
-interface WidgetGridProps {
-  widgets: readonly WidgetId[];
-}
+export const B2B_WIDGET_CATALOG: WidgetCatalog<WidgetId> = {
+  all: ALL_WIDGETS,
+  defaults: DEFAULT_WIDGETS,
+  widgets: WIDGETS,
+  titlesNamespace: TITLES,
+};
 
-// A half-width widget with no half-width partner next to it (because the
-// company's chosen order puts a full-width widget, or nothing, beside it)
-// stretches across the row instead of leaving an empty hole.
-function resolveSpans(widgets: readonly WidgetId[]) {
-  const spans: ("half" | "full")[] = [];
-  let column = 0;
-  widgets.forEach((id, index) => {
-    const next = widgets[index + 1];
-    let span = WIDGETS[id].span;
-    if (span === "half" && column === 0 && (!next || WIDGETS[next].span !== "half")) span = "full";
-    spans.push(span);
-    column = span === "full" ? 0 : (column + 1) % 2;
-  });
-  return spans;
-}
-
-export function WidgetGrid({ widgets }: WidgetGridProps) {
-  const spans = resolveSpans(widgets);
-  return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-      {widgets.map((id, index) => {
-        const { Component } = WIDGETS[id];
-        return (
-          <section
-            key={id}
-            data-widget={id}
-            className={`min-w-0 [&>*]:h-full ${spans[index] === "full" ? "lg:col-span-2" : ""}`}
-          >
-            <Component />
-          </section>
-        );
-      })}
-    </div>
-  );
+export function WidgetGrid({ widgets }: { widgets: readonly WidgetId[] }) {
+  return <DashboardWidgetGrid widgets={widgets} registry={WIDGETS} />;
 }

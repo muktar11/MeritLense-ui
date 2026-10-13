@@ -12,19 +12,32 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ALL_WIDGETS, DEFAULT_WIDGETS, WIDGETS, type WidgetId } from "./widget-registry";
+import type { WidgetCatalog } from "./widget-grid";
 
-interface CustomizeDashboardDialogProps {
+interface CustomizeDashboardDialogProps<WidgetId extends string> {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  // Which dashboard's widgets these are (B2B company, B2C individual).
+  catalog: WidgetCatalog<WidgetId>;
   widgets: readonly WidgetId[];
   onSave: (widgets: WidgetId[]) => Promise<void>;
   onReset: () => Promise<void>;
+  /** Overrides the default ("applies to everyone in your company") text. */
+  description?: string;
 }
 
-export function CustomizeDashboardDialog({ open, onOpenChange, widgets, onSave, onReset }: CustomizeDashboardDialogProps) {
+export function CustomizeDashboardDialog<WidgetId extends string>({
+  open,
+  onOpenChange,
+  catalog,
+  widgets,
+  onSave,
+  onReset,
+  description,
+}: CustomizeDashboardDialogProps<WidgetId>) {
   const t = useTranslations("dashboard.business.overview.customize");
-  const tw = useTranslations("dashboard.business.overview.widgets");
+  const tw = useTranslations(catalog.titlesNamespace);
+  const { all: ALL_WIDGETS, defaults: DEFAULT_WIDGETS, widgets: WIDGETS } = catalog;
   const locale = useLocale();
   const [draft, setDraft] = useState<WidgetId[]>([...widgets]);
   const [busy, setBusy] = useState<"save" | "reset" | null>(null);
@@ -67,7 +80,7 @@ export function CustomizeDashboardDialog({ open, onOpenChange, widgets, onSave, 
       <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto" dir={locale === "ar" ? "rtl" : "ltr"}>
         <DialogHeader>
           <DialogTitle>{t("title")}</DialogTitle>
-          <DialogDescription>{t("description")}</DialogDescription>
+          <DialogDescription>{description ?? t("description")}</DialogDescription>
         </DialogHeader>
 
         <section aria-labelledby="visible-widgets-heading" className="space-y-2">
@@ -82,7 +95,7 @@ export function CustomizeDashboardDialog({ open, onOpenChange, widgets, onSave, 
             <ol className="space-y-2">
               {draft.map((id, index) => {
                 const Icon = WIDGETS[id].icon;
-                const title = tw(`${id}.title`);
+                const title = tw(`${id as string}.title`);
                 return (
                   <li key={id} className="flex items-center gap-3 rounded-lg border border-gray-200 bg-white px-3 py-2">
                     <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold text-gray-600">
@@ -91,7 +104,7 @@ export function CustomizeDashboardDialog({ open, onOpenChange, widgets, onSave, 
                     <Icon className="h-4 w-4 shrink-0 text-blue-600" />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium text-gray-900">{title}</p>
-                      <p className="truncate text-xs text-gray-500">{tw(`${id}.description`)}</p>
+                      <p className="truncate text-xs text-gray-500">{tw(`${id as string}.description`)}</p>
                     </div>
                     <div className="flex shrink-0 items-center gap-1">
                       <Button
@@ -135,13 +148,13 @@ export function CustomizeDashboardDialog({ open, onOpenChange, widgets, onSave, 
             <ul className="space-y-2">
               {hidden.map((id) => {
                 const Icon = WIDGETS[id].icon;
-                const title = tw(`${id}.title`);
+                const title = tw(`${id as string}.title`);
                 return (
                   <li key={id} className="flex items-center gap-3 rounded-lg border border-dashed border-gray-200 bg-gray-50/60 px-3 py-2">
                     <Icon className="h-4 w-4 shrink-0 text-gray-400" />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium text-gray-700">{title}</p>
-                      <p className="truncate text-xs text-gray-500">{tw(`${id}.description`)}</p>
+                      <p className="truncate text-xs text-gray-500">{tw(`${id as string}.description`)}</p>
                     </div>
                     <Button
                       type="button" variant="outline" size="sm" className="shrink-0 gap-1"

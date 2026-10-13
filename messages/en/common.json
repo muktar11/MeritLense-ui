@@ -4504,7 +4504,58 @@
           "pendingEvaluation": "Pending Evaluation",
           "newReport": "New Report Ready"
         },
-        "viewAnalytics": "View Analytics"
+        "viewAnalytics": "View Analytics",
+        "widgets": {
+          "requires_attention": {
+            "title": "Requires Attention",
+            "description": "Evaluations flagged for human review or missing evidence"
+          },
+          "readiness_index": {
+            "title": "Overall Readiness Index",
+            "description": "Completed evaluations by readiness outcome"
+          },
+          "recent_candidates": {
+            "title": "Candidate List",
+            "description": "Your latest candidates and their results"
+          },
+          "recent_evaluations": {
+            "title": "Evaluation Management",
+            "description": "Scheduled, in-progress and completed evaluations"
+          },
+          "evaluation_status": {
+            "title": "Evaluation Status",
+            "description": "Scheduled, completed and cancelled evaluations"
+          },
+          "evaluation_trend": {
+            "title": "Evaluation Trends",
+            "description": "Daily evaluation activity over the last 30 days"
+          },
+          "performance_trend": {
+            "title": "Performance Trends",
+            "description": "Average score over the last 30 days"
+          },
+          "job_role_distribution": {
+            "title": "Assessments by Role",
+            "description": "How your assessments are spread across job roles"
+          },
+          "language_distribution": {
+            "title": "Language Distribution",
+            "description": "Evaluations by interview language"
+          },
+          "time_of_day": {
+            "title": "Evaluation Time of Day",
+            "description": "When evaluations take place"
+          },
+          "monthly_activity": {
+            "title": "Monthly Activity",
+            "description": "Candidates, evaluations and certificates per month"
+          },
+          "candidate_comparison": {
+            "title": "Candidate Comparison",
+            "description": "Average scores of your candidates side by side"
+          }
+        },
+        "customizeDescription": "Choose which widgets appear on your dashboard and set their order. Only you see this layout."
       },
       "pointConsumption": {
         "title": "Assessment Consumption by Service",
