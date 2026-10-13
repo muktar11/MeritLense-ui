@@ -2472,8 +2472,8 @@
         "analytics_insights": "التحليلات والرؤى",
         "performance_scorecard": "بطاقة الأداء",
         "user_management": "إدارة المستخدمين",
-        "business_management": "الدرجات",
-        "audit_logs": "الدفع",
+        "business_management": "نتائج التقييم",
+        "audit_logs": "الفوترة والمدفوعات",
         "notifications": "الإشعارات والتنبيهات",
         "system_configuration": "ملف الشركة"
       },
@@ -3526,10 +3526,10 @@
         "overview": "لوحة التحكم",
         "candidate_management": "المرشحون",
         "evaluation_setup": "التقييمات",
-        "assessments_monitor": "مراقبة التقييمات",
+        "assessments_monitor": "نتائج التقييم",
         "reports_certificates": "التقارير والشهادات",
         "profile_management": "الملف الشخصي",
-        "packages_subscription": "الباقات والاشتراك",
+        "packages_subscription": "الفوترة والمدفوعات",
         "notifications": "الإشعارات",
         "analytics_insights": "التحليلات والرؤى"
       },
@@ -4550,7 +4550,15 @@
         "title": "التحليلات والرؤى",
         "subtitle": "تحليلات تفصيلية للتقييمات والجاهزية والمرشحين الخاصين بك."
       }
-    }
+    },
+    "accountTypes": {
+      "B2B": "حساب شركة",
+      "B2B_TEAM_MEMBER": "عضو فريق",
+      "B2C": "حساب فردي",
+      "ADMIN": "مسؤول",
+      "SUPERADMIN": "مسؤول أعلى"
+    },
+    "accountMenu": "قائمة الحساب"
   },
   "zodErrors": {
     "email_required": "البريد الإلكتروني مطلوب",
