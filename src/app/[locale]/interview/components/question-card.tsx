@@ -15,6 +15,30 @@ type Loaded = { state: "loading" } | { state: "ready"; value: LocalizedText } | 
 // Per page view: a question's text per language, so switching back and
 // forth doesn't refetch (the backend stores translations as well).
 const textCache = new Map<string, LocalizedText>();
+const failedKeys = new Set<string>();
+
+/** Translates the session's other questions in the background, one at a
+ *  time, so the next question's translation is ready when it appears.
+ *  Returns a cancel function. */
+export function prefetchQuestionTexts(sessionId: string, token: string, questionIds: string[], language: string) {
+  let cancelled = false;
+  (async () => {
+    for (const id of questionIds) {
+      const key = `${id}:${language}`;
+      if (cancelled) return;
+      if (textCache.has(key) || failedKeys.has(key)) continue;
+      try {
+        textCache.set(key, await interviewSessionService.getQuestionText(sessionId, token, id, language));
+      } catch {
+        failedKeys.add(key);
+        return; // unavailable for this language - don't keep trying
+      }
+    }
+  })();
+  return () => {
+    cancelled = true;
+  };
+}
 
 function useQuestionText(
   sessionId: string,
@@ -69,6 +93,8 @@ interface QuestionCardProps {
   /** The candidate's answer language (any supported language key). */
   answerKey: string;
   audio: ReturnType<typeof useInterviewAudio>;
+  /** Whether the translation into the answer language worked (for the side panel). */
+  onTranslationStatus?: (status: "not-needed" | "checking" | "available" | "unavailable") => void;
   uiLanguage?: string | null;
 }
 
@@ -83,6 +109,7 @@ export function QuestionCard({
   onDisplayKeyChange,
   answerKey,
   audio,
+  onTranslationStatus,
   uiLanguage,
 }: QuestionCardProps) {
   const ui = resolveCandidateLanguage(uiLanguage);
@@ -97,6 +124,16 @@ export function QuestionCard({
   const translationKey = answerKey !== displayKey ? answerKey : null;
   const translation = useQuestionText(sessionId, token, question, sourceKey, translationKey);
   const otherSource = SOURCE_LANGUAGES.find((key) => key !== displayKey) ?? "EN";
+  const translationStatus = !translationKey
+    ? "not-needed"
+    : translation?.state === "ready"
+      ? "available"
+      : translation?.state === "unavailable"
+        ? "unavailable"
+        : "checking";
+  useEffect(() => {
+    onTranslationStatus?.(translationStatus);
+  }, [onTranslationStatus, translationStatus]);
 
   const shownText = shown?.state === "ready" ? shown.value.text : question.question_text;
   const shownLabel =

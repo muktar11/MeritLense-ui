@@ -22,6 +22,8 @@ export interface InterviewSessionPublic {
   preferred_language?: string;
   current_question_index: number;
   total_questions: number;
+  // All of the session's questions (ids used to pre-load translations).
+  questions?: { id: string }[];
   progress_percent: number;
   started_at: string | null;
   ended_at: string | null;

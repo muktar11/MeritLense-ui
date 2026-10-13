@@ -10,7 +10,7 @@ import {
   type SessionQuestion,
   type SessionStatus,
 } from "@/app/api/interview-session/types";
-import { QuestionCard } from "./components/question-card";
+import { QuestionCard, prefetchQuestionTexts } from "./components/question-card";
 import { AnswerTextForm } from "./components/answer-text-form";
 import { AnswerRecorder } from "./components/answer-recorder";
 import { PrecheckFlow } from "./components/precheck-flow";
@@ -84,6 +84,15 @@ function InterviewSessionContent() {
   const [answerKey, setAnswerKey] = useState<string>("EN");
   const audio = useInterviewAudio(sessionId, token);
   const stopAudio = audio.stop;
+  const [translationStatus, setTranslationStatus] = useState<"not-needed" | "checking" | "available" | "unavailable">("not-needed");
+
+  // Translate the remaining questions in the background once the current
+  // one is on screen, so each next question's translation is instant.
+  const questionIds = (session?.questions ?? []).map((q) => q.id).join(",");
+  useEffect(() => {
+    if (pageState !== "question" || !questionIds || answerKey === displayKey) return;
+    return prefetchQuestionTexts(sessionId, token, questionIds.split(","), answerKey);
+  }, [pageState, questionIds, answerKey, displayKey, sessionId, token]);
 
   // Drives the whole candidate-facing experience's language/RTL layout -
   // see ./candidate-lang.ts. Independent of this route's [locale] URL
@@ -537,6 +546,7 @@ function InterviewSessionContent() {
                 }}
                 answerKey={answerKey}
                 audio={audio}
+                onTranslationStatus={setTranslationStatus}
                 uiLanguage={session?.ui_language}
               />
             )}
@@ -613,7 +623,12 @@ function InterviewSessionContent() {
             </section>
           </div>
 
-          <LanguagePanel answerKey={answerKey} onAnswerKeyChange={handleAnswerKeyChange} uiLanguage={session?.ui_language} />
+          <LanguagePanel
+            answerKey={answerKey}
+            onAnswerKeyChange={handleAnswerKeyChange}
+            translationStatus={translationStatus}
+            uiLanguage={session?.ui_language}
+          />
         </div>
       </div>
     </div>

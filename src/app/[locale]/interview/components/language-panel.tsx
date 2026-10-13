@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, Globe, Lightbulb, Volume2, XCircle } from "lucide-react";
+import { CheckCircle2, Globe, Lightbulb, Loader2, Volume2, XCircle } from "lucide-react";
 import { LANGUAGES } from "@/lib/languages";
 import { resolveCandidateLanguage } from "../candidate-lang";
 import { getLanguageStrings, languageByKey, languageName } from "../language-strings";
@@ -8,17 +8,19 @@ import { getLanguageStrings, languageByKey, languageName } from "../language-str
 interface LanguagePanelProps {
   answerKey: string;
   onAnswerKeyChange: (key: string) => void;
+  /** From the question card: did the translation into this language work? */
+  translationStatus?: "not-needed" | "checking" | "available" | "unavailable";
   uiLanguage?: string | null;
 }
 
 // Right-hand panel: the candidate's answer language, how the interview
 // handles languages, and what's supported for the chosen language.
-export function LanguagePanel({ answerKey, onAnswerKeyChange, uiLanguage }: LanguagePanelProps) {
+export function LanguagePanel({ answerKey, onAnswerKeyChange, translationStatus, uiLanguage }: LanguagePanelProps) {
   const ui = resolveCandidateLanguage(uiLanguage);
   const tl = getLanguageStrings(ui);
   const info = languageByKey(answerKey);
   const support = [
-    { label: tl.support.translate, ok: true },
+    { label: tl.support.translate, ok: translationStatus !== "unavailable", pending: translationStatus === "checking" },
     { label: tl.support.listen, ok: Boolean(info?.tts) },
     { label: tl.support.record, ok: Boolean(info?.stt) },
   ];
@@ -51,8 +53,14 @@ export function LanguagePanel({ answerKey, onAnswerKeyChange, uiLanguage }: Lang
             <li key={item.label} className="flex items-center justify-between text-xs">
               <span className="text-gray-600">{item.label}</span>
               <span className={`inline-flex items-center gap-1 ${item.ok ? "text-emerald-700" : "text-gray-400"}`}>
-                {item.ok ? <CheckCircle2 className="h-3.5 w-3.5" /> : <XCircle className="h-3.5 w-3.5" />}
-                {item.ok ? tl.support.yes : tl.support.no}
+                {"pending" in item && item.pending ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : item.ok ? (
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                ) : (
+                  <XCircle className="h-3.5 w-3.5" />
+                )}
+                {"pending" in item && item.pending ? tl.translating : item.ok ? tl.support.yes : tl.support.no}
               </span>
             </li>
           ))}
