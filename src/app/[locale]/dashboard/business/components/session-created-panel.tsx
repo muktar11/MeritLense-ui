@@ -1,11 +1,14 @@
 "use client"
 
 import { useState } from "react"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { QRCodeSVG } from "qrcode.react"
-import { Check, Copy, FileText, Link2, Mail, MessageCircle, QrCode, User } from "lucide-react"
+import { Check, Copy, FileText, Link2, Loader2, Mail, MessageCircle, QrCode, User } from "lucide-react"
+import interviewService from "@/app/api/interviews/endpoints"
+import { apiErrorMessage } from "@/lib/api-error-message"
 
 interface SessionCreatedPanelProps {
+  sessionId: string
   candidateName: string
   candidateEmail?: string
   roleName: string
@@ -18,6 +21,7 @@ interface SessionCreatedPanelProps {
 /** Success state of the Create Assessment modal: a short, shareable
  *  candidate link with one-click copy, plus Email / WhatsApp / QR sharing. */
 export default function SessionCreatedPanel({
+  sessionId,
   candidateName,
   candidateEmail,
   roleName,
@@ -29,6 +33,29 @@ export default function SessionCreatedPanel({
   const t = useTranslations("shared.startSessionModal")
   const [copied, setCopied] = useState(false)
   const [showQr, setShowQr] = useState(false)
+  const locale = useLocale()
+  const [emailState, setEmailState] = useState<"idle" | "sending" | "sent" | "error">("idle")
+  const [emailMessage, setEmailMessage] = useState("")
+
+  // Sent by MeritLense's own mail server: the previous mailto: link opened
+  // nothing on computers without a configured mail app.
+  const handleEmail = async () => {
+    if (!candidateEmail) {
+      setEmailState("error")
+      setEmailMessage(t("shareEmailNoAddress"))
+      return
+    }
+    setEmailState("sending")
+    setEmailMessage("")
+    try {
+      const { sent_to } = await interviewService.sendSessionLink(sessionId, locale)
+      setEmailState("sent")
+      setEmailMessage(t("shareEmailSent", { email: sent_to }))
+    } catch (error) {
+      setEmailState("error")
+      setEmailMessage(apiErrorMessage(error) || t("shareEmailFailed"))
+    }
+  }
 
   const shareText = t("shareMessage", { name: candidateName, link })
 
@@ -46,9 +73,6 @@ export default function SessionCreatedPanel({
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const emailHref =
-    `mailto:${encodeURIComponent(candidateEmail ?? "")}` +
-    `?subject=${encodeURIComponent(t("emailSubject"))}&body=${encodeURIComponent(shareText)}`
   const whatsappHref = `https://wa.me/?text=${encodeURIComponent(shareText)}`
 
   const shareButton =
@@ -131,10 +155,21 @@ export default function SessionCreatedPanel({
         </div>
 
         <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
-          <a href={emailHref} className={shareButton}>
-            <Mail className="h-4 w-4 text-blue-600" />
-            {t("shareEmail")}
-          </a>
+          <button
+            type="button"
+            onClick={handleEmail}
+            disabled={emailState === "sending"}
+            className={`${shareButton} disabled:opacity-60 ${emailState === "sent" ? "border-green-300 text-green-700" : ""}`}
+          >
+            {emailState === "sending" ? (
+              <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
+            ) : emailState === "sent" ? (
+              <Check className="h-4 w-4 text-green-600" />
+            ) : (
+              <Mail className="h-4 w-4 text-blue-600" />
+            )}
+            {emailState === "sending" ? t("shareEmailSending") : emailState === "sent" ? t("shareEmailSentShort") : t("shareEmail")}
+          </button>
           <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className={shareButton}>
             <MessageCircle className="h-4 w-4 text-green-600" />
             {t("shareWhatsApp")}
@@ -144,6 +179,12 @@ export default function SessionCreatedPanel({
             {showQr ? t("hideQr") : t("showQr")}
           </button>
         </div>
+
+        {emailMessage && (
+          <p role="status" className={`mt-2 text-sm ${emailState === "error" ? "text-red-600" : "text-green-700"}`}>
+            {emailMessage}
+          </p>
+        )}
 
         {showQr && (
           <div className="mt-4 flex flex-col items-center gap-2 rounded-xl border border-gray-200 bg-white p-4">

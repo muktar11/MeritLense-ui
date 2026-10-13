@@ -258,7 +258,12 @@
         "skilled_trades": "الحرف المهنية والصيانة",
         "farm_worker": "عامل مزرعة",
         "livestock_support": "دعم تربية الماشية"
-      }
+      },
+      "shareEmailSending": "جارٍ الإرسال...",
+      "shareEmailSentShort": "تم الإرسال",
+      "shareEmailSent": "تم إرسال رابط المقابلة إلى {email}.",
+      "shareEmailFailed": "تعذّر إرسال البريد. انسخ الرابط وأرسله بطريقة أخرى.",
+      "shareEmailNoAddress": "لا يوجد بريد إلكتروني لهذا المرشح. انسخ الرابط أو شاركه عبر واتساب."
     },
     "evaluationResultsModal": {
       "title": "نتائج تقييم جاهزية القوى العاملة",
