@@ -4,8 +4,12 @@ export interface B2CRegistrationData {
   last_name: string
   password: string
   confirm_password: string
+  // Required registration checkbox (Terms & Privacy); recorded server-side.
+  terms_accepted: boolean
+  terms_language?: "en" | "ar"
   passport_id: string
-  job_role: string
+  // No longer asked at registration (Job Title removed).
+  job_role?: string
   nationality: string
   preferred_language: string
   phone_number: string
@@ -97,6 +101,9 @@ export interface B2BRegistrationData {
   last_name: string
   password: string
   confirm_password: string
+  // Required registration checkbox (Terms & Privacy); recorded server-side.
+  terms_accepted: boolean
+  terms_language?: "en" | "ar"
   company_name: string
   company_registration_number: string
   company_size: string

@@ -3,12 +3,14 @@
 import type React from "react"
 import { Suspense, useEffect, useRef, useState } from "react"
 import { useRouter, usePathname } from "next/navigation"
+import { useTranslations } from "next-intl"
 import { Loader2, Eye, EyeOff } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import ProgressStepper from "../components/auth/progress-stepper"
+import TermsConsent from "../components/auth/terms-consent"
 import { useAuth } from "../../../../hooks/useAuth"
 import { COMPANY_SIZES, LANGUAGES } from "../../../../api/auth/endpoints"
 import { COUNTRIES } from "@/lib/countries"
@@ -34,6 +36,8 @@ function EmployerRegistrationContent() {
   const { registerB2B, loading, error } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [termsAccepted, setTermsAccepted] = useState(false)
+  const tConsent = useTranslations("auth_page.consent")
 
   const [formData, setFormData] = useState({
     email: "",
@@ -123,6 +127,7 @@ function EmployerRegistrationContent() {
     if (!formData.country) errors.country = "Country is required"
     if (!formData.city) errors.city = "City is required"
     if (!formData.phone_number) errors.phone_number = "Phone number is required"
+    if (!termsAccepted) errors.terms_accepted = tConsent("required")
 
     setFormErrors(errors)
     return Object.keys(errors).length === 0
@@ -150,6 +155,8 @@ function EmployerRegistrationContent() {
       website: formData.website || undefined,
       industry: formData.industry || undefined,
       address: formData.address || undefined,
+      terms_accepted: termsAccepted,
+      terms_language: locale === "ar" ? "ar" : "en",
     }
 
     const success = await registerB2B(registrationData)
@@ -445,6 +452,16 @@ function EmployerRegistrationContent() {
             <p className="text-sm text-muted-foreground">
               You can upload your registration certificate and other company documents from Company Profile after registration. Platform access is enabled after admin approval.
             </p>
+
+            <TermsConsent
+              variant="b2b"
+              checked={termsAccepted}
+              onChange={(value) => {
+                setTermsAccepted(value)
+                if (value) setFormErrors((prev) => ({ ...prev, terms_accepted: "" }))
+              }}
+              error={formErrors.terms_accepted || undefined}
+            />
 
             <Button
               type="submit"
