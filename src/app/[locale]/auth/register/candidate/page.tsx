@@ -10,8 +10,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import ProgressStepper from "../components/auth/progress-stepper"
+import TermsConsent from "../components/auth/terms-consent"
 import { useAuth } from "../../../../hooks/useAuth"
-import { JOB_ROLES, NATIONALITIES, LANGUAGES } from "../../../../api/auth/endpoints"
+import { NATIONALITIES, LANGUAGES } from "../../../../api/auth/endpoints"
 import { COUNTRIES } from "@/lib/countries"
 import { detectCountry, detectTimezone, suggestLanguageFromCountry } from "@/lib/location-detection"
 import type { B2CRegistrationData } from "@/app/api/auth/auth"
@@ -19,7 +20,7 @@ import type { B2CRegistrationData } from "@/app/api/auth/auth"
 export default function CandidateRegistrationPage() {
   const t = useTranslations("auth_page.register_candidate")
   const tZod = useTranslations("zodErrors")
-  const tRoles = useTranslations("dashboard.indivisual.settings.edit-profile-tab.jobRoles")
+  const tConsent = useTranslations("auth_page.consent")
   const tNationalities = useTranslations("dashboard.indivisual.settings.edit-profile-tab.nationalities")
   const tLanguages = useTranslations("dashboard.indivisual.settings.edit-profile-tab.languages")
   const router = useRouter()
@@ -28,6 +29,7 @@ export default function CandidateRegistrationPage() {
   const { registerB2C, loading, error } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [termsAccepted, setTermsAccepted] = useState(false)
 
   const [formData, setFormData] = useState({
     email: "",
@@ -36,14 +38,12 @@ export default function CandidateRegistrationPage() {
     password: "",
     confirm_password: "",
     passport_id: "",
-    job_role: "",
     nationality: "",
     preferred_language: "EN",
     country_of_residence: "",
     target_market: "",
     timezone: "",
     phone_number: "",
-    date_of_birth: "",
     address: "",
   })
 
@@ -110,9 +110,9 @@ export default function CandidateRegistrationPage() {
     }
 
     if (!formData.passport_id) errors.passport_id = t("errors.passportRequired")
-    if (!formData.job_role) errors.job_role = t("errors.jobRoleRequired")
     if (!formData.nationality) errors.nationality = t("errors.nationalityRequired")
     if (!formData.phone_number) errors.phone_number = t("errors.phoneRequired")
+    if (!termsAccepted) errors.terms_accepted = tConsent("required")
     setFormErrors(errors)
     return Object.keys(errors).length === 0
   }
@@ -128,15 +128,15 @@ export default function CandidateRegistrationPage() {
       password: formData.password,
       confirm_password: formData.confirm_password,
       passport_id: formData.passport_id,
-      job_role: formData.job_role,
       nationality: formData.nationality,
       preferred_language: formData.preferred_language,
       country_of_residence: formData.country_of_residence || undefined,
       target_market: formData.target_market || undefined,
       timezone: formData.timezone || undefined,
       phone_number: formData.phone_number,
-      date_of_birth: formData.date_of_birth || undefined,
       address: formData.address || undefined,
+      terms_accepted: termsAccepted,
+      terms_language: locale === "ar" ? "ar" : "en",
     }
 
     const success = await registerB2C(registrationData)
@@ -292,50 +292,19 @@ export default function CandidateRegistrationPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="date_of_birth">{t("fields.dateOfBirth")}</Label>
-                  <Input
-                    id="date_of_birth"
-                    name="date_of_birth"
-                    type="date"
-                    value={formData.date_of_birth}
-                    onChange={handleInputChange}
-                    className="h-11"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="address">{t("fields.address")}</Label>
-                  <Input
-                    id="address"
-                    name="address"
-                    value={formData.address}
-                    onChange={handleInputChange}
-                    placeholder={t("placeholders.address")}
-                    className="h-11"
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="address">{t("fields.address")}</Label>
+                <Input
+                  id="address"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleInputChange}
+                  placeholder={t("placeholders.address")}
+                  className="h-11"
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="job_role">{t("fields.jobRole")} *</Label>
-                  <select
-                    id="job_role"
-                    name="job_role"
-                    value={formData.job_role}
-                    onChange={handleInputChange}
-                    className={`flex h-11 w-full rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-1 focus-visible:ring-primary/50 ${
-                      formErrors.job_role ? "border-destructive" : "border-input"
-                    }`}
-                  >
-                    <option value="">{t("placeholders.selectJobRole")}</option>
-                    {JOB_ROLES.map((role) => (
-                      <option key={role.key} value={role.key}>{tRoles(role.key)}</option>
-                    ))}
-                  </select>
-                  <FieldError field="job_role" />
-                </div>
                 <div className="space-y-2">
                   <Label htmlFor="nationality">{t("fields.nationality")} *</Label>
                   <select
@@ -354,22 +323,22 @@ export default function CandidateRegistrationPage() {
                   </select>
                   <FieldError field="nationality" />
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="preferred_language">{t("fields.preferredLanguage")} *</Label>
+                  <select
+                    id="preferred_language"
+                    name="preferred_language"
+                    value={formData.preferred_language}
+                    onChange={handleInputChange}
+                    className="flex h-11 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-1 focus-visible:ring-primary/50"
+                  >
+                    {LANGUAGES.map((lang) => (
+                      <option key={lang.key} value={lang.key}>{tLanguages(lang.key)}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="preferred_language">{t("fields.preferredLanguage")} *</Label>
-                <select
-                  id="preferred_language"
-                  name="preferred_language"
-                  value={formData.preferred_language}
-                  onChange={handleInputChange}
-                  className="flex h-11 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-1 focus-visible:ring-primary/50"
-                >
-                  {LANGUAGES.map((lang) => (
-                    <option key={lang.key} value={lang.key}>{tLanguages(lang.key)}</option>
-                  ))}
-                </select>
-              </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -404,6 +373,16 @@ export default function CandidateRegistrationPage() {
                 </div>
               </div>
             </div>
+
+            <TermsConsent
+              variant="b2c"
+              checked={termsAccepted}
+              onChange={(value) => {
+                setTermsAccepted(value)
+                if (value) setFormErrors((prev) => ({ ...prev, terms_accepted: "" }))
+              }}
+              error={formErrors.terms_accepted || undefined}
+            />
 
             <Button
               type="submit"

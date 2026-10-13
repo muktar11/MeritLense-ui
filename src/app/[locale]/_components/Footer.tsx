@@ -4,9 +4,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { Instagram, Twitter, Linkedin, Mail } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import { OPEN_COOKIE_SETTINGS_EVENT } from "@/lib/cookie-consent";
 
 export function Footer() {
   const t = useTranslations("landing-page.footer");
+  const tCookies = useTranslations("shared.cookieConsent");
   const locale = useLocale();
 
   return (
@@ -141,6 +143,15 @@ export function Footer() {
                 >
                   {t("link_privacy_terms")}
                 </Link>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => window.dispatchEvent(new Event(OPEN_COOKIE_SETTINGS_EVENT))}
+                  className="text-foreground-muted hover:text-foreground transition-colors text-start"
+                >
+                  {tCookies("settingsLink")}
+                </button>
               </li>
             </ul>
           </div>

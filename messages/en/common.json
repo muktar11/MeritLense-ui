@@ -391,6 +391,26 @@
     "scoreSource": {
       "evaluatorRating": "Evaluator rating",
       "evaluatorRatingHint": "Scheduled interview rated by an evaluator. The score is the average of the rated competencies."
+    },
+    "cookieConsent": {
+      "title": "We value your privacy",
+      "body": "We use necessary cookies and similar storage to keep you signed in and the site working. With your permission we would also use optional analytics and marketing cookies; none are active today. You can change your choice at any time from Cookie settings at the bottom of the page.",
+      "policyLink": "Privacy Policy",
+      "acceptAll": "Accept all",
+      "rejectOptional": "Reject optional",
+      "preferences": "Preferences",
+      "preferencesTitle": "Cookie preferences",
+      "save": "Save choices",
+      "alwaysOn": "Always on",
+      "close": "Close",
+      "necessary": "Necessary",
+      "necessaryDescription": "Needed to sign in, keep you signed in, remember your language and keep the site secure.",
+      "analytics": "Analytics",
+      "analyticsDescription": "Would help us understand how the site is used so we can improve it.",
+      "marketing": "Marketing",
+      "marketingDescription": "Would let us measure our campaigns and show relevant content elsewhere.",
+      "settingsLink": "Cookie settings",
+      "saved": "Your cookie choice was saved."
     }
   },
   "landing-page": {
@@ -969,6 +989,11 @@
     },
     "common": {
       "back_to_home": "Back to Home"
+    },
+    "consent": {
+      "b2cStatement": "I confirm that I am 18 years or older and agree to the applicable <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>.",
+      "b2bStatement": "I have read and agree to the applicable <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>.",
+      "required": "Please tick the box to continue."
     }
   },
   "dashboard": {
