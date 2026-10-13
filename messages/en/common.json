@@ -258,7 +258,12 @@
         "skilled_trades": "Skilled Trades & Maintenance",
         "farm_worker": "Farm Worker",
         "livestock_support": "Livestock Support"
-      }
+      },
+      "shareEmailSending": "Sending...",
+      "shareEmailSentShort": "Email sent",
+      "shareEmailSent": "Interview link sent to {email}.",
+      "shareEmailFailed": "The email could not be sent. Copy the link and send it another way.",
+      "shareEmailNoAddress": "This candidate has no email address. Copy the link or share it by WhatsApp."
     },
     "evaluationResultsModal": {
       "title": "Workforce Readiness Assessment Results",

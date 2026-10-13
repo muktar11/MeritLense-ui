@@ -345,6 +345,7 @@ export default function StartSessionModal({
         {createdSession ? (
           <div className="px-6 pb-6 pt-4 overflow-y-auto">
             <SessionCreatedPanel
+              sessionId={createdSession.id}
               candidateName={activeCandidateObj?.full_name ?? createdSession.candidate_name}
               candidateEmail={activeCandidateObj?.email}
               roleName={selectedRole ? roleLabel(selectedRole) : createdSession.role_name}
