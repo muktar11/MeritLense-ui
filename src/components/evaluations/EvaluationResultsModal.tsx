@@ -13,6 +13,7 @@ import {
   FileText,
   RefreshCw,
   ShieldAlert,
+  ShieldCheck,
 } from "lucide-react";
 import evaluationService from "@/app/api/evaluations/endpoints";
 import reportService from "@/app/api/reports/endpoints";
@@ -147,10 +148,12 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
   const [report, setReport] = useState<EvaluationReport | null>(null);
   const [reportError, setReportError] = useState<string | null>(null);
   const [generatingReport, setGeneratingReport] = useState(false);
+  const [awaitingReview, setAwaitingReview] = useState(false);
 
   const load = async (id: string) => {
     setLoading(true);
     setError(null);
+    setAwaitingReview(false);
     try {
       const summaryData = await evaluationService.getScoringSummary(id);
       setSummary(summaryData);
@@ -168,8 +171,13 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
         setResponseResults([]);
         setReport(null);
       }
-    } catch {
-      setError(t("loadFailed"));
+    } catch (err) {
+      if ((err as { code?: string })?.code === "awaiting_human_review") {
+        setSummary(null);
+        setAwaitingReview(true);
+      } else {
+        setError(t("loadFailed"));
+      }
     } finally {
       setLoading(false);
     }
@@ -265,7 +273,17 @@ export function EvaluationResultsModal({ evaluationId, candidateName, onClose }:
             </div>
           )}
 
-          {!loading && !summary && (
+          {!loading && awaitingReview && (
+            <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-lg p-4">
+              <ShieldCheck className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-semibold text-amber-900">{t("awaitingReview.title")}</p>
+                <p className="text-sm text-amber-800 mt-1">{t("awaitingReview.body")}</p>
+              </div>
+            </div>
+          )}
+
+          {!loading && !summary && !awaitingReview && (
             <div className="text-center py-10">
               <p className="text-sm text-gray-500 mb-4">{t("noScoringYet")}</p>
               <button

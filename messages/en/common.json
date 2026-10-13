@@ -330,7 +330,11 @@
         "taskExecution": "Practical Task Execution",
         "knowledgeComprehension": "Knowledge & Comprehension"
       },
-      "notAssessed": "Not Assessed"
+      "notAssessed": "Not Assessed",
+      "awaitingReview": {
+        "title": "Result under review",
+        "body": "MeritLense is reviewing this result before release. The score, readiness decision, report and any certificate will appear here once the review is complete."
+      }
     },
     "liveCallRoom": {
       "missingSessionId": "Missing session ID.",
@@ -984,7 +988,8 @@
         "package_requests": "Package Requests",
         "interview_setup": "Interview Setup",
         "candidate_comparison": "Candidate Comparison",
-        "analytics_insights": "Analytics & Insights"
+        "analytics_insights": "Analytics & Insights",
+        "review_queue": "Review Queue"
       },
       "candidateComparison": {
         "title": "Candidate Comparison",
@@ -2373,6 +2378,53 @@
       "analytics": {
         "title": "Analytics & Insights",
         "subtitle": "Platform-wide evaluation, readiness, user and revenue analytics."
+      },
+      "reviewQueue": {
+        "title": "Review Queue",
+        "subtitle": "Results held from employers until a reviewer records a decision. The automatic outcome is kept; your decision is stored as an audited correction.",
+        "empty": "No results are waiting for review.",
+        "loadFailed": "Could not load the review queue.",
+        "table": {
+          "candidate": "Candidate",
+          "role": "Role",
+          "language": "Language",
+          "tier": "Assessment",
+          "company": "Company",
+          "automatic": "Automatic outcome",
+          "score": "Score",
+          "reasons": "Why it was held",
+          "completed": "Completed",
+          "actions": "Actions"
+        },
+        "tiers": {
+          "FULL": "Full",
+          "SCREENING": "Screening"
+        },
+        "noCompany": "Individual (B2C)",
+        "viewResults": "View results",
+        "review": "Record decision",
+        "modal": {
+          "title": "Record review decision",
+          "candidate": "Candidate",
+          "automatic": "Automatic outcome",
+          "reasons": "Why it was held",
+          "decision": "Your decision",
+          "notes": "Reviewer notes",
+          "notesPlaceholder": "What did you check, and why this decision?",
+          "notesRequired": "Please add notes explaining the decision.",
+          "submit": "Release result",
+          "submitting": "Releasing...",
+          "cancel": "Cancel",
+          "certificateNote": "A certificate is still only issued if the normal eligibility rules pass on the actual scores.",
+          "failed": "Could not record the decision."
+        },
+        "decisions": {
+          "READY": "Ready",
+          "PARTIALLY_READY": "Partially Ready",
+          "NOT_READY": "Not Ready",
+          "INCOMPLETE": "Incomplete"
+        },
+        "released": "Result released."
       }
     },
     "business": {
@@ -3768,7 +3820,8 @@
             "markComplete": "Mark Complete",
             "startAiInterview": "Start AI Interview",
             "cancel": "Cancel"
-          }
+          },
+          "underReview": "Under review"
         },
         "scheduleModal": {
           "titles": {
