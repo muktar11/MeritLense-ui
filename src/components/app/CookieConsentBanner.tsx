@@ -11,9 +11,10 @@ import {
   type CookieChoice,
 } from "@/lib/cookie-consent";
 
-// Cookie consent banner (improvement deck, slide 3): Accept all / Reject
-// optional / Preferences, separate from registration consent. Reopened from
-// "Cookie settings" in the footer.
+// Cookie consent banner (improvement deck design): Accept All / Just This
+// Time / Reject, plus a "Manage preferences" link for per-category choices.
+// Separate from registration consent; reopened from "Cookie settings" in
+// the footer.
 export function CookieConsentBanner() {
   const t = useTranslations("shared.cookieConsent");
   const locale = useLocale();
@@ -71,30 +72,48 @@ export function CookieConsentBanner() {
           aria-label={t("title")}
           className="fixed inset-x-0 bottom-0 z-[60] p-3 sm:p-4"
         >
-          <div className="mx-auto flex max-w-4xl flex-col gap-3 rounded-2xl border border-gray-200 bg-white p-4 shadow-2xl sm:flex-row sm:items-end sm:gap-5 sm:p-5">
-            <div className="flex min-w-0 flex-1 gap-3">
-              <span className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-full bg-purple-50 sm:flex">
-                <Cookie className="h-5 w-5 text-purple-600" aria-hidden="true" />
+          <div className="mx-auto flex max-w-5xl flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-4 shadow-2xl md:flex-row md:items-center md:gap-6 md:p-5">
+            <div className="flex min-w-0 flex-1 items-start gap-4">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-amber-100 sm:h-14 sm:w-14">
+                <Cookie className="h-6 w-6 text-amber-800 sm:h-7 sm:w-7" aria-hidden="true" />
               </span>
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-gray-900">{t("title")}</p>
                 <p className="mt-1 text-sm leading-relaxed text-gray-600">
                   {t("body")}{" "}
-                  <a href={`/${locale}/privacy`} className="font-medium text-purple-700 underline underline-offset-2">
+                  <a href={`/${locale}/privacy`} className="font-medium text-blue-700 underline underline-offset-2">
                     {t("policyLink")}
                   </a>
+                  {" · "}
+                  <button
+                    type="button"
+                    onClick={() => setPreferencesOpen(true)}
+                    className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
+                  >
+                    {t("managePreferences")}
+                  </button>
                 </p>
               </div>
             </div>
-            <div className="flex flex-wrap gap-2 sm:flex-nowrap">
-              <button type="button" className={secondary} onClick={() => setPreferencesOpen(true)} disabled={saving}>
-                {t("preferences")}
-              </button>
-              <button type="button" className={secondary} onClick={() => decide("reject_optional")} disabled={saving}>
-                {t("rejectOptional")}
-              </button>
-              <button type="button" className={primary} onClick={() => decide("accept_all")} disabled={saving}>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 md:flex md:shrink-0">
+              <button
+                type="button"
+                className="rounded-xl bg-green-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-60"
+                onClick={() => decide("accept_all")}
+                disabled={saving}
+              >
                 {t("acceptAll")}
+              </button>
+              <button
+                type="button"
+                className="rounded-xl border border-blue-200 bg-blue-50 px-5 py-2.5 text-sm font-semibold text-blue-700 hover:bg-blue-100 disabled:opacity-60"
+                onClick={() => decide("this_session")}
+                disabled={saving}
+              >
+                {t("justThisTime")}
+              </button>
+              <button type="button" className={`${secondary} rounded-xl px-5 py-2.5`} onClick={() => decide("reject_optional")} disabled={saving}>
+                {t("reject")}
               </button>
             </div>
           </div>

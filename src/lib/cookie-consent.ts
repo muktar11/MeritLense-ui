@@ -5,7 +5,9 @@ import { API_BASE_URL } from "@/lib/config/env";
 // cookies are set today - anything added later must check
 // hasCookieConsent("analytics" | "marketing") before loading.
 
-export type CookieChoice = "accept_all" | "reject_optional" | "custom";
+// this_session = "Just This Time": optional cookies for this visit only -
+// kept in sessionStorage, so the banner asks again on the next visit.
+export type CookieChoice = "accept_all" | "this_session" | "reject_optional" | "custom";
 
 export interface CookieConsentState {
   consentId: string;
@@ -21,7 +23,7 @@ export const OPEN_COOKIE_SETTINGS_EVENT = "ml:open-cookie-settings";
 
 export function readCookieConsent(): CookieConsentState | null {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(STORAGE_KEY) ?? sessionStorage.getItem(STORAGE_KEY);
     return raw ? (JSON.parse(raw) as CookieConsentState) : null;
   } catch {
     return null;
@@ -51,11 +53,12 @@ export async function saveCookieConsent(
   options: { analytics?: boolean; marketing?: boolean; language: string },
 ): Promise<CookieConsentState> {
   const previous = readCookieConsent();
+  const allowAll = choice === "accept_all" || choice === "this_session";
   const state: CookieConsentState = {
     consentId: previous?.consentId ?? newConsentId(),
     choice,
-    analytics: choice === "accept_all" ? true : choice === "reject_optional" ? false : Boolean(options.analytics),
-    marketing: choice === "accept_all" ? true : choice === "reject_optional" ? false : Boolean(options.marketing),
+    analytics: allowAll ? true : choice === "reject_optional" ? false : Boolean(options.analytics),
+    marketing: allowAll ? true : choice === "reject_optional" ? false : Boolean(options.marketing),
     decidedAt: new Date().toISOString(),
     recorded: false,
   };
@@ -89,7 +92,13 @@ export async function recordCookieConsent(state: CookieConsentState, language: s
 
 function persist(state: CookieConsentState) {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    if (state.choice === "this_session") {
+      localStorage.removeItem(STORAGE_KEY);
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } else {
+      sessionStorage.removeItem(STORAGE_KEY);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
   } catch {
     // Storage blocked - the banner simply shows again next visit.
   }
