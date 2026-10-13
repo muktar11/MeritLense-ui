@@ -13,6 +13,7 @@ import {
   Settings,
   FileText,
   ClipboardList,
+  GitCompare,
   Loader2,
 } from "lucide-react";
 import { LanguageSelector } from "@/components/app/LanguageSelector";
@@ -139,6 +140,13 @@ export default function AdminLayout({
         label: t("pages_list.business_management"),
         icon: Building2,
         href: `/${locale}/dashboard/business/score-management`,
+        disabled: lockedUntilSigned,
+        disabledTooltip,
+      },
+      {
+        label: t("pages_list.compare_candidates"),
+        icon: GitCompare,
+        href: `/${locale}/dashboard/business/compare-candidates`,
         disabled: lockedUntilSigned,
         disabledTooltip,
       },

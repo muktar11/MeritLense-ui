@@ -113,6 +113,10 @@
       "b2cAnalytics": {
         "title": "التحليلات والرؤى - MeritLense",
         "description": "تحليلات تفصيلية للتقييمات والجاهزية والمرشحين الخاصين بك"
+      },
+      "compareCandidates": {
+        "title": "مقارنة المرشحين - MeritLense",
+        "description": "قارن المرشحين الذين تم تقييمهم للوظيفة نفسها جنبًا إلى جنب."
       }
     },
     "tablePagination": {
@@ -2598,7 +2602,8 @@
         "business_management": "نتائج التقييم",
         "audit_logs": "الفوترة والمدفوعات",
         "notifications": "الإشعارات والتنبيهات",
-        "system_configuration": "ملف الشركة"
+        "system_configuration": "ملف الشركة",
+        "compare_candidates": "مقارنة المرشحين"
       },
       "sidebarLocked": "وقّع اتفاقية خدمات الأعمال (B2B) واتفاقية معالجة البيانات (DPA) لفتح هذه الصفحة",
       "accessDenied": "صلاحيات الموظف الخاصة بك لا تسمح بالوصول إلى هذا القسم.",
@@ -3654,7 +3659,8 @@
         "profile_management": "الملف الشخصي",
         "packages_subscription": "الفوترة والمدفوعات",
         "notifications": "الإشعارات",
-        "analytics_insights": "التحليلات والرؤى"
+        "analytics_insights": "التحليلات والرؤى",
+        "compare_candidates": "مقارنة المرشحين"
       },
       "sidebarLocked": "وقّع اتفاقية خدمات الأفراد (B2C) لفتح هذه الصفحة",
       "payment": {
@@ -4732,7 +4738,79 @@
       "ADMIN": "مسؤول",
       "SUPERADMIN": "مسؤول أعلى"
     },
-    "accountMenu": "قائمة الحساب"
+    "accountMenu": "قائمة الحساب",
+    "compareCandidates": {
+      "title": "مقارنة المرشحين",
+      "subtitle": "قارن بين 2–4 مرشحين تم تقييمهم للوظيفة نفسها جنبًا إلى جنب، بالاعتماد على نتائج تقييمهم المسجلة.",
+      "loadFailed": "تعذّر تحميل هذه القائمة. يرجى تحديث الصفحة.",
+      "step1": {
+        "title": "اختر الوظيفة",
+        "hint": "يمكن مقارنة المرشحين الذين تم تقييمهم لهذه الوظيفة تحديدًا فقط.",
+        "noRoles": "لا يوجد مرشحون لديهم نتائج تقييم قابلة للمقارنة بعد.",
+        "typeLabel": "نوع التقييم",
+        "typeHint": "لا تتم مقارنة نتائج الفحص الأولي مع نتائج التقييم الكامل أبدًا."
+      },
+      "step2": {
+        "title": "اختر التقييمات",
+        "hint": "{role} · {type}. اختر تقييمًا واحدًا لكل مرشح؛ من 2 إلى 4 مرشحين.",
+        "search": "ابحث عن مرشح",
+        "from": "من",
+        "to": "إلى",
+        "selected": "تم اختيار {count} من {max}",
+        "remove": "إزالة {name}",
+        "empty": "لا توجد تقييمات مطابقة لهذه المرشحات.",
+        "attempts": "{count, plural, =1 {تقييم واحد} =2 {تقييمان} few {# تقييمات} other {# تقييمًا}}",
+        "needTwo": "اختر مرشحَين اثنين على الأقل."
+      },
+      "step3": {
+        "title": "نتائج المقارنة"
+      },
+      "tier": {
+        "FULL": "تقييم كامل",
+        "SCREENING": "فحص أولي"
+      },
+      "status": {
+        "COMPLETE": "مكتمل",
+        "HUMAN_REVIEW": "مراجعة بشرية"
+      },
+      "readiness": {
+        "READY": "جاهز",
+        "PARTIALLY_READY": "جاهزية جزئية",
+        "NOT_READY": "توجد فجوات جاهزية",
+        "INCOMPLETE": "أدلة غير كافية",
+        "PENDING": "قيد المراجعة"
+      },
+      "compare": "{count, plural, =0 {مقارنة} =1 {مقارنة} two {مقارنة مرشحَين} few {مقارنة # مرشحين} other {مقارنة # مرشحًا}}",
+      "comparing": "جارٍ المقارنة…",
+      "compareFailed": "تعذّر تحميل المقارنة. يرجى المحاولة مرة أخرى.",
+      "incompatible": "لا يمكن مقارنة هذه التقييمات معًا. اختر تقييمات من النوع نفسه.",
+      "overallScore": "الدرجة الإجمالية",
+      "scoreWithheld": "محجوبة حتى اكتمال المراجعة البشرية",
+      "readinessLevel": "مستوى الجاهزية",
+      "criticalIndicators": "المؤشرات الحرجة",
+      "criticalAllMet": "جميعها مستوفاة",
+      "criticalNotMet": "{count, plural, =1 {مؤشر واحد غير مستوفى} =2 {مؤشران غير مستوفيين} few {# مؤشرات غير مستوفاة} other {# مؤشرًا غير مستوفى}}",
+      "assessmentCoverage": "تغطية التقييم",
+      "humanReviewRequired": "تتطلب مراجعة بشرية",
+      "viewFullReport": "عرض التقرير الكامل",
+      "competencyComparison": "مقارنة الكفاءات",
+      "competency": "الكفاءة",
+      "classification": "التصنيف",
+      "classificationLabel": {
+        "CRITICAL": "حرجة",
+        "NON_CRITICAL": "غير حرجة",
+        "REQUIRED": "مطلوبة"
+      },
+      "keyDifferences": "أبرز الفروقات",
+      "radarChart": "مخطط الرادار",
+      "barChart": "المخطط الشريطي",
+      "notEnoughForRadar": "يحتاج مخطط الرادار إلى 3 كفاءات قابلة للمقارنة على الأقل.",
+      "exportPng": "PNG",
+      "exportPdf": "تصدير تقرير PDF",
+      "exportingPdf": "جارٍ إنشاء ملف PDF…",
+      "limitations": "حول هذه المقارنة",
+      "openPage": "مقارنة المرشحين"
+    }
   },
   "zodErrors": {
     "email_required": "البريد الإلكتروني مطلوب",

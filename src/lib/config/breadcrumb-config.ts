@@ -25,6 +25,7 @@ export const BUSINESS_BREADCRUMB_CONFIG: Record<string, string[]> = {
   
   
   '/dashboard/business/score-management': ['page_type', 'pages_list.business_management'],
+  '/dashboard/business/compare-candidates': ['page_type', 'pages_list.compare_candidates'],
  
 };
 
@@ -38,6 +39,8 @@ export const INDIVISUAL_BREADCRUMB_CONFIG: Record<string, string[]> = {
   '/dashboard/indivisual/assessments': ['page_type', 'pages_list.assessments_monitor'],
   '/dashboard/indivisual/reports': ['page_type', 'pages_list.reports_certificates'],
   '/dashboard/indivisual/profile': ['page_type', 'pages_list.profile_management'],
+  '/dashboard/indivisual/score-management': ['page_type', 'pages_list.assessments_monitor'],
+  '/dashboard/indivisual/compare-candidates': ['page_type', 'pages_list.compare_candidates'],
   '/dashboard/indivisual/payment': ['page_type', 'pages_list.packages_subscription'],
   '/dashboard/indivisual/notifications': ['page_type', 'pages_list.notifications'],
 };

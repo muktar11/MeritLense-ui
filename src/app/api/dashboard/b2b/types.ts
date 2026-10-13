@@ -122,14 +122,41 @@ export interface ComparisonCompetencyRow {
   tone: string;
 }
 
+export type EvaluationTier = 'FULL' | 'SCREENING';
+
+// One scored assessment a comparison can be built from (step 2).
+export interface ComparisonAssessment {
+  evaluation_id: string;
+  candidate_id: string;
+  candidate_name: string;
+  assessment_date: string; // YYYY-MM-DD
+  evaluation_tier: EvaluationTier;
+  review_status: 'COMPLETE' | 'HUMAN_REVIEW';
+  readiness_status: string;
+  // null while the result is held for human review.
+  overall_score: number | null;
+}
+
+export interface ComparisonCriticalIndicators {
+  failed_count: number;
+  failed_topics: string[];
+  override_triggered: boolean;
+}
+
 export interface ComparisonCandidateEntry {
   candidate_id: string;
   candidate_name: string;
   evaluation_id: string;
+  evaluation_tier: EvaluationTier | '';
+  evaluation_tier_display: string;
+  assessment_date: string;
+  overall_score: number | null;
+  score_withheld: boolean;
   readiness_status: string;
   readiness_display: string;
   assessment_coverage: number;
   requires_human_review: boolean;
+  critical_indicators: ComparisonCriticalIndicators;
   competencies: ComparisonCompetencyRow[];
 }
 
@@ -141,8 +168,10 @@ export interface ComparisonKeyDifference {
 export interface FullComparisonResult {
   role_code: string;
   role_name: string;
+  evaluation_tier: EvaluationTier | '';
   candidates: ComparisonCandidateEntry[];
   key_differences: ComparisonKeyDifference[];
+  limitations: string[];
 }
 
 export interface JobRoleDistribution {
