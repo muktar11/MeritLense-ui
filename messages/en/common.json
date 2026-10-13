@@ -2464,8 +2464,8 @@
         "analytics_insights": "Analytics & Insights",
         "performance_scorecard": "Performance Scorecard",
         "user_management": "User Management",
-        "business_management": "Scores",
-        "audit_logs": "Payment",
+        "business_management": "Assessment Results",
+        "audit_logs": "Billing & Payments",
         "notifications": "Notifications & Alerts",
         "system_configuration": "Company Profile"
       },
@@ -3520,10 +3520,10 @@
         "overview": "Dashboard ",
         "candidate_management": "Candidates",
         "evaluation_setup": "Evaluations",
-        "assessments_monitor": "Scores",
+        "assessments_monitor": "Assessment Results",
         "reports_certificates": "Reports & Certificates",
         "profile_management": "Profile",
-        "packages_subscription": "Packages & Subscription",
+        "packages_subscription": "Billing & Payments",
         "notifications": "Notifications",
         "analytics_insights": "Analytics & Insights"
       },
@@ -4561,7 +4561,15 @@
         "title": "Analytics & Insights",
         "subtitle": "Detailed evaluation, readiness and candidate analytics for your candidates."
       }
-    }
+    },
+    "accountTypes": {
+      "B2B": "Company Account",
+      "B2B_TEAM_MEMBER": "Team Member",
+      "B2C": "Individual Account",
+      "ADMIN": "Administrator",
+      "SUPERADMIN": "Super Administrator"
+    },
+    "accountMenu": "Account menu"
   },
   "zodErrors": {
     "email_required": "Email is required",
