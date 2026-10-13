@@ -12,8 +12,11 @@ import { Label } from "@/components/ui/label"
 import ProgressStepper from "../components/auth/progress-stepper"
 import TermsConsent from "../components/auth/terms-consent"
 import { useAuth } from "../../../../hooks/useAuth"
-import { NATIONALITIES, LANGUAGES } from "../../../../api/auth/endpoints"
-import { COUNTRIES } from "@/lib/countries"
+import { LANGUAGES } from "../../../../api/auth/endpoints"
+import { SearchableSelect } from "@/components/ui/searchable-select"
+import { PhoneInput, phoneIsValid } from "@/components/ui/phone-input"
+import { CityInput } from "@/components/ui/city-input"
+import { OTHER_COUNTRY, countryName, countryOptions } from "@/lib/geo"
 import { detectCountry, detectTimezone, suggestLanguageFromCountry } from "@/lib/location-detection"
 import type { B2CRegistrationData } from "@/app/api/auth/auth"
 
@@ -21,7 +24,7 @@ export default function CandidateRegistrationPage() {
   const t = useTranslations("auth_page.register_candidate")
   const tZod = useTranslations("zodErrors")
   const tConsent = useTranslations("auth_page.consent")
-  const tNationalities = useTranslations("dashboard.indivisual.settings.edit-profile-tab.nationalities")
+  const tLists = useTranslations("auth_page.lists")
   const tLanguages = useTranslations("dashboard.indivisual.settings.edit-profile-tab.languages")
   const router = useRouter()
   const pathname = usePathname()
@@ -39,9 +42,12 @@ export default function CandidateRegistrationPage() {
     confirm_password: "",
     passport_id: "",
     nationality: "",
+    nationality_other: "",
     preferred_language: "EN",
     country_of_residence: "",
+    country_of_residence_other: "",
     target_market: "",
+    target_city: "",
     timezone: "",
     phone_number: "",
     address: "",
@@ -93,6 +99,31 @@ export default function CandidateRegistrationPage() {
     }
   }
 
+  // For the custom pickers (no native change event).
+  const setField = (name: string, value: string) => {
+    touchedFields.current.add(name)
+    setFormData((prev) => {
+      const next = { ...prev, [name]: value }
+      // The hiring market follows the country of residence until the user
+      // picks a different one.
+      if (name === "country_of_residence" && !touchedFields.current.has("target_market") && value !== OTHER_COUNTRY) {
+        next.target_market = value
+      }
+      return next
+    })
+    setFormErrors((prev) => {
+      if (!prev[name]) return prev
+      const next = { ...prev }
+      delete next[name]
+      return next
+    })
+  }
+
+  const countries = countryOptions(locale)
+  const countryChoices = countries.map((c) => ({ value: c.code, label: c.name, keywords: c.englishName }))
+  const otherChoice = [{ value: OTHER_COUNTRY, label: countryName(OTHER_COUNTRY, locale), keywords: "other" }]
+  const pickerText = { searchPlaceholder: tLists("search"), emptyText: tLists("noMatches") }
+
   const validateForm = (): boolean => {
     const errors: Record<string, string> = {}
 
@@ -111,7 +142,14 @@ export default function CandidateRegistrationPage() {
 
     if (!formData.passport_id) errors.passport_id = t("errors.passportRequired")
     if (!formData.nationality) errors.nationality = t("errors.nationalityRequired")
+    if (formData.nationality === OTHER_COUNTRY && !formData.nationality_other.trim()) {
+      errors.nationality_other = tLists("otherRequired")
+    }
+    if (formData.country_of_residence === OTHER_COUNTRY && !formData.country_of_residence_other.trim()) {
+      errors.country_of_residence_other = tLists("otherRequired")
+    }
     if (!formData.phone_number) errors.phone_number = t("errors.phoneRequired")
+    else if (!phoneIsValid(formData.phone_number)) errors.phone_number = tLists("phoneInvalid")
     if (!termsAccepted) errors.terms_accepted = tConsent("required")
     setFormErrors(errors)
     return Object.keys(errors).length === 0
@@ -129,9 +167,13 @@ export default function CandidateRegistrationPage() {
       confirm_password: formData.confirm_password,
       passport_id: formData.passport_id,
       nationality: formData.nationality,
+      nationality_other: formData.nationality === OTHER_COUNTRY ? formData.nationality_other.trim() : undefined,
       preferred_language: formData.preferred_language,
       country_of_residence: formData.country_of_residence || undefined,
-      target_market: formData.target_market || undefined,
+      country_of_residence_other:
+        formData.country_of_residence === OTHER_COUNTRY ? formData.country_of_residence_other.trim() : undefined,
+      target_market: formData.target_market && formData.target_market !== OTHER_COUNTRY ? formData.target_market : undefined,
+      target_city: formData.target_city.trim() || undefined,
       timezone: formData.timezone || undefined,
       phone_number: formData.phone_number,
       address: formData.address || undefined,
@@ -221,12 +263,12 @@ export default function CandidateRegistrationPage() {
                       value={formData.password}
                       onChange={handleInputChange}
                       placeholder={t("placeholders.password")}
-                      className={`h-11 pr-10 ${formErrors.password ? "border-destructive" : ""}`}
+                      className={`h-11 pe-10 ${formErrors.password ? "border-destructive" : ""}`}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                       tabIndex={-1}
                     >
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -244,12 +286,12 @@ export default function CandidateRegistrationPage() {
                       value={formData.confirm_password}
                       onChange={handleInputChange}
                       placeholder={t("placeholders.confirmPassword")}
-                      className={`h-11 pr-10 ${formErrors.confirm_password ? "border-destructive" : ""}`}
+                      className={`h-11 pe-10 ${formErrors.confirm_password ? "border-destructive" : ""}`}
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      className="absolute end-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                       tabIndex={-1}
                     >
                       {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -279,14 +321,19 @@ export default function CandidateRegistrationPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone_number">{t("fields.phoneNumber")} *</Label>
-                  <Input
+                  <PhoneInput
                     id="phone_number"
-                    name="phone_number"
-                    type="tel"
                     value={formData.phone_number}
-                    onChange={handleInputChange}
-                    placeholder={t("placeholders.phoneNumber")}
-                    className={`h-11 ${formErrors.phone_number ? "border-destructive" : ""}`}
+                    onChange={(value) => setField("phone_number", value)}
+                    defaultCountry={formData.country_of_residence !== OTHER_COUNTRY ? formData.country_of_residence : undefined}
+                    locale={locale}
+                    invalid={Boolean(formErrors.phone_number)}
+                    labels={{
+                      country: tLists("countryCode"),
+                      search: tLists("searchCountryCode"),
+                      empty: tLists("noMatches"),
+                      number: t("fields.phoneNumber"),
+                    }}
                   />
                   <FieldError field="phone_number" />
                 </div>
@@ -307,20 +354,28 @@ export default function CandidateRegistrationPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="nationality">{t("fields.nationality")} *</Label>
-                  <select
+                  <SearchableSelect
                     id="nationality"
-                    name="nationality"
                     value={formData.nationality}
-                    onChange={handleInputChange}
-                    className={`flex h-11 w-full rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-1 focus-visible:ring-primary/50 ${
-                      formErrors.nationality ? "border-destructive" : "border-input"
-                    }`}
-                  >
-                    <option value="">{t("placeholders.selectNationality")}</option>
-                    {NATIONALITIES.map((nation) => (
-                      <option key={nation.key} value={nation.key}>{tNationalities(nation.key)}</option>
-                    ))}
-                  </select>
+                    options={countryChoices}
+                    pinnedLast={otherChoice}
+                    onChange={(value) => setField("nationality", value)}
+                    placeholder={t("placeholders.selectNationality")}
+                    invalid={Boolean(formErrors.nationality)}
+                    {...pickerText}
+                  />
+                  {formData.nationality === OTHER_COUNTRY && (
+                    <Input
+                      id="nationality_other"
+                      name="nationality_other"
+                      value={formData.nationality_other}
+                      onChange={handleInputChange}
+                      placeholder={tLists("specifyNationality")}
+                      aria-label={tLists("specifyNationality")}
+                      className={`h-11 ${formErrors.nationality_other ? "border-destructive" : ""}`}
+                    />
+                  )}
+                  <FieldError field="nationality_other" />
                   <FieldError field="nationality" />
                 </div>
                 <div className="space-y-2">
@@ -343,34 +398,52 @@ export default function CandidateRegistrationPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="country_of_residence">{t("fields.countryOfResidence")}</Label>
-                  <select
+                  <SearchableSelect
                     id="country_of_residence"
-                    name="country_of_residence"
                     value={formData.country_of_residence}
-                    onChange={handleInputChange}
-                    className="flex h-11 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-1 focus-visible:ring-primary/50"
-                  >
-                    <option value="">{t("placeholders.selectCountry")}</option>
-                    {COUNTRIES.map((c) => (
-                      <option key={c.key} value={c.key}>{c.label}</option>
-                    ))}
-                  </select>
+                    options={countryChoices}
+                    pinnedLast={otherChoice}
+                    onChange={(value) => setField("country_of_residence", value)}
+                    placeholder={t("placeholders.selectCountry")}
+                    {...pickerText}
+                  />
+                  {formData.country_of_residence === OTHER_COUNTRY && (
+                    <Input
+                      id="country_of_residence_other"
+                      name="country_of_residence_other"
+                      value={formData.country_of_residence_other}
+                      onChange={handleInputChange}
+                      placeholder={tLists("specifyCountry")}
+                      aria-label={tLists("specifyCountry")}
+                      className={`h-11 ${formErrors.country_of_residence_other ? "border-destructive" : ""}`}
+                    />
+                  )}
+                  <FieldError field="country_of_residence_other" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="target_market">{t("fields.targetMarket")}</Label>
-                  <select
+                  <SearchableSelect
                     id="target_market"
-                    name="target_market"
                     value={formData.target_market}
-                    onChange={handleInputChange}
-                    className="flex h-11 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-1 focus-visible:ring-primary/50"
-                  >
-                    <option value="">{t("placeholders.selectTargetMarket")}</option>
-                    {COUNTRIES.map((c) => (
-                      <option key={c.key} value={c.key}>{c.label}</option>
-                    ))}
-                  </select>
+                    options={countryChoices}
+                    onChange={(value) => setField("target_market", value)}
+                    placeholder={t("placeholders.selectTargetMarket")}
+                    {...pickerText}
+                  />
+                  <p className="text-xs text-muted-foreground">{tLists("targetMarketHint")}</p>
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="target_city">{tLists("targetCity")}</Label>
+                <CityInput
+                  id="target_city"
+                  countryCode={formData.target_market}
+                  value={formData.target_city}
+                  onChange={(value) => setField("target_city", value)}
+                  locale={locale}
+                  labels={{ select: tLists("targetCityPlaceholder"), search: tLists("searchCity"), type: tLists("typeCity"), empty: tLists("noMatches") }}
+                />
               </div>
             </div>
 
