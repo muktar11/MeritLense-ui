@@ -148,4 +148,9 @@ export interface MonthlyActivity {
 }
 
 // Same shape as the B2B readiness-distribution response.
-export type { ReadinessDistribution, ReadinessStatus } from '@/app/api/dashboard/b2b/types';
+export type {
+  DashboardLayout,
+  ReadinessDistribution,
+  ReadinessStatus,
+  RequiresAttention,
+} from '@/app/api/dashboard/b2b/types';

@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { MetricCard } from "./metric-card";
 import { CustomizeDashboardDialog } from "./widgets/customize-dashboard-dialog";
-import { DEFAULT_WIDGETS, WidgetGrid, isWidgetId, type WidgetId } from "./widgets/widget-registry";
+import { B2B_WIDGET_CATALOG, DEFAULT_WIDGETS, WidgetGrid, isWidgetId, type WidgetId } from "./widgets/widget-registry";
 import b2bDashboardService from "@/app/api/dashboard/b2b/endpoints";
 import paymentService from "@/app/api/payments/endpoints";
 import type { DashboardLayout, DashboardStats } from "@/app/api/dashboard/b2b/types";
@@ -240,6 +240,7 @@ export function Dashboard() {
         <CustomizeDashboardDialog
           open={customizeOpen}
           onOpenChange={setCustomizeOpen}
+          catalog={B2B_WIDGET_CATALOG}
           widgets={widgets}
           onSave={saveLayout}
           onReset={resetLayout}

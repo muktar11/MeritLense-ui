@@ -4493,7 +4493,58 @@
           "pendingEvaluation": "تقييم معلق",
           "newReport": "تقرير جديد جاهز"
         },
-        "viewAnalytics": "عرض التحليلات"
+        "viewAnalytics": "عرض التحليلات",
+        "widgets": {
+          "requires_attention": {
+            "title": "يتطلب الانتباه",
+            "description": "تقييمات تحتاج إلى مراجعة بشرية أو تنقصها الأدلة"
+          },
+          "readiness_index": {
+            "title": "مؤشر الجاهزية العام",
+            "description": "التقييمات المكتملة حسب نتيجة الجاهزية"
+          },
+          "recent_candidates": {
+            "title": "قائمة المرشحين",
+            "description": "أحدث المرشحين لديك ونتائجهم"
+          },
+          "recent_evaluations": {
+            "title": "إدارة التقييمات",
+            "description": "التقييمات المجدولة والجارية والمكتملة"
+          },
+          "evaluation_status": {
+            "title": "حالة التقييمات",
+            "description": "التقييمات المجدولة والمكتملة والملغاة"
+          },
+          "evaluation_trend": {
+            "title": "اتجاهات التقييم",
+            "description": "نشاط التقييم اليومي خلال آخر 30 يومًا"
+          },
+          "performance_trend": {
+            "title": "اتجاهات الأداء",
+            "description": "متوسط الدرجات خلال آخر 30 يومًا"
+          },
+          "job_role_distribution": {
+            "title": "التقييمات حسب الوظيفة",
+            "description": "توزيع تقييماتك على الوظائف"
+          },
+          "language_distribution": {
+            "title": "توزيع اللغات",
+            "description": "التقييمات حسب لغة المقابلة"
+          },
+          "time_of_day": {
+            "title": "توقيت التقييمات خلال اليوم",
+            "description": "الأوقات التي تُجرى فيها التقييمات"
+          },
+          "monthly_activity": {
+            "title": "النشاط الشهري",
+            "description": "المرشحون والتقييمات والشهادات شهريًا"
+          },
+          "candidate_comparison": {
+            "title": "مقارنة المرشحين",
+            "description": "متوسط درجات مرشحيك جنبًا إلى جنب"
+          }
+        },
+        "customizeDescription": "اختر الأدوات التي تظهر في لوحة التحكم الخاصة بك وحدّد ترتيبها. هذا الترتيب يظهر لك وحدك."
       },
       "pointConsumption": {
         "title": "استهلاك التقييمات حسب الخدمة",
