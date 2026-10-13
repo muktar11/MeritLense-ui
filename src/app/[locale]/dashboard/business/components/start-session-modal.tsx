@@ -6,12 +6,13 @@ import { useLocale, useTranslations } from "next-intl"
 import Image from "next/image"
 import {
   X, Loader2, AlertCircle, Search, ChevronDown, LayoutGrid, Users,
-  User, FileText, Clock, Link2, Stethoscope, House, ConciergeBell, Shield, Settings, Truck,
+  User, FileText, Link2, Stethoscope, House, ConciergeBell, Shield, Settings, Truck,
   Wrench, Leaf, Briefcase, Brush, Baby, UserRound, Accessibility, HeartHandshake, Pill,
   HeartPulse, BedDouble, UtensilsCrossed, Ticket, SprayCan, Factory, Package, Car, HardHat,
-  Wheat, PawPrint, ClipboardList, type LucideIcon,
+  Wheat, PawPrint, ClipboardList, Globe, Info, FileCheck2, type LucideIcon,
 } from "lucide-react"
 import SessionCreatedPanel from "./session-created-panel"
+import { apiErrorMessage } from "@/lib/api-error-message"
 import type { Candidate } from "@/app/api/candidates/types"
 import interviewService from "@/app/api/interviews/endpoints"
 import paymentService from "@/app/api/payments/endpoints"
@@ -63,6 +64,8 @@ const ROLE_LUCIDE_ICONS: Record<string, LucideIcon> = {
 }
 
 const TIER_ORDER: EvaluationTier[] = ["FULL", "SCREENING", "BOTH"]
+type AssessmentType = Exclude<EvaluationTier, "BOTH">
+const LANGUAGE_ORDER = ["EN", "AR"]
 
 interface StartSessionModalProps {
   isOpen: boolean
@@ -90,12 +93,15 @@ export default function StartSessionModal({
   const [loadingConfigs, setLoadingConfigs] = useState(false)
   const [selectedCandidateId, setSelectedCandidateId] = useState("")
   const [selectedRoleCode, setSelectedRoleCode] = useState("")
-  const [selectedConfigId, setSelectedConfigId] = useState("")
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState("")
   const [createdSession, setCreatedSession] = useState<InterviewSession | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
-  const [tierFilter, setTierFilter] = useState<EvaluationTier | "ALL">("ALL")
+  // Chosen explicitly by the employer - never pre-picked (a silent default
+  // tier is exactly what the Screening/Full regression tests guard against).
+  const [assessmentType, setAssessmentType] = useState<AssessmentType | null>(null)
+  // "" = follow the candidate's preferred language.
+  const [language, setLanguage] = useState("")
   const [activeCategory, setActiveCategory] = useState<string>("all")
 
   useEffect(() => {
@@ -107,11 +113,11 @@ export default function StartSessionModal({
       }
     } else {
       setSelectedRoleCode("")
-      setSelectedConfigId("")
       setError("")
       setCreatedSession(null)
       setSearchQuery("")
-      setTierFilter("ALL")
+      setAssessmentType(null)
+      setLanguage("")
       setActiveCategory("all")
       if (!preselectedCandidate) {
         setSelectedCandidateId("")
@@ -165,7 +171,6 @@ export default function StartSessionModal({
   const roleLabel = (role: RolePackage) => t.has(`roles.${role.role_code}`) ? t(`roles.${role.role_code}`) : role.role_name
 
   const selectedRole = rolePackages.find(r => r.role_code === selectedRoleCode)
-  const selectedConfig = configs.find(c => c.id === selectedConfigId)
   const showUpgradePrompt = selectedRole && selectedRole.coverage !== null && selectedRole.coverage !== 'FULL'
   const recommendedPackage = selectedRole
     ? recommendPackageForFullCoverage(selectedRole.role_code, coverageRows, PACKAGE_ORDER_B2B)
@@ -176,13 +181,10 @@ export default function StartSessionModal({
     : tier === 'BOTH' ? t("assessmentTypeBoth")
     : t("assessmentTypeScreening")
 
-  // With a tier filter active, only that tier's configs count for a role -
-  // so the card's duration/type and the auto-selection below reflect what
-  // the user actually filtered to.
-  const visibleConfigs = (pkg: RolePackage) =>
-    tierFilter === "ALL" ? pkg.configs : pkg.configs.filter(c => c.evaluation_tier === tierFilter)
-
-  const availableTiers = TIER_ORDER.filter(tier => configs.some(c => c.evaluation_tier === tier))
+  // Configs matching the chosen assessment type (a BOTH config serves either).
+  const matchesType = (cfg: InterviewConfig) =>
+    !assessmentType || cfg.evaluation_tier === assessmentType || cfg.evaluation_tier === "BOTH"
+  const visibleConfigs = (pkg: RolePackage) => pkg.configs.filter(matchesType)
 
   const categoryOf = (roleCode: string) =>
     ROLE_CATEGORIES.find(c => c.roles.includes(roleCode))?.key ?? OTHER_CATEGORY.key
@@ -220,28 +222,6 @@ export default function StartSessionModal({
   const handleRoleSelect = (roleCode: string) => {
     setSelectedRoleCode(roleCode)
     setError("")
-    const pkg = rolePackages.find(r => r.role_code === roleCode)
-    const roleConfigs = pkg ? visibleConfigs(pkg) : []
-    // Only auto-select when there's exactly one real option. Silently
-    // pre-picking a tier (previously always preferring FULL) when there
-    // were multiple configs to choose from short-circuited the Interview
-    // Depth step the user should make explicitly - and since that step's
-    // button group only renders when there's more than one config, it
-    // could vanish entirely, making role selection feel like it skipped
-    // straight past a step the user never actually got to answer.
-    setSelectedConfigId(roleConfigs.length === 1 ? roleConfigs[0].id : "")
-  }
-
-  // Distinguishes configs that would otherwise show the identical tier
-  // label (e.g. two FULL-tier configs in different languages) so the
-  // Interview Depth buttons never look like repeated/duplicate options.
-  const depthTierLabel = (cfg: InterviewConfig, siblings: InterviewConfig[]) => {
-    const tier =
-      cfg.evaluation_tier === 'FULL' ? t("depthTierFull")
-      : cfg.evaluation_tier === 'BOTH' ? t("depthTierBoth")
-      : t("depthTierScreening")
-    const sameTierCount = siblings.filter(c => c.evaluation_tier === cfg.evaluation_tier).length
-    return sameTierCount > 1 ? t("depthTierWithLanguage", { tier, language: cfg.language }) : tier
   }
 
   const coverageLabel = (coverage: CoverageLevel | null) => {
@@ -254,8 +234,13 @@ export default function StartSessionModal({
   }
 
   const handleSubmit = async () => {
-    if (!selectedCandidateId || !selectedConfigId) {
-      setError(t("selectCandidateAndPackageError"))
+    if (!selectedCandidateId || !assessmentType || !selectedRole || !selectedConfig) {
+      setError(
+        !selectedCandidateId ? t("selectCandidateError")
+        : !assessmentType ? t("selectAssessmentTypeError")
+        : !selectedRole ? t("selectRoleError")
+        : t("noSetupForLanguageError", { language: languageName(effectiveLanguage) })
+      )
       return
     }
     setSubmitting(true)
@@ -263,18 +248,14 @@ export default function StartSessionModal({
     try {
       const session = await interviewService.createSession({
         candidate_id: selectedCandidateId,
-        config_id: selectedConfigId,
+        config_id: selectedConfig.id,
       }, locale)
       // The candidate starts the assessment only after completing consent,
       // device, verbal-confirmation, privacy, and identity prechecks.
       setCreatedSession(session)
       onSuccess?.(session)
-    } catch (err: any) {
-      const msg =
-        err?.response?.data?.detail ??
-        err?.detail ??
-        t("createSessionFailedError")
-      setError(msg)
+    } catch (err) {
+      setError(apiErrorMessage(err) || t("createSessionFailedError"))
     } finally {
       setSubmitting(false)
     }
@@ -293,7 +274,19 @@ export default function StartSessionModal({
   const activeCandidateObj =
     preselectedCandidate ?? candidates.find(c => c.id === selectedCandidateId)
 
-  const selectedRoleConfigs = selectedRole ? visibleConfigs(selectedRole) : []
+  const selectedRoleConfigs = selectedRole && assessmentType ? visibleConfigs(selectedRole) : []
+  // Languages this role/type is actually set up in (EN/AR today; more come
+  // with the interview page's translation support).
+  const languagePool = selectedRoleConfigs.length ? selectedRoleConfigs : configs.filter(matchesType)
+  const availableLanguages = LANGUAGE_ORDER.filter(code => languagePool.some(c => (c.language || "EN").toUpperCase() === code))
+  const preferredLanguage = (activeCandidateObj?.preferred_language || "").toUpperCase()
+  const effectiveLanguage =
+    (language && availableLanguages.includes(language) && language) ||
+    (availableLanguages.includes(preferredLanguage) && preferredLanguage) ||
+    availableLanguages[0] ||
+    ""
+  const selectedConfig = selectedRoleConfigs.find(c => (c.language || "EN").toUpperCase() === effectiveLanguage)
+  const languageName = (code: string) => (t.has(`languages.${code}`) ? t(`languages.${code}`) : code)
   const SelectedRoleIcon = selectedRole ? ROLE_LUCIDE_ICONS[selectedRole.role_code] ?? ClipboardList : User
 
   const sidebarItems = [
@@ -302,10 +295,20 @@ export default function StartSessionModal({
   ]
 
   const summaryItems = [
-    { icon: SelectedRoleIcon, label: t("selectedRoleLabel"), value: selectedRole ? roleLabel(selectedRole) : t("notSelected"), strong: true },
-    { icon: FileText, label: t("assessmentTypeLabel"), value: selectedConfig ? tierLabel(selectedConfig.evaluation_tier) : t("notSelected"), strong: false },
-    { icon: Clock, label: t("footerDurationLabel"), value: selectedConfig ? t("durationMinutes", { value: selectedConfig.duration_minutes }) : t("notSelected"), strong: false },
+    { icon: User, label: t("footerCandidateLabel"), value: activeCandidateObj?.full_name ?? t("notSelected"), sub: activeCandidateObj?.email, strong: true },
+    { icon: FileText, label: t("assessmentTypeLabel"), value: assessmentType ? tierLabel(assessmentType) : t("notSelected"), strong: false },
+    { icon: SelectedRoleIcon, label: t("selectedRoleLabel"), value: selectedRole ? roleLabel(selectedRole) : t("notSelected"), strong: false },
+    { icon: Globe, label: t("footerLanguageLabel"), value: effectiveLanguage ? languageName(effectiveLanguage) : t("notSelected"), strong: false },
   ]
+  const stepHeader = (n: number, title: string, subtitle: string) => (
+    <div className="flex items-start gap-3 mb-3">
+      <span className="w-9 h-9 rounded-full bg-purple-600 text-white font-bold flex items-center justify-center shrink-0">{n}</span>
+      <div>
+        <h3 className="text-base font-bold text-gray-900">{title} <span className="text-red-500">*</span></h3>
+        <p className="text-sm text-gray-500">{subtitle}</p>
+      </div>
+    </div>
+  )
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none p-2 sm:p-4">
@@ -391,13 +394,13 @@ export default function StartSessionModal({
 
               {/* Main column */}
               <div className="flex-1 min-w-0 overflow-y-auto px-4 sm:px-5 py-4 space-y-5">
-                {/* Candidate */}
+                {/* Step 1: Candidate */}
+                <section className="rounded-2xl border border-gray-100 p-4">
+                {stepHeader(1, t("candidateLabel"), t("candidateStepSubtitle"))}
                 {!preselectedCandidate ? (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {t("candidateLabel")} <span className="text-red-500">*</span>
-                    </label>
                     <select
+                      aria-label={t("candidateLabel")}
                       value={selectedCandidateId}
                       onChange={e => setSelectedCandidateId(e.target.value)}
                       className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-purple-500"
@@ -420,6 +423,49 @@ export default function StartSessionModal({
                     </p>
                   </div>
                 )}
+                </section>
+
+                {/* Step 2: Assessment type */}
+                <section className="rounded-2xl border border-gray-100 p-4">
+                  {stepHeader(2, t("assessmentTypeLabel"), t("assessmentTypeSubtitle"))}
+                  <div role="radiogroup" aria-label={t("assessmentTypeLabel")} className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {(["SCREENING", "FULL"] as const).map(type => {
+                      const isSelected = assessmentType === type
+                      return (
+                        <button
+                          key={type}
+                          type="button"
+                          role="radio"
+                          aria-checked={isSelected}
+                          onClick={() => {
+                            setAssessmentType(type)
+                            setError("")
+                          }}
+                          className={`flex items-start gap-3 p-4 rounded-xl border text-start transition-all ${
+                            isSelected ? "border-purple-500 bg-purple-50 ring-1 ring-purple-500" : "border-gray-200 bg-white hover:border-purple-200"
+                          }`}
+                        >
+                          <span className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${isSelected ? "border-purple-600" : "border-gray-400"}`}>
+                            {isSelected && <span className="w-2.5 h-2.5 rounded-full bg-purple-600" />}
+                          </span>
+                          <span className="w-11 h-11 rounded-xl bg-purple-50 flex items-center justify-center shrink-0">
+                            {type === "FULL" ? <FileCheck2 className="w-5 h-5 text-purple-600" /> : <FileText className="w-5 h-5 text-purple-600" />}
+                          </span>
+                          <span className="min-w-0">
+                            <span className="block text-sm font-semibold text-gray-900">{tierLabel(type)}</span>
+                            <span className="block text-sm text-gray-500 mt-0.5">
+                              {type === "FULL" ? t("fullCardBody") : t("screeningCardBody")}
+                            </span>
+                          </span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                </section>
+
+                {/* Step 3: Role */}
+                <section className="rounded-2xl border border-gray-100 p-4 space-y-4">
+                {stepHeader(3, t("roleStepTitle"), t("roleStepSubtitle"))}
 
                 {loadingConfigs ? (
                   <div className="flex items-center gap-2 text-gray-500 py-6">
@@ -444,19 +490,6 @@ export default function StartSessionModal({
                           placeholder={t("searchPlaceholder")}
                           className="w-full ps-12 pe-4 py-3 border border-purple-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
-                      </div>
-                      <div className="relative sm:w-64">
-                        <select
-                          value={tierFilter}
-                          onChange={e => setTierFilter(e.target.value as EvaluationTier | "ALL")}
-                          className="w-full appearance-none ps-4 pe-10 py-3 border border-gray-200 rounded-xl text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        >
-                          <option value="ALL">{t("assessmentTypeAll")}</option>
-                          {availableTiers.map(tier => (
-                            <option key={tier} value={tier}>{tierLabel(tier)}</option>
-                          ))}
-                        </select>
-                        <ChevronDown className="absolute end-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
                       </div>
                     </div>
 
@@ -541,36 +574,46 @@ export default function StartSessionModal({
                     )}
                   </>
                 )}
+                </section>
+
+                {/* Step 4: Candidate language */}
+                <section className="rounded-2xl border border-gray-100 p-4">
+                  {stepHeader(4, t("languageStepTitle"), t("languageStepSubtitle"))}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-start">
+                    <div className="relative">
+                      <Globe className="absolute start-4 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-600 pointer-events-none" />
+                      <select
+                        aria-label={t("languageStepTitle")}
+                        value={effectiveLanguage}
+                        onChange={e => setLanguage(e.target.value)}
+                        disabled={availableLanguages.length === 0}
+                        className="w-full appearance-none ps-12 pe-10 py-3 border border-gray-200 rounded-xl text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      >
+                        {availableLanguages.map(code => (
+                          <option key={code} value={code}>{languageName(code)}</option>
+                        ))}
+                      </select>
+                      <ChevronDown className="absolute end-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+                    </div>
+                    <div className="flex items-start gap-2 rounded-xl bg-purple-50/70 p-3 text-sm text-gray-700">
+                      <Info className="w-5 h-5 text-purple-600 shrink-0 mt-0.5" />
+                      <span>
+                        {t("languageInfoLink")}
+                        {preferredLanguage && availableLanguages.includes(preferredLanguage) && (
+                          <span className="block text-xs text-gray-500 mt-1">{t("languageFromProfile")}</span>
+                        )}
+                      </span>
+                    </div>
+                  </div>
+                </section>
               </div>
             </div>
 
             {/* Depth chooser, upgrade prompt and errors sit pinned above the
                 footer, so they're visible as soon as a role is picked rather
                 than somewhere below the fold of the role grid. */}
-            {(selectedRoleConfigs.length > 1 || showUpgradePrompt || error) && (
+            {(showUpgradePrompt || error) && (
               <div className="shrink-0 border-t border-gray-100 px-4 sm:px-6 py-3 space-y-3 max-h-[30vh] overflow-y-auto">
-                {selectedRoleConfigs.length > 1 && (
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                    <span className="text-xs font-medium text-gray-600 shrink-0">{t("interviewDepthLabel")}</span>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedRoleConfigs.map(cfg => (
-                        <button
-                          key={cfg.id}
-                          type="button"
-                          onClick={() => setSelectedConfigId(cfg.id)}
-                          className={`py-1.5 px-3 rounded-lg border text-xs font-medium transition-all ${
-                            selectedConfigId === cfg.id
-                              ? "border-purple-500 bg-purple-50 text-purple-700"
-                              : "border-gray-200 text-gray-600 hover:border-gray-300"
-                          }`}
-                        >
-                          {depthTierLabel(cfg, selectedRoleConfigs)}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
                 {showUpgradePrompt && (
                   <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
                     <div className="flex gap-3">
@@ -611,12 +654,12 @@ export default function StartSessionModal({
             {/* Footer: selection summary + actions */}
             <div className="shrink-0 border-t border-gray-100 px-4 sm:px-6 py-3 sm:py-4 flex flex-col lg:flex-row lg:items-center gap-4">
               {/* Hidden on phones, where the selected card itself shows the same info. */}
-              <div className="hidden sm:flex flex-1 flex-wrap items-center gap-x-6 gap-y-3 min-w-0">
+              <div className="hidden sm:grid flex-1 grid-cols-2 xl:grid-cols-4 items-center gap-x-4 gap-y-3 min-w-0">
                 {summaryItems.map((item, i) => {
                   const Icon = item.icon
                   return (
-                    <div key={i} className={`flex items-center gap-3 min-w-0 ${i > 0 ? "sm:border-s sm:border-gray-100 sm:ps-6" : ""}`}>
-                      <span className="w-11 h-11 rounded-xl bg-purple-50 flex items-center justify-center shrink-0">
+                    <div key={i} className={`flex items-center gap-2.5 min-w-0 ${i > 0 ? "xl:border-s xl:border-gray-100 xl:ps-4" : ""}`}>
+                      <span className="w-9 h-9 rounded-xl bg-purple-50 flex items-center justify-center shrink-0">
                         <Icon className="w-5 h-5 text-purple-600" strokeWidth={1.75} />
                       </span>
                       <span className="min-w-0">
@@ -624,6 +667,7 @@ export default function StartSessionModal({
                         <span className={`block truncate text-gray-900 ${item.strong ? "text-base font-bold" : "text-sm font-medium"}`}>
                           {item.value}
                         </span>
+                        {item.sub && <span className="block truncate text-xs text-gray-500">{item.sub}</span>}
                       </span>
                     </div>
                   )
@@ -640,7 +684,7 @@ export default function StartSessionModal({
                 </button>
                 <button
                   onClick={handleSubmit}
-                  disabled={submitting || !selectedCandidateId || !selectedConfigId}
+                  disabled={submitting || !selectedCandidateId || !selectedConfig}
                   className="flex-1 lg:flex-none px-4 sm:px-6 py-2.5 sm:py-3 bg-purple-600 text-white rounded-xl text-sm font-semibold hover:bg-purple-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   {submitting ? (
