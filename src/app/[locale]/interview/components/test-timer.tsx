@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Clock } from "lucide-react";
 import { toast } from "sonner";
-import { getCandidateStrings } from "../candidate-lang";
+import { getCandidateStrings, resolveCandidateLanguage } from "../candidate-lang";
+import { getLanguageStrings } from "../language-strings";
 
 // Warning thresholds, each fired at most once as remainingSeconds crosses
 // it on the way down - a plain `<=` check alone would re-fire every tick
@@ -23,6 +24,7 @@ interface TestTimerProps {
 // fresh full duration.
 export function TestTimer({ startedAt, durationMinutes, onTimeUp, uiLanguage }: TestTimerProps) {
   const t = getCandidateStrings(uiLanguage).testTimer;
+  const tl = getLanguageStrings(resolveCandidateLanguage(uiLanguage));
   const deadlineRef = useRef(new Date(startedAt).getTime() + durationMinutes * 60_000);
   const [remainingSeconds, setRemainingSeconds] = useState(() =>
     Math.max(0, Math.round((deadlineRef.current - Date.now()) / 1000))
@@ -67,25 +69,37 @@ export function TestTimer({ startedAt, durationMinutes, onTimeUp, uiLanguage }: 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const minutes = Math.floor(remainingSeconds / 60);
-  const seconds = remainingSeconds % 60;
-  const low = remainingSeconds <= 120; // last 2 minutes - a gentle amber cue, distinct from the red integrity warnings
-  const critical = remainingSeconds <= 10; // final countdown - red and pulsing, same digits the badge already shows each tick
+  const totalSeconds = durationMinutes * 60;
+  const fmt = (value: number) => `${Math.floor(value / 60)}:${String(value % 60).padStart(2, "0")}`;
+  const low = remainingSeconds <= 120; // last 2 minutes - amber
+  const critical = remainingSeconds <= 30; // final seconds - red
+  const percentLeft = totalSeconds > 0 ? Math.max(0, Math.min(100, (remainingSeconds / totalSeconds) * 100)) : 0;
+  const tone = critical ? "text-red-700" : low ? "text-amber-700" : "text-gray-900";
+  const bar = critical ? "bg-red-500" : low ? "bg-amber-500" : "bg-purple-600";
 
   return (
     <div
-      className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium border shrink-0 transition-colors ${
-        critical
-          ? "bg-red-50 border-red-300 text-red-700 animate-pulse"
-          : low
-          ? "bg-amber-50 border-amber-200 text-amber-700"
-          : "bg-white border-gray-200 text-gray-700"
+      role="timer"
+      aria-live="off"
+      aria-label={`${tl.timeRemaining}: ${fmt(remainingSeconds)}`}
+      className={`flex min-w-[15rem] items-center gap-3 rounded-2xl border px-4 py-3 shadow-sm ${
+        critical ? "border-red-200 bg-red-50" : low ? "border-amber-200 bg-amber-50" : "border-purple-100 bg-purple-50/70"
       }`}
     >
-      <Clock className="w-4 h-4" />
-      <span className={critical ? "text-base font-bold tabular-nums" : "tabular-nums"}>
-        {critical ? seconds : t.remaining(minutes, seconds.toString().padStart(2, "0"))}
-      </span>
+      <Clock className={`h-6 w-6 shrink-0 ${critical ? "text-red-600" : low ? "text-amber-600" : "text-purple-600"}`} />
+      <div className="min-w-0 flex-1">
+        <p className="text-xs text-gray-600">{tl.timeRemaining}</p>
+        <p className={`font-bold tabular-nums ${tone} ${critical ? "animate-pulse" : ""}`} dir="ltr">
+          <span className="text-2xl">{fmt(remainingSeconds)}</span>
+          <span className="ms-1 text-sm font-medium text-gray-500">/ {fmt(totalSeconds)}</span>
+        </p>
+        <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-white/80" dir="ltr">
+          <div className={`h-full ${bar} transition-[width] duration-1000 ease-linear`} style={{ width: `${percentLeft}%` }} />
+        </div>
+      </div>
+      <p className="hidden max-w-[9rem] border-s border-purple-200 ps-3 text-xs leading-snug text-gray-500 lg:block">
+        {tl.timeContinues}
+      </p>
     </div>
   );
 }

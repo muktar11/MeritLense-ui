@@ -10,6 +10,7 @@ import type {
   IdentityVerificationResult,
   IntegrityEventResult,
   VerbalConfirmationResult,
+  LocalizedText,
 } from './types';
 
 class InterviewSessionClientService {
@@ -38,6 +39,30 @@ class InterviewSessionClientService {
     const response = await interviewSessionClient.post(`/${sessionId}/question-audio/`, {
       token,
       ...(languageCode ? { language_code: languageCode } : {}),
+    });
+    return response.data;
+  }
+
+  // One of the session's questions in another language - its approved
+  // EN/AR version, or a translation shown beside the original. Rejects
+  // (503) when no translation is available.
+  async getQuestionText(
+    sessionId: string,
+    token: string,
+    questionId: string,
+    language: string
+  ): Promise<LocalizedText> {
+    const response = await interviewSessionClient.get(`/${sessionId}/question-text/`, {
+      params: { token, question_id: questionId, language },
+    });
+    return response.data;
+  }
+
+  // The verbal-confirmation statement in a language (approved EN/AR, or a
+  // translation of the English).
+  async getVerbalStatement(sessionId: string, token: string, language: string): Promise<LocalizedText> {
+    const response = await interviewSessionClient.get(`/${sessionId}/prechecks/statement/`, {
+      params: { token, language },
     });
     return response.data;
   }

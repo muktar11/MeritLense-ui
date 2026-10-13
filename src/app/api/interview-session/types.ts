@@ -17,8 +17,13 @@ export interface InterviewSessionPublic {
   role_code: string;
   ui_language: string;
   candidate_language: string;
+  // The candidate's own language (any supported one) - the interview's
+  // default answer language. Older backends omit it.
+  preferred_language?: string;
   current_question_index: number;
   total_questions: number;
+  // All of the session's questions (ids used to pre-load translations).
+  questions?: { id: string }[];
   progress_percent: number;
   started_at: string | null;
   ended_at: string | null;
@@ -162,4 +167,14 @@ export interface IntegrityEventResult {
     reason: string;
   } | null;
   artifact: { id: string; artifact_type: string; file_url: string } | null;
+}
+
+// A question (or statement) in one language. kind: "original" = as asked in
+// this session; "approved" = the approved EN/AR version; "machine" = an
+// automatic translation.
+export interface LocalizedText {
+  language: string;
+  text: string;
+  kind: 'original' | 'approved' | 'machine';
+  provider: string;
 }

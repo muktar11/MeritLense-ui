@@ -19,6 +19,8 @@ import interviewSessionService from "@/app/api/interview-session/endpoints";
 import type { PrecheckStatus } from "@/app/api/interview-session/types";
 import { IdentityVerification } from "./identity-verification";
 import { candidateDir, getCandidateStrings, resolveCandidateLanguage, type CandidateStrings } from "../candidate-lang";
+import { getLanguageStrings, languageByKey, languageName } from "../language-strings";
+import { useInterviewAudio } from "../use-interview-audio";
 
 interface PrecheckFlowProps {
   sessionId: string;
@@ -36,13 +38,16 @@ interface PrecheckFlowProps {
   // step - the backend derives signatory_name from this same record
   // regardless of what the client sends, so this is display-only.
   candidateName?: string | null;
+  // The candidate's own language key (e.g. "AM"). When it isn't the
+  // statement's language, a translation is shown beneath the original.
+  preferredLanguage?: string | null;
 }
 
 type Step = "loading" | "consent" | "privacy" | "device-check" | "verbal-confirmation" | "identity";
 
 const VERBAL_CONFIRMATION_MAX_SECONDS = 15;
 
-export function PrecheckFlow({ sessionId, token, onContinue, isLiveCall, uiLanguage, candidateName }: PrecheckFlowProps) {
+export function PrecheckFlow({ sessionId, token, onContinue, isLiveCall, uiLanguage, candidateName, preferredLanguage }: PrecheckFlowProps) {
   const [step, setStep] = useState<Step>("loading");
   const [error, setError] = useState<string | null>(null);
   const t = getCandidateStrings(uiLanguage);
@@ -128,6 +133,9 @@ export function PrecheckFlow({ sessionId, token, onContinue, isLiveCall, uiLangu
       <VerbalConfirmationStep
         t={t}
         dir={dir}
+        sessionId={sessionId}
+        token={token}
+        preferredLanguage={preferredLanguage}
         error={error}
         onError={setError}
         onSubmit={async (blob, statement) => {
@@ -486,16 +494,38 @@ function VerbalConfirmationStep({
   onSubmit,
   t,
   dir,
+  sessionId,
+  token,
+  preferredLanguage,
 }: {
   error: string | null;
   onError: (message: string | null) => void;
   onSubmit: (blob: Blob, statement: { text: string; language: string }) => Promise<void>;
   t: CandidateStrings;
   dir: "ltr" | "rtl";
+  sessionId: string;
+  token: string;
+  preferredLanguage?: string | null;
 }) {
   const v = t.precheck.verbalConfirmation;
   const lang = dir === "rtl" ? "ar" : "en";
   const speech = useStatementSpeech(lang);
+  const tl = getLanguageStrings(lang);
+  const translationInfo = languageByKey(preferredLanguage);
+  const translationKey = translationInfo && translationInfo.key !== lang.toUpperCase() ? translationInfo.key : null;
+  const translationAudio = useInterviewAudio(sessionId, token);
+  const [translation, setTranslation] = useState<{ text: string } | "unavailable" | null>(null);
+  useEffect(() => {
+    if (!translationKey) return;
+    let active = true;
+    interviewSessionService
+      .getVerbalStatement(sessionId, token, translationKey)
+      .then((result) => active && setTranslation({ text: result.text }))
+      .catch(() => active && setTranslation("unavailable"));
+    return () => {
+      active = false;
+    };
+  }, [sessionId, token, translationKey]);
   const [state, setState] = useState<"idle" | "recording" | "recorded" | "submitting">("idle");
   const [elapsed, setElapsed] = useState(0);
   const [levels, setLevels] = useState<number[]>(() => Array(WAVE_BARS).fill(0.15));
@@ -555,6 +585,7 @@ function VerbalConfirmationStep({
 
   const startRecording = async () => {
     speech.stop();
+    translationAudio.stop();
     onError(null);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -610,6 +641,7 @@ function VerbalConfirmationStep({
   };
 
   const handleListen = () => {
+    translationAudio.stop();
     if (speech.speaking) return speech.stop();
     if (!speech.supported) return setSpeechNote(true);
     speech.speak(v.phrase);
@@ -648,6 +680,45 @@ function VerbalConfirmationStep({
         <p className="text-base font-medium leading-relaxed text-gray-900" lang={lang}>&ldquo;{v.phrase}&rdquo;</p>
         {speechNote && <p className="mt-2 text-xs text-gray-500">{v.audioUnavailable}</p>}
       </div>
+
+      {translationKey && translation && (
+        <div className="mb-4 rounded-xl bg-fuchsia-50/70 p-4 text-start">
+          <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+            <span className="rounded-md bg-fuchsia-100 px-2 py-0.5 text-xs font-semibold text-fuchsia-800">
+              {tl.verbalTranslationLabel(languageName(translationKey, lang))}
+            </span>
+            {translation !== "unavailable" && (
+              <button
+                type="button"
+                onClick={() => {
+                  speech.stop();
+                  if (translationAudio.state.key) return translationAudio.stop();
+                  void translationAudio.play("statement", {
+                    text: translation.text,
+                    languageCode: translationInfo?.code ?? translationKey.toLowerCase(),
+                    serverLanguageCode: null,
+                  });
+                }}
+                disabled={state === "recording"}
+                className="flex items-center gap-1.5 rounded-full border border-fuchsia-200 bg-white px-3 py-1 text-xs font-medium text-fuchsia-800 hover:bg-fuchsia-50 disabled:opacity-50"
+              >
+                {translationAudio.state.key ? <Square className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5 rtl:-scale-x-100" />}
+                {translationAudio.state.key ? tl.stop : tl.listenIn(languageName(translationKey, lang))}
+              </button>
+            )}
+          </div>
+          {translation === "unavailable" ? (
+            <p className="text-xs text-amber-800">{tl.statementTranslationUnavailable(languageName(translationKey, lang))}</p>
+          ) : (
+            <p className="text-base leading-relaxed text-gray-900" dir="auto" lang={translationKey.toLowerCase()}>
+              &ldquo;{translation.text}&rdquo;
+            </p>
+          )}
+          {translationAudio.notice && (
+            <p className="mt-2 text-xs text-gray-500">{tl.audioUnavailable(languageName(translationKey, lang))}</p>
+          )}
+        </div>
+      )}
 
       {state === "idle" && (
         <button

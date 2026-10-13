@@ -2,7 +2,7 @@
 
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { CheckCircle2, Loader2, Mic, PauseCircle, Type, XCircle, Clock, ShieldAlert } from "lucide-react";
+import { CheckCircle2, Info, Loader2, Mic, PauseCircle, Type, XCircle, Clock, ShieldAlert, UserRound } from "lucide-react";
 import interviewSessionService from "@/app/api/interview-session/endpoints";
 import {
   isSessionCompleted,
@@ -10,7 +10,7 @@ import {
   type SessionQuestion,
   type SessionStatus,
 } from "@/app/api/interview-session/types";
-import { QuestionCard } from "./components/question-card";
+import { QuestionCard, prefetchQuestionTexts } from "./components/question-card";
 import { AnswerTextForm } from "./components/answer-text-form";
 import { AnswerRecorder } from "./components/answer-recorder";
 import { PrecheckFlow } from "./components/precheck-flow";
@@ -18,9 +18,16 @@ import { OrientationTour } from "./components/orientation-tour";
 import { LiveCallRoom } from "@/components/live-call/LiveCallRoom";
 import { IntegrityMonitor } from "./components/integrity-monitor";
 import { TestTimer } from "./components/test-timer";
-import { LANGUAGES } from "@/lib/languages";
+import { LanguagePanel } from "./components/language-panel";
 import { candidateDir, getCandidateStrings, resolveCandidateLanguage } from "./candidate-lang";
-import { speakWithBrowser, stopBrowserSpeech } from "./browser-speech";
+import { getLanguageStrings, languageByKey, languageName } from "./language-strings";
+import { useInterviewAudio } from "./use-interview-audio";
+
+// English and Arabic are the approved source languages: an Arabic session
+// asks the approved Arabic questions, every other session the English ones.
+function sourceLanguageOf(session: InterviewSessionPublic | null): "EN" | "AR" {
+  return (session?.candidate_language ?? "").toUpperCase() === "AR" ? "AR" : "EN";
+}
 
 type PageState =
   | "loading"
@@ -70,12 +77,22 @@ function InterviewSessionContent() {
   const [session, setSession] = useState<InterviewSessionPublic | null>(null);
   const [question, setQuestion] = useState<SessionQuestion | null>(null);
   const [answerMode, setAnswerMode] = useState<AnswerMode>("audio");
-  const [audioUrl, setAudioUrl] = useState<string | null>(null);
-  const [loadingAudio, setLoadingAudio] = useState(false);
-  const [audioNotice, setAudioNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [readAloudLanguage, setReadAloudLanguage] = useState("en-US");
-  const [answerLanguage, setAnswerLanguage] = useState("en-US");
+  // Which approved version is on screen (EN/AR) and the candidate's answer
+  // language (any supported language; translations are shown for it).
+  const [displayKey, setDisplayKey] = useState<string>("EN");
+  const [answerKey, setAnswerKey] = useState<string>("EN");
+  const audio = useInterviewAudio(sessionId, token);
+  const stopAudio = audio.stop;
+  const [translationStatus, setTranslationStatus] = useState<"not-needed" | "checking" | "available" | "unavailable">("not-needed");
+
+  // Translate the remaining questions in the background once the current
+  // one is on screen, so each next question's translation is instant.
+  const questionIds = (session?.questions ?? []).map((q) => q.id).join(",");
+  useEffect(() => {
+    if (pageState !== "question" || !questionIds || answerKey === displayKey) return;
+    return prefetchQuestionTexts(sessionId, token, questionIds.split(","), answerKey);
+  }, [pageState, questionIds, answerKey, displayKey, sessionId, token]);
 
   // Drives the whole candidate-facing experience's language/RTL layout -
   // see ./candidate-lang.ts. Independent of this route's [locale] URL
@@ -84,9 +101,7 @@ function InterviewSessionContent() {
   const dir = candidateDir(resolveCandidateLanguage(session?.ui_language));
 
   const loadCurrentQuestion = useCallback(async () => {
-    setAudioUrl(null);
-    setAudioNotice(null);
-    stopBrowserSpeech();
+    stopAudio();
     try {
       const result = await interviewSessionService.getCurrentQuestion(sessionId, token);
       if (isSessionCompleted(result)) {
@@ -108,7 +123,7 @@ function InterviewSessionContent() {
       setError(t.loadQuestionError);
       setPageState("error");
     }
-  }, [sessionId, token]);
+  }, [sessionId, token, stopAudio]);
 
   // Shared by the initial mount check and the "scheduled" screen's re-check
   // poll below - resolves what to show for a freshly-fetched session. A
@@ -119,20 +134,18 @@ function InterviewSessionContent() {
   // the product starts a scheduled session automatically at its due time.
   const resolveSessionState = useCallback(
     async (data: InterviewSessionPublic, active: () => boolean) => {
-      if (data.tts_language_code) {
-        setReadAloudLanguage(data.tts_language_code);
-        setAnswerLanguage(data.tts_language_code);
-      }
-      // Some languages have no working speech-to-text provider (confirmed
-      // directly against Whisper's documented supported-language list -
-      // see LANGUAGES' `stt` flag), so recorded audio answers for those
-      // would transcribe unreliably at best. Force text answers instead
-      // of silently producing bad transcriptions. Also re-applied
-      // reactively below (handleAnswerLanguageChange) if the candidate
-      // switches their answer language to/from an stt-incapable one
-      // mid-interview.
-      const candidateLang = LANGUAGES.find((lang) => lang.key === data.candidate_language);
-      if (candidateLang && !candidateLang.stt) setAnswerMode("text");
+      const source = sourceLanguageOf(data);
+      setDisplayKey(source);
+      // Default answer language: the candidate's own language when it's a
+      // supported one, otherwise the session's language.
+      const preferred = languageByKey(data.preferred_language) ?? languageByKey(data.candidate_language);
+      const initialAnswerKey = preferred?.key ?? source;
+      setAnswerKey(initialAnswerKey);
+      // Some languages have no working speech-to-text provider (see
+      // LANGUAGES' `stt` flag) - recorded answers would transcribe badly,
+      // so those languages answer by text instead of producing a
+      // misleading transcript. Re-applied when the answer language changes.
+      if (!languageByKey(initialAnswerKey)?.stt) setAnswerMode("text");
 
       if (data.status === "COMPLETED") {
         setPageState("completed");
@@ -297,60 +310,16 @@ function InterviewSessionContent() {
     }
   };
 
-  // The on-screen question is in the session's candidate language, so the
-  // browser voice can only stand in when the read-aloud language matches it.
-  const fallBackToBrowserVoice = async () => {
-    const questionLang = LANGUAGES.find((lang) => lang.key === session?.candidate_language)?.code ?? "en-US";
-    const sameLanguage = questionLang.split("-")[0] === readAloudLanguage.split("-")[0];
-    const spoke = question && sameLanguage ? await speakWithBrowser(question.question_text, readAloudLanguage) : false;
-    setAudioNotice(spoke ? null : getCandidateStrings(session?.ui_language).questionCard.audioUnavailable);
+  const handleAnswerKeyChange = (key: string) => {
+    setAnswerKey(key);
+    stopAudio();
+    // An stt-incapable language answers by text; switching away doesn't
+    // force audio back, since the candidate may prefer typing. Answers
+    // already typed or recorded are kept (both inputs stay mounted).
+    if (!languageByKey(key)?.stt) setAnswerMode("text");
   };
 
-  const handlePlayAudio = async () => {
-    setLoadingAudio(true);
-    setAudioNotice(null);
-    stopBrowserSpeech();
-    try {
-      const artifact = await interviewSessionService.getQuestionAudio(sessionId, token, readAloudLanguage);
-      if (artifact.audio_url) {
-        setAudioUrl(artifact.audio_url);
-      } else {
-        await fallBackToBrowserVoice();
-      }
-    } catch {
-      // Server voice unavailable (e.g. the speech provider refused the
-      // request) - use the browser's own voice rather than doing nothing.
-      await fallBackToBrowserVoice();
-    } finally {
-      setLoadingAudio(false);
-    }
-  };
-
-  // The audio file itself failed to load or play.
-  const handleAudioError = () => {
-    setAudioUrl(null);
-    void fallBackToBrowserVoice();
-  };
-
-  const handleReadAloudLanguageChange = (languageCode: string) => {
-    setReadAloudLanguage(languageCode);
-    setAudioNotice(null);
-    stopBrowserSpeech();
-    // Clear any already-playing audio from the previous language selection -
-    // it doesn't match the new choice, and would otherwise keep showing/
-    // playing until the candidate clicks play again.
-    setAudioUrl(null);
-  };
-
-  const handleAnswerLanguageChange = (languageCode: string) => {
-    setAnswerLanguage(languageCode);
-    // Switching to an stt-incapable language mid-interview should force
-    // text answers the same way the initial session-language check does;
-    // switching away doesn't force back to audio, since the candidate may
-    // still prefer typing.
-    const lang = LANGUAGES.find((l) => l.code === languageCode);
-    if (lang && !lang.stt) setAnswerMode("text");
-  };
+  const answerLanguage = languageByKey(answerKey)?.code ?? "en-US";
 
   const handleTextSubmit = async (text: string) => {
     if (!question) return;
@@ -445,6 +414,7 @@ function InterviewSessionContent() {
         isLiveCall={Boolean(session?.scheduled_start_at)}
         uiLanguage={session?.ui_language}
         candidateName={session?.candidate_name}
+        preferredLanguage={session?.preferred_language}
       />
     );
   }
@@ -522,17 +492,24 @@ function InterviewSessionContent() {
   const submitting = pageState === "submitting";
   const totalQuestions = session?.total_questions ?? 0;
   const questionNumber = question ? question.question_order : 0;
-  // Tracks the live answer-language selection's `stt` capability (not just
-  // the session's fixed default), so switching to/from an stt-incapable
-  // language via the picker below reacts immediately.
-  const audioAnswersUnavailable = !LANGUAGES.find((lang) => lang.code === answerLanguage)?.stt;
+  const ui = resolveCandidateLanguage(session?.ui_language);
+  const tl = getLanguageStrings(ui);
+  const answerName = languageName(answerKey, ui);
+  const audioAnswersUnavailable = !languageByKey(answerKey)?.stt;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4" dir={dir}>
-      <div className="max-w-2xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gray-50 px-4 py-6 sm:py-8" dir={dir}>
+      <div className="mx-auto max-w-6xl space-y-5">
         {session && (
-          <div className="flex items-center justify-between gap-3 flex-wrap">
-            <h1 className="text-xl font-bold text-gray-900">{t.interviewTitle(session.role_name)}</h1>
+          <header className="flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-5">
+            <div className="flex items-center gap-3">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-purple-100 text-purple-700">
+                <UserRound className="h-6 w-6" />
+              </span>
+              <div>
+                <h1 className="text-xl font-bold text-gray-900 sm:text-2xl">{t.interviewTitle(session.role_name)}</h1>
+              </div>
+            </div>
             {session.started_at && session.config_details?.duration_minutes ? (
               <TestTimer
                 startedAt={session.started_at}
@@ -541,7 +518,7 @@ function InterviewSessionContent() {
                 uiLanguage={session.ui_language}
               />
             ) : null}
-          </div>
+          </header>
         )}
 
         <IntegrityMonitor
@@ -551,86 +528,107 @@ function InterviewSessionContent() {
           uiLanguage={session?.ui_language}
         />
 
-        {question && (
-          <QuestionCard
-            question={question}
-            questionNumber={questionNumber}
-            totalQuestions={totalQuestions}
-            onPlayAudio={handlePlayAudio}
-            audioUrl={audioUrl}
-            audioNotice={audioNotice}
-            onAudioError={handleAudioError}
-            loadingAudio={loadingAudio}
-            readAloudLanguage={readAloudLanguage}
-            onReadAloudLanguageChange={handleReadAloudLanguageChange}
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_20rem]">
+          <div className="min-w-0 space-y-5">
+            {question && (
+              <QuestionCard
+                key={question.id}
+                sessionId={sessionId}
+                token={token}
+                question={question}
+                questionNumber={questionNumber}
+                totalQuestions={totalQuestions}
+                sourceKey={sourceLanguageOf(session)}
+                displayKey={displayKey}
+                onDisplayKeyChange={(key) => {
+                  stopAudio();
+                  setDisplayKey(key);
+                }}
+                answerKey={answerKey}
+                audio={audio}
+                onTranslationStatus={setTranslationStatus}
+                uiLanguage={session?.ui_language}
+              />
+            )}
+
+            <section className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
+              <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h2 className="font-semibold text-gray-900">{tl.yourAnswerTitle(answerName)}</h2>
+                  <p className="text-sm text-gray-500">{tl.yourAnswerHint(answerName)}</p>
+                </div>
+                <span
+                  className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs ${
+                    audioAnswersUnavailable ? "bg-amber-50 text-amber-800" : "bg-emerald-50 text-emerald-700"
+                  }`}
+                >
+                  <Mic className="h-3.5 w-3.5" />
+                  {audioAnswersUnavailable ? tl.voiceUnsupported(answerName) : tl.voiceSupported(answerName)}
+                </span>
+              </div>
+              <div className="mb-4 grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setAnswerMode("audio")}
+                  disabled={audioAnswersUnavailable}
+                  aria-pressed={answerMode === "audio"}
+                  className={`flex items-center justify-center gap-2 rounded-lg border py-2.5 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-40 ${
+                    answerMode === "audio" ? "border-purple-500 bg-purple-50 text-purple-700" : "border-gray-200 text-gray-600"
+                  }`}
+                >
+                  <Mic className="h-4 w-4" /> {t.recordAnswerButton}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAnswerMode("text")}
+                  aria-pressed={answerMode === "text"}
+                  className={`flex items-center justify-center gap-2 rounded-lg border py-2.5 text-sm font-medium ${
+                    answerMode === "text" ? "border-purple-500 bg-purple-50 text-purple-700" : "border-gray-200 text-gray-600"
+                  }`}
+                >
+                  <Type className="h-4 w-4" /> {t.typeAnswerButton}
+                </button>
+              </div>
+
+              {error && (
+                <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">{error}</div>
+              )}
+
+              {/* Both inputs stay mounted (one hidden) so switching answer
+                  type or language never erases a typed or recorded answer.
+                  Each question remounts them (key), starting fresh. */}
+              <div hidden={answerMode !== "audio" || audioAnswersUnavailable}>
+                <AnswerRecorder
+                  key={`rec-${question?.id}`}
+                  onSubmit={handleAudioSubmit}
+                  onRecordingStart={stopAudio}
+                  submitting={submitting}
+                  submitLabel={t.uploadingLabel}
+                  recordingLanguageLabel={tl.recordingIn(answerName)}
+                  uiLanguage={session?.ui_language}
+                />
+              </div>
+              <div hidden={answerMode !== "text" && !audioAnswersUnavailable}>
+                <AnswerTextForm
+                  key={`text-${question?.id}`}
+                  onSubmit={handleTextSubmit}
+                  submitting={submitting}
+                  uiLanguage={session?.ui_language}
+                  textLanguage={answerKey}
+                />
+              </div>
+              <p className="mt-3 flex items-center gap-1.5 text-xs text-gray-500">
+                <Info className="h-3.5 w-3.5 shrink-0" /> {tl.answerKept}
+              </p>
+            </section>
+          </div>
+
+          <LanguagePanel
+            answerKey={answerKey}
+            onAnswerKeyChange={handleAnswerKeyChange}
+            translationStatus={translationStatus}
             uiLanguage={session?.ui_language}
           />
-        )}
-
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center justify-between gap-3 mb-3">
-            <label className="text-xs text-gray-500">{t.answeringInLabel}</label>
-            <select
-              value={answerLanguage}
-              onChange={(e) => handleAnswerLanguageChange(e.target.value)}
-              title={t.answeringInLabel}
-              className="text-xs border border-gray-200 rounded-lg px-1.5 py-1 text-gray-600 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-            >
-              {LANGUAGES.map((lang) => (
-                <option key={lang.code} value={lang.code}>
-                  {lang.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="flex gap-2 mb-4">
-            {!audioAnswersUnavailable && (
-              <button
-                type="button"
-                onClick={() => setAnswerMode("audio")}
-                className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium border ${
-                  answerMode === "audio"
-                    ? "border-purple-500 bg-purple-50 text-purple-700"
-                    : "border-gray-200 text-gray-500"
-                }`}
-              >
-                <Mic className="w-4 h-4" /> {t.recordAnswerButton}
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={() => setAnswerMode("text")}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium border ${
-                answerMode === "text"
-                  ? "border-purple-500 bg-purple-50 text-purple-700"
-                  : "border-gray-200 text-gray-500"
-              }`}
-            >
-              <Type className="w-4 h-4" /> {t.typeAnswerButton}
-            </button>
-          </div>
-          {audioAnswersUnavailable && (
-            <p className="text-xs text-gray-500 -mt-2 mb-4">
-              {t.audioUnavailableMessage(LANGUAGES.find((lang) => lang.code === answerLanguage)?.label ?? t.thisLanguage)}
-            </p>
-          )}
-
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded-lg text-sm mb-4">
-              {error}
-            </div>
-          )}
-
-          {answerMode === "audio" ? (
-            <AnswerRecorder
-              onSubmit={handleAudioSubmit}
-              submitting={submitting}
-              submitLabel={t.uploadingLabel}
-              uiLanguage={session?.ui_language}
-            />
-          ) : (
-            <AnswerTextForm onSubmit={handleTextSubmit} submitting={submitting} uiLanguage={session?.ui_language} />
-          )}
         </div>
       </div>
     </div>
