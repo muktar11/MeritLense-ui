@@ -330,7 +330,11 @@
         "taskExecution": "تنفيذ المهام العملية",
         "knowledgeComprehension": "المعرفة والاستيعاب"
       },
-      "notAssessed": "غير مقيَّم"
+      "notAssessed": "غير مقيَّم",
+      "awaitingReview": {
+        "title": "النتيجة قيد المراجعة",
+        "body": "تقوم MeritLense بمراجعة هذه النتيجة قبل إصدارها. ستظهر الدرجة وقرار الجاهزية والتقرير وأي شهادة هنا بعد اكتمال المراجعة."
+      }
     },
     "liveCallRoom": {
       "missingSessionId": "معرّف الجلسة مفقود.",
@@ -985,7 +989,8 @@
         "package_requests": "طلبات الباقات",
         "interview_setup": "إعداد المقابلات",
         "candidate_comparison": "مقارنة المرشحين",
-        "analytics_insights": "التحليلات والرؤى"
+        "analytics_insights": "التحليلات والرؤى",
+        "review_queue": "قائمة المراجعة"
       },
       "candidateComparison": {
         "title": "مقارنة المرشحين",
@@ -2400,6 +2405,53 @@
       "analytics": {
         "title": "التحليلات والرؤى",
         "subtitle": "تحليلات المنصة بالكامل للتقييمات والجاهزية والمستخدمين والإيرادات."
+      },
+      "reviewQueue": {
+        "title": "قائمة المراجعة",
+        "subtitle": "نتائج محجوبة عن أصحاب العمل حتى يسجّل المراجع قراره. تُحفظ النتيجة التلقائية، ويُسجَّل قرارك كتصحيح خاضع للتدقيق.",
+        "empty": "لا توجد نتائج بانتظار المراجعة.",
+        "loadFailed": "تعذّر تحميل قائمة المراجعة.",
+        "table": {
+          "candidate": "المرشح",
+          "role": "الدور",
+          "language": "اللغة",
+          "tier": "التقييم",
+          "company": "الشركة",
+          "automatic": "النتيجة التلقائية",
+          "score": "الدرجة",
+          "reasons": "سبب الحجب",
+          "completed": "تاريخ الإكمال",
+          "actions": "الإجراءات"
+        },
+        "tiers": {
+          "FULL": "كامل",
+          "SCREENING": "فحص أولي"
+        },
+        "noCompany": "فردي (B2C)",
+        "viewResults": "عرض النتائج",
+        "review": "تسجيل القرار",
+        "modal": {
+          "title": "تسجيل قرار المراجعة",
+          "candidate": "المرشح",
+          "automatic": "النتيجة التلقائية",
+          "reasons": "سبب الحجب",
+          "decision": "قرارك",
+          "notes": "ملاحظات المراجع",
+          "notesPlaceholder": "ما الذي تحققت منه، ولماذا هذا القرار؟",
+          "notesRequired": "يرجى إضافة ملاحظات توضّح القرار.",
+          "submit": "إصدار النتيجة",
+          "submitting": "جارٍ الإصدار...",
+          "cancel": "إلغاء",
+          "certificateNote": "لا تُصدر الشهادة إلا إذا استوفت الدرجات الفعلية شروط الأهلية المعتادة.",
+          "failed": "تعذّر تسجيل القرار."
+        },
+        "decisions": {
+          "READY": "جاهز",
+          "PARTIALLY_READY": "جاهز جزئيًا",
+          "NOT_READY": "غير جاهز",
+          "INCOMPLETE": "غير مكتمل"
+        },
+        "released": "تم إصدار النتيجة."
       }
     },
     "business": {
@@ -3757,7 +3809,8 @@
             "markComplete": "وضع علامة كمكتمل",
             "startAiInterview": "بدء مقابلة بالذكاء الاصطناعي",
             "cancel": "إلغاء"
-          }
+          },
+          "underReview": "قيد المراجعة"
         },
         "scheduleModal": {
           "titles": {

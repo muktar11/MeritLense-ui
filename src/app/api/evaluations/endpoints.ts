@@ -16,6 +16,9 @@ import {
   EvaluatorRating,
   EvaluatorRatingPayload,
   CertificateVerification,
+  PendingReviewItem,
+  HumanReviewPayload,
+  HumanReviewResult,
 } from './types';
 import { API_BASE_URL } from '@/lib/config/env';
 
@@ -52,6 +55,19 @@ class EvaluationService {
   async getEvaluation(id: string): Promise<Evaluation> {
     this.ensureAuthToken();
     const response = await authClient.get(`${this.baseURL}/${id}`);
+    return response.data;
+  }
+
+  // Admin reviewer queue: results held from employers until reviewed.
+  async getPendingReview(): Promise<PendingReviewItem[]> {
+    this.ensureAuthToken();
+    const response = await authClient.get(`${this.baseURL}/pending-review`);
+    return response.data;
+  }
+
+  async submitHumanReview(evaluationId: string, data: HumanReviewPayload): Promise<HumanReviewResult> {
+    this.ensureAuthToken();
+    const response = await authClient.post(`${this.baseURL}/${evaluationId}/human-review`, data);
     return response.data;
   }
 
@@ -121,12 +137,14 @@ class EvaluationService {
     try {
       const response = await authClient.get(`${this.baseURL}/${evaluationId}/scoring-summary`);
       return response.data;
-    } catch {
+    } catch (error) {
       // authClient's response interceptor unwraps errors to the response
       // body (not a standard AxiosError), so there's no reliable status
-      // code to branch on here. The only failure mode this endpoint has
-      // is "no summary generated yet" (404) — treat any failure as that
-      // empty state rather than a hard error.
+      // code to branch on here. A result held for human review says so
+      // explicitly - let callers show that instead of "not scored yet".
+      if ((error as { code?: string })?.code === 'awaiting_human_review') throw error;
+      // Otherwise the only failure mode is "no summary generated yet"
+      // (404) - treat it as that empty state rather than a hard error.
       return null;
     }
   }

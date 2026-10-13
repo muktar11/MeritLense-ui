@@ -31,6 +31,7 @@ export type CertificateStatus = typeof CERTIFICATE_STATUS[number]['value'];
 export interface Evaluation {
   id: string;
   candidate: string;
+  review_status?: ReviewStatus;
   candidate_details?: Candidate;
   
   candidate_first_name: string;
@@ -370,9 +371,45 @@ export interface ScoringRuleSetPayload {
   rules: ScoringRulePayload[];
 }
 
+// Release safeguard (backend HumanReviewService): while REQUIRED, the
+// score, readiness and report are withheld from the employer until an
+// admin reviewer records a decision.
+export type ReviewStatus = 'NOT_REQUIRED' | 'REQUIRED' | 'APPROVED';
+
+export interface PendingReviewItem {
+  evaluation_id: string;
+  candidate_name: string;
+  role_code: string;
+  language: string;
+  evaluation_tier: string;
+  company: string | null;
+  automatic_readiness: string;
+  score: number | null;
+  review_reasons: string[];
+  completed_at: string | null;
+}
+
+export type ReviewDecision = 'READY' | 'PARTIALLY_READY' | 'NOT_READY' | 'INCOMPLETE';
+
+export interface HumanReviewPayload {
+  decision: ReviewDecision;
+  notes: string;
+}
+
+export interface HumanReviewResult {
+  evaluation_id: string;
+  review_status: ReviewStatus;
+  decision: ReviewDecision;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  report_number: string | null;
+  certificate_status: string;
+}
+
 export interface EvaluationListItem {
   id: string;
   candidate_name: string;
+  review_status?: ReviewStatus;
   evaluation_type: EvaluationType;
   evaluation_type_display: string;
   status: EvaluationStatus;

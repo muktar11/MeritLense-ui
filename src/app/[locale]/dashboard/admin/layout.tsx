@@ -24,6 +24,7 @@ import {
   Inbox,
   GitCompare,
   BarChart3,
+  ShieldCheck,
 } from "lucide-react";
 
 // Optional: locale code → human-readable name map
@@ -89,6 +90,12 @@ export default function AdminLayout({
         label: t("pages_list.candidate_comparison"),
         icon: GitCompare,
         href: `/${locale}/dashboard/admin/candidate-comparison`,
+      },
+
+      {
+        label: t("pages_list.review_queue"),
+        icon: ShieldCheck,
+        href: `/${locale}/dashboard/admin/review-queue`,
       },
 
       {
