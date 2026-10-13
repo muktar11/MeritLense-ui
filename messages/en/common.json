@@ -994,6 +994,84 @@
       "b2cStatement": "I confirm that I am 18 years or older and agree to the applicable <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>.",
       "b2bStatement": "I have read and agree to the applicable <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>.",
       "required": "Please tick the box to continue."
+    },
+    "lists": {
+      "search": "Search...",
+      "noMatches": "No matches",
+      "countryCode": "Code",
+      "searchCountryCode": "Search country or code",
+      "otherRequired": "Please type it in.",
+      "specifyNationality": "Type your nationality",
+      "specifyCountry": "Type your country",
+      "phoneInvalid": "Enter a valid phone number for the selected country code.",
+      "targetMarketHint": "Defaults to your country of residence; change it if you hire for another country.",
+      "targetCity": "Target hiring city (optional)",
+      "targetCityPlaceholder": "Any city",
+      "searchCity": "Search city",
+      "selectCity": "Select city",
+      "typeCity": "Type the city"
+    },
+    "register_company": {
+      "title": "Company Registration",
+      "subtitle": "Register your company for workforce readiness assessments",
+      "sections": {
+        "account": "Account Information",
+        "company": "Company Information"
+      },
+      "fields": {
+        "email": "Email Address",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "password": "Password",
+        "confirmPassword": "Confirm Password",
+        "companyName": "Company Name",
+        "registrationNumber": "Registration Number",
+        "companySize": "Company Size",
+        "industry": "Industry",
+        "country": "Country",
+        "city": "City",
+        "phone": "Phone Number",
+        "website": "Website",
+        "address": "Address",
+        "preferredLanguage": "Preferred Language",
+        "targetMarket": "Target Hiring Market"
+      },
+      "placeholders": {
+        "email": "company@example.com",
+        "firstName": "First name",
+        "lastName": "Last name",
+        "password": "Min. 8 characters",
+        "confirmPassword": "Confirm password",
+        "companyName": "Your company name",
+        "registrationNumber": "e.g. REG123456",
+        "companySize": "Select company size",
+        "industry": "e.g. Hospitality",
+        "country": "Select country",
+        "address": "Street, building, suite",
+        "targetMarket": "Select market"
+      },
+      "companySizes": "{range} employees",
+      "showPassword": "Show or hide password",
+      "documentsNote": "You can upload your registration certificate and other company documents from Company Profile after registration. Platform access is enabled after admin approval.",
+      "errors": {
+        "emailRequired": "Email is required",
+        "emailInvalid": "Enter a valid email address",
+        "firstNameRequired": "First name is required",
+        "lastNameRequired": "Last name is required",
+        "passwordRequired": "Password is required",
+        "passwordMin": "Password must be at least 8 characters",
+        "passwordsMismatch": "Passwords do not match",
+        "companyNameRequired": "Company name is required",
+        "registrationNumberRequired": "Registration number is required",
+        "companySizeRequired": "Company size is required",
+        "countryRequired": "Country is required",
+        "cityRequired": "City is required",
+        "phoneRequired": "Phone number is required"
+      },
+      "buttons": {
+        "submit": "Register Company",
+        "submitting": "Registering company..."
+      }
     }
   },
   "dashboard": {

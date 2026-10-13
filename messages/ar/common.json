@@ -995,6 +995,84 @@
       "b2cStatement": "أؤكد أن عمري 18 عامًا أو أكثر، وأوافق على <terms>شروط الخدمة</terms> و<privacy>سياسة الخصوصية</privacy> المعمول بها.",
       "b2bStatement": "لقد قرأت <terms>شروط الخدمة</terms> و<privacy>سياسة الخصوصية</privacy> المعمول بها وأوافق عليها.",
       "required": "يرجى تحديد المربع للمتابعة."
+    },
+    "lists": {
+      "search": "بحث...",
+      "noMatches": "لا توجد نتائج",
+      "countryCode": "الرمز",
+      "searchCountryCode": "ابحث بالدولة أو الرمز",
+      "otherRequired": "يرجى كتابتها.",
+      "specifyNationality": "اكتب جنسيتك",
+      "specifyCountry": "اكتب دولتك",
+      "phoneInvalid": "أدخل رقم هاتف صحيحًا لرمز الدولة المحدد.",
+      "targetMarketHint": "افتراضيًا هي دولة إقامتك؛ غيّرها إذا كنت توظّف لدولة أخرى.",
+      "targetCity": "مدينة التوظيف المستهدفة (اختياري)",
+      "targetCityPlaceholder": "أي مدينة",
+      "searchCity": "ابحث عن مدينة",
+      "selectCity": "اختر المدينة",
+      "typeCity": "اكتب المدينة"
+    },
+    "register_company": {
+      "title": "تسجيل الشركة",
+      "subtitle": "سجّل شركتك لإجراء تقييمات جاهزية القوى العاملة",
+      "sections": {
+        "account": "معلومات الحساب",
+        "company": "معلومات الشركة"
+      },
+      "fields": {
+        "email": "البريد الإلكتروني",
+        "firstName": "الاسم الأول",
+        "lastName": "اسم العائلة",
+        "password": "كلمة المرور",
+        "confirmPassword": "تأكيد كلمة المرور",
+        "companyName": "اسم الشركة",
+        "registrationNumber": "رقم السجل التجاري",
+        "companySize": "حجم الشركة",
+        "industry": "القطاع",
+        "country": "الدولة",
+        "city": "المدينة",
+        "phone": "رقم الهاتف",
+        "website": "الموقع الإلكتروني",
+        "address": "العنوان",
+        "preferredLanguage": "اللغة المفضلة",
+        "targetMarket": "سوق التوظيف المستهدف"
+      },
+      "placeholders": {
+        "email": "company@example.com",
+        "firstName": "الاسم الأول",
+        "lastName": "اسم العائلة",
+        "password": "8 أحرف على الأقل",
+        "confirmPassword": "أعد كتابة كلمة المرور",
+        "companyName": "اسم شركتك",
+        "registrationNumber": "مثال: REG123456",
+        "companySize": "اختر حجم الشركة",
+        "industry": "مثال: الضيافة",
+        "country": "اختر الدولة",
+        "address": "الشارع، المبنى، المكتب",
+        "targetMarket": "اختر السوق"
+      },
+      "companySizes": "{range} موظف",
+      "showPassword": "إظهار كلمة المرور أو إخفاؤها",
+      "documentsNote": "يمكنك رفع شهادة السجل التجاري ومستندات الشركة الأخرى من «ملف الشركة» بعد التسجيل. يُفعَّل الوصول إلى المنصة بعد موافقة الإدارة.",
+      "errors": {
+        "emailRequired": "البريد الإلكتروني مطلوب",
+        "emailInvalid": "أدخل بريدًا إلكترونيًا صحيحًا",
+        "firstNameRequired": "الاسم الأول مطلوب",
+        "lastNameRequired": "اسم العائلة مطلوب",
+        "passwordRequired": "كلمة المرور مطلوبة",
+        "passwordMin": "يجب ألا تقل كلمة المرور عن 8 أحرف",
+        "passwordsMismatch": "كلمتا المرور غير متطابقتين",
+        "companyNameRequired": "اسم الشركة مطلوب",
+        "registrationNumberRequired": "رقم السجل التجاري مطلوب",
+        "companySizeRequired": "حجم الشركة مطلوب",
+        "countryRequired": "الدولة مطلوبة",
+        "cityRequired": "المدينة مطلوبة",
+        "phoneRequired": "رقم الهاتف مطلوب"
+      },
+      "buttons": {
+        "submit": "تسجيل الشركة",
+        "submitting": "جارٍ تسجيل الشركة..."
+      }
     }
   },
   "dashboard": {
