@@ -7,7 +7,6 @@ import { ArrowRight, GitCompare } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import {CandidateModal} from "../candidates/components/candidate-modal";
 import CandidatesTable from "../candidates/components/candidates-table";
-import ShareModal from "../candidates/components/share-modal";
 import candidateService from "../../../../api/candidates/endpoints";
 import { Candidate } from "../../../../api/candidates/types";
 import { useAuth } from "@/app/hooks/useAuth";
@@ -24,7 +23,6 @@ export default function Candidates() {
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
   const [modalMode, setModalMode] = useState<'view' | 'edit' | 'create'>('view');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -63,11 +61,6 @@ export default function Candidates() {
     setIsModalOpen(true);
   };
 
-  const handleShareCandidate = (candidate: Candidate) => {
-    setSelectedCandidate(candidate);
-    setIsShareModalOpen(true);
-  };
-
   const handleModalSuccess = () => {
     fetchCandidates();
   };
@@ -102,7 +95,6 @@ export default function Candidates() {
             candidates={candidates}
             onView={handleViewCandidate}
             onEdit={handleEditCandidate}
-            onShare={handleShareCandidate}
             onAdd={handleAddCandidate}
             loading={loading}
             userRole={userRole || 'B2C'}
@@ -136,15 +128,6 @@ export default function Candidates() {
         currentUserId={userId || undefined}
       />
 
-      {selectedCandidate && (
-        <ShareModal
-          isOpen={isShareModalOpen}
-          onClose={() => setIsShareModalOpen(false)}
-          candidate={selectedCandidate}
-          onSuccess={handleModalSuccess}
-          userRole={userRole || 'B2C'}
-        />
-      )}
     </div>
   );
 }
