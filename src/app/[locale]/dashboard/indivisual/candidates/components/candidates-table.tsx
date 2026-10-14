@@ -4,7 +4,6 @@ import { useState } from "react";
 import { 
   Eye, 
   Edit, 
-  Share2, 
   Search,
   Plus
 } from "lucide-react";
@@ -19,7 +18,6 @@ interface CandidatesTableProps {
   candidates: Candidate[];
   onView: (candidate: Candidate) => void;
   onEdit: (candidate: Candidate) => void;
-  onShare: (candidate: Candidate) => void;
   onAdd: () => void;
   loading?: boolean;
   userRole: string;
@@ -30,7 +28,6 @@ export default function CandidatesTable({
   candidates, 
   onView, 
   onEdit, 
-  onShare,
   onAdd,
   loading,
   userRole = 'B2C',
@@ -42,7 +39,6 @@ export default function CandidatesTable({
   const [filterRole, setFilterRole] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const canShare = userRole === 'B2B' || userRole === 'B2B_TEAM_MEMBER';
   
   const canEdit = (candidate: Candidate) => {
   if (userRole === 'B2B_TEAM_MEMBER') {
@@ -260,15 +256,6 @@ export default function CandidatesTable({
                         </button>
                       )}
 
-                      {canShare && (
-                        <button
-                          onClick={() => onShare(candidate)}
-                          className="p-1 text-gray-400 hover:text-green-500 rounded-full hover:bg-green-50"
-                          title={t("actions.share")}
-                        >
-                          <Share2 size={16} />
-                        </button>
-                      )}
                     </div>
                   </td>
                 </tr>
@@ -278,7 +265,7 @@ export default function CandidatesTable({
         </table>
       </div>
 
-      {/* Mobile: card list. Same data and the same view/edit/share actions
+      {/* Mobile: card list. Same data and the same view/edit actions
           as the table above, just laid out so nothing requires a
           horizontal swipe to reach. */}
       <div className="md:hidden divide-y divide-gray-200">
@@ -330,15 +317,6 @@ export default function CandidatesTable({
                       title={t("actions.edit")}
                     >
                       <Edit size={18} />
-                    </button>
-                  )}
-                  {canShare && (
-                    <button
-                      onClick={() => onShare(candidate)}
-                      className="p-2 text-gray-400 hover:text-green-500 rounded-full hover:bg-green-50"
-                      title={t("actions.share")}
-                    >
-                      <Share2 size={18} />
                     </button>
                   )}
                 </div>

@@ -78,32 +78,9 @@ class CandidateService {
     await authClient.delete(`${this.baseURL}/${id}`);
   }
 
-  async shareCandidate(id: string, data: { user_ids: number[] }): Promise<any> {
-    this.ensureAuthToken();
-    try {
-      const response = await apiClient.post(`${this.baseURL}/${id}/share`, data);
-      return response.data;
-    } catch (error: any) {
-      console.error('Share candidate error:', error.response?.data || error);
-      throw error;
-    }
-  }
-
-  async unshareCandidate(id: string, user_ids: number[]): Promise<any> {
-    this.ensureAuthToken();
-    const response = await authClient.post(`${this.baseURL}/${id}/unshare`, { user_ids });
-    return response.data;
-  }
-
   async getMyCandidates(): Promise<Candidate[]> {
     this.ensureAuthToken();
     const response = await authClient.get(`${this.baseURL}/my_candidates`);
-    return response.data;
-  }
-
-  async getSharedWithMe(): Promise<Candidate[]> {
-    this.ensureAuthToken();
-    const response = await authClient.get(`${this.baseURL}/shared_with_me`);
     return response.data;
   }
 
