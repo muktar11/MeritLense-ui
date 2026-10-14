@@ -104,8 +104,15 @@ const AR: LanguageStrings = {
   statementTranslationUnavailable: (l) => `الترجمة إلى ${l} غير متاحة حاليًا. يُرجى قراءة النص الأصلي أعلاه.`,
 };
 
+const BY_LANGUAGE: Record<CandidateLanguage, LanguageStrings> = { en: EN, ar: AR };
+
+/** Adds a bundled language once it has loaded (candidate-messages.ts). */
+export function registerLanguageStrings(language: CandidateLanguage, strings: LanguageStrings) {
+  BY_LANGUAGE[language] = strings;
+}
+
 export function getLanguageStrings(language: CandidateLanguage): LanguageStrings {
-  return language === "ar" ? AR : EN;
+  return BY_LANGUAGE[language] ?? EN;
 }
 
 export type LanguageInfo = (typeof LANGUAGES)[number];

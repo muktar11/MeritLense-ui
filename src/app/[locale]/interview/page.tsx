@@ -20,6 +20,7 @@ import { IntegrityMonitor } from "./components/integrity-monitor";
 import { TestTimer } from "./components/test-timer";
 import { LanguagePanel } from "./components/language-panel";
 import { candidateDir, getCandidateStrings, resolveCandidateLanguage } from "./candidate-lang";
+import { loadCandidateLanguage } from "./candidate-messages";
 import { getLanguageStrings, languageByKey, languageName } from "./language-strings";
 import { useInterviewAudio } from "./use-interview-audio";
 
@@ -85,6 +86,10 @@ function InterviewSessionContent() {
   const audio = useInterviewAudio(sessionId, token);
   const stopAudio = audio.stop;
   const [translationStatus, setTranslationStatus] = useState<"not-needed" | "checking" | "available" | "unavailable">("not-needed");
+  // The page's own language: the candidate's language chosen for this
+  // assessment when there's a translation for it, otherwise the session's
+  // English/Arabic. Set once the session (and that translation) has loaded.
+  const [uiKey, setUiKey] = useState<string>("");
 
   // Translate the remaining questions in the background once the current
   // one is on screen, so each next question's translation is instant.
@@ -97,8 +102,8 @@ function InterviewSessionContent() {
   // Drives the whole candidate-facing experience's language/RTL layout -
   // see ./candidate-lang.ts. Independent of this route's [locale] URL
   // segment, which only governs next-intl's marketing/admin/dashboard UI.
-  const t = getCandidateStrings(session?.ui_language).interviewPage;
-  const dir = candidateDir(resolveCandidateLanguage(session?.ui_language));
+  const t = getCandidateStrings(uiKey).interviewPage;
+  const dir = candidateDir(resolveCandidateLanguage(uiKey));
 
   const loadCurrentQuestion = useCallback(async () => {
     stopAudio();
@@ -134,6 +139,9 @@ function InterviewSessionContent() {
   // the product starts a scheduled session automatically at its due time.
   const resolveSessionState = useCallback(
     async (data: InterviewSessionPublic, active: () => boolean) => {
+      const interfaceKey = await loadCandidateLanguage(data.preferred_language, resolveCandidateLanguage(data.ui_language));
+      if (!active()) return;
+      setUiKey(interfaceKey);
       const source = sourceLanguageOf(data);
       setDisplayKey(source);
       // Default answer language: the candidate's own language when it's a
@@ -379,7 +387,9 @@ function InterviewSessionContent() {
 
   if (pageState === "scheduled") {
     const scheduledAt = session?.scheduled_start_at ? new Date(session.scheduled_start_at) : null;
-    const locale = dir === "rtl" ? "ar" : undefined;
+    // Dates in the candidate's language (the browser falls back to its own
+    // locale for any it doesn't know).
+    const locale = resolveCandidateLanguage(uiKey) === "en" ? undefined : resolveCandidateLanguage(uiKey);
     const formattedDateTime = scheduledAt
       ? `${scheduledAt.toLocaleDateString(locale, {
           weekday: "long",
@@ -402,7 +412,7 @@ function InterviewSessionContent() {
   if (pageState === "live-call") {
     // LiveCallRoom owns its own "call ended" screen internally once the
     // call finishes - no page-level state transition needed on top of it.
-    return <LiveCallRoom sessionId={sessionId} candidateToken={token} uiLanguage={session?.ui_language} />;
+    return <LiveCallRoom sessionId={sessionId} candidateToken={token} uiLanguage={uiKey} />;
   }
 
   if (pageState === "precheck") {
@@ -412,15 +422,16 @@ function InterviewSessionContent() {
         token={token}
         onContinue={handlePrecheckContinue}
         isLiveCall={Boolean(session?.scheduled_start_at)}
-        uiLanguage={session?.ui_language}
+        uiLanguage={uiKey}
         candidateName={session?.candidate_name}
         preferredLanguage={session?.preferred_language}
+        statementLanguage={session?.ui_language}
       />
     );
   }
 
   if (pageState === "orientation") {
-    return <OrientationTour onDone={handleOrientationDone} uiLanguage={session?.ui_language} />;
+    return <OrientationTour onDone={handleOrientationDone} uiLanguage={uiKey} />;
   }
 
   if (pageState === "paused") {
@@ -434,7 +445,7 @@ function InterviewSessionContent() {
             sessionId={sessionId}
             token={token}
             onSessionStatusChange={handleIntegrityStatusChange}
-            uiLanguage={session?.ui_language}
+            uiLanguage={uiKey}
           />
         </div>
       </CenteredCard>
@@ -492,7 +503,7 @@ function InterviewSessionContent() {
   const submitting = pageState === "submitting";
   const totalQuestions = session?.total_questions ?? 0;
   const questionNumber = question ? question.question_order : 0;
-  const ui = resolveCandidateLanguage(session?.ui_language);
+  const ui = resolveCandidateLanguage(uiKey);
   const tl = getLanguageStrings(ui);
   const answerName = languageName(answerKey, ui);
   const audioAnswersUnavailable = !languageByKey(answerKey)?.stt;
@@ -515,7 +526,7 @@ function InterviewSessionContent() {
                 startedAt={session.started_at}
                 durationMinutes={session.config_details.duration_minutes}
                 onTimeUp={handleTimeUp}
-                uiLanguage={session.ui_language}
+                uiLanguage={uiKey}
               />
             ) : null}
           </header>
@@ -525,7 +536,7 @@ function InterviewSessionContent() {
           sessionId={sessionId}
           token={token}
           onSessionStatusChange={handleIntegrityStatusChange}
-          uiLanguage={session?.ui_language}
+          uiLanguage={uiKey}
         />
 
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_20rem]">
@@ -547,7 +558,7 @@ function InterviewSessionContent() {
                 answerKey={answerKey}
                 audio={audio}
                 onTranslationStatus={setTranslationStatus}
-                uiLanguage={session?.ui_language}
+                uiLanguage={uiKey}
               />
             )}
 
@@ -605,7 +616,7 @@ function InterviewSessionContent() {
                   submitting={submitting}
                   submitLabel={t.uploadingLabel}
                   recordingLanguageLabel={tl.recordingIn(answerName)}
-                  uiLanguage={session?.ui_language}
+                  uiLanguage={uiKey}
                 />
               </div>
               <div hidden={answerMode !== "text" && !audioAnswersUnavailable}>
@@ -613,7 +624,7 @@ function InterviewSessionContent() {
                   key={`text-${question?.id}`}
                   onSubmit={handleTextSubmit}
                   submitting={submitting}
-                  uiLanguage={session?.ui_language}
+                  uiLanguage={uiKey}
                   textLanguage={answerKey}
                 />
               </div>
@@ -627,7 +638,7 @@ function InterviewSessionContent() {
             answerKey={answerKey}
             onAnswerKeyChange={handleAnswerKeyChange}
             translationStatus={translationStatus}
-            uiLanguage={session?.ui_language}
+            uiLanguage={uiKey}
           />
         </div>
       </div>

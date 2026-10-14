@@ -41,17 +41,22 @@ interface PrecheckFlowProps {
   // The candidate's own language key (e.g. "AM"). When it isn't the
   // statement's language, a translation is shown beneath the original.
   preferredLanguage?: string | null;
+  // The official language of the verbal statement (the session's EN/AR).
+  // The candidate reads it aloud and it is what gets recorded, so it never
+  // follows the page language.
+  statementLanguage?: string | null;
 }
 
 type Step = "loading" | "consent" | "privacy" | "device-check" | "verbal-confirmation" | "identity";
 
 const VERBAL_CONFIRMATION_MAX_SECONDS = 15;
 
-export function PrecheckFlow({ sessionId, token, onContinue, isLiveCall, uiLanguage, candidateName, preferredLanguage }: PrecheckFlowProps) {
+export function PrecheckFlow({ sessionId, token, onContinue, isLiveCall, uiLanguage, candidateName, preferredLanguage, statementLanguage }: PrecheckFlowProps) {
   const [step, setStep] = useState<Step>("loading");
   const [error, setError] = useState<string | null>(null);
   const t = getCandidateStrings(uiLanguage);
-  const dir = candidateDir(resolveCandidateLanguage(uiLanguage));
+  const ui = resolveCandidateLanguage(uiLanguage);
+  const dir = candidateDir(ui);
 
   useEffect(() => {
     let active = true;
@@ -90,7 +95,7 @@ export function PrecheckFlow({ sessionId, token, onContinue, isLiveCall, uiLangu
         onError={setError}
         candidateName={candidateName}
         onSubmit={async () => {
-          await interviewSessionService.captureConsent(sessionId, token, candidateName ?? "");
+          await interviewSessionService.captureConsent(sessionId, token, candidateName ?? "", ui);
           setError(null);
           setStep("privacy");
         }}
@@ -104,7 +109,7 @@ export function PrecheckFlow({ sessionId, token, onContinue, isLiveCall, uiLangu
         error={error}
         onError={setError}
         onSubmit={async () => {
-          await interviewSessionService.acknowledgePrivacy(sessionId, token);
+          await interviewSessionService.acknowledgePrivacy(sessionId, token, ui);
           setError(null);
           setStep("device-check");
         }}
@@ -133,6 +138,8 @@ export function PrecheckFlow({ sessionId, token, onContinue, isLiveCall, uiLangu
       <VerbalConfirmationStep
         t={t}
         dir={dir}
+        ui={ui}
+        statementLanguage={statementLanguage}
         sessionId={sessionId}
         token={token}
         preferredLanguage={preferredLanguage}
@@ -494,6 +501,8 @@ function VerbalConfirmationStep({
   onSubmit,
   t,
   dir,
+  ui,
+  statementLanguage,
   sessionId,
   token,
   preferredLanguage,
@@ -503,20 +512,31 @@ function VerbalConfirmationStep({
   onSubmit: (blob: Blob, statement: { text: string; language: string }) => Promise<void>;
   t: CandidateStrings;
   dir: "ltr" | "rtl";
+  ui: string;
+  statementLanguage?: string | null;
   sessionId: string;
   token: string;
   preferredLanguage?: string | null;
 }) {
   const v = t.precheck.verbalConfirmation;
-  const lang = dir === "rtl" ? "ar" : "en";
+  // The official statement (English/Arabic) - read aloud and recorded.
+  const lang = (statementLanguage ?? "").toUpperCase() === "AR" ? "ar" : "en";
+  const statement = getCandidateStrings(lang).precheck.verbalConfirmation;
   const speech = useStatementSpeech(lang);
-  const tl = getLanguageStrings(lang);
+  const tl = getLanguageStrings(ui);
   const translationInfo = languageByKey(preferredLanguage);
   const translationKey = translationInfo && translationInfo.key !== lang.toUpperCase() ? translationInfo.key : null;
+  // The bundled translation of the statement, when the page has the
+  // candidate's language - no translation service needed.
+  const bundledTranslation =
+    translationKey && resolveCandidateLanguage(translationKey) === translationKey.toLowerCase()
+      ? getCandidateStrings(translationKey).precheck.verbalConfirmation.phrase
+      : null;
   const translationAudio = useInterviewAudio(sessionId, token);
-  const [translation, setTranslation] = useState<{ text: string } | "unavailable" | null>(null);
+  const [fetchedTranslation, setTranslation] = useState<{ text: string } | "unavailable" | null>(null);
+  const translation = bundledTranslation ? { text: bundledTranslation } : fetchedTranslation;
   useEffect(() => {
-    if (!translationKey) return;
+    if (!translationKey || bundledTranslation) return;
     let active = true;
     interviewSessionService
       .getVerbalStatement(sessionId, token, translationKey)
@@ -525,7 +545,7 @@ function VerbalConfirmationStep({
     return () => {
       active = false;
     };
-  }, [sessionId, token, translationKey]);
+  }, [sessionId, token, translationKey, bundledTranslation]);
   const [state, setState] = useState<"idle" | "recording" | "recorded" | "submitting">("idle");
   const [elapsed, setElapsed] = useState(0);
   const [levels, setLevels] = useState<number[]>(() => Array(WAVE_BARS).fill(0.15));
@@ -633,7 +653,7 @@ function VerbalConfirmationStep({
     if (!blobRef.current) return;
     setState("submitting");
     try {
-      await onSubmit(blobRef.current, { text: v.phrase, language: lang });
+      await onSubmit(blobRef.current, { text: statement.phrase, language: lang });
     } catch {
       onError(v.errorGeneric);
       setState("recorded");
@@ -644,7 +664,7 @@ function VerbalConfirmationStep({
     translationAudio.stop();
     if (speech.speaking) return speech.stop();
     if (!speech.supported) return setSpeechNote(true);
-    speech.speak(v.phrase);
+    speech.speak(statement.phrase);
   };
 
   return (
@@ -665,7 +685,7 @@ function VerbalConfirmationStep({
 
       <div className="mb-4 rounded-xl bg-purple-50/70 p-4 text-start">
         <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-          <span className="rounded-md bg-purple-100 px-2 py-0.5 text-xs font-semibold text-purple-800">{v.statementLabel}</span>
+          <span className="rounded-md bg-purple-100 px-2 py-0.5 text-xs font-semibold text-purple-800">{statement.statementLabel}</span>
           <button
             type="button"
             onClick={handleListen}
@@ -674,10 +694,10 @@ function VerbalConfirmationStep({
             className="flex items-center gap-1.5 rounded-full border border-purple-200 bg-white px-3 py-1 text-xs font-medium text-purple-800 hover:bg-purple-50 disabled:opacity-50"
           >
             {speech.speaking ? <Square className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5 rtl:-scale-x-100" />}
-            {speech.speaking ? v.stopListening : v.listenButton}
+            {speech.speaking ? v.stopListening : statement.listenButton}
           </button>
         </div>
-        <p className="text-base font-medium leading-relaxed text-gray-900" lang={lang}>&ldquo;{v.phrase}&rdquo;</p>
+        <p className="text-base font-medium leading-relaxed text-gray-900" lang={lang} dir={lang === "ar" ? "rtl" : "ltr"}>&ldquo;{statement.phrase}&rdquo;</p>
         {speechNote && <p className="mt-2 text-xs text-gray-500">{v.audioUnavailable}</p>}
       </div>
 
@@ -685,7 +705,7 @@ function VerbalConfirmationStep({
         <div className="mb-4 rounded-xl bg-fuchsia-50/70 p-4 text-start">
           <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
             <span className="rounded-md bg-fuchsia-100 px-2 py-0.5 text-xs font-semibold text-fuchsia-800">
-              {tl.verbalTranslationLabel(languageName(translationKey, lang))}
+              {tl.verbalTranslationLabel(languageName(translationKey, ui))}
             </span>
             {translation !== "unavailable" && (
               <button
@@ -703,19 +723,19 @@ function VerbalConfirmationStep({
                 className="flex items-center gap-1.5 rounded-full border border-fuchsia-200 bg-white px-3 py-1 text-xs font-medium text-fuchsia-800 hover:bg-fuchsia-50 disabled:opacity-50"
               >
                 {translationAudio.state.key ? <Square className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5 rtl:-scale-x-100" />}
-                {translationAudio.state.key ? tl.stop : tl.listenIn(languageName(translationKey, lang))}
+                {translationAudio.state.key ? tl.stop : tl.listenIn(languageName(translationKey, ui))}
               </button>
             )}
           </div>
           {translation === "unavailable" ? (
-            <p className="text-xs text-amber-800">{tl.statementTranslationUnavailable(languageName(translationKey, lang))}</p>
+            <p className="text-xs text-amber-800">{tl.statementTranslationUnavailable(languageName(translationKey, ui))}</p>
           ) : (
             <p className="text-base leading-relaxed text-gray-900" dir="auto" lang={translationKey.toLowerCase()}>
               &ldquo;{translation.text}&rdquo;
             </p>
           )}
           {translationAudio.notice && (
-            <p className="mt-2 text-xs text-gray-500">{tl.audioUnavailable(languageName(translationKey, lang))}</p>
+            <p className="mt-2 text-xs text-gray-500">{tl.audioUnavailable(languageName(translationKey, ui))}</p>
           )}
         </div>
       )}
