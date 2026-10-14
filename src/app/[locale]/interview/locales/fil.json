@@ -211,6 +211,26 @@
     "languageBeat": "Itakda dito ang wikang sinasalita mo at ang gusto mong marinig.",
     "gotIt": "Nakuha ko"
   },
+  "cookie": {
+    "title": "Pinahahalagahan namin ang iyong privacy",
+    "body": "Gumagamit kami ng mga kinakailangang cookie at katulad na storage para manatili kang naka-sign in at gumana ang site. Sa iyong pahintulot, gagamit din kami ng opsyonal na analytics at marketing cookie; wala pang aktibo sa mga ito ngayon. Maaari mong baguhin ang iyong pinili anumang oras sa Cookie settings sa ibaba ng page.",
+    "policyLink": "Patakaran sa Privacy",
+    "acceptAll": "Tanggapin Lahat",
+    "justThisTime": "Ngayon Lang",
+    "reject": "Tanggihan",
+    "managePreferences": "Pamahalaan ang mga kagustuhan",
+    "preferencesTitle": "Mga kagustuhan sa cookie",
+    "rejectOptional": "Tanggihan ang opsyonal",
+    "save": "I-save ang mga pinili",
+    "alwaysOn": "Laging naka-on",
+    "close": "Isara",
+    "necessary": "Kinakailangan",
+    "necessaryDescription": "Kailangan para mag-sign in, manatiling naka-sign in, matandaan ang iyong wika, at mapanatiling ligtas ang site.",
+    "analytics": "Analytics",
+    "analyticsDescription": "Makakatulong sa amin na maunawaan kung paano ginagamit ang site para mapabuti ito.",
+    "marketing": "Marketing",
+    "marketingDescription": "Hahayaan kaming sukatin ang aming mga kampanya at magpakita ng kaugnay na nilalaman sa ibang lugar."
+  },
   "language": {
     "originalLabel": "Orihinal na Tanong ({language})",
     "approvedLabel": "Aprubadong Tanong ({language})",

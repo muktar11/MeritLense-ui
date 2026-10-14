@@ -211,6 +211,26 @@
     "languageBeat": "Atu yaabta af kee abuh faxxa af ah dooris.",
     "gotIt": "Yaxxigeh"
   },
+  "cookie": {
+    "title": "Ku-xagana baaxo qhaddarinna",
+    "body": "Culte haytuh kee saytu taamitaah faxximta kuukiiwa kee innah tan dacrisa faxxinna. Ku-oggolsiyoh doorimu qeefi kee gatah kuukiiwa faxxinnu; maggaaxa ama inkih taamita mali. Ku-doorit boodah gubbal yan kuukih sugeyal waktik aybil beddeluh duddta.",
+    "policyLink": "Xagana Baaxoh Siyaasa",
+    "acceptAll": "Inkih Oggol",
+    "justThisTime": "Ta Wakti Qala",
+    "reject": "Yediyyi",
+    "managePreferences": "Doorit taamis",
+    "preferencesTitle": "Kuukih doorit",
+    "rejectOptional": "Doorimu yediyyi",
+    "save": "Doorit dacris",
+    "alwaysOn": "Ginni fakime",
+    "close": "Alif",
+    "necessary": "Faxximta",
+    "necessaryDescription": "Culuh, culte haytuh, ku-af kassittaah kee saytu dacrisimtaah faxximta.",
+    "analytics": "Qeefi",
+    "analyticsDescription": "Saytu aaxagite faxximtam yaxxigenna kee yasmiyinnah caatiisa.",
+    "marketing": "Gata",
+    "marketingDescription": "Ni-ololooyyi giffinnah kee wohu-hinna bagul sinnih tan xagana bulalinnah xaguy."
+  },
   "language": {
     "originalLabel": "Asli Esserok ({language})",
     "approvedLabel": "Oggolsiimte Esserok ({language})",

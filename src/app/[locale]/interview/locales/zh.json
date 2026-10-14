@@ -211,6 +211,26 @@
     "languageBeat": "在此设置您说的语言和想听的语言。",
     "gotIt": "知道了"
   },
+  "cookie": {
+    "title": "我们重视您的隐私",
+    "body": "我们使用必要的 Cookie 和类似存储，以保持您的登录状态并确保网站正常运行。经您许可，我们还会使用可选的分析和营销 Cookie；目前均未启用。您可以随时通过页面底部的 Cookie 设置更改您的选择。",
+    "policyLink": "隐私政策",
+    "acceptAll": "全部接受",
+    "justThisTime": "仅限本次",
+    "reject": "拒绝",
+    "managePreferences": "管理偏好",
+    "preferencesTitle": "Cookie 偏好",
+    "rejectOptional": "拒绝可选项",
+    "save": "保存选择",
+    "alwaysOn": "始终开启",
+    "close": "关闭",
+    "necessary": "必要",
+    "necessaryDescription": "用于登录、保持登录状态、记住您的语言并保障网站安全。",
+    "analytics": "分析",
+    "analyticsDescription": "帮助我们了解网站的使用情况，以便加以改进。",
+    "marketing": "营销",
+    "marketingDescription": "让我们衡量推广活动的效果，并在其他地方展示相关内容。"
+  },
   "language": {
     "originalLabel": "原题（{language}）",
     "approvedLabel": "审定题目（{language}）",

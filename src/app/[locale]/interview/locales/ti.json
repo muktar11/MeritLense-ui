@@ -211,6 +211,26 @@
     "languageBeat": "ዝዛረቦ ቋንቋን ክትሰምዖ እትደልዮ ቋንቋን ኣብዚ ምረጽ።",
     "gotIt": "ተረዲኡኒ"
   },
+  "cookie": {
+    "title": "ብሕትውናኻ ነኽብር",
+    "body": "ኣቲኻ ክትጸንሕን እቲ መርበብ ክሰርሕን ኣድለይቲ ኩኪታትን ተመሳሳሊ ዕቑርን ንጥቀም። ብፍቓድካ ኣማራጺ ናይ ትንተናን ዕዳጋን ኩኪታት እውን ምተጠቐምና፤ ሎሚ ሓደ እኳ ኣይሰርሕን። ምርጫኻ ኣብ ዝኾነ ግዜ ካብ ኣብ ታሕቲ ገጽ ዘሎ ምድላዋት ኩኪ ክትቕይሮ ትኽእል።",
+    "policyLink": "ፖሊሲ ብሕትውና",
+    "acceptAll": "ኩሉ ተቐበል",
+    "justThisTime": "ነዚ ግዜ ጥራይ",
+    "reject": "ኣብዪ",
+    "managePreferences": "ምርጫታት ኣመሓድር",
+    "preferencesTitle": "ምርጫታት ኩኪ",
+    "rejectOptional": "ኣማራጻት ኣብዪ",
+    "save": "ምርጫታት ዕቀብ",
+    "alwaysOn": "ኩሉ ግዜ ወሊዑ",
+    "close": "ዕጸው",
+    "necessary": "ኣድለይቲ",
+    "necessaryDescription": "ንምእታው፣ ኣቲኻ ንምጽናሕ፣ ቋንቋኻ ንምዝካርን መርበብ ውሑስ ንምግባርን የድልዩ።",
+    "analytics": "ትንተና",
+    "analyticsDescription": "እቲ መርበብ ከመይ ከም ዝጥቀመሉ ተረዲእና ንምምሕያሹ ይሕግዙና።",
+    "marketing": "ዕዳጋ",
+    "marketingDescription": "ዘመቻታትና ክንዕቅንን ኣብ ካልእ ቦታ ተዛማዲ ትሕዝቶ ከነርእን የኽእሉና።"
+  },
   "language": {
     "originalLabel": "መበቆላዊ ሕቶ ({language})",
     "approvedLabel": "ዝጸደቐ ሕቶ ({language})",

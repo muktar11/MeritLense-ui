@@ -211,6 +211,26 @@
     "languageBeat": "Safidio eto ny fiteny ampiasainao sy ny fiteny tianao hohenoina.",
     "gotIt": "Azoko"
   },
+  "cookie": {
+    "title": "Manaja ny fiainanao manokana izahay",
+    "body": "Mampiasa cookies ilaina sy fitehirizana mitovy amin'izany izahay mba hijanonanao ho tafiditra sy hiasan'ny tranonkala. Raha manome alalana ianao dia hampiasa cookies azo safidiana ho an'ny famakafakana sy ny varotra koa izahay; tsy misy miasa na dia iray aza anio. Azonao ovaina amin'ny fotoana rehetra ny safidinao ao amin'ny Fikirakirana cookies eo ambany pejy.",
+    "policyLink": "Politikan'ny Tsiambaratelo",
+    "acceptAll": "Ekeo Daholo",
+    "justThisTime": "Ity Indray Mandeha Ity Ihany",
+    "reject": "Lavo",
+    "managePreferences": "Tantano ny safidy",
+    "preferencesTitle": "Safidy momba ny cookies",
+    "rejectOptional": "Lavo ireo azo safidiana",
+    "save": "Tehirizo ny safidy",
+    "alwaysOn": "Mandeha foana",
+    "close": "Akatony",
+    "necessary": "Ilaina",
+    "necessaryDescription": "Ilaina hidirana, hijanonana ho tafiditra, hitadidiana ny fiteninao ary hiarovana ny tranonkala.",
+    "analytics": "Famakafakana",
+    "analyticsDescription": "Hanampy anay hahatakatra ny fomba fampiasana ny tranonkala mba hanatsarana azy.",
+    "marketing": "Varotra",
+    "marketingDescription": "Hamela anay handrefy ny fanentanana ataonay sy haneho votoaty mifandraika any an-kafa."
+  },
   "language": {
     "originalLabel": "Fanontaniana Tany Am-boalohany ({language})",
     "approvedLabel": "Fanontaniana Nankatoavina ({language})",

@@ -10,14 +10,20 @@ import {
   saveCookieConsent,
   type CookieChoice,
 } from "@/lib/cookie-consent";
+import { useCookieBannerLanguage } from "@/lib/cookie-banner-language";
 
 // Cookie consent banner (improvement deck design): Accept All / Just This
 // Time / Reject, plus a "Manage preferences" link for per-category choices.
 // Separate from registration consent; reopened from "Cookie settings" in
 // the footer.
 export function CookieConsentBanner() {
-  const t = useTranslations("shared.cookieConsent");
+  const siteT = useTranslations("shared.cookieConsent");
   const locale = useLocale();
+  // On the candidate interview page: the candidate's language (and its
+  // direction), falling back to the site translation per key.
+  const override = useCookieBannerLanguage();
+  const t = (key: string) => override?.strings[key] ?? siteT(key);
+  const dir = override?.dir;
   const [visible, setVisible] = useState(false);
   const [preferencesOpen, setPreferencesOpen] = useState(false);
   const [analytics, setAnalytics] = useState(false);
@@ -70,6 +76,7 @@ export function CookieConsentBanner() {
         <div
           role="region"
           aria-label={t("title")}
+          dir={dir}
           className="fixed inset-x-0 bottom-0 z-[60] p-3 sm:p-4"
         >
           <div className="mx-auto flex max-w-5xl flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-4 shadow-2xl md:flex-row md:items-center md:gap-6 md:p-5">
@@ -121,7 +128,7 @@ export function CookieConsentBanner() {
       )}
 
       {preferencesOpen && (
-        <div className="fixed inset-0 z-[70] flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-4">
+        <div dir={dir} className="fixed inset-0 z-[70] flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-4">
           <div
             role="dialog"
             aria-modal="true"

@@ -211,6 +211,26 @@
     "languageBeat": "Weka hapa lugha unayoongea na ile unayotaka kusikia.",
     "gotIt": "Nimeelewa"
   },
+  "cookie": {
+    "title": "Tunathamini faragha yako",
+    "body": "Tunatumia vidakuzi vya lazima na hifadhi nyingine kama hiyo ili uendelee kuingia na tovuti ifanye kazi. Kwa ruhusa yako tungetumia pia vidakuzi vya hiari vya takwimu na masoko; hakuna kinachotumika leo. Unaweza kubadilisha chaguo lako wakati wowote kupitia Mipangilio ya vidakuzi chini ya ukurasa.",
+    "policyLink": "Sera ya Faragha",
+    "acceptAll": "Kubali Vyote",
+    "justThisTime": "Kwa Sasa Tu",
+    "reject": "Kataa",
+    "managePreferences": "Dhibiti mapendeleo",
+    "preferencesTitle": "Mapendeleo ya vidakuzi",
+    "rejectOptional": "Kataa vya hiari",
+    "save": "Hifadhi chaguo",
+    "alwaysOn": "Vimewashwa daima",
+    "close": "Funga",
+    "necessary": "Vya lazima",
+    "necessaryDescription": "Vinahitajika kuingia, kuendelea kuingia, kukumbuka lugha yako na kuweka tovuti salama.",
+    "analytics": "Takwimu",
+    "analyticsDescription": "Vingetusaidia kuelewa jinsi tovuti inavyotumika ili tuiboreshe.",
+    "marketing": "Masoko",
+    "marketingDescription": "Vingetuwezesha kupima kampeni zetu na kuonyesha maudhui yanayohusika mahali pengine."
+  },
   "language": {
     "originalLabel": "Swali la Asili ({language})",
     "approvedLabel": "Swali Lililoidhinishwa ({language})",

@@ -211,6 +211,26 @@
     "languageBeat": "Hyɛ kasa a wokasa ne kasa a wopɛ sɛ wote wɔ ha.",
     "gotIt": "Mate aseɛ"
   },
+  "cookie": {
+    "title": "Yɛbu wo kokoamsɛm",
+    "body": "Yɛde cookies a ehia ne nneɛma a ɛte saa sie nneɛma na woatumi atena mu na wɛbsaet no ayɛ adwuma. Sɛ woma yɛn kwan a, yɛde cookies a ɛyɛ nhwehwɛmu ne aguadeɛ ho a ɛnhia nso bɛdi dwuma; ɛnnɛ, baako mpo nyɛ adwuma. Wobɛtumi asesa wo paw berɛ biara wɔ Cookie nhyehyɛeɛ a ɛwɔ krataafa no ase.",
+    "policyLink": "Kokoamsɛm Ho Nhyehyɛeɛ",
+    "acceptAll": "Gye Ne Nyinaa",
+    "justThisTime": "Saa Prɛ Yi Nko",
+    "reject": "Pow",
+    "managePreferences": "Hwɛ wo apɛdeɛ so",
+    "preferencesTitle": "Cookie apɛdeɛ",
+    "rejectOptional": "Pow deɛ ɛnhia",
+    "save": "Kora wo paw",
+    "alwaysOn": "Ɛyɛ adwuma daa",
+    "close": "To mu",
+    "necessary": "Deɛ ehia",
+    "necessaryDescription": "Ehia na woakɔ mu, woatena mu, wɔakae wo kasa na wɛbsaet no ayɛ dwoodwoo.",
+    "analytics": "Nhwehwɛmu",
+    "analyticsDescription": "Ɛbɛboa yɛn ma yɛate sɛdeɛ wɔde wɛbsaet no di dwuma na yɛayɛ no yie.",
+    "marketing": "Aguadeɛ",
+    "marketingDescription": "Ɛbɛma yɛasusu yɛn dwumadie na yɛakyerɛ nsɛm a ɛfa ho wɔ baabi foforɔ."
+  },
   "language": {
     "originalLabel": "Mfitiaseɛ Nsɛmmisa ({language})",
     "approvedLabel": "Nsɛmmisa a Wɔapene So ({language})",

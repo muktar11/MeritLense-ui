@@ -211,6 +211,26 @@
     "languageBeat": "Halkan ku dooro luqadda aad ku hadasho iyo tan aad rabto inaad maqasho.",
     "gotIt": "Waan fahmay"
   },
+  "cookie": {
+    "title": "Waxaan qiimaynaa asturnaantaada",
+    "body": "Waxaan isticmaalnaa cookies lagama maarmaan ah iyo kayd la mid ah si aad u sii gashanaato oo boggu u shaqeeyo. Oggolaanshahaaga kadib waxaan sidoo kale isticmaali lahayn cookies ikhtiyaari ah oo falanqayn iyo suuqgeyn ah; maanta midna ma shaqaynayo. Waxaad doorashadaada beddeli kartaa wakhti kasta adigoo adeegsanaya Dejinta cookies ee hoose ee bogga.",
+    "policyLink": "Siyaasadda Asturnaanta",
+    "acceptAll": "Aqbal Dhammaan",
+    "justThisTime": "Hadda Oo Keliya",
+    "reject": "Diid",
+    "managePreferences": "Maamul doorashooyinka",
+    "preferencesTitle": "Doorashooyinka cookies",
+    "rejectOptional": "Diid kuwa ikhtiyaariga ah",
+    "save": "Kaydi doorashooyinka",
+    "alwaysOn": "Had iyo jeer shidan",
+    "close": "Xir",
+    "necessary": "Lagama maarmaan",
+    "necessaryDescription": "Waxaa loo baahan yahay in la galo, la sii galo, la xusuusto luqaddaada oo boggu ammaan ahaado.",
+    "analytics": "Falanqayn",
+    "analyticsDescription": "Waxay naga caawin lahayd inaan fahanno sida boggu loo isticmaalo si aan u horumarinno.",
+    "marketing": "Suuqgeyn",
+    "marketingDescription": "Waxay noo oggolaan lahayd inaan cabbirno ololeyaasheena oo aan meelo kale ku muujinno waxyaabo khuseeya."
+  },
   "language": {
     "originalLabel": "Su'aasha Asalka ah ({language})",
     "approvedLabel": "Su'aasha la Ansixiyay ({language})",
