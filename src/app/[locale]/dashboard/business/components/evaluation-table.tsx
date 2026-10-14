@@ -119,8 +119,9 @@ export default function EvaluationTable({
   const paginatedData = data.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
 
   const handleCopyMeetingLink = async (evaluation: EvaluationListItem) => {
-    if (!evaluation.meeting_link) return
-    await navigator.clipboard.writeText(evaluation.meeting_link)
+    const link = evaluation.meeting_short_link || evaluation.meeting_link
+    if (!link) return
+    await navigator.clipboard.writeText(link)
     setCopiedId(evaluation.id)
     setTimeout(() => setCopiedId(null), 2000)
   }

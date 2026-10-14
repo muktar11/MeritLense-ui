@@ -60,6 +60,8 @@ export interface Evaluation {
   feedback?: string;
   
   meeting_link?: string;
+  // Short link to share instead of meeting_link; null when it can't be shortened.
+  meeting_short_link?: string | null;
   meeting_id?: string;
   meeting_password?: string;
   session_id?: string;
@@ -427,5 +429,7 @@ export interface EvaluationListItem {
   // room (?sessionId=...) for INTERVIEW-type evaluations. Both null/absent
   // for other evaluation types or ones without a linked session.
   meeting_link?: string;
+  // Short link to share instead of meeting_link; null when it can't be shortened.
+  meeting_short_link?: string | null;
   session_id?: string;
 }

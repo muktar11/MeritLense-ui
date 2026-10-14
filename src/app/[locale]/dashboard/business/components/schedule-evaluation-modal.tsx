@@ -862,9 +862,9 @@ export default function EvaluationModal({
                       <Video className="w-4 h-4 text-gray-400 mt-0.5" />
                       <div>
                         <p className="text-sm text-gray-900">{t("candidateAccessLink")}</p>
-                        <a href={evaluation.meeting_link} target="_blank" rel="noopener noreferrer"
+                        <a href={evaluation.meeting_short_link || evaluation.meeting_link} target="_blank" rel="noopener noreferrer"
                            className="text-sm text-purple-600 hover:text-purple-700">
-                          {evaluation.meeting_link}
+                          {evaluation.meeting_short_link || evaluation.meeting_link}
                         </a>
                         <p className="text-xs text-gray-500">{t("candidateOnlyNote")}</p>
                       </div>
@@ -896,9 +896,9 @@ export default function EvaluationModal({
                       <Video className="w-4 h-4 text-gray-400 mt-0.5" />
                       <div>
                         <p className="text-sm text-gray-900">{t("meetingLink")}</p>
-                        <a href={evaluation.meeting_link} target="_blank" rel="noopener noreferrer"
+                        <a href={evaluation.meeting_short_link || evaluation.meeting_link} target="_blank" rel="noopener noreferrer"
                            className="text-sm text-purple-600 hover:text-purple-700">
-                          {evaluation.meeting_link}
+                          {evaluation.meeting_short_link || evaluation.meeting_link}
                         </a>
                       </div>
                     </div>
