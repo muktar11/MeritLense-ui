@@ -1916,8 +1916,8 @@
         },
         "ipTracer": {
           "title": "IP Tracer",
-          "subtitle": "Enter an account email to see every IP address it acted from, or an IP address to see every account seen on it.",
-          "placeholder": "Email or IP address",
+          "subtitle": "Enter an account email to see every IP address it acted from, an IP address to see every account seen on it, or a candidate passport ID to see that candidate's full activity trail.",
+          "placeholder": "Email, IP address or passport ID",
           "trace": "Trace",
           "days": "Last {days} days",
           "invalid": "Enter an email address or an IP address.",
@@ -1941,6 +1941,36 @@
             "browsers": "Browser / device",
             "shared": "Other accounts on this IP",
             "sessions": "Interviews"
+          }
+        },
+        "trail": {
+          "open": "Activity trail",
+          "title": "Candidate activity trail",
+          "subtitle": "Who registered this candidate, who created each assessment, and every action tied to it, with the IP address it came from.",
+          "notFound": "No candidate found with this passport ID.",
+          "failed": "Could not load the trail. Please try again.",
+          "owner": "Account: {owner} · Company: {company}",
+          "registered": "Registered",
+          "byFrom": "by {name} ({email}) on {at} from",
+          "noRegistration": "No record of this candidate being added through the app (record created {at}). It was created outside the app, e.g. directly on the server.",
+          "noIp": "IP not recorded",
+          "assessments": "Assessments",
+          "noAssessments": "No assessments.",
+          "ran": "Started {start} · Ended {end}",
+          "createdBy": "Created",
+          "candidateIps": "Candidate's IP addresses on the interview link",
+          "events": "All activity ({count})",
+          "filterIp": "Filter by IP:",
+          "allIps": "All",
+          "noEvents": "No activity for this filter.",
+          "candidateOrSystem": "Candidate / system",
+          "page": "Page {current} of {total}",
+          "col": {
+            "when": "When",
+            "who": "Who",
+            "action": "Action",
+            "ip": "IP address",
+            "details": "Details"
           }
         }
       },

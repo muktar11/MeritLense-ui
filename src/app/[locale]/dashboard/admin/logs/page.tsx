@@ -26,6 +26,7 @@ import {
 } from "lucide-react"
 import { VerifyDocumentsModal } from "./components/verify-documents-modal"
 import { IpTracer } from "./components/ip-tracer"
+import { CandidateTrailModal } from "./components/candidate-trail-modal"
 import auditService from "@/app/api/admin/audit/endpoints"
 import type { 
   AuditLogEntry, 
@@ -60,6 +61,8 @@ export default function AuditLog() {
   const [pendingLoading, setPendingLoading] = useState(true)
   const [selectedUser, setSelectedUser] = useState<PendingVerificationUser | null>(null)
   const [isVerifyModalOpen, setIsVerifyModalOpen] = useState(false)
+  // Candidate activity trail: opened from an audit row or a passport-ID search.
+  const [trail, setTrail] = useState<{ candidateId?: string | null; passportId?: string } | null>(null)
 
   const pageSize = 20
 
@@ -397,6 +400,7 @@ export default function AuditLog() {
               setAuditFilters(prev => ({ ...prev, search: "", ip_address: ip }))
               setActiveTab("audit")
             }}
+            onOpenTrail={(passportId) => setTrail({ passportId })}
           />
         )}
 
@@ -530,6 +534,15 @@ export default function AuditLog() {
                                 <div>
                                   <p className="text-sm font-medium">{log.resource_name}</p>
                                   <p className="text-xs text-gray-500">{log.resource_type_name || '-'}</p>
+                                  {log.trail_candidate_id && (
+                                    <button
+                                      type="button"
+                                      onClick={() => setTrail({ candidateId: log.trail_candidate_id })}
+                                      className="text-xs text-purple-700 hover:underline"
+                                    >
+                                      {t("trail.open")}
+                                    </button>
+                                  )}
                                 </div>
                               ) : (
                                 <span className="text-gray-400">-</span>
@@ -584,6 +597,15 @@ export default function AuditLog() {
                             <p className="mt-1 text-sm">
                               <span className="font-medium">{log.resource_name}</span>
                               {log.resource_type_name && <span className="text-gray-500"> · {log.resource_type_name}</span>}
+                              {log.trail_candidate_id && (
+                                <button
+                                  type="button"
+                                  onClick={() => setTrail({ candidateId: log.trail_candidate_id })}
+                                  className="ms-2 text-xs text-purple-700 hover:underline"
+                                >
+                                  {t("trail.open")}
+                                </button>
+                              )}
                             </p>
                           )}
                           <p className="mt-1 text-sm text-gray-600">{log.description}</p>
@@ -637,6 +659,12 @@ export default function AuditLog() {
       </div>
 
       {/* Verify Documents Modal */}
+      <CandidateTrailModal
+        candidateId={trail?.candidateId}
+        passportId={trail?.passportId}
+        onClose={() => setTrail(null)}
+      />
+
       <VerifyDocumentsModal
         isOpen={isVerifyModalOpen}
         onClose={() => {
