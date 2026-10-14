@@ -1761,7 +1761,8 @@
         "adminAccess": "Admin Access",
         "tabs": {
           "pendingVerifications": "Pending Verifications",
-          "auditLogs": "Audit Logs"
+          "auditLogs": "Audit Logs",
+          "ipTracer": "IP Tracer"
         },
         "pending": {
           "title": "Document Verification Queue",
@@ -1794,8 +1795,10 @@
             "severity": "Severity",
             "resource": "Resource",
             "timestamp": "Timestamp",
-            "description": "Description"
-          }
+            "description": "Description",
+            "ip": "IP address"
+          },
+          "ipFilter": "Filter by IP"
         },
         "severity": {
           "INFO": "Info",
@@ -1909,6 +1912,35 @@
             "of": "of",
             "prev": "Prev",
             "next": "Next"
+          }
+        },
+        "ipTracer": {
+          "title": "IP Tracer",
+          "subtitle": "Enter an account email to see every IP address it acted from, or an IP address to see every account seen on it.",
+          "placeholder": "Email or IP address",
+          "trace": "Trace",
+          "days": "Last {days} days",
+          "invalid": "Enter an email address or an IP address.",
+          "notFound": "No account found for this email.",
+          "failed": "Could not load the trace. Please try again.",
+          "accountHeading": "IP addresses used by {email}",
+          "candidateHeading": "IP addresses used by this account's candidates (interview links)",
+          "ipHeading": "Accounts seen on {ip}",
+          "unattributed": "{count} more events on this IP are not tied to an account (candidates on interview links, sign-in attempts for unknown emails).",
+          "empty": "No activity recorded in this period.",
+          "note": "IP addresses are recorded for every request from 14 Oct 2026. Older entries may have none.",
+          "viewLogs": "View logs",
+          "col": {
+            "ip": "IP address",
+            "account": "Account",
+            "firstSeen": "First seen",
+            "lastSeen": "Last seen",
+            "events": "Events",
+            "logins": "Sign-ins",
+            "failed": "Failed sign-ins",
+            "browsers": "Browser / device",
+            "shared": "Other accounts on this IP",
+            "sessions": "Interviews"
           }
         }
       },
