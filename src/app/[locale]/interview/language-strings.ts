@@ -3,6 +3,8 @@
 // chrome is English or Arabic (session.ui_language); question content can
 // be shown in any supported language.
 import { LANGUAGES } from "@/lib/languages";
+import { buildLanguageStrings } from "./candidate-builders";
+import arMessages from "./locales/ar.json";
 import type { CandidateLanguage } from "./candidate-lang";
 
 export interface LanguageStrings {
@@ -69,40 +71,8 @@ const EN: LanguageStrings = {
   statementTranslationUnavailable: (l) => `Translation into ${l} isn't available right now. Please read the English statement above.`,
 };
 
-const AR: LanguageStrings = {
-  originalLabel: (l) => `السؤال الأصلي (${l})`,
-  approvedLabel: (l) => `السؤال المعتمد (${l})`,
-  translationLabel: (l) => `السؤال المترجَم (${l})`,
-  listenIn: (l) => `استمع بـ${l}`,
-  stop: "إيقاف",
-  showIn: (l) => `عرض بـ${l}`,
-  translating: "جارٍ الترجمة…",
-  translationUnavailable: (l) => `الترجمة إلى ${l} غير متاحة حاليًا. يُرجى الاعتماد على السؤال الأصلي أعلاه.`,
-  audioUnavailable: (l) => `الصوت غير متاح بـ${l} على هذا الجهاز. يُرجى قراءة النص على الشاشة.`,
-  yourLanguageTitle: "لغتك",
-  yourLanguageHint: "هذه هي اللغة التي ستجيب بها عن الأسئلة. يمكنك تغييرها في أي وقت.",
-  howItWorksTitle: "كيف يعمل التقييم",
-  howItWorks: [
-    "الأسئلة من بنك الأسئلة المعتمد (بالإنجليزية والعربية).",
-    "تُترجَم تلقائيًا إلى اللغة التي تختارها.",
-    "يمكنك الاستماع إلى السؤال باللغتين.",
-    "يمكنك الإجابة بالصوت أو بالكتابة، حسب دعم اللغة.",
-  ],
-  audioSupportTitle: "دعم الصوت",
-  audioSupportBody:
-    "الصوت متاح بالإنجليزية ومعظم اللغات المدعومة. إذا لم يكن الصوت متاحًا بلغتك، يمكنك قراءة السؤال والإجابة بالكتابة.",
-  support: { listen: "الاستماع", record: "الإجابة الصوتية", translate: "الترجمة", yes: "متاح", no: "غير متاح" },
-  yourAnswerTitle: (l) => `إجابتك (${l})`,
-  yourAnswerHint: (l) => `اختر طريقة الإجابة بـ${l}.`,
-  voiceSupported: (l) => `التسجيل الصوتي مدعوم بـ${l}.`,
-  voiceUnsupported: (l) => `التسجيل الصوتي غير متاح بـ${l}. يُرجى كتابة إجابتك.`,
-  recordingIn: (l) => `سيكون التسجيل بـ: ${l}`,
-  answerKept: "تُحفَظ إجابتك عند تغيير اللغة أو طريقة الإجابة.",
-  timeRemaining: "الوقت المتبقي",
-  timeContinues: "يستمر احتساب الوقت عبر جميع الأسئلة.",
-  verbalTranslationLabel: (l) => `${l} (ترجمة)`,
-  statementTranslationUnavailable: (l) => `الترجمة إلى ${l} غير متاحة حاليًا. يُرجى قراءة النص الأصلي أعلاه.`,
-};
+// Arabic comes from locales/ar.json (see candidate-lang.ts).
+const AR: LanguageStrings = buildLanguageStrings(arMessages.language);
 
 const BY_LANGUAGE: Record<CandidateLanguage, LanguageStrings> = { en: EN, ar: AR };
 
