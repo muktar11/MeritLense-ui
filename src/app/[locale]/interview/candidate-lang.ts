@@ -5,14 +5,20 @@
 // browser here belongs to the candidate taking a specific interview, and
 // that interview's language was chosen by the admin/config, not by the
 // candidate's own browser locale.
-export type CandidateLanguage = "en" | "ar";
+// A lowercase LANGUAGES key: "en" and "ar" are built in below; every other
+// language is registered once its bundle loads (see candidate-messages.ts).
+export type CandidateLanguage = string;
 
 export function resolveCandidateLanguage(uiLanguage?: string | null): CandidateLanguage {
-  return (uiLanguage ?? "").toUpperCase() === "AR" ? "ar" : "en";
+  const key = (uiLanguage ?? "").toLowerCase();
+  if (DICTIONARIES[key]) return key;
+  return key === "ar" ? "ar" : "en";
 }
 
+const RTL_LANGUAGES = ["ar", "ur"];
+
 export function candidateDir(language: CandidateLanguage): "rtl" | "ltr" {
-  return language === "ar" ? "rtl" : "ltr";
+  return RTL_LANGUAGES.includes(language) ? "rtl" : "ltr";
 }
 
 interface CandidateStrings {
@@ -720,6 +726,11 @@ const ar: CandidateStrings = {
 };
 
 const DICTIONARIES: Record<CandidateLanguage, CandidateStrings> = { en, ar };
+
+/** Adds a bundled language once it has loaded (candidate-messages.ts). */
+export function registerCandidateStrings(language: CandidateLanguage, strings: CandidateStrings) {
+  DICTIONARIES[language] = strings;
+}
 
 export function getCandidateStrings(uiLanguage?: string | null): CandidateStrings {
   return DICTIONARIES[resolveCandidateLanguage(uiLanguage)];

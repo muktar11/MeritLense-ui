@@ -1,0 +1,219 @@
+// Candidate interview page in the candidate's own language.
+//
+// English and Arabic are written in candidate-lang.ts / language-strings.ts.
+// Every other supported language is a plain JSON file in ./locales (same
+// keys, with {placeholders}), so translators can review and correct it
+// without touching code. A language is loaded only when a candidate needs
+// it. Typing each import as CandidateMessages makes a missing key a build
+// error rather than blank text on the page.
+//
+// The consent and privacy texts in these files are translations shown to
+// the candidate in place of the English/Arabic originals (management
+// decision, 14 Oct 2026). The language shown is recorded with the consent.
+import type { CandidateStrings } from "./candidate-lang";
+import { registerCandidateStrings } from "./candidate-lang";
+import type { LanguageStrings } from "./language-strings";
+import { registerLanguageStrings } from "./language-strings";
+
+type Step = { title: string; description: string };
+
+export interface CandidateMessages {
+  common: CandidateStrings["common"];
+  precheck: {
+    preparing: string;
+    liveCallBanner: string;
+    consent: CandidateStrings["precheck"]["consent"];
+    privacy: CandidateStrings["precheck"]["privacy"];
+    deviceCheck: CandidateStrings["precheck"]["deviceCheck"];
+    verbalConfirmation: Omit<CandidateStrings["precheck"]["verbalConfirmation"], "recording"> & { recording: string };
+  };
+  identity: Omit<CandidateStrings["identity"], "verifyingLabel" | "matchPassed" | "matchFailed"> & {
+    verifyingLabel: string;
+    matchPassed: string;
+    matchFailed: string;
+  };
+  orientation: { steps: Step[]; skip: string; next: string; start: string };
+  interviewPage: Omit<
+    CandidateStrings["interviewPage"],
+    "scheduledBody" | "cancelledMessage" | "completedMessage" | "interviewTitle" | "audioUnavailableMessage"
+  > & {
+    scheduledBodyAt: string;
+    scheduledBodyPending: string;
+    scheduledBodyContinue: string;
+    cancelledMessage: string;
+    completedMessage: string;
+    completedMessageRole: string;
+    interviewTitle: string;
+    audioUnavailableMessage: string;
+  };
+  questionCard: Omit<CandidateStrings["questionCard"], "questionOf" | "domainLabel" | "skillTagLabel"> & {
+    questionOf: string;
+    domainLabel: string;
+    skillTagLabel: string;
+  };
+  answerRecorder: Omit<CandidateStrings["answerRecorder"], "recordingLabel"> & { recordingLabel: string };
+  answerTextForm: CandidateStrings["answerTextForm"];
+  integrityMonitor: { problemLabels: CandidateStrings["integrityMonitor"]["problemLabels"]; willBeFlagged: string };
+  testTimer: Omit<CandidateStrings["testTimer"], "remaining"> & { remaining: string };
+  liveCallRoom: Omit<CandidateStrings["liveCallRoom"], "isSpeaking" | "waitingToFinish" | "recording"> & {
+    isSpeaking: string;
+    waitingToFinish: string;
+    recording: string;
+  };
+  callControlsIntro: CandidateStrings["callControlsIntro"];
+  language: {
+    originalLabel: string;
+    approvedLabel: string;
+    translationLabel: string;
+    listenIn: string;
+    stop: string;
+    showIn: string;
+    translating: string;
+    translationUnavailable: string;
+    audioUnavailable: string;
+    yourLanguageTitle: string;
+    yourLanguageHint: string;
+    howItWorksTitle: string;
+    howItWorks: string[];
+    audioSupportTitle: string;
+    audioSupportBody: string;
+    support: LanguageStrings["support"];
+    yourAnswerTitle: string;
+    yourAnswerHint: string;
+    voiceSupported: string;
+    voiceUnsupported: string;
+    recordingIn: string;
+    answerKept: string;
+    timeRemaining: string;
+    timeContinues: string;
+    verbalTranslationLabel: string;
+    statementTranslationUnavailable: string;
+  };
+}
+
+type Loader = () => Promise<{ default: CandidateMessages }>;
+
+// Keys match LANGUAGES (lowercased). Explicit imports so each language is
+// its own small chunk, downloaded only by candidates who need it.
+const LOADERS: Record<string, Loader> = {
+  am: () => import("./locales/am.json"),
+  om: () => import("./locales/om.json"),
+  fil: () => import("./locales/fil.json"),
+  zh: () => import("./locales/zh.json"),
+  hi: () => import("./locales/hi.json"),
+  ur: () => import("./locales/ur.json"),
+  bn: () => import("./locales/bn.json"),
+  ta: () => import("./locales/ta.json"),
+  te: () => import("./locales/te.json"),
+  ml: () => import("./locales/ml.json"),
+  pa: () => import("./locales/pa.json"),
+  si: () => import("./locales/si.json"),
+  id: () => import("./locales/id.json"),
+  ne: () => import("./locales/ne.json"),
+  sw: () => import("./locales/sw.json"),
+  vi: () => import("./locales/vi.json"),
+  km: () => import("./locales/km.json"),
+  my: () => import("./locales/my.json"),
+  ti: () => import("./locales/ti.json"),
+  so: () => import("./locales/so.json"),
+  aa: () => import("./locales/aa.json"),
+  ak: () => import("./locales/ak.json"),
+  lg: () => import("./locales/lg.json"),
+  mg: () => import("./locales/mg.json"),
+};
+
+export function hasBundledLanguage(key?: string | null): boolean {
+  return Boolean(key && LOADERS[key.toLowerCase()]);
+}
+
+function fill(template: string, values: Record<string, string | number>): string {
+  return template.replace(/\{(\w+)\}/g, (match, name: string) => (name in values ? String(values[name]) : match));
+}
+
+export function buildCandidateStrings(m: CandidateMessages): CandidateStrings {
+  const page = m.interviewPage;
+  return {
+    common: m.common,
+    precheck: {
+      ...m.precheck,
+      verbalConfirmation: {
+        ...m.precheck.verbalConfirmation,
+        recording: (seconds) => fill(m.precheck.verbalConfirmation.recording, { seconds }),
+      },
+    },
+    identity: {
+      ...m.identity,
+      verifyingLabel: (seconds) => fill(m.identity.verifyingLabel, { seconds }),
+      matchPassed: (score) => fill(m.identity.matchPassed, { score: score.toFixed(0) }),
+      matchFailed: (score) => fill(m.identity.matchFailed, { score: score.toFixed(0) }),
+    },
+    orientation: m.orientation,
+    interviewPage: {
+      ...page,
+      scheduledBody: (dateTime) =>
+        `${dateTime ? fill(page.scheduledBodyAt, { dateTime }) : page.scheduledBodyPending} ${page.scheduledBodyContinue}`,
+      cancelledMessage: (reason) => fill(page.cancelledMessage, { reason }),
+      completedMessage: (roleName) => (roleName ? fill(page.completedMessageRole, { roleName }) : page.completedMessage),
+      interviewTitle: (roleName) => fill(page.interviewTitle, { roleName }),
+      audioUnavailableMessage: (language) => fill(page.audioUnavailableMessage, { language }),
+    },
+    questionCard: {
+      ...m.questionCard,
+      questionOf: (n, total) => fill(m.questionCard.questionOf, { n, total }),
+      domainLabel: (domain) => fill(m.questionCard.domainLabel, { domain }),
+      skillTagLabel: (skill) => fill(m.questionCard.skillTagLabel, { skill }),
+    },
+    answerRecorder: { ...m.answerRecorder, recordingLabel: (time) => fill(m.answerRecorder.recordingLabel, { time }) },
+    answerTextForm: m.answerTextForm,
+    integrityMonitor: {
+      problemLabels: m.integrityMonitor.problemLabels,
+      willBeFlagged: (label, secondsLeft) => fill(m.integrityMonitor.willBeFlagged, { label, secondsLeft }),
+    },
+    testTimer: { ...m.testTimer, remaining: (mm, ss) => fill(m.testTimer.remaining, { mm, ss }) },
+    liveCallRoom: {
+      ...m.liveCallRoom,
+      isSpeaking: (role) => fill(m.liveCallRoom.isSpeaking, { role }),
+      waitingToFinish: (role) => fill(m.liveCallRoom.waitingToFinish, { role }),
+      recording: (time) => fill(m.liveCallRoom.recording, { time }),
+    },
+    callControlsIntro: m.callControlsIntro,
+  };
+}
+
+export function buildLanguageStrings(m: CandidateMessages["language"]): LanguageStrings {
+  const one = (template: string) => (language: string) => fill(template, { language });
+  return {
+    ...m,
+    originalLabel: one(m.originalLabel),
+    approvedLabel: one(m.approvedLabel),
+    translationLabel: one(m.translationLabel),
+    listenIn: one(m.listenIn),
+    showIn: one(m.showIn),
+    translationUnavailable: one(m.translationUnavailable),
+    audioUnavailable: one(m.audioUnavailable),
+    yourAnswerTitle: one(m.yourAnswerTitle),
+    yourAnswerHint: one(m.yourAnswerHint),
+    voiceSupported: one(m.voiceSupported),
+    voiceUnsupported: one(m.voiceUnsupported),
+    recordingIn: one(m.recordingIn),
+    verbalTranslationLabel: one(m.verbalTranslationLabel),
+    statementTranslationUnavailable: one(m.statementTranslationUnavailable),
+  };
+}
+
+/** Loads the candidate's language (if it's a bundled one) and returns the
+ * interface language key to use: that language, or the session's EN/AR
+ * language when there is no bundle or it fails to load. */
+export async function loadCandidateLanguage(key: string | null | undefined, fallback: string): Promise<string> {
+  const lower = (key ?? "").toLowerCase();
+  const loader = LOADERS[lower];
+  if (!loader) return fallback;
+  try {
+    const messages: CandidateMessages = (await loader()).default;
+    registerCandidateStrings(lower, buildCandidateStrings(messages));
+    registerLanguageStrings(lower, buildLanguageStrings(messages.language));
+    return lower;
+  } catch {
+    return fallback;
+  }
+}

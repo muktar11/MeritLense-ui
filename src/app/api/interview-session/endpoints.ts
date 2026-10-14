@@ -123,18 +123,21 @@ class InterviewSessionClientService {
     return response.data;
   }
 
-  async captureConsent(sessionId: string, token: string, signatoryName: string): Promise<PrecheckStatus> {
+  // displayLanguage: the language the consent text was shown in (e.g. "AM"),
+  // recorded with the consent.
+  async captureConsent(sessionId: string, token: string, signatoryName: string, displayLanguage?: string): Promise<PrecheckStatus> {
     const response = await interviewSessionClient.post(`/${sessionId}/prechecks/consent/`, {
       token,
       signatory_name: signatoryName,
+      ...(displayLanguage ? { display_language: displayLanguage.toUpperCase() } : {}),
     });
     return response.data;
   }
 
-  async acknowledgePrivacy(sessionId: string, token: string): Promise<PrecheckStatus> {
+  async acknowledgePrivacy(sessionId: string, token: string, displayLanguage?: string): Promise<PrecheckStatus> {
     const response = await interviewSessionClient.post(`/${sessionId}/prechecks/privacy-acknowledgement/`, {
       token,
-      metadata: { source: 'candidate-precheck' },
+      metadata: { source: 'candidate-precheck', ...(displayLanguage ? { display_language: displayLanguage.toUpperCase() } : {}) },
     });
     return response.data;
   }
