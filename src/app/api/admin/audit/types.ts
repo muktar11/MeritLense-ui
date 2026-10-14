@@ -54,9 +54,58 @@ export interface AuditLogFilter {
   date_from?: string;
   date_to?: string;
   search?: string;
+  ip_address?: string;
   page?: number;
   page_size?: number;
 }
+
+// GET audit/logs/ip-activity - the admin IP tracer.
+export interface IpTraceAccountIp {
+  ip_address: string;
+  first_seen: string;
+  last_seen: string;
+  events: number;
+  logins: number;
+  failed_logins: number;
+  user_agents: string[];
+  other_accounts: number;
+}
+
+export interface IpTraceCandidateIp {
+  ip_address: string;
+  first_seen: string;
+  last_seen: string;
+  events: number;
+  sessions: number;
+}
+
+export interface IpTraceIpAccount {
+  user_id: string;
+  email: string;
+  name: string;
+  role: string;
+  first_seen: string;
+  last_seen: string;
+  events: number;
+  logins: number;
+  failed_logins: number;
+}
+
+export type IpTraceResult =
+  | {
+      mode: 'account';
+      days: number;
+      account: { user_id: string; email: string; name: string; role: string };
+      ips: IpTraceAccountIp[];
+      candidate_ips: IpTraceCandidateIp[];
+    }
+  | {
+      mode: 'ip';
+      days: number;
+      ip: string;
+      accounts: IpTraceIpAccount[];
+      unattributed_events: number;
+    };
 
 export interface PendingVerificationUser {
   id: string;
