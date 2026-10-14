@@ -211,6 +211,26 @@
     "languageBeat": "Londa wano olulimi lw'oyogera n'olw'oyagala okuwulira.",
     "gotIt": "Ntegedde"
   },
+  "cookie": {
+    "title": "Tussaamu ekitiibwa ku byama byo",
+    "body": "Tukozesa cookies ezeetaagisa n'okutereka okufaanana bwe tutyo okukukuuma ng'oli muyingize n'omukutu okukola. Ng'otukkirizza, twandikozesezza ne cookies ez'okwesalirawo ez'okwekenneenya n'ez'okutunda; leero tewali n'emu ekola. Osobola okukyusa by'olonze essaawa yonna mu Nteekateeka za cookies wansi ku lupapula.",
+    "policyLink": "Enkola y'Ebyama",
+    "acceptAll": "Kkiriza Byonna",
+    "justThisTime": "Omulundi Guno Gwokka",
+    "reject": "Gaana",
+    "managePreferences": "Tegeka by'oyagala",
+    "preferencesTitle": "By'oyagala ku cookies",
+    "rejectOptional": "Gaana ez'okwesalirawo",
+    "save": "Tereka by'olonze",
+    "alwaysOn": "Bulijjo zikola",
+    "close": "Ggalawo",
+    "necessary": "Ezeetaagisa",
+    "necessaryDescription": "Zeetaagisa okuyingira, okusigala ng'oli muyingize, okujjukira olulimi lwo n'okukuuma omukutu nga gwa bukuumi.",
+    "analytics": "Okwekenneenya",
+    "analyticsDescription": "Zandituyambye okutegeera engeri omukutu gye gukozesebwamu tusobole okugulongoosa.",
+    "marketing": "Okutunda",
+    "marketingDescription": "Zanditusobozesezza okupima kampeyini zaffe n'okulaga ebikwatagana mu bifo ebirala."
+  },
   "language": {
     "originalLabel": "Ekibuuzo Ekyasooka ({language})",
     "approvedLabel": "Ekibuuzo Ekikkiriziddwa ({language})",

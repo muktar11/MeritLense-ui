@@ -211,6 +211,26 @@
     "languageBeat": "Afaan ati dubbattuu fi afaan dhaga'uu barbaaddu asitti filadhu.",
     "gotIt": "Hubadheera"
   },
+  "cookie": {
+    "title": "Iccitii kee ni kabajna",
+    "body": "Akka seenamee turtuu fi marsariitiin akka hojjetuuf kuukiiwwan barbaachisoo fi kuusaa akkasii fayyadamna. Hayyama keetiin kuukiiwwan filannoo xiinxalaa fi gabaa illee fayyadamna; har'a tokkollee hojii irra hin jiru. Filannoo kee yeroo kamiyyuu Qindaa'ina kuukii gadi aanaa fuulaa irraa jijjiiruu dandeessa.",
+    "policyLink": "Imaammata Iccitii",
+    "acceptAll": "Hunda Fudhadhu",
+    "justThisTime": "Yeroo Kana Qofa",
+    "reject": "Didi",
+    "managePreferences": "Filannoowwan bulchi",
+    "preferencesTitle": "Filannoowwan kuukii",
+    "rejectOptional": "Kanneen filannoo didi",
+    "save": "Filannoowwan olkaa'i",
+    "alwaysOn": "Yeroo hunda banaa",
+    "close": "Cufi",
+    "necessary": "Barbaachisoo",
+    "necessaryDescription": "Seenuuf, seenamee turuuf, afaan kee yaadachuu fi marsariitii nageenya qabeessa gochuuf barbaachisa.",
+    "analytics": "Xiinxala",
+    "analyticsDescription": "Akkaataa marsariitiin itti fayyadamamu hubannee fooyyessuuf nu gargaara.",
+    "marketing": "Gabaa",
+    "marketingDescription": "Duula keenya safaruu fi qabiyyee walitti dhufeenya qabu bakka biraatti agarsiisuuf nu dandeessisa."
+  },
   "language": {
     "originalLabel": "Gaaffii Isa Jalqabaa ({language})",
     "approvedLabel": "Gaaffii Mirkanaa'e ({language})",

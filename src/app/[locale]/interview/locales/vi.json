@@ -211,6 +211,26 @@
     "languageBeat": "Chọn tại đây ngôn ngữ bạn nói và ngôn ngữ bạn muốn nghe.",
     "gotIt": "Đã hiểu"
   },
+  "cookie": {
+    "title": "Chúng tôi coi trọng quyền riêng tư của bạn",
+    "body": "Chúng tôi sử dụng cookie cần thiết và các hình thức lưu trữ tương tự để giữ bạn đăng nhập và giúp trang web hoạt động. Khi được bạn cho phép, chúng tôi cũng sẽ dùng cookie phân tích và tiếp thị tùy chọn; hiện chưa có loại nào được bật. Bạn có thể thay đổi lựa chọn bất cứ lúc nào trong Cài đặt cookie ở cuối trang.",
+    "policyLink": "Chính sách quyền riêng tư",
+    "acceptAll": "Chấp nhận tất cả",
+    "justThisTime": "Chỉ lần này",
+    "reject": "Từ chối",
+    "managePreferences": "Quản lý tùy chọn",
+    "preferencesTitle": "Tùy chọn cookie",
+    "rejectOptional": "Từ chối loại tùy chọn",
+    "save": "Lưu lựa chọn",
+    "alwaysOn": "Luôn bật",
+    "close": "Đóng",
+    "necessary": "Cần thiết",
+    "necessaryDescription": "Cần để đăng nhập, duy trì đăng nhập, ghi nhớ ngôn ngữ của bạn và giữ an toàn cho trang web.",
+    "analytics": "Phân tích",
+    "analyticsDescription": "Giúp chúng tôi hiểu cách trang web được sử dụng để cải thiện.",
+    "marketing": "Tiếp thị",
+    "marketingDescription": "Giúp chúng tôi đo lường các chiến dịch và hiển thị nội dung phù hợp ở nơi khác."
+  },
   "language": {
     "originalLabel": "Câu hỏi gốc ({language})",
     "approvedLabel": "Câu hỏi chính thức ({language})",

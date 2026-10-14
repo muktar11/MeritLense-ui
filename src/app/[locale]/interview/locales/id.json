@@ -211,6 +211,26 @@
     "languageBeat": "Atur di sini bahasa yang Anda gunakan dan bahasa yang ingin Anda dengar.",
     "gotIt": "Mengerti"
   },
+  "cookie": {
+    "title": "Kami menghargai privasi Anda",
+    "body": "Kami menggunakan cookie yang diperlukan dan penyimpanan serupa agar Anda tetap masuk dan situs berfungsi. Dengan izin Anda, kami juga akan menggunakan cookie analitik dan pemasaran opsional; saat ini tidak ada yang aktif. Anda dapat mengubah pilihan kapan saja dari Pengaturan cookie di bagian bawah halaman.",
+    "policyLink": "Kebijakan Privasi",
+    "acceptAll": "Terima Semua",
+    "justThisTime": "Hanya Kali Ini",
+    "reject": "Tolak",
+    "managePreferences": "Kelola preferensi",
+    "preferencesTitle": "Preferensi cookie",
+    "rejectOptional": "Tolak yang opsional",
+    "save": "Simpan pilihan",
+    "alwaysOn": "Selalu aktif",
+    "close": "Tutup",
+    "necessary": "Diperlukan",
+    "necessaryDescription": "Diperlukan untuk masuk, tetap masuk, mengingat bahasa Anda, dan menjaga keamanan situs.",
+    "analytics": "Analitik",
+    "analyticsDescription": "Membantu kami memahami cara situs digunakan agar dapat kami tingkatkan.",
+    "marketing": "Pemasaran",
+    "marketingDescription": "Memungkinkan kami mengukur kampanye dan menampilkan konten yang relevan di tempat lain."
+  },
   "language": {
     "originalLabel": "Pertanyaan Asli ({language})",
     "approvedLabel": "Pertanyaan Resmi ({language})",

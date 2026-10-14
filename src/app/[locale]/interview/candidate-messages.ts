@@ -10,8 +10,9 @@
 // The consent and privacy texts in these files are translations shown to
 // the candidate in place of the English/Arabic originals (management
 // decision, 14 Oct 2026). The language shown is recorded with the consent.
+import { setCookieBannerLanguage } from "@/lib/cookie-banner-language";
 import type { CandidateStrings } from "./candidate-lang";
-import { registerCandidateStrings } from "./candidate-lang";
+import { candidateDir, registerCandidateStrings } from "./candidate-lang";
 import type { LanguageStrings } from "./language-strings";
 import { registerLanguageStrings } from "./language-strings";
 
@@ -61,6 +62,27 @@ export interface CandidateMessages {
     recording: string;
   };
   callControlsIntro: CandidateStrings["callControlsIntro"];
+  // The site cookie banner, shown over this page (components/app/CookieConsentBanner.tsx).
+  cookie: {
+    title: string;
+    body: string;
+    policyLink: string;
+    acceptAll: string;
+    justThisTime: string;
+    reject: string;
+    managePreferences: string;
+    preferencesTitle: string;
+    rejectOptional: string;
+    save: string;
+    alwaysOn: string;
+    close: string;
+    necessary: string;
+    necessaryDescription: string;
+    analytics: string;
+    analyticsDescription: string;
+    marketing: string;
+    marketingDescription: string;
+  };
   language: {
     originalLabel: string;
     approvedLabel: string;
@@ -212,6 +234,7 @@ export async function loadCandidateLanguage(key: string | null | undefined, fall
     const messages: CandidateMessages = (await loader()).default;
     registerCandidateStrings(lower, buildCandidateStrings(messages));
     registerLanguageStrings(lower, buildLanguageStrings(messages.language));
+    setCookieBannerLanguage({ strings: messages.cookie, dir: candidateDir(lower) });
     return lower;
   } catch {
     return fallback;
