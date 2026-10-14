@@ -261,6 +261,7 @@ export default function StartSessionModal({
       const session = await interviewService.createSession({
         candidate_id: selectedCandidateId,
         config_id: selectedConfig.id,
+        answer_language: effectiveLanguage,
       }, locale)
       // The candidate starts the assessment only after completing consent,
       // device, verbal-confirmation, privacy, and identity prechecks.
@@ -287,18 +288,29 @@ export default function StartSessionModal({
     preselectedCandidate ?? candidates.find(c => c.id === selectedCandidateId)
 
   const selectedRoleConfigs = selectedRole && assessmentType ? visibleConfigs(selectedRole) : []
-  // Languages this role/type is actually set up in (EN/AR today; more come
-  // with the interview page's translation support).
+  // Question sets this role/type is set up in (EN/AR - the approved bank).
   const languagePool = selectedRoleConfigs.length ? selectedRoleConfigs : configs.filter(matchesType)
   const availableLanguages = LANGUAGE_ORDER.filter(code => languagePool.some(c => (c.language || "EN").toUpperCase() === code))
   const preferredLanguage = (activeCandidateObj?.preferred_language || "").toUpperCase()
+  const isSupported = (key: string) => LANGUAGES.some(lang => lang.key === key)
+  // The candidate's language: any supported language. Defaults to their
+  // profile language.
   const effectiveLanguage =
-    (language && availableLanguages.includes(language) && language) ||
-    (availableLanguages.includes(preferredLanguage) && preferredLanguage) ||
+    (language && isSupported(language) && language) ||
+    (isSupported(preferredLanguage) && preferredLanguage) ||
+    "EN"
+  // The question set it runs on: English or Arabic directly; any other
+  // language uses the English set (or Arabic when there's no English one),
+  // shown to the candidate translated, and answered in their language.
+  const questionLanguage =
+    (availableLanguages.includes(effectiveLanguage) && effectiveLanguage) ||
+    (availableLanguages.includes("EN") && "EN") ||
     availableLanguages[0] ||
     ""
-  const selectedConfig = selectedRoleConfigs.find(c => (c.language || "EN").toUpperCase() === effectiveLanguage)
-  const languageName = (code: string) => (t.has(`languages.${code}`) ? t(`languages.${code}`) : code)
+  const selectedConfig = selectedRoleConfigs.find(c => (c.language || "EN").toUpperCase() === questionLanguage)
+  const languageName = (code: string) => (t.has(`languages.${code}`) ? t(`languages.${code}`) : spokenLanguageName(code, locale))
+  const isTranslated = Boolean(questionLanguage) && effectiveLanguage !== questionLanguage
+  const answersByText = !LANGUAGES.find(lang => lang.key === effectiveLanguage)?.stt
   const SelectedRoleIcon = selectedRole ? ROLE_LUCIDE_ICONS[selectedRole.role_code] ?? ClipboardList : User
 
   const sidebarItems = [
@@ -601,8 +613,8 @@ export default function StartSessionModal({
                         disabled={availableLanguages.length === 0}
                         className="w-full appearance-none ps-12 pe-10 py-3 border border-gray-200 rounded-xl text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500"
                       >
-                        {availableLanguages.map(code => (
-                          <option key={code} value={code}>{languageName(code)}</option>
+                        {LANGUAGES.map(lang => (
+                          <option key={lang.key} value={lang.key}>{languageName(lang.key)}</option>
                         ))}
                       </select>
                       <ChevronDown className="absolute end-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
@@ -611,15 +623,20 @@ export default function StartSessionModal({
                       <Info className="w-5 h-5 text-purple-600 shrink-0 mt-0.5" />
                       <span>
                         {t("languageInfoLink")}
-                        {preferredLanguage && availableLanguages.includes(preferredLanguage) && (
+                        {!language && isSupported(preferredLanguage) && (
                           <span className="block text-xs text-gray-500 mt-1">{t("languageFromProfile")}</span>
                         )}
-                        {preferredLanguage && !LANGUAGE_ORDER.includes(preferredLanguage) && effectiveLanguage && (
+                        {isTranslated && (
                           <span className="block text-xs text-purple-800 mt-1">
                             {t("languageTranslatedFor", {
-                              language: spokenLanguageName(preferredLanguage, locale),
-                              source: languageName(effectiveLanguage),
+                              language: languageName(effectiveLanguage),
+                              source: languageName(questionLanguage),
                             })}
+                          </span>
+                        )}
+                        {answersByText && (
+                          <span className="block text-xs text-amber-800 mt-1">
+                            {t("languageTextAnswers", { language: languageName(effectiveLanguage) })}
                           </span>
                         )}
                       </span>

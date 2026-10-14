@@ -288,7 +288,8 @@
       "selectAssessmentTypeError": "اختر تقييم الفحص الأولي أو التقييم الكامل.",
       "selectRoleError": "اختر الدور الوظيفي لهذا التقييم.",
       "noSetupForLanguageError": "هذا الدور غير مُعد بلغة {language} لنوع التقييم المختار بعد.",
-      "languageTranslatedFor": "لغة المرشح هي {language}: سيرى كل سؤال بنسخته المعتمدة باللغة {source} مع ترجمة إلى {language}، ويمكنه الإجابة بـ{language}."
+      "languageTranslatedFor": "لغة المرشح هي {language}: سيرى كل سؤال بنسخته المعتمدة باللغة {source} مع ترجمة إلى {language}، ويمكنه الإجابة بـ{language}.",
+      "languageTextAnswers": "تُكتب الإجابات بلغة {language}: التعرف على الكلام غير متاح لهذه اللغة."
     },
     "evaluationResultsModal": {
       "title": "نتائج تقييم جاهزية القوى العاملة",
