@@ -22,9 +22,11 @@ const formatDate = (value: string) =>
 interface IpTracerProps {
   // Opens the Audit Logs tab filtered to this IP.
   onViewLogs: (ip: string) => void
+  // Anything that isn't an email or IP is taken as a candidate passport ID.
+  onOpenTrail: (passportId: string) => void
 }
 
-export function IpTracer({ onViewLogs }: IpTracerProps) {
+export function IpTracer({ onViewLogs, onOpenTrail }: IpTracerProps) {
   const t = useTranslations("dashboard.admin.auditLog.ipTracer")
   const [query, setQuery] = useState("")
   const [days, setDays] = useState(90)
@@ -34,8 +36,13 @@ export function IpTracer({ onViewLogs }: IpTracerProps) {
 
   const trace = async (value: string = query, period: number = days) => {
     const term = value.trim()
-    if (!term || (!looksLikeIp(term) && !term.includes("@"))) {
+    if (!term) {
       setError(t("invalid"))
+      return
+    }
+    if (!looksLikeIp(term) && !term.includes("@")) {
+      setError(null)
+      onOpenTrail(term)
       return
     }
     setQuery(term)

@@ -3,6 +3,7 @@ import {
   AuditLogEntry, 
   AuditLogSummary, 
   AuditLogFilter,
+  CandidateTrail,
   IpTraceResult,
   PendingVerificationResponse,
   DocumentVerificationRequest
@@ -102,6 +103,14 @@ async getAuditLogs(filters?: AuditLogFilter): Promise<{
   async traceIp(query: { email?: string; ip?: string; days?: number }): Promise<IpTraceResult> {
     this.ensureAuthToken();
     const response = await apiClient.get(`${this.baseURL}logs/ip-activity`, { params: query });
+    return response.data;
+  }
+
+  // Candidate activity trail by candidate_id or passport_id. Rejects with
+  // { detail, code } (code: invalid_query | candidate_not_found).
+  async getCandidateTrail(query: { candidate_id?: string; passport_id?: string }): Promise<CandidateTrail> {
+    this.ensureAuthToken();
+    const response = await apiClient.get(`${this.baseURL}logs/trail`, { params: query });
     return response.data;
   }
 
