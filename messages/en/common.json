@@ -3280,8 +3280,149 @@
             "inviteInfo": "The invited team member will receive an email with instructions to set up their account. The invitation will expire in 7 days.",
             "cancel": "Cancel",
             "sendInvite": "Send Invitation",
-            "sending": "Sending..."
+            "sending": "Sending...",
+            "role": "Role",
+            "roleHint": "The role sets the starting permissions. You can adjust them below."
           }
+        },
+        "subtitle": "Manage your company information, team and settings.",
+        "info": {
+          "title": "Company Information",
+          "brandName": "Company (Brand) Name",
+          "legalName": "Legal Company Name",
+          "registrationNumber": "Registration Number",
+          "companyType": "Company Type",
+          "industry": "Industry",
+          "website": "Website",
+          "description": "Company Description",
+          "descriptionPlaceholder": "Describe what your company does and how you use MeritLense.",
+          "notSet": "Not set",
+          "selectType": "Select company type",
+          "changePhoto": "Change Photo",
+          "addPhoto": "Add Photo",
+          "businessRoles": "Business Roles",
+          "nameRequired": "Company name is required.",
+          "saveFailed": "Could not save the company information. Please try again.",
+          "saved": "Company information saved.",
+          "registrationLocked": "Contact MeritLense support to change the registration number.",
+          "companyTypes": {
+            "LLC": "Limited Liability Company (L.L.C.)",
+            "FREE_ZONE": "Free Zone Company",
+            "SOLE_ESTABLISHMENT": "Sole Establishment",
+            "CIVIL": "Civil Company",
+            "BRANCH": "Branch of a Foreign Company",
+            "PJSC": "Public Joint Stock Company (PJSC)",
+            "PRIVATE_JSC": "Private Joint Stock Company",
+            "OTHER": "Other"
+          }
+        },
+        "contact": {
+          "title": "Contact Information",
+          "email": "Email",
+          "phone": "Phone",
+          "website": "Website",
+          "emailLocked": "Your sign-in email. It cannot be changed here.",
+          "saveFailed": "Could not save the contact information. Please try again."
+        },
+        "addresses": {
+          "title": "Business Address(es)",
+          "add": "Add Address",
+          "empty": "No business address added yet.",
+          "addTitle": "Add Address",
+          "editTitle": "Edit Address",
+          "label": "Label",
+          "labelPlaceholder": "e.g. Main Office (UAE)",
+          "type": "Address Type",
+          "country": "Country",
+          "city": "City",
+          "street": "Street Address",
+          "streetPlaceholder": "Office, building, street, area",
+          "edit": "Edit",
+          "remove": "Remove",
+          "removeConfirm": "Remove this address?",
+          "mainLocked": "The Main Office cannot be removed. Edit it instead.",
+          "oneMain": "There is already a Main Office. Change it first.",
+          "countryRequired": "Country is required.",
+          "saveFailed": "Could not save the address. Please try again.",
+          "actions": "Address actions",
+          "types": {
+            "MAIN": "Main Office",
+            "TRADING": "Trading Address",
+            "BRANCH": "Branch Address"
+          }
+        },
+        "sections": {
+          "navLabel": "Company profile sections",
+          "team": "Team & Access",
+          "license": "Business License",
+          "agreements": "Legal Agreements",
+          "security": "Account Security",
+          "settings": "Settings"
+        },
+        "staff": {
+          "subtitle": "Add and manage team members and their access permissions.",
+          "name": "Name",
+          "email": "Email",
+          "role": "User Role",
+          "permissions": "Permissions",
+          "status": "Status",
+          "actions": "Actions",
+          "roleInfo": "What each role can do",
+          "permissionsInfo": "What each access level allows",
+          "ownerOnly": "Only the account owner can add or change staff.",
+          "legacyRole": "{title} (earlier job title)",
+          "updateFailed": "Could not update this staff member. Please try again.",
+          "roles": {
+            "admin": "Admin",
+            "evaluator": "Evaluator",
+            "reviewer": "Reviewer"
+          },
+          "roleHelp": {
+            "admin": "Adds candidates, runs assessments, sets scores and manages billing, and can view every result in the company. Changes apply to the candidates they added. The company profile and staff stay with the account owner.",
+            "evaluator": "Adds candidates and creates and manages assessments for the candidates they added.",
+            "reviewer": "Views every assessment, report and certificate in the company. Cannot change anything."
+          },
+          "access": {
+            "full": "Full Access",
+            "standard": "Standard Access",
+            "review": "Review Only",
+            "custom": "Custom",
+            "none": "No Access"
+          },
+          "accessHelp": {
+            "full": "Every permission, including billing and viewing all company results.",
+            "standard": "Add candidates and manage assessments for their own candidates.",
+            "review": "View all company results. No changes.",
+            "custom": "A custom set of permissions. Use Edit to see or change it."
+          }
+        },
+        "licenseCard": {
+          "subtitle": "Upload and manage your business license and related documents.",
+          "fileLabel": "Business license",
+          "verified": "Document Verified",
+          "underReview": "Under Review",
+          "view": "View"
+        },
+        "agreementsTable": {
+          "subtitle": "Review and manage your legal agreements and documents.",
+          "document": "Document Name",
+          "type": "Type",
+          "legal": "Legal",
+          "status": "Status",
+          "signedOn": "Signed On",
+          "actions": "Actions",
+          "view": "View",
+          "review": "Review",
+          "download": "Download PDF",
+          "auditTrail": "View Audit Trail"
+        },
+        "security": {
+          "subtitle": "Manage your password and account security settings.",
+          "note": "Enter your current password to set a new one. Each team member changes their own password from their own account."
+        },
+        "settingsCard": {
+          "subtitle": "Configure your preferences.",
+          "saved": "Settings saved."
         }
       },
       "settings": {
@@ -4208,7 +4349,41 @@
         "exportingPdf": "Generating PDF..."
       },
       "profile": {
-        "pageTitle": "Profile Settings"
+        "pageTitle": "Profile Settings",
+        "subtitle": "Manage your personal information, security, billing and settings.",
+        "info": {
+          "title": "Personal Information",
+          "edit": "Edit",
+          "changePhoto": "Change Photo",
+          "addPhoto": "Add Photo",
+          "removePhoto": "Remove photo",
+          "notSet": "Not set"
+        },
+        "contact": {
+          "title": "Contact Information",
+          "email": "Email",
+          "phone": "Phone"
+        },
+        "address": {
+          "title": "Address",
+          "residence": "Country of residence",
+          "empty": "No address added yet."
+        },
+        "sections": {
+          "navLabel": "Profile sections",
+          "agreements": "Legal Agreements",
+          "security": "Account Security",
+          "billing": "Billing & Subscription",
+          "settings": "Settings"
+        },
+        "settings": {
+          "subtitle": "Configure your preferences.",
+          "theme": "Theme",
+          "light": "Light",
+          "dark": "Dark",
+          "save": "Save Changes",
+          "saved": "Settings saved."
+        }
       },
       "dashboardHeader": {
         "premiumBadge": "Premium"
@@ -4316,7 +4491,8 @@
             "LG": "Luganda",
             "MG": "Malagasy"
           },
-          "saveButton": "Save Changes"
+          "saveButton": "Save Changes",
+          "cancelButton": "Cancel"
         },
         "billing-tab": {
           "remainingPoints": "Remaining Points",

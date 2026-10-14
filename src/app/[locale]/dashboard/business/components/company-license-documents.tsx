@@ -13,6 +13,9 @@ interface CompanyLicenseDocumentsProps {
   isCompanyOwner: boolean
   canUploadRequestedDocuments: boolean
   onLicenseUploaded: () => Promise<void>
+  // Inside the Company Profile's Business License card, which shows the
+  // license itself: render only the extra documents MeritLense requested.
+  embedded?: boolean
 }
 
 const ACCEPTED_DOCUMENT_TYPES = ".pdf,.jpg,.jpeg,.png"
@@ -22,6 +25,7 @@ export function CompanyLicenseDocuments({
   isCompanyOwner,
   canUploadRequestedDocuments,
   onLicenseUploaded,
+  embedded = false,
 }: CompanyLicenseDocumentsProps) {
   const t = useTranslations("dashboard.business.company-profile")
   const [requests, setRequests] = useState<RequestedCompanyDocument[]>([])
@@ -111,7 +115,8 @@ export function CompanyLicenseDocuments({
   const pendingRequests = requests.filter((request) => request.status === "PENDING")
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6 py-8">
+    <div className={embedded ? "space-y-4" : "mx-auto max-w-3xl space-y-6 py-8"}>
+      {!embedded && (
       <Card className={!hasLicense || verificationStatus === "REJECTED" ? "border-amber-300" : "border-blue-200"}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -160,6 +165,7 @@ export function CompanyLicenseDocuments({
           )}
         </CardContent>
       </Card>
+      )}
 
       {(uploadError || uploadSuccess) && (
         <p className={`text-sm ${uploadError ? "text-red-600" : "text-green-600"}`} role="status">
