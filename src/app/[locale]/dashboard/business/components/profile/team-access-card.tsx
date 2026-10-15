@@ -154,13 +154,17 @@ export function TeamAccessCard({ id, isOwner }: { id: string; isOwner: boolean }
         onValueChange={(value) => value !== LEGACY && changeRole(member, value as TeamRole)}
         disabled={updating === member.id}
       >
-        <SelectTrigger className={`${className} h-8 border-purple-200 text-xs text-purple-700`} aria-label={t("staff.role")}>
+        <SelectTrigger
+          className={`${className} h-8 border-purple-200 text-xs text-purple-700`}
+          aria-label={t("staff.role")}
+          title={role ? undefined : t("staff.legacyRole", { title: member.job_title || "—" })}
+        >
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
           {!role && (
             <SelectItem value={LEGACY} disabled>
-              {member.job_title ? t("staff.legacyRole", { title: member.job_title }) : "—"}
+              {member.job_title || "—"}
             </SelectItem>
           )}
           {TEAM_ROLES.map((r) => (
