@@ -28,8 +28,8 @@ export function SectionCard({
       id={id}
       className={`scroll-mt-24 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5 dark:border-gray-800 dark:bg-gray-900 ${className}`}
     >
-      <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
-        <div className="flex min-w-0 items-start gap-3">
+      <div className="mb-4 flex flex-wrap items-start justify-between gap-3 sm:flex-nowrap">
+        <div className="flex min-w-0 flex-1 items-start gap-3">
           {Icon && <Icon className="mt-0.5 h-6 w-6 shrink-0 text-purple-600" aria-hidden="true" />}
           <div className="min-w-0">
             <h2 className="text-base font-semibold text-gray-900 sm:text-lg dark:text-gray-100">{title}</h2>
