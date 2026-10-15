@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { SearchSelect } from "@/components/app/searchable-fields"
 import { Badge } from "@/components/ui/badge"
 import { 
   Sparkles, 
@@ -447,20 +448,15 @@ export default function AuditLog() {
                   }}
                   className="w-full sm:w-48 font-mono"
                 />
-                <Select 
-                  value={auditFilters.category} 
-                  onValueChange={(v) => setAuditFilters(prev => ({ ...prev, category: v === 'all' ? '' : v }))}
-                >
-                  <SelectTrigger className="w-40">
-                    <SelectValue placeholder={t("audit.allCategories")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">{t("audit.allCategories")}</SelectItem>
-                    {categories.map(cat => (
-                      <SelectItem key={cat.key} value={cat.key}>{cat.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <SearchSelect
+                  id="audit-category-filter"
+                  aria-label={t("audit.allCategories")}
+                  className="w-full sm:w-48"
+                  buttonClassName="min-h-9 rounded-md px-3 py-1.5"
+                  value={auditFilters.category}
+                  onChange={(v) => setAuditFilters(prev => ({ ...prev, category: v }))}
+                  options={[{ value: "", label: t("audit.allCategories") }, ...categories.map(cat => ({ value: cat.key, label: cat.label, keywords: cat.key }))]}
+                />
                 <Select 
                   value={auditFilters.severity} 
                   onValueChange={(v) => setAuditFilters(prev => ({ ...prev, severity: v === 'all' ? '' : v }))}
