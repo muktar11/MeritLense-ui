@@ -21,6 +21,7 @@ import { LANGUAGES } from "@/lib/languages";
 import { EvaluatorRatingCard } from "@/components/evaluations/EvaluatorRatingCard";
 import { CallControlsIntro } from "./CallControlsIntro";
 import { candidateDir, getCandidateStrings, resolveCandidateLanguage } from "@/app/[locale]/interview/candidate-lang";
+import { SearchSelect } from "@/components/app/searchable-fields";
 
 interface LiveCallRoomProps {
   sessionId: string;
@@ -47,6 +48,7 @@ interface LiveCallRoomProps {
 export function LiveCallRoom({ sessionId, candidateToken, uiLanguage, onEnded, embedded = false }: LiveCallRoomProps) {
   const tIntl = useTranslations("shared.liveCallRoom");
   const tLanguages = useTranslations("dashboard.indivisual.settings.edit-profile-tab.languages");
+  const tSearch = useTranslations("shared.searchableSelect");
   // Candidate flow renders from the interview's own configured language
   // (independent of the site's [locale] URL, which the candidate never
   // chose); the evaluator flow keeps next-intl, driven by their own
@@ -409,33 +411,31 @@ export function LiveCallRoom({ sessionId, candidateToken, uiLanguage, onEnded, e
           <div className="flex items-center gap-1.5">
             <Mic className="w-4 h-4 text-gray-400" />
             <label className="text-xs text-gray-300">{t.iSpeak}</label>
-            <select
+            <SearchSelect
+              id="live-call-input-language"
+              aria-label={t.iSpeak}
+              className="w-44"
               value={languagePrefs?.input_language ?? "en-US"}
-              onChange={(e) => handleLanguageChange("input_language", e.target.value)}
+              onChange={(value) => handleLanguageChange("input_language", value)}
               disabled={savingLanguage}
-              className="text-xs bg-gray-700 text-white border border-gray-600 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50"
-            >
-              {LANGUAGES.map((lang) => (
-                <option key={lang.code} value={lang.code}>
-                  {tLanguages(lang.key)}
-                </option>
-              ))}
-            </select>
+              options={LANGUAGES.map((lang) => ({ value: lang.code, label: tLanguages(lang.key), keywords: lang.key }))}
+              searchPlaceholder={tSearch("searchLanguages")}
+              buttonClassName="min-h-8 rounded-lg border-gray-600 bg-gray-700 px-2 py-1 text-xs text-white"
+            />
           </div>
           <div className="flex items-center gap-1.5">
             <label className="text-xs text-gray-300">{t.iWantToHear}</label>
-            <select
+            <SearchSelect
+              id="live-call-output-language"
+              aria-label={t.iWantToHear}
+              className="w-44"
               value={languagePrefs?.output_language ?? "en-US"}
-              onChange={(e) => handleLanguageChange("output_language", e.target.value)}
+              onChange={(value) => handleLanguageChange("output_language", value)}
               disabled={savingLanguage}
-              className="text-xs bg-gray-700 text-white border border-gray-600 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50"
-            >
-              {LANGUAGES.map((lang) => (
-                <option key={lang.code} value={lang.code}>
-                  {tLanguages(lang.key)}
-                </option>
-              ))}
-            </select>
+              options={LANGUAGES.map((lang) => ({ value: lang.code, label: tLanguages(lang.key), keywords: lang.key }))}
+              searchPlaceholder={tSearch("searchLanguages")}
+              buttonClassName="min-h-8 rounded-lg border-gray-600 bg-gray-700 px-2 py-1 text-xs text-white"
+            />
           </div>
         </div>
 

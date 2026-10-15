@@ -440,6 +440,23 @@
       "justThisTime": "Just This Time",
       "reject": "Reject",
       "managePreferences": "Manage preferences"
+    },
+    "searchableSelect": {
+      "search": "Type to search…",
+      "noResults": "No results found",
+      "selectCandidate": "Select a candidate",
+      "searchCandidates": "Search by name or email",
+      "selectCountry": "Select a country",
+      "searchCountries": "Search countries",
+      "selectLanguage": "Select a language",
+      "searchLanguages": "Search languages",
+      "selectRole": "Select a role",
+      "searchRoles": "Search roles",
+      "selectTimezone": "Select a time zone",
+      "searchTimezones": "Search time zones",
+      "selectNationality": "Select a nationality",
+      "searchNationalities": "Search nationalities",
+      "allRoles": "All roles"
     }
   },
   "landing-page": {

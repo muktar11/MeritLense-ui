@@ -49,6 +49,7 @@ import { AuditTrailModal } from "@/components/agreements/AuditTrailModal";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { COUNTRIES } from "@/lib/countries";
+import { CountrySelect, SearchSelect } from "@/components/app/searchable-fields";
 import { getTimezoneOptions } from "@/lib/location-detection";
 import { SectionCard, inputClass, outlineButtonClass, primaryButtonClass } from "../../business/components/profile/section-card";
 
@@ -724,6 +725,8 @@ function IndividualSettings({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const label = "block text-xs font-medium text-gray-700 dark:text-gray-300";
+  const fieldButton = "min-h-10 rounded-lg border-gray-300 bg-white px-3 py-2 dark:border-gray-700 dark:bg-gray-950";
+  const tSearch = useTranslations("shared.searchableSelect");
 
   const save = async () => {
     setSaving(true);
@@ -752,37 +755,48 @@ function IndividualSettings({
           </select>
         </span>
       </label>
-      <label className={label}>
-        <span className="inline-flex items-center gap-1"><Globe className="h-3.5 w-3.5" /> {t("settingsCard.language")}</span>
-        <select
+      <div className={label}>
+        <span id="b2c-settings-language" className="inline-flex items-center gap-1"><Globe className="h-3.5 w-3.5" /> {t("settingsCard.language")}</span>
+        <SearchSelect
+          id="b2c-settings-language-select"
+          aria-labelledby="b2c-settings-language"
+          className="mt-1"
+          buttonClassName={fieldButton}
           value={prefs.preferred_language}
-          onChange={(e) => setPrefs((v) => ({ ...v, preferred_language: e.target.value }))}
-          className={`${inputClass} mt-1`}
-        >
-          {LANGUAGES.map((lang) => (
-            <option key={lang.key} value={lang.key}>{tForm(`languages.${lang.key}`)}</option>
-          ))}
-        </select>
-      </label>
-      <label className={label}>
-        {t("settingsCard.targetMarket")}
-        <select value={prefs.target_market} onChange={(e) => setPrefs((v) => ({ ...v, target_market: e.target.value }))} className={`${inputClass} mt-1`}>
-          <option value="">{tForm("selectTargetMarketPlaceholder")}</option>
-          {COUNTRIES.map((c) => (
-            <option key={c.key} value={c.key}>{c.label}</option>
-          ))}
-        </select>
-      </label>
-      <label className={label}>
-        {t("settingsCard.timezone")}
-        <select value={prefs.timezone} onChange={(e) => setPrefs((v) => ({ ...v, timezone: e.target.value }))} className={`${inputClass} mt-1`}>
-          <option value="">{tForm("selectTimezonePlaceholder")}</option>
-          {prefs.timezone && !timezoneOptions.includes(prefs.timezone) && <option value={prefs.timezone}>{prefs.timezone}</option>}
-          {timezoneOptions.map((tz) => (
-            <option key={tz} value={tz}>{tz}</option>
-          ))}
-        </select>
-      </label>
+          onChange={(value) => setPrefs((v) => ({ ...v, preferred_language: value }))}
+          options={LANGUAGES.map((lang) => ({ value: lang.key, label: tForm(`languages.${lang.key}`), keywords: lang.key }))}
+          searchPlaceholder={tSearch("searchLanguages")}
+        />
+      </div>
+      <div className={label}>
+        <span id="b2c-settings-market">{t("settingsCard.targetMarket")}</span>
+        <CountrySelect
+          id="b2c-settings-market-select"
+          aria-labelledby="b2c-settings-market"
+          className="mt-1"
+          buttonClassName={fieldButton}
+          value={prefs.target_market}
+          onChange={(value) => setPrefs((v) => ({ ...v, target_market: value }))}
+          emptyOptionLabel={tForm("selectTargetMarketPlaceholder")}
+        />
+      </div>
+      <div className={label}>
+        <span id="b2c-settings-timezone">{t("settingsCard.timezone")}</span>
+        <SearchSelect
+          id="b2c-settings-timezone-select"
+          aria-labelledby="b2c-settings-timezone"
+          className="mt-1"
+          buttonClassName={fieldButton}
+          value={prefs.timezone}
+          onChange={(value) => setPrefs((v) => ({ ...v, timezone: value }))}
+          options={[
+            { value: "", label: tForm("selectTimezonePlaceholder") },
+            ...(prefs.timezone && !timezoneOptions.includes(prefs.timezone) ? [{ value: prefs.timezone, label: prefs.timezone }] : []),
+            ...timezoneOptions.map((tz) => ({ value: tz, label: tz })),
+          ]}
+          searchPlaceholder={tSearch("searchTimezones")}
+        />
+      </div>
       <div className="flex justify-end pt-1">
         <button type="button" onClick={save} disabled={saving} className={primaryButtonClass}>
           {saving && <Loader2 className="h-4 w-4 animate-spin" />}
