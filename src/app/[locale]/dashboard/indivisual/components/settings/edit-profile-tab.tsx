@@ -12,7 +12,17 @@ import { getTimezoneOptions } from "@/lib/location-detection"
 const PROFILE_PICTURE_MAX_BYTES = 5 * 1024 * 1024
 const PROFILE_PICTURE_ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"]
 
-export default function EditProfileTab() {
+// "personal" is the inline edit form of the Profile page's Personal
+// Information card: the photo has its own control there, and language,
+// target market and time zone live in the Settings section.
+export default function EditProfileTab({
+  mode = "full",
+  onDone,
+}: {
+  mode?: "full" | "personal"
+  onDone?: () => void
+} = {}) {
+  const personal = mode === "personal"
   const t = useTranslations("dashboard.indivisual.settings.edit-profile-tab")
   const { profile, loading, error, updateProfile, fetchProfile, uploadProfilePicture, removeProfilePicture } = useProfile()
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -85,6 +95,7 @@ export default function EditProfileTab() {
     if (success) {
       setSaveSuccess(true)
       setTimeout(() => setSaveSuccess(false), 3000)
+      onDone?.()
     }
   }
 
@@ -133,6 +144,7 @@ export default function EditProfileTab() {
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
       {/* Profile Avatar */}
+      {!personal && (
       <div className="flex flex-col sm:flex-row items-start gap-6 sm:gap-8">
         <div className="shrink-0">
           {profile?.profile_picture ? (
@@ -191,6 +203,7 @@ export default function EditProfileTab() {
           </div>
         </div>
       </div>
+      )}
 
       {/* Error Message */}
       {error && (
@@ -336,6 +349,7 @@ export default function EditProfileTab() {
         </div>
 
         {/* Preferred Language */}
+        {!personal && (
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
             {t("preferredLanguage")} *
@@ -354,6 +368,7 @@ export default function EditProfileTab() {
             ))}
           </select>
         </div>
+        )}
 
         {/* Country of Residence */}
         <div>
@@ -374,6 +389,7 @@ export default function EditProfileTab() {
         </div>
 
         {/* Target Employment/Hiring Market */}
+        {!personal && (
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
             {t("targetMarket")}
@@ -390,8 +406,10 @@ export default function EditProfileTab() {
             ))}
           </select>
         </div>
+        )}
 
         {/* Time Zone */}
+        {!personal && (
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
             {t("timezone")}
@@ -411,6 +429,7 @@ export default function EditProfileTab() {
             ))}
           </select>
         </div>
+        )}
 
         {/* Address */}
         <div className="sm:col-span-2">
@@ -429,7 +448,17 @@ export default function EditProfileTab() {
       </div>
 
       {/* Save Button */}
-      <div className="flex justify-center sm:justify-end">
+      <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+        {onDone && (
+          <button
+            type="button"
+            onClick={onDone}
+            disabled={loading}
+            className="w-full sm:w-auto px-6 py-2.5 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+          >
+            {t("cancelButton")}
+          </button>
+        )}
         <button
           type="submit"
           disabled={loading}

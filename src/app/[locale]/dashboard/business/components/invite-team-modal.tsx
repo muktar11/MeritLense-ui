@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { X, Loader2, Mail, User, Briefcase, Key } from "lucide-react";
 import { useTranslations } from "next-intl";
 import teamService from "@/app/api/team/endpoints";
+import { PRESET_PERMISSIONS, ROLE_JOB_TITLE, ROLE_PRESET, TEAM_ROLES, roleForJobTitle, type TeamRole } from "./team-roles";
 import type { Permission } from "@/app/api/team/types";
 
 interface InviteTeamModalProps {
@@ -14,6 +15,7 @@ interface InviteTeamModalProps {
 
 export function InviteTeamModal({ isOpen, onClose, onSuccess }: InviteTeamModalProps) {
   const t = useTranslations("dashboard.business.company-profile.team");
+  const tPage = useTranslations("dashboard.business.company-profile");
   const [loading, setLoading] = useState(false);
   const [permissions, setPermissions] = useState<Permission[]>([]);
   const [formData, setFormData] = useState({
@@ -61,6 +63,16 @@ export function InviteTeamModal({ isOpen, onClose, onSuccess }: InviteTeamModalP
         return newErrors;
       });
     }
+  };
+
+  // A role is a job title plus the permissions it starts with; they can
+  // still be adjusted with the checkboxes below.
+  const handleRoleChange = (role: TeamRole) => {
+    setFormData(prev => ({
+      ...prev,
+      job_title: ROLE_JOB_TITLE[role],
+      permissions: PRESET_PERMISSIONS[ROLE_PRESET[role]],
+    }));
   };
 
   const handlePermissionChange = (permissionKey: string) => {
@@ -225,22 +237,29 @@ export function InviteTeamModal({ isOpen, onClose, onSuccess }: InviteTeamModalP
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                {t('inviteModal.jobTitle')} *
+              <label htmlFor="team-role" className="block text-sm font-medium text-gray-700 mb-1">
+                {t('inviteModal.role')} *
               </label>
               <div className="relative">
                 <Briefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <input
-                  type="text"
-                  name="job_title"
-                  value={formData.job_title}
-                  onChange={handleInputChange}
-                  className={`w-full pl-10 pr-3 py-2 border rounded-lg text-sm ${
+                <select
+                  id="team-role"
+                  value={roleForJobTitle(formData.job_title) ?? ''}
+                  onChange={(e) => handleRoleChange(e.target.value as TeamRole)}
+                  className={`w-full pl-10 pr-3 py-2 border rounded-lg text-sm bg-white ${
                     errors.job_title ? 'border-red-500' : 'border-gray-300'
                   }`}
-                  placeholder="HR Manager"
-                />
+                >
+                  <option value="" disabled>—</option>
+                  {TEAM_ROLES.map((role) => (
+                    <option key={role} value={role}>{tPage(`staff.roles.${role}`)}</option>
+                  ))}
+                </select>
               </div>
+              {roleForJobTitle(formData.job_title) && (
+                <p className="mt-1 text-xs text-gray-500">{tPage(`staff.roleHelp.${roleForJobTitle(formData.job_title)}`)}</p>
+              )}
+              <p className="mt-1 text-xs text-gray-400">{t('inviteModal.roleHint')}</p>
               {errors.job_title && <p className="mt-1 text-xs text-red-600">{errors.job_title}</p>}
             </div>
 
