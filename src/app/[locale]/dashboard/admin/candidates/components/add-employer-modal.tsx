@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import employerService from "@/app/api/admin/employers/endpoints";
 import { JOB_ROLES, NATIONALITIES, LANGUAGES, COMPANY_SIZES } from "@/app/api/auth/endpoints";
 import type { B2CRegistrationData, B2BRegistrationData } from "@/app/api/auth/auth";
+import { SearchSelect } from "@/components/app/searchable-fields";
 
 interface AddEmployerModalProps {
   isOpen: boolean;
@@ -38,6 +39,10 @@ export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModa
   const tRoles = useTranslations("dashboard.indivisual.settings.edit-profile-tab.jobRoles");
   const tNationalities = useTranslations("dashboard.indivisual.settings.edit-profile-tab.nationalities");
   const tLanguages = useTranslations("dashboard.indivisual.settings.edit-profile-tab.languages");
+  const tSearch = useTranslations("shared.searchableSelect");
+  // Searchable dropdowns report a value; the form handlers take an event.
+  const selectEvent = (name: string, value: string) =>
+    ({ target: { name, value } }) as React.ChangeEvent<HTMLSelectElement>;
   const [accountType, setAccountType] = useState<AccountType>('B2C');
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -310,40 +315,45 @@ export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModa
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">{t("jobRole")}</label>
-                          <select
-                            name="job_role"
+                          <SearchSelect
+                            id="add-employer-job-role"
+                            aria-label={t("jobRole")}
                             value={b2c.job_role}
-                            onChange={handleB2cChange}
-                            className={`w-full px-3 py-2 border rounded-lg text-sm ${errors.job_role ? 'border-red-500' : 'border-gray-300'}`}
-                          >
-                            <option value="">{t("selectRole")}</option>
-                            {JOB_ROLES.map(r => <option key={r.key} value={r.key}>{tRoles(r.key)}</option>)}
-                          </select>
+                            onChange={(value) => handleB2cChange(selectEvent("job_role", value))}
+                            placeholder={t("selectRole")}
+                            options={JOB_ROLES.map(r => ({ value: r.key, label: tRoles(r.key) }))}
+                            searchPlaceholder={tSearch("searchRoles")}
+                            invalid={Boolean(errors.job_role)}
+                            buttonClassName="min-h-10 rounded-lg px-3 py-2"
+                          />
                           {errors.job_role && <p className="mt-1 text-xs text-red-600">{errors.job_role}</p>}
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">{t("nationality")}</label>
-                          <select
-                            name="nationality"
+                          <SearchSelect
+                            id="add-employer-nationality"
+                            aria-label={t("nationality")}
                             value={b2c.nationality}
-                            onChange={handleB2cChange}
-                            className={`w-full px-3 py-2 border rounded-lg text-sm ${errors.nationality ? 'border-red-500' : 'border-gray-300'}`}
-                          >
-                            <option value="">{t("selectNationality")}</option>
-                            {NATIONALITIES.map(n => <option key={n.key} value={n.key}>{tNationalities(n.key)}</option>)}
-                          </select>
+                            onChange={(value) => handleB2cChange(selectEvent("nationality", value))}
+                            placeholder={t("selectNationality")}
+                            options={NATIONALITIES.map(n => ({ value: n.key, label: tNationalities(n.key), keywords: n.key }))}
+                            searchPlaceholder={tSearch("searchNationalities")}
+                            invalid={Boolean(errors.nationality)}
+                            buttonClassName="min-h-10 rounded-lg px-3 py-2"
+                          />
                           {errors.nationality && <p className="mt-1 text-xs text-red-600">{errors.nationality}</p>}
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">{t("preferredLanguage")}</label>
-                          <select
-                            name="preferred_language"
+                          <SearchSelect
+                            id="add-employer-b2c-language"
+                            aria-label={t("preferredLanguage")}
                             value={b2c.preferred_language}
-                            onChange={handleB2cChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                          >
-                            {LANGUAGES.map(l => <option key={l.key} value={l.key}>{tLanguages(l.key)}</option>)}
-                          </select>
+                            onChange={(value) => handleB2cChange(selectEvent("preferred_language", value))}
+                            options={LANGUAGES.map(l => ({ value: l.key, label: tLanguages(l.key), keywords: l.key }))}
+                            searchPlaceholder={tSearch("searchLanguages")}
+                            buttonClassName="min-h-10 rounded-lg border-gray-300 px-3 py-2"
+                          />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">{t("dateOfBirth")}</label>
@@ -485,14 +495,15 @@ export function AddEmployerModal({ isOpen, onClose, onSuccess }: AddEmployerModa
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">{t("preferredLanguage")}</label>
-                          <select
-                            name="preferred_language"
+                          <SearchSelect
+                            id="add-employer-b2b-language"
+                            aria-label={t("preferredLanguage")}
                             value={b2b.preferred_language}
-                            onChange={handleB2bChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                          >
-                            {LANGUAGES.map(l => <option key={l.key} value={l.key}>{tLanguages(l.key)}</option>)}
-                          </select>
+                            onChange={(value) => handleB2bChange(selectEvent("preferred_language", value))}
+                            options={LANGUAGES.map(l => ({ value: l.key, label: tLanguages(l.key), keywords: l.key }))}
+                            searchPlaceholder={tSearch("searchLanguages")}
+                            buttonClassName="min-h-10 rounded-lg border-gray-300 px-3 py-2"
+                          />
                         </div>
                         <div className="md:col-span-2">
                           <label className="block text-sm font-medium text-gray-700 mb-1">{t("address")}</label>

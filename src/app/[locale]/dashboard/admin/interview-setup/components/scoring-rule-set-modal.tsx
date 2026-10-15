@@ -4,6 +4,7 @@ import { useState, useEffect, Fragment } from "react";
 import { Dialog, Transition } from '@headlessui/react';
 import { X, Loader2, Plus, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { SearchSelect } from "@/components/app/searchable-fields";
 import evaluationService from "@/app/api/evaluations/endpoints";
 import type {
   ScoringRuleSet,
@@ -112,6 +113,7 @@ function formatWeightedIndicators(dict: Record<string, string> | undefined): str
 export function ScoringRuleSetModal({ isOpen, onClose, onSuccess, ruleSetToEdit }: ScoringRuleSetModalProps) {
   const t = useTranslations("dashboard.admin.interviewSetup.ruleSetModal");
   const tShared = useTranslations("dashboard.admin.interviewSetup");
+  const tSearch = useTranslations("shared.searchableSelect");
   const [form, setForm] = useState<RuleSetForm>(initialForm());
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -299,21 +301,18 @@ export function ScoringRuleSetModal({ isOpen, onClose, onSuccess, ruleSetToEdit 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className={labelClass}>{t("role")}</label>
-                        <select
-                          name="role_code"
+                        <SearchSelect
+                          id="scoring-rule-set-modal-role"
+                          aria-label={t("role")}
                           value={form.role_code}
-                          onChange={(e) => {
-                            const role = CANDIDATE_JOB_ROLES.find((r) => r.code === e.target.value);
-                            setForm((prev) => ({ ...prev, role_code: e.target.value, role_name: role?.name ?? prev.role_name }));
+                          onChange={(code) => {
+                            const role = CANDIDATE_JOB_ROLES.find((r) => r.code === code);
+                            setForm((prev) => ({ ...prev, role_code: code, role_name: role?.name ?? prev.role_name }));
                           }}
-                          className={inputClass}
-                        >
-                          {CANDIDATE_JOB_ROLES.map((role) => (
-                            <option key={role.code} value={role.code}>
-                              {role.icon} {tShared(`roles.${role.code}`)} ({role.code})
-                            </option>
-                          ))}
-                        </select>
+                          options={CANDIDATE_JOB_ROLES.map((role) => ({ value: role.code, label: `${role.icon} ${tShared(`roles.${role.code}`)}`, hint: role.code, keywords: role.name }))}
+                          searchPlaceholder={tSearch("searchRoles")}
+                          buttonClassName="min-h-10 rounded-lg border-gray-300 bg-white px-3 py-2"
+                        />
                       </div>
                       <div>
                         <label className={labelClass}>{t("evaluationTier")}</label>

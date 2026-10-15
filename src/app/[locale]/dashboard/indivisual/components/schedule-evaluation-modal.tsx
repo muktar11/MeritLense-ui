@@ -11,7 +11,7 @@ import { EVALUATION_TYPES, EVALUATION_STATUS, type Evaluation, type CreateEvalua
 import { format } from "date-fns"
 import { ar } from "date-fns/locale"
 import { EvaluatorRatingCard } from "@/components/evaluations/EvaluatorRatingCard"
-import { CandidateSelect, candidateOption } from "@/components/app/searchable-fields"
+import { CandidateSelect, SearchSelect, candidateOption } from "@/components/app/searchable-fields"
 import { OptionAvatar } from "@/components/ui/searchable-select"
 
 type ModalMode = 'view' | 'create' | 'edit' | 'reschedule';
@@ -493,20 +493,22 @@ export default function EvaluationModal({
                       </div>
                       <div>
                         <label className="block text-sm font-semibold text-gray-700 mb-1.5">{t("timeLabel")} *</label>
-                        <div className="relative">
-                          <Clock className="pointer-events-none absolute start-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-600" />
-                          <select
-                            value={timeValue}
-                            onChange={(e) => setFormData({ ...formData, scheduled_date: combineDateTimeLocalValue(dateValue, e.target.value) })}
-                            className={`${inputBase} appearance-none ps-12 pe-10 ${errors.scheduled_date ? 'border-red-500' : 'border-gray-300'}`}
-                          >
-                            {!timeValue && <option value="" disabled>--:--</option>}
-                            {timeSlots(timeValue).map((slot) => (
-                              <option key={slot} value={slot}>{timeSlotLabel(slot, dateLocale)}</option>
-                            ))}
-                          </select>
-                          <ChevronDown className="pointer-events-none absolute end-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-                        </div>
+                        <SearchSelect
+                          id="schedule-evaluation-time"
+                          aria-label={t("timeLabel")}
+                          value={timeValue}
+                          onChange={(slot) => setFormData({ ...formData, scheduled_date: combineDateTimeLocalValue(dateValue, slot) })}
+                          placeholder="--:--"
+                          invalid={Boolean(errors.scheduled_date)}
+                          options={timeSlots(timeValue).map((slot) => ({ value: slot, label: timeSlotLabel(slot, dateLocale), keywords: slot }))}
+                          renderValue={(option) => (
+                            <span className="flex items-center gap-3 text-gray-900">
+                              <Clock className="w-5 h-5 shrink-0 text-gray-600" />
+                              {option.label}
+                            </span>
+                          )}
+                          buttonClassName="h-12 rounded-xl border-gray-300 bg-white px-4"
+                        />
                       </div>
                     </div>
                     {errors.scheduled_date && <p className="text-xs text-red-600">{errors.scheduled_date}</p>}

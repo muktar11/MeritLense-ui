@@ -4,6 +4,7 @@ import { useState, useEffect, Fragment } from "react";
 import { Dialog, Transition } from '@headlessui/react';
 import { X, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { SearchSelect } from "@/components/app/searchable-fields";
 import interviewService from "@/app/api/interviews/endpoints";
 import type { QuestionTemplate, QuestionTemplatePayload } from "@/app/api/interviews/types";
 import {
@@ -48,6 +49,7 @@ const initialForm: QuestionTemplatePayload = {
 export function QuestionTemplateModal({ isOpen, onClose, onSuccess, templateToEdit }: QuestionTemplateModalProps) {
   const t = useTranslations("dashboard.admin.interviewSetup.questionModal");
   const tShared = useTranslations("dashboard.admin.interviewSetup");
+  const tSearch = useTranslations("shared.searchableSelect");
   const [form, setForm] = useState<QuestionTemplatePayload>(initialForm);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -193,14 +195,18 @@ export function QuestionTemplateModal({ isOpen, onClose, onSuccess, templateToEd
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className={labelClass}>{t("role")}</label>
-                      <select name="role_code" value={form.role_code} onChange={(e) => {
-                        const role = CANDIDATE_JOB_ROLES.find(r => r.code === e.target.value);
-                        setForm(prev => ({ ...prev, role_code: e.target.value, role_name: role?.name ?? prev.role_name }));
-                      }} className={inputClass}>
-                        {CANDIDATE_JOB_ROLES.map(role => (
-                          <option key={role.code} value={role.code}>{role.icon} {tShared(`roles.${role.code}`)} ({role.code})</option>
-                        ))}
-                      </select>
+                      <SearchSelect
+                        id="question-template-modal-role"
+                        aria-label={t("role")}
+                        value={form.role_code}
+                        onChange={(code) => {
+                          const role = CANDIDATE_JOB_ROLES.find((r) => r.code === code);
+                          setForm((prev) => ({ ...prev, role_code: code, role_name: role?.name ?? prev.role_name }));
+                        }}
+                        options={CANDIDATE_JOB_ROLES.map((role) => ({ value: role.code, label: `${role.icon} ${tShared(`roles.${role.code}`)}`, hint: role.code, keywords: role.name }))}
+                        searchPlaceholder={tSearch("searchRoles")}
+                        buttonClassName="min-h-10 rounded-lg border-gray-300 bg-white px-3 py-2"
+                      />
                       {errors.role_code && <p className="text-xs text-red-600 mt-1">{errors.role_code}</p>}
                     </div>
                     <div>
