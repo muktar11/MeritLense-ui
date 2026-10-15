@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { SearchSelect } from "@/components/app/searchable-fields";
 
 interface JobRoleTabsProps {
   selectedRole: string;
@@ -44,6 +44,8 @@ const ROLE_CODES = [
 export function JobRoleTabs({ selectedRole, onRoleChange, roleCounts }: JobRoleTabsProps) {
   const t = useTranslations("dashboard.business.score-management.jobRoleTabs");
   const tRoles = useTranslations("shared.startSessionModal.roles");
+  const tSearch = useTranslations("shared.searchableSelect");
+  const count = (code: string) => (roleCounts[code] > 0 ? String(roleCounts[code]) : undefined);
 
   // Older sessions can still carry a role_code from a previous taxonomy
   // (e.g. a legacy 2-letter code) that isn't one of the current 21 - rather
@@ -57,41 +59,21 @@ export function JobRoleTabs({ selectedRole, onRoleChange, roleCounts }: JobRoleT
 
   return (
     <div className="mb-6">
-      <Select value={selectedRole} onValueChange={onRoleChange}>
-        <SelectTrigger className="w-full sm:w-72 bg-white">
-          <SelectValue placeholder={t("selectPlaceholder")} />
-        </SelectTrigger>
-        <SelectContent>
-          {ROLE_CODES.map((roleCode) => (
-            <SelectItem key={roleCode} value={roleCode}>
-              {tRoles(roleCode)}
-              {roleCounts[roleCode] > 0 && (
-                <span className="ml-auto px-2 py-0.5 text-xs bg-gray-100 rounded-full text-gray-600">
-                  {roleCounts[roleCode]}
-                </span>
-              )}
-            </SelectItem>
-          ))}
-          {extraCodes.map((roleCode) => (
-            <SelectItem key={roleCode} value={roleCode}>
-              {roleCode}
-              {roleCounts[roleCode] > 0 && (
-                <span className="ml-auto px-2 py-0.5 text-xs bg-gray-100 rounded-full text-gray-600">
-                  {roleCounts[roleCode]}
-                </span>
-              )}
-            </SelectItem>
-          ))}
-          <SelectItem value={UNASSESSED_ROLE_BUCKET}>
-            {t("unassessed")}
-            {roleCounts[UNASSESSED_ROLE_BUCKET] > 0 && (
-              <span className="ml-auto px-2 py-0.5 text-xs bg-gray-100 rounded-full text-gray-600">
-                {roleCounts[UNASSESSED_ROLE_BUCKET]}
-              </span>
-            )}
-          </SelectItem>
-        </SelectContent>
-      </Select>
+      <SearchSelect
+        id="job-role-tabs"
+        aria-label={t("selectPlaceholder")}
+        className="w-full sm:w-72"
+        buttonClassName="bg-white"
+        value={selectedRole}
+        onChange={onRoleChange}
+        placeholder={t("selectPlaceholder")}
+        searchPlaceholder={tSearch("searchRoles")}
+        options={[
+          ...ROLE_CODES.map((roleCode) => ({ value: roleCode, label: tRoles(roleCode), hint: count(roleCode) })),
+          ...extraCodes.map((roleCode) => ({ value: roleCode, label: roleCode, hint: count(roleCode) })),
+          { value: UNASSESSED_ROLE_BUCKET, label: t("unassessed"), hint: count(UNASSESSED_ROLE_BUCKET) },
+        ]}
+      />
     </div>
   );
 }

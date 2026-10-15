@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { Loader2, MoreVertical, Pencil, Plus, Trash2 } from "lucide-react"
+import { CountrySelect } from "@/components/app/searchable-fields"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import companyService from "@/app/api/company/endpoints"
@@ -217,18 +218,18 @@ export function BusinessAddressesCard({
                 </select>
               </label>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <label className="block text-xs text-gray-500">
-                  {t("addresses.country")} *
-                  <select value={dialog.form.country} onChange={(e) => setField("country", e.target.value)} className={inputClass}>
-                    <option value="">{t("selectCountry")}</option>
-                    {dialog.form.country && !COUNTRIES.some((c) => c.label === dialog.form.country) && (
-                      <option value={dialog.form.country}>{dialog.form.country}</option>
-                    )}
-                    {COUNTRIES.map((c) => (
-                      <option key={c.key} value={c.label}>{c.label}</option>
-                    ))}
-                  </select>
-                </label>
+                <div className="block text-xs text-gray-500">
+                  <span id="address-country-label">{t("addresses.country")} *</span>
+                  <CountrySelect
+                    id="address-country"
+                    aria-labelledby="address-country-label"
+                    valueKind="label"
+                    value={dialog.form.country}
+                    onChange={(value) => setField("country", value)}
+                    placeholder={t("selectCountry")}
+                    buttonClassName="min-h-10 rounded-lg border-gray-300 bg-white px-3 py-2 text-gray-900 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100"
+                  />
+                </div>
                 <label className="block text-xs text-gray-500">
                   {t("addresses.city")}
                   <input type="text" maxLength={100} value={dialog.form.city} onChange={(e) => setField("city", e.target.value)} className={inputClass} />

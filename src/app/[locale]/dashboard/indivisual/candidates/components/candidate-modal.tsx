@@ -28,6 +28,7 @@ import { checkPassportPhotoQuality, matchFaces, passportQualityMessage, isBlocki
 import { PASSPORT_PHOTO_GUIDELINES } from "@/lib/photo-guidelines"
 import { CANDIDATE_SKILLS_BY_ROLE, translateSkill } from "@/lib/candidate-skills"
 import { COUNTRIES } from "@/lib/countries"
+import { CountrySelect, SearchSelect } from "@/components/app/searchable-fields"
 import { detectCountry, detectTimezone, getTimezoneOptions, suggestLanguageFromCountry } from "@/lib/location-detection"
 import { CoreSkillsDropdown } from "@/components/candidates/core-skills-dropdown"
 
@@ -52,6 +53,7 @@ export function CandidateModal({
   userRole = 'B2C',
   currentUserId}: CandidateModalProps) {
   const t = useTranslations("dashboard.candidates.modal")
+  const tSearch = useTranslations("shared.searchableSelect")
   const tRoles = useTranslations("dashboard.candidates.table.candidateRoles")
   const tLanguages = useTranslations("dashboard.indivisual.settings.edit-profile-tab.languages")
   const tSkills = useTranslations("shared.candidateSkills")
@@ -233,6 +235,11 @@ export function CandidateModal({
       cancelled = true
     }
   }, [formData.passport_document, formData.profile_photo])
+
+  // Searchable dropdowns report a value, not an event; feed it through the
+  // same handler so validation behaves exactly as before.
+  const setSelectField = (name: string, value: string) =>
+    handleInputChange({ target: { name, value } } as React.ChangeEvent<HTMLSelectElement>)
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -937,23 +944,18 @@ export function CandidateModal({
                           {formData.job_role ? tRoles(formData.job_role) : formData.job_role}
                         </p>
                       ) : (
-                        <select
-                          name="job_role"
+                        <SearchSelect
+                          id="candidate-job-role"
+                          aria-label={t("fields.jobRole")}
                           value={formData.job_role}
-                          onChange={handleInputChange}
-                          onBlur={() => handleBlur('job_role')}
+                          onChange={(value) => { setSelectField("job_role", value); handleBlur('job_role') }}
                           disabled={!canEdit}
-                          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${
-                            touchedFields.job_role && errors.job_role ? 'border-red-500' : 'border-gray-300'
-                          }`}
-                        >
-                          <option value="">{t("fields.selectRole")}</option>
-                          {JOB_ROLES.map(role => (
-                            <option key={role.key} value={role.key}>
-                              {tRoles(role.key)}
-                            </option>
-                          ))}
-                        </select>
+                          invalid={Boolean(touchedFields.job_role && errors.job_role)}
+                          placeholder={t("fields.selectRole")}
+                          options={JOB_ROLES.map(role => ({ value: role.key, label: tRoles(role.key) }))}
+                          searchPlaceholder={tSearch("searchRoles")}
+                          buttonClassName={`rounded-lg px-3 py-2 ${touchedFields.job_role && errors.job_role ? 'border-red-500' : 'border-gray-300'}`}
+                        />
                       )}
                       {touchedFields.job_role && errors.job_role && (
                         <p className="mt-1 text-xs text-red-600">{errors.job_role}</p>
@@ -969,22 +971,17 @@ export function CandidateModal({
                           {formData.preferred_language ? tLanguages(formData.preferred_language) : formData.preferred_language}
                         </p>
                       ) : (
-                        <select
-                          name="preferred_language"
+                        <SearchSelect
+                          id="candidate-language"
+                          aria-label={t("fields.preferredLanguage")}
                           value={formData.preferred_language}
-                          onChange={handleInputChange}
-                          onBlur={() => handleBlur('preferred_language')}
+                          onChange={(value) => { setSelectField("preferred_language", value); handleBlur('preferred_language') }}
                           disabled={!canEdit}
-                          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${
-                            touchedFields.preferred_language && errors.preferred_language ? 'border-red-500' : 'border-gray-300'
-                          }`}
-                        >
-                          {LANGUAGES.map(lang => (
-                            <option key={lang.key} value={lang.key}>
-                              {tLanguages(lang.key)}
-                            </option>
-                          ))}
-                        </select>
+                          invalid={Boolean(touchedFields.preferred_language && errors.preferred_language)}
+                          options={LANGUAGES.map(lang => ({ value: lang.key, label: tLanguages(lang.key), keywords: lang.key }))}
+                          searchPlaceholder={tSearch("searchLanguages")}
+                          buttonClassName={`rounded-lg px-3 py-2 ${touchedFields.preferred_language && errors.preferred_language ? 'border-red-500' : 'border-gray-300'}`}
+                        />
                       )}
                       {touchedFields.preferred_language && errors.preferred_language && (
                         <p className="mt-1 text-xs text-red-600">{errors.preferred_language}</p>
@@ -1002,18 +999,15 @@ export function CandidateModal({
                             : "-"}
                         </p>
                       ) : (
-                        <select
-                          name="country_of_residence"
-                          value={formData.country_of_residence}
-                          onChange={handleInputChange}
+                        <CountrySelect
+                          id="candidate-country"
+                          aria-label={t("fields.countryOfResidence")}
+                          value={formData.country_of_residence ?? ""}
+                          onChange={(value) => setSelectField("country_of_residence", value)}
                           disabled={!canEdit}
-                          className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 border-gray-300"
-                        >
-                          <option value="">{t("fields.selectCountry")}</option>
-                          {COUNTRIES.map((c) => (
-                            <option key={c.key} value={c.key}>{c.label}</option>
-                          ))}
-                        </select>
+                          emptyOptionLabel={t("fields.selectCountry")}
+                          buttonClassName="rounded-lg border-gray-300 px-3 py-2"
+                        />
                       )}
                     </div>
 
@@ -1028,18 +1022,15 @@ export function CandidateModal({
                             : "-"}
                         </p>
                       ) : (
-                        <select
-                          name="target_market"
-                          value={formData.target_market}
-                          onChange={handleInputChange}
+                        <CountrySelect
+                          id="candidate-target-market"
+                          aria-label={t("fields.targetMarket")}
+                          value={formData.target_market ?? ""}
+                          onChange={(value) => setSelectField("target_market", value)}
                           disabled={!canEdit}
-                          className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 border-gray-300"
-                        >
-                          <option value="">{t("fields.selectTargetMarket")}</option>
-                          {COUNTRIES.map((c) => (
-                            <option key={c.key} value={c.key}>{c.label}</option>
-                          ))}
-                        </select>
+                          emptyOptionLabel={t("fields.selectTargetMarket")}
+                          buttonClassName="rounded-lg border-gray-300 px-3 py-2"
+                        />
                       )}
                     </div>
 
@@ -1052,21 +1043,20 @@ export function CandidateModal({
                           {formData.timezone || "-"}
                         </p>
                       ) : (
-                        <select
-                          name="timezone"
-                          value={formData.timezone}
-                          onChange={handleInputChange}
+                        <SearchSelect
+                          id="candidate-timezone"
+                          aria-label={t("fields.timezone")}
+                          value={formData.timezone ?? ""}
+                          onChange={(value) => setSelectField("timezone", value)}
                           disabled={!canEdit}
-                          className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 border-gray-300"
-                        >
-                          <option value="">{t("fields.selectTimezone")}</option>
-                          {formData.timezone && !timezoneOptions.includes(formData.timezone) && (
-                            <option value={formData.timezone}>{formData.timezone}</option>
-                          )}
-                          {timezoneOptions.map((tz) => (
-                            <option key={tz} value={tz}>{tz}</option>
-                          ))}
-                        </select>
+                          options={[
+                            { value: "", label: t("fields.selectTimezone") },
+                            ...(formData.timezone && !timezoneOptions.includes(formData.timezone) ? [{ value: formData.timezone, label: formData.timezone }] : []),
+                            ...timezoneOptions.map((tz) => ({ value: tz, label: tz })),
+                          ]}
+                          searchPlaceholder={tSearch("searchTimezones")}
+                          buttonClassName="rounded-lg border-gray-300 px-3 py-2"
+                        />
                       )}
                     </div>
                   </div>

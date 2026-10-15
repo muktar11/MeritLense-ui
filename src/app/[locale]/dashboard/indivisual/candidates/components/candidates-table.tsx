@@ -8,6 +8,7 @@ import {
   Plus
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { SearchSelect } from "@/components/app/searchable-fields";
 import { Candidate } from "../../../../../api/candidates/types";
 import TablePagination from "@/components/ui/table-pagination";
 import { translateSkill } from "@/lib/candidate-skills";
@@ -34,6 +35,7 @@ export default function CandidatesTable({
   currentUserId
 }: CandidatesTableProps) {
   const t = useTranslations("dashboard.candidates.table");
+  const tSearch = useTranslations("shared.searchableSelect");
   const tSkills = useTranslations("shared.candidateSkills");
   const [searchTerm, setSearchTerm] = useState("");
   const [filterRole, setFilterRole] = useState<string>("");
@@ -113,16 +115,16 @@ export default function CandidatesTable({
                 className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               />
             </div>
-            <select
+            <SearchSelect
+              id="candidates-role-filter"
+              aria-label={t("filters.allRoles")}
+              className="w-full sm:w-56"
+              buttonClassName="min-h-10 rounded-lg border-gray-300 px-3 py-2"
               value={filterRole}
-              onChange={(e) => setFilterRole(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            >
-              <option value="">{t("filters.allRoles")}</option>
-              {uniqueRoles.map(role => (
-                <option key={role} value={role}>{getJobRoleLabel(role)}</option>
-              ))}
-            </select>
+              onChange={setFilterRole}
+              options={[{ value: "", label: t("filters.allRoles") }, ...uniqueRoles.map(role => ({ value: role, label: getJobRoleLabel(role) }))]}
+              searchPlaceholder={tSearch("searchRoles")}
+            />
           </div>
           <button
             onClick={onAdd}

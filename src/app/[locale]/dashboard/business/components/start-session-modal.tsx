@@ -15,6 +15,7 @@ import {
 import SessionCreatedPanel from "./session-created-panel"
 import { apiErrorMessage } from "@/lib/api-error-message"
 import type { Candidate } from "@/app/api/candidates/types"
+import { CandidateSelect, SearchSelect } from "@/components/app/searchable-fields"
 import interviewService from "@/app/api/interviews/endpoints"
 import paymentService from "@/app/api/payments/endpoints"
 import type { CoverageLevel, EvaluationTier, InterviewConfig, InterviewSession, RolePackage, RolePackageCoverageEntry } from "@/app/api/interviews/types"
@@ -95,6 +96,7 @@ export default function StartSessionModal({
   onSuccess,
 }: StartSessionModalProps) {
   const t = useTranslations("shared.startSessionModal")
+  const tSearch = useTranslations("shared.searchableSelect")
   const locale = useLocale()
   const [configs, setConfigs] = useState<InterviewConfig[]>([])
   const [coverageRows, setCoverageRows] = useState<RolePackageCoverageEntry[]>([])
@@ -423,19 +425,15 @@ export default function StartSessionModal({
                 {stepHeader(1, t("candidateLabel"), t("candidateStepSubtitle"))}
                 {!preselectedCandidate ? (
                   <div>
-                    <select
+                    <CandidateSelect
+                      id="start-session-candidate"
                       aria-label={t("candidateLabel")}
+                      candidates={candidates}
                       value={selectedCandidateId}
-                      onChange={e => setSelectedCandidateId(e.target.value)}
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    >
-                      <option value="">{t("selectCandidatePlaceholder")}</option>
-                      {candidates.map(c => (
-                        <option key={c.id} value={c.id}>
-                          {c.full_name} – {c.email}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={setSelectedCandidateId}
+                      placeholder={t("selectCandidatePlaceholder")}
+                      buttonClassName="rounded-xl border-gray-200 bg-white px-4"
+                    />
                   </div>
                 ) : (
                   <div className="flex items-center gap-3 bg-purple-50 border border-purple-100 rounded-xl px-4 py-2.5">
@@ -604,21 +602,22 @@ export default function StartSessionModal({
                 <section className="rounded-2xl border border-gray-100 p-4">
                   {stepHeader(4, t("languageStepTitle"), t("languageStepSubtitle"))}
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-start">
-                    <div className="relative">
-                      <Globe className="absolute start-4 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-600 pointer-events-none" />
-                      <select
-                        aria-label={t("languageStepTitle")}
-                        value={effectiveLanguage}
-                        onChange={e => setLanguage(e.target.value)}
-                        disabled={availableLanguages.length === 0}
-                        className="w-full appearance-none ps-12 pe-10 py-3 border border-gray-200 rounded-xl text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      >
-                        {LANGUAGES.map(lang => (
-                          <option key={lang.key} value={lang.key}>{languageName(lang.key)}</option>
-                        ))}
-                      </select>
-                      <ChevronDown className="absolute end-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
-                    </div>
+                    <SearchSelect
+                      id="start-session-language"
+                      aria-label={t("languageStepTitle")}
+                      value={effectiveLanguage}
+                      onChange={setLanguage}
+                      disabled={availableLanguages.length === 0}
+                      options={LANGUAGES.map(lang => ({ value: lang.key, label: languageName(lang.key), keywords: lang.key }))}
+                      searchPlaceholder={tSearch("searchLanguages")}
+                      renderValue={(option) => (
+                        <span className="flex items-center gap-3 text-gray-900">
+                          <Globe className="w-5 h-5 text-purple-600 shrink-0" />
+                          {option.label}
+                        </span>
+                      )}
+                      buttonClassName="rounded-xl border-gray-200 bg-white px-4 py-3"
+                    />
                     <div className="flex items-start gap-2 rounded-xl bg-purple-50/70 p-3 text-sm text-gray-700">
                       <Info className="w-5 h-5 text-purple-600 shrink-0 mt-0.5" />
                       <span>

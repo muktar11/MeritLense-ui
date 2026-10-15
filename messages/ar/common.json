@@ -440,6 +440,23 @@
       "justThisTime": "هذه المرة فقط",
       "reject": "رفض",
       "managePreferences": "إدارة التفضيلات"
+    },
+    "searchableSelect": {
+      "search": "اكتب للبحث…",
+      "noResults": "لا توجد نتائج",
+      "selectCandidate": "اختر مرشحاً",
+      "searchCandidates": "ابحث بالاسم أو البريد الإلكتروني",
+      "selectCountry": "اختر دولة",
+      "searchCountries": "ابحث عن دولة",
+      "selectLanguage": "اختر لغة",
+      "searchLanguages": "ابحث عن لغة",
+      "selectRole": "اختر دوراً",
+      "searchRoles": "ابحث عن دور",
+      "selectTimezone": "اختر المنطقة الزمنية",
+      "searchTimezones": "ابحث عن منطقة زمنية",
+      "selectNationality": "اختر الجنسية",
+      "searchNationalities": "ابحث عن جنسية",
+      "allRoles": "جميع الأدوار"
     }
   },
   "landing-page": {

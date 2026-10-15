@@ -49,6 +49,7 @@ import type {
 import { EvaluationResultsModal } from "@/components/evaluations/EvaluationResultsModal";
 import { exportChartAsPng } from "@/lib/chart-export";
 import { cn } from "@/lib/utils";
+import { SearchSelect } from "@/components/app/searchable-fields";
 
 // Assigned by selection order, so a candidate keeps one colour across the
 // list, the charts, the score bars and the PDF (CANDIDATE_COLORS in
@@ -87,6 +88,7 @@ interface CandidateGroup {
 
 export function CompareCandidates({ scope }: { scope: ComparisonScope }) {
   const t = useTranslations("dashboard.compareCandidates");
+  const tSearch = useTranslations("shared.searchableSelect");
   const tRoles = useTranslations("shared.startSessionModal.roles");
   const locale = useLocale();
   const api = useMemo(() => comparisonApi(scope), [scope]);
@@ -363,26 +365,26 @@ export function CompareCandidates({ scope }: { scope: ComparisonScope }) {
 
         {/* Filters */}
         <section className="grid grid-cols-1 gap-4 rounded-2xl bg-white p-4 shadow-sm sm:p-5 md:grid-cols-2 xl:grid-cols-[1.2fr_1fr_1fr_1.3fr]">
-          <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-gray-800">{t("filters.role")} *</span>
-            <span className="relative block">
-              <Briefcase className="pointer-events-none absolute start-4 top-1/2 h-5 w-5 -translate-y-1/2 text-purple-600" />
-              <select
-                value={roleCode}
-                onChange={(e) => chooseRole(e.target.value)}
-                disabled={rolesState !== "ready" || roles.length === 0}
-                className={cn(selectClass, roleCode && "border-purple-400 ring-1 ring-purple-200")}
-              >
-                <option value="">{rolesState === "loading" ? t("loading") : roles.length ? t("filters.chooseRole") : t("step1.noRoles")}</option>
-                {roles.map((role) => (
-                  <option key={role.role_code} value={role.role_code}>
-                    {roleLabel(role)} ({role.candidate_count})
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="pointer-events-none absolute end-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
-            </span>
-          </label>
+          <div className="block">
+            <span id="compare-role-label" className="mb-1.5 block text-sm font-medium text-gray-800">{t("filters.role")} *</span>
+            <SearchSelect
+              id="compare-role"
+              aria-labelledby="compare-role-label"
+              value={roleCode}
+              onChange={chooseRole}
+              disabled={rolesState !== "ready" || roles.length === 0}
+              placeholder={rolesState === "loading" ? t("loading") : roles.length ? t("filters.chooseRole") : t("step1.noRoles")}
+              searchPlaceholder={tSearch("searchRoles")}
+              options={roles.map((role) => ({ value: role.role_code, label: roleLabel(role), hint: String(role.candidate_count) }))}
+              renderValue={(option) => (
+                <span className="flex items-center gap-3 text-gray-900">
+                  <Briefcase className="h-5 w-5 shrink-0 text-purple-600" />
+                  <span className="truncate">{option.label} ({option.hint})</span>
+                </span>
+              )}
+              buttonClassName={cn("min-h-12 rounded-xl border-gray-300 bg-white px-4", roleCode && "border-purple-400 ring-1 ring-purple-200")}
+            />
+          </div>
 
           <div>
             <label className="block">

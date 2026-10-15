@@ -11,6 +11,8 @@ import { EVALUATION_TYPES, EVALUATION_STATUS, type Evaluation, type CreateEvalua
 import { format } from "date-fns"
 import { ar } from "date-fns/locale"
 import { EvaluatorRatingCard } from "@/components/evaluations/EvaluatorRatingCard"
+import { CandidateSelect, candidateOption } from "@/components/app/searchable-fields"
+import { OptionAvatar } from "@/components/ui/searchable-select"
 
 type ModalMode = 'view' | 'create' | 'edit' | 'reschedule';
 
@@ -126,7 +128,7 @@ interface EvaluationModalProps {
   onReschedule?: (data: { new_date: string; reason?: string }) => Promise<boolean>
   mode: ModalMode
   evaluation?: Evaluation | null
-  candidates?: Array<{ id: string; full_name: string; email: string; job_role: string }>
+  candidates?: Array<{ id: string; full_name: string; email: string; job_role: string; profile_photo?: string | null }>
   userRole?: string
   currentUserId?: string
   errorMessage?: string | null
@@ -171,21 +173,6 @@ export default function EvaluationModal({
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [meetingType, setMeetingType] = useState<'online' | 'inperson'>('online');
-  const [candidateMenuOpen, setCandidateMenuOpen] = useState(false)
-  const [candidateSearch, setCandidateSearch] = useState("")
-  const candidateMenuRef = useRef<HTMLDivElement | null>(null)
-
-  useEffect(() => {
-    if (!candidateMenuOpen) return
-    const onPointerDown = (e: MouseEvent) => {
-      if (candidateMenuRef.current && !candidateMenuRef.current.contains(e.target as Node)) {
-        setCandidateMenuOpen(false)
-      }
-    }
-    document.addEventListener("mousedown", onPointerDown)
-    return () => document.removeEventListener("mousedown", onPointerDown)
-  }, [candidateMenuOpen])
-
   useEffect(() => {
     if (isOpen) {
       if ((mode === 'view' || mode === 'edit') && evaluation) {
@@ -318,8 +305,6 @@ export default function EvaluationModal({
     })
     setRescheduleData({ new_date: "", reason: "" })
     setErrors({})
-    setCandidateMenuOpen(false)
-    setCandidateSearch("")
     onClose()
   }
 
@@ -348,10 +333,6 @@ export default function EvaluationModal({
     const durationOptions = DURATION_OPTIONS.includes(formData.duration_minutes)
       ? DURATION_OPTIONS
       : [...DURATION_OPTIONS, formData.duration_minutes].sort((a, b) => a - b)
-    const searchQuery = candidateSearch.trim().toLowerCase()
-    const filteredCandidates = searchQuery
-      ? candidates.filter((c) => c.full_name.toLowerCase().includes(searchQuery) || c.email.toLowerCase().includes(searchQuery))
-      : candidates
     const inputBase = "w-full h-12 rounded-xl border bg-white text-base sm:text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
     const typeLabel = TYPE_KEYS[formData.evaluation_type] ? tTypes(TYPE_KEYS[formData.evaluation_type]) : formData.evaluation_type
     const dateLocale = locale === 'ar' ? { locale: ar } : undefined
@@ -414,86 +395,33 @@ export default function EvaluationModal({
                   {stepHeader(1, t("steps.candidate.title"), isCreateMode ? t("steps.candidate.subtitle") : undefined)}
                   <div className="sm:ps-[52px]">
                     {isCreateMode ? (
-                      <div className="relative" ref={candidateMenuRef}>
-                        <button
-                          type="button"
-                          onClick={() => setCandidateMenuOpen((open) => !open)}
-                          aria-haspopup="listbox"
-                          aria-expanded={candidateMenuOpen}
-                          className={`w-full flex items-center gap-3 rounded-xl border bg-white px-4 py-3 text-start focus:outline-none focus:ring-2 focus:ring-purple-500 ${
-                            errors.candidate ? 'border-red-500' : 'border-gray-300'
-                          }`}
-                        >
-                          {selectedCandidate ? (
-                            <>
-                              <span className="shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 text-white text-sm font-semibold flex items-center justify-center">
-                                {initialsOf(selectedCandidate.full_name)}
-                              </span>
-                              <span className="min-w-0 flex-1">
-                                <span className="block font-semibold text-gray-900 truncate">{selectedCandidate.full_name}</span>
-                                <span className="block text-sm text-gray-500 truncate">{selectedCandidate.email}</span>
-                              </span>
-                            </>
-                          ) : (
-                            <span className="flex-1 text-gray-400">{t("selectCandidatePlaceholder")}</span>
-                          )}
-                          <ChevronDown className={`w-5 h-5 text-gray-500 shrink-0 transition-transform ${candidateMenuOpen ? 'rotate-180' : ''}`} />
-                        </button>
-
-                        {candidateMenuOpen && (
-                          <div className="absolute z-20 mt-2 w-full rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden">
-                            <div className="p-2 border-b border-gray-100">
-                              <div className="relative">
-                                <Search className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                                <input
-                                  autoFocus
-                                  type="text"
-                                  value={candidateSearch}
-                                  onChange={(e) => setCandidateSearch(e.target.value)}
-                                  placeholder={t("searchCandidates")}
-                                  className="w-full ps-9 pe-3 py-2 rounded-lg border border-gray-200 text-base sm:text-sm focus:outline-none focus:border-purple-400"
-                                />
-                              </div>
-                            </div>
-                            <ul role="listbox" className="max-h-64 overflow-y-auto py-1">
-                              {filteredCandidates.length === 0 ? (
-                                <li className="px-4 py-3 text-sm text-gray-400">{t("noCandidatesFound")}</li>
-                              ) : filteredCandidates.map((candidate) => {
-                                const isSelected = candidate.id === formData.candidate
-                                return (
-                                  <li key={candidate.id} role="option" aria-selected={isSelected}>
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        setFormData({ ...formData, candidate: candidate.id })
-                                        setErrors((prev) => ({ ...prev, candidate: "" }))
-                                        setCandidateMenuOpen(false)
-                                        setCandidateSearch("")
-                                      }}
-                                      className={`w-full flex items-center gap-3 px-4 py-2.5 text-start hover:bg-purple-50 ${isSelected ? 'bg-purple-50' : ''}`}
-                                    >
-                                      <span className="shrink-0 w-8 h-8 rounded-full bg-purple-100 text-purple-700 text-xs font-semibold flex items-center justify-center">
-                                        {initialsOf(candidate.full_name)}
-                                      </span>
-                                      <span className="min-w-0 flex-1">
-                                        <span className="block text-sm font-medium text-gray-900 truncate">{candidate.full_name}</span>
-                                        <span className="block text-xs text-gray-500 truncate">{candidate.email}</span>
-                                      </span>
-                                      {isSelected && <Check className="w-4 h-4 text-purple-600 shrink-0" />}
-                                    </button>
-                                  </li>
-                                )
-                              })}
-                            </ul>
-                          </div>
-                        )}
+                      <div>
+                        <CandidateSelect
+                          id="schedule-evaluation-candidate"
+                          aria-label={t("steps.candidate.title")}
+                          candidates={candidates}
+                          value={formData.candidate}
+                          onChange={(id) => {
+                            setFormData({ ...formData, candidate: id })
+                            setErrors((prev) => ({ ...prev, candidate: "" }))
+                          }}
+                          placeholder={t("selectCandidatePlaceholder")}
+                          searchPlaceholder={t("searchCandidates")}
+                          emptyText={t("noCandidatesFound")}
+                          invalid={Boolean(errors.candidate)}
+                          buttonClassName="min-h-16 rounded-xl border-gray-300 bg-white px-4 py-3"
+                        />
                         {errors.candidate && <p className="mt-1 text-xs text-red-600">{errors.candidate}</p>}
                       </div>
                     ) : (
                       <div className="flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
-                        <span className="shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 text-white text-sm font-semibold flex items-center justify-center">
-                          {initialsOf(candidateName)}
-                        </span>
+                        {selectedCandidate?.profile_photo ? (
+                          <OptionAvatar avatar={candidateOption(selectedCandidate).avatar!} />
+                        ) : (
+                          <span className="shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 text-white text-sm font-semibold flex items-center justify-center">
+                            {initialsOf(candidateName)}
+                          </span>
+                        )}
                         <span className="min-w-0">
                           <span className="block font-semibold text-gray-900 truncate">{candidateName}</span>
                           {candidateEmail && <span className="block text-sm text-gray-500 truncate">{candidateEmail}</span>}

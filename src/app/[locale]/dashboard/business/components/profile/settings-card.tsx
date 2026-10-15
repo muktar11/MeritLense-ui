@@ -7,7 +7,7 @@ import { Loader2, Moon, Settings, Sun } from "lucide-react"
 import { usePathname, useRouter } from "@/i18n/navigation"
 import { LANGUAGES } from "@/app/api/auth/endpoints"
 import type { B2BProfileData } from "@/app/api/profile/endpoints"
-import { COUNTRIES } from "@/lib/countries"
+import { CountrySelect, SearchSelect } from "@/components/app/searchable-fields"
 import { getTimezoneOptions } from "@/lib/location-detection"
 import { SectionCard, inputClass, primaryButtonClass } from "./section-card"
 
@@ -26,6 +26,7 @@ export function SettingsCard({
 }) {
   const t = useTranslations("dashboard.business.company-profile")
   const tLanguages = useTranslations("dashboard.indivisual.settings.edit-profile-tab.languages")
+  const tSearch = useTranslations("shared.searchableSelect")
   const locale = useLocale()
   const pathname = usePathname()
   const router = useRouter()
@@ -46,6 +47,8 @@ export function SettingsCard({
 
   const set = (key: keyof Preferences) => (e: React.ChangeEvent<HTMLSelectElement>) =>
     setPrefs((prev) => ({ ...prev, [key]: e.target.value }))
+  const setValue = (key: keyof Preferences, value: string) => setPrefs((prev) => ({ ...prev, [key]: value }))
+  const fieldButton = "min-h-10 rounded-lg border-gray-300 bg-white px-3 py-2 dark:border-gray-700 dark:bg-gray-950"
 
   const save = async () => {
     if (!(await onSave(prefs))) return
@@ -74,14 +77,19 @@ export function SettingsCard({
             </select>
           </span>
         </label>
-        <label className={label}>
-          {t("language")}
-          <select value={prefs.preferred_language} onChange={set("preferred_language")} className={`${inputClass} mt-1`}>
-            {LANGUAGES.map((lang) => (
-              <option key={lang.key} value={lang.key}>{tLanguages(lang.key)}</option>
-            ))}
-          </select>
-        </label>
+        <div className={label}>
+          <span id="settings-language-label">{t("language")}</span>
+          <SearchSelect
+            id="settings-language"
+            aria-labelledby="settings-language-label"
+            className="mt-1"
+            buttonClassName={fieldButton}
+            value={prefs.preferred_language}
+            onChange={(value) => setValue("preferred_language", value)}
+            options={LANGUAGES.map((lang) => ({ value: lang.key, label: tLanguages(lang.key), keywords: lang.key }))}
+            searchPlaceholder={tSearch("searchLanguages")}
+          />
+        </div>
         <label className={label}>
           {t("notification")}
           <select value={prefs.notification_preference} onChange={set("notification_preference")} className={`${inputClass} mt-1`}>
@@ -90,27 +98,35 @@ export function SettingsCard({
             <option value="both">{t("bothNotifications")}</option>
           </select>
         </label>
-        <label className={label}>
-          {t("targetHiringMarket")}
-          <select value={prefs.target_market} onChange={set("target_market")} className={`${inputClass} mt-1`}>
-            <option value="">{t("selectMarket")}</option>
-            {COUNTRIES.map((c) => (
-              <option key={c.key} value={c.key}>{c.label}</option>
-            ))}
-          </select>
-        </label>
-        <label className={`${label} sm:col-span-2 xl:col-span-1`}>
-          {t("timeZone")}
-          <select value={prefs.timezone} onChange={set("timezone")} className={`${inputClass} mt-1`}>
-            <option value="">{t("selectTimezone")}</option>
-            {prefs.timezone && !timezoneOptions.includes(prefs.timezone) && (
-              <option value={prefs.timezone}>{prefs.timezone}</option>
-            )}
-            {timezoneOptions.map((tz) => (
-              <option key={tz} value={tz}>{tz}</option>
-            ))}
-          </select>
-        </label>
+        <div className={label}>
+          <span id="settings-market-label">{t("targetHiringMarket")}</span>
+          <CountrySelect
+            id="settings-market"
+            aria-labelledby="settings-market-label"
+            className="mt-1"
+            buttonClassName={fieldButton}
+            value={prefs.target_market}
+            onChange={(value) => setValue("target_market", value)}
+            emptyOptionLabel={t("selectMarket")}
+          />
+        </div>
+        <div className={`${label} sm:col-span-2 xl:col-span-1`}>
+          <span id="settings-timezone-label">{t("timeZone")}</span>
+          <SearchSelect
+            id="settings-timezone"
+            aria-labelledby="settings-timezone-label"
+            className="mt-1"
+            buttonClassName={fieldButton}
+            value={prefs.timezone}
+            onChange={(value) => setValue("timezone", value)}
+            options={[
+              { value: "", label: t("selectTimezone") },
+              ...(prefs.timezone && !timezoneOptions.includes(prefs.timezone) ? [{ value: prefs.timezone, label: prefs.timezone }] : []),
+              ...timezoneOptions.map((tz) => ({ value: tz, label: tz })),
+            ]}
+            searchPlaceholder={tSearch("searchTimezones")}
+          />
+        </div>
       </div>
       <div className="mt-4 flex items-center justify-end gap-3">
         {saved && <span className="text-sm text-green-700" role="status">{t("settingsCard.saved")}</span>}
