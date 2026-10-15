@@ -4362,7 +4362,10 @@
         "contact": {
           "title": "Contact Information",
           "email": "Email",
-          "phone": "Phone"
+          "phone": "Phone",
+          "subtitle": "Your contact details for account access and important updates.",
+          "verified": "Verified",
+          "address": "Address"
         },
         "address": {
           "title": "Address",
@@ -4374,7 +4377,9 @@
           "agreements": "Legal Agreements",
           "security": "Account Security",
           "billing": "Billing & Subscription",
-          "settings": "Settings"
+          "settings": "Settings",
+          "personal": "Personal Information",
+          "contact": "Contact Information"
         },
         "settings": {
           "subtitle": "Configure your preferences.",
@@ -4383,6 +4388,69 @@
           "dark": "Dark",
           "save": "Save Changes",
           "saved": "Settings saved."
+        },
+        "header": {
+          "accountType": "Individual Account",
+          "note": "Your profile helps us provide a secure and personalized experience on MeritLense.",
+          "changePhoto": "Change photo"
+        },
+        "personal": {
+          "subtitle": "Manage your basic information.",
+          "fullName": "Full Name",
+          "optional": "Not set (Optional)"
+        },
+        "security": {
+          "subtitle": "Manage your password and account security settings.",
+          "changePassword": "Change Password",
+          "password": "Password",
+          "change": "Change",
+          "deleteAccount": "Delete account",
+          "deleteHint": "Permanently remove your account and data.",
+          "manage": "Manage"
+        },
+        "billing": {
+          "subtitle": "View your plan details, payment methods and invoices.",
+          "managePlan": "Manage Plan",
+          "noPlan": "No active plan",
+          "noPlanHint": "Choose a plan to start assessing candidates.",
+          "renewsOn": "Renews on {date}",
+          "endsOn": "Ends on {date}",
+          "paymentMethod": "Payment Method",
+          "noMethod": "No payment method saved",
+          "update": "Update",
+          "add": "Add",
+          "history": "Billing History",
+          "historyHint": "View your past invoices.",
+          "view": "View"
+        },
+        "agreementsCard": {
+          "subtitle": "Review and manage your agreements and consents.",
+          "viewDocuments": "View Documents",
+          "signedOn": "Signed on {date}",
+          "signed": "Signed",
+          "pending": "Pending",
+          "sign": "Sign",
+          "download": "Download PDF",
+          "auditTrail": "View Audit Trail",
+          "actions": "Agreement actions",
+          "none": "No agreements on your account yet."
+        },
+        "settingsCard": {
+          "subtitle": "Personalize your experience.",
+          "edit": "Edit",
+          "language": "Language",
+          "targetMarket": "Target Market",
+          "timezone": "Time Zone",
+          "appearance": "Appearance",
+          "notSet": "Not set"
+        },
+        "dialogs": {
+          "editPersonal": "Edit Personal Information",
+          "editContact": "Edit Contact Information",
+          "editSettings": "Edit Settings",
+          "save": "Save",
+          "cancel": "Cancel",
+          "saveFailed": "Could not save. Please try again."
         }
       },
       "dashboardHeader": {

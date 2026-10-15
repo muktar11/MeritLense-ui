@@ -4351,7 +4351,10 @@
         "contact": {
           "title": "معلومات التواصل",
           "email": "البريد الإلكتروني",
-          "phone": "الهاتف"
+          "phone": "الهاتف",
+          "subtitle": "بيانات التواصل الخاصة بالوصول إلى حسابك والتحديثات المهمة.",
+          "verified": "موثّق",
+          "address": "العنوان"
         },
         "address": {
           "title": "العنوان",
@@ -4363,7 +4366,9 @@
           "agreements": "الاتفاقيات القانونية",
           "security": "أمان الحساب",
           "billing": "الفواتير والاشتراك",
-          "settings": "الإعدادات"
+          "settings": "الإعدادات",
+          "personal": "المعلومات الشخصية",
+          "contact": "معلومات التواصل"
         },
         "settings": {
           "subtitle": "اضبط تفضيلاتك.",
@@ -4372,6 +4377,69 @@
           "dark": "داكن",
           "save": "حفظ التغييرات",
           "saved": "تم حفظ الإعدادات."
+        },
+        "header": {
+          "accountType": "حساب فردي",
+          "note": "يساعدنا ملفك الشخصي على تقديم تجربة آمنة ومخصصة لك على MeritLense.",
+          "changePhoto": "تغيير الصورة"
+        },
+        "personal": {
+          "subtitle": "أدر معلوماتك الأساسية.",
+          "fullName": "الاسم الكامل",
+          "optional": "غير محدد (اختياري)"
+        },
+        "security": {
+          "subtitle": "أدر كلمة المرور وإعدادات أمان الحساب.",
+          "changePassword": "تغيير كلمة المرور",
+          "password": "كلمة المرور",
+          "change": "تغيير",
+          "deleteAccount": "حذف الحساب",
+          "deleteHint": "حذف حسابك وبياناتك نهائياً.",
+          "manage": "إدارة"
+        },
+        "billing": {
+          "subtitle": "اطّلع على تفاصيل خطتك وطرق الدفع والفواتير.",
+          "managePlan": "إدارة الخطة",
+          "noPlan": "لا توجد خطة نشطة",
+          "noPlanHint": "اختر خطة لبدء تقييم المرشحين.",
+          "renewsOn": "تتجدد في {date}",
+          "endsOn": "تنتهي في {date}",
+          "paymentMethod": "طريقة الدفع",
+          "noMethod": "لا توجد طريقة دفع محفوظة",
+          "update": "تحديث",
+          "add": "إضافة",
+          "history": "سجل الفواتير",
+          "historyHint": "اطّلع على فواتيرك السابقة.",
+          "view": "عرض"
+        },
+        "agreementsCard": {
+          "subtitle": "راجع اتفاقياتك وموافقاتك وأدرها.",
+          "viewDocuments": "عرض المستندات",
+          "signedOn": "تم التوقيع في {date}",
+          "signed": "موقّعة",
+          "pending": "قيد الانتظار",
+          "sign": "توقيع",
+          "download": "تنزيل PDF",
+          "auditTrail": "عرض سجل التدقيق",
+          "actions": "إجراءات الاتفاقية",
+          "none": "لا توجد اتفاقيات في حسابك بعد."
+        },
+        "settingsCard": {
+          "subtitle": "خصّص تجربتك.",
+          "edit": "تعديل",
+          "language": "اللغة",
+          "targetMarket": "السوق المستهدف",
+          "timezone": "المنطقة الزمنية",
+          "appearance": "المظهر",
+          "notSet": "غير محدد"
+        },
+        "dialogs": {
+          "editPersonal": "تعديل المعلومات الشخصية",
+          "editContact": "تعديل معلومات التواصل",
+          "editSettings": "تعديل الإعدادات",
+          "save": "حفظ",
+          "cancel": "إلغاء",
+          "saveFailed": "تعذّر الحفظ. حاول مرة أخرى."
         }
       },
       "dashboardHeader": {
