@@ -200,7 +200,7 @@ export function CompanyInfoCard({
           />
           <div className="relative h-44 w-44 overflow-hidden rounded-xl border border-gray-200 bg-gray-100 dark:border-gray-700 dark:bg-gray-800">
             {company?.logo ? (
-              <img src={company.logo} alt={t("logoAlt")} className="h-full w-full object-cover" />
+              <img src={company.logo} alt={t("logoAlt")} className="h-full w-full bg-white object-contain p-2 pb-12" />
             ) : (
               <div className="flex h-full w-full items-center justify-center text-4xl font-bold text-purple-300">
                 {(name || "?").charAt(0).toUpperCase()}
@@ -264,7 +264,7 @@ export function CompanyInfoCard({
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 2xl:grid-cols-4">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <FieldTile label={t("info.brandName")}>{name || notSet}</FieldTile>
                 <FieldTile label={t("info.legalName")}>{company?.legal_name || notSet}</FieldTile>
                 <FieldTile label={t("info.registrationNumber")}>{registrationNumber || notSet}</FieldTile>
