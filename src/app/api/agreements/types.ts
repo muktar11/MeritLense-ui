@@ -25,6 +25,10 @@ export interface Agreement {
   signed_pdf_url: string | null;
   pdf_hash: string;
   created_at: string;
+  /** The version available to sign now; differs from `version` when this one is outdated. */
+  current_version?: string;
+  /** false when a newer version of this agreement exists to sign. */
+  is_current?: boolean;
 }
 
 export type AgreementVersions = Record<AgreementType, string>;

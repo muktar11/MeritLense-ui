@@ -58,7 +58,8 @@ export default function SignAgreementsPage() {
     (async () => {
       try {
         const status = await agreementService.getStatus();
-        const signed = new Set(status.filter((a) => a.status === "SIGNED").map((a) => a.agreement_type));
+        // Signed *current* versions only: an outdated signed version can be re-signed.
+        const signed = new Set(status.filter((a) => a.status === "SIGNED" && a.is_current !== false).map((a) => a.agreement_type));
         if (!active) return;
 
         if (DOC_ORDER.every((d) => signed.has(d.type))) {

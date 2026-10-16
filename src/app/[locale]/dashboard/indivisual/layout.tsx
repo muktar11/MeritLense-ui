@@ -5,6 +5,7 @@ import { Breadcrumb } from "@/components/app/Breadcrumb";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { Watermark } from "@/components/app/Watermark";
 import { AgreementGuard, useB2CAgreementStatus } from "./components/agreement-guard";
+import { UpdatedAgreementsNotice } from "@/components/agreements/UpdatedAgreementsNotice";
 
 import {
   LayoutDashboard,
@@ -116,7 +117,10 @@ export default function AdminLayout({
               <Breadcrumb />
               <LanguageSelector />
             </div>
-            <div className="sm:px-8 px-4">{children}</div>
+            <div className="sm:px-8 px-4">
+              <UpdatedAgreementsNotice types={["B2C_AGREEMENT"]} signPath="/dashboard/indivisual/sign-agreements" />
+              {children}
+            </div>
           </div>
         </DashboardLayout>
       </AgreementGuard>

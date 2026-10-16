@@ -561,6 +561,12 @@
         "footer": "To verify integrity, compare the hash above against the SHA-256 checksum of your downloaded PDF copy. No evaluation data or personal contact information is shown on this page.",
         "title": "Document Verification"
       }
+    },
+    "updatedAgreements": {
+      "title": "Updated agreements are available",
+      "body": "A newer version of an agreement you signed is available. Please review and sign it. Your account keeps working in the meantime, and your earlier signed copy stays on record.",
+      "action": "Review and sign",
+      "dismiss": "Dismiss"
     }
   },
   "landing-page": {
@@ -3587,7 +3593,8 @@
           "view": "View",
           "review": "Review",
           "download": "Download PDF",
-          "auditTrail": "View Audit Trail"
+          "auditTrail": "View Audit Trail",
+          "newVersion": "New version available"
         },
         "security": {
           "subtitle": "Manage your password and account security settings.",
