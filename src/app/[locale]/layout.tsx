@@ -76,7 +76,7 @@ export default async function LocaleLayout({
           <ContentProtectionProvider />
           {children}
           <CookieConsentBanner />
-          <Toaster richColors position={isRtl ? "top-left" : "top-right"} dir={isRtl ? "rtl" : "ltr"} />
+          <Toaster richColors position={isRtl ? "top-left" : "top-right"} dir={isRtl ? "rtl" : "ltr"} containerAriaLabel={isRtl ? "الإشعارات" : "Notifications"} />
         </ThemeProvider>
       </NextIntlClientProvider>
     </div>

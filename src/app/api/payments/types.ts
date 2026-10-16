@@ -142,6 +142,15 @@ const PLAN_NAME_AR: Record<string, string> = {
   "premium package": "الباقة المميزة",
   "growth package": "باقة النمو",
   "business package": "باقة الأعمال",
+  // Plans are also named without the word "package".
+  basic: "الأساسية",
+  essential: "الضرورية",
+  advanced: "المتقدمة",
+  premium: "المميزة",
+  starter: "الباقة الابتدائية",
+  enterprise: "باقة المؤسسات",
+  growth: "باقة النمو",
+  business: "باقة الأعمال",
 };
 
 export function localizedPlanName(name: string | undefined | null, locale: string): string {

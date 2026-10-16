@@ -72,7 +72,7 @@ export default function ForgotPasswordPage() {
                     onClick={handleTryAgain}
                     className="text-sm text-red-600 font-medium hover:text-red-700 mt-2"
                   >
-                    Try Again
+                    {t("tryAgain")}
                   </button>
                 </div>
               </div>
@@ -90,7 +90,7 @@ export default function ForgotPasswordPage() {
             <form onSubmit={onSubmit} className="space-y-6">
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                  {t("form.label_email_or_phone") || "Email Address"}
+                  {t("form.label_email_or_phone")}
                 </label>
                 <Input
                   id="email"
@@ -172,12 +172,12 @@ export default function ForgotPasswordPage() {
               </Button>
               
               <p className="text-sm text-gray-500">
-                Didn't receive the email?{" "}
+                {t("didNotReceive")}{" "}
                 <button
                   onClick={handleTryAgain}
                   className="text-blue-600 hover:text-blue-700 font-medium"
                 >
-                  Try again
+                  {t("tryAgainLink")}
                 </button>
               </p>
             </div>

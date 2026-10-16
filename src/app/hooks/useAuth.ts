@@ -1,6 +1,7 @@
 // hooks/useAuth.ts
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { authAPI } from '../api/auth/endpoints'
 import { setAuthToken } from '../api/auth/client'
 import {
@@ -29,6 +30,7 @@ interface UseAuthReturn {
 }
 
 export const useAuth = (): UseAuthReturn => {
+  const tErr = useTranslations('shared.ui.errors')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [userRole, setUserRole] = useState<string | null>(null)
@@ -81,9 +83,9 @@ export const useAuth = (): UseAuthReturn => {
         const errorMessages = Object.entries(err)
           .map(([key, value]) => `${key}: ${value}`)
           .join(', ')
-        setError(errorMessages || 'Registration failed')
+        setError(errorMessages || tErr("registrationFailed"))
       } else {
-        setError('Registration failed. Please try again.')
+        setError(tErr("registrationFailedRetry"))
       }
       return false
     } finally {
@@ -110,9 +112,9 @@ export const useAuth = (): UseAuthReturn => {
         const errorMessages = Object.entries(err)
           .map(([key, value]) => `${key}: ${value}`)
           .join(', ')
-        setError(errorMessages || 'Registration failed')
+        setError(errorMessages || tErr("registrationFailed"))
       } else {
-        setError('Registration failed. Please try again.')
+        setError(tErr("registrationFailedRetry"))
       }
       return false
     } finally {
@@ -150,7 +152,7 @@ export const useAuth = (): UseAuthReturn => {
       if (err.error) {
         setError(err.error)
       } else {
-        setError('Verification failed. Please check your code and try again.')
+        setError(tErr("verificationFailed"))
       }
       return false
     } finally {
@@ -169,7 +171,7 @@ export const useAuth = (): UseAuthReturn => {
       if (err.error) {
         setError(err.error)
       } else {
-        setError('Failed to resend verification code')
+        setError(tErr("resendFailed"))
       }
       return false
     } finally {
@@ -190,7 +192,7 @@ export const useAuth = (): UseAuthReturn => {
       } else if (err.message) {
         setError(err.message)
       } else {
-        setError('Failed to send reset email. Please try again.')
+        setError(tErr("resetEmailFailed"))
       }
       return false
     } finally {
@@ -217,7 +219,7 @@ export const useAuth = (): UseAuthReturn => {
       } else if (err.password) {
         setError(err.password[0])
       } else {
-        setError('Failed to reset password. Please try again.')
+        setError(tErr("resetFailed"))
       }
       return false
     } finally {
@@ -264,7 +266,7 @@ export const useAuth = (): UseAuthReturn => {
       } else if (err.detail) {
         setError(err.detail)
       } else {
-        setError('Login failed. Please check your credentials.')
+        setError(tErr("loginFailed"))
       }
       return false
     } finally {
@@ -300,7 +302,7 @@ export const useAuth = (): UseAuthReturn => {
       if (err.error) {
         setError(err.error)
       } else {
-        setError('Google sign-in failed. Please try again.')
+        setError(tErr("googleFailed"))
       }
       return false
     } finally {

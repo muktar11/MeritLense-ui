@@ -72,3 +72,35 @@ export const COUNTRIES = [
   { key: "VN", label: "Vietnam" }, { key: "YE", label: "Yemen" }, { key: "ZM", label: "Zambia" },
   { key: "ZW", label: "Zimbabwe" },
 ] as const
+
+const displayNames = new Map<string, Intl.DisplayNames | null>()
+
+/** The ISO code for a stored country (a code, or an English name saved by
+ *  older forms), or null when it is not in the list. */
+export function countryCode(value: string | null | undefined): string | null {
+  const v = (value || "").trim().toLowerCase()
+  if (!v) return null
+  const match = COUNTRIES.find((c) => c.key.toLowerCase() === v || c.label.toLowerCase() === v)
+  return match ? match.key : null
+}
+
+/** A country's name in the page language (Arabic names come from the
+ *  browser's own CLDR data); unknown values are shown as stored. */
+export function countryName(value: string | null | undefined, locale: string): string {
+  if (!value) return ""
+  const code = countryCode(value)
+  if (!code) return value
+  const english = COUNTRIES.find((c) => c.key === code)!.label
+  if (locale === "en") return english
+  if (!displayNames.has(locale)) {
+    try {
+      displayNames.set(locale, new Intl.DisplayNames([locale], { type: "region" }))
+    } catch {
+      displayNames.set(locale, null)
+    }
+  }
+  const names = displayNames.get(locale)
+  // "OT" (Other) and similar are not ISO regions
+  const localized = code === "OT" ? null : names?.of(code)
+  return localized && localized !== code ? localized : english
+}

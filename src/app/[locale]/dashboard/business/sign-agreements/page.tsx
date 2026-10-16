@@ -17,6 +17,7 @@ const DOC_TYPES: Array<{ type: "B2B_AGREEMENT" | "DPA"; labelKey: "b2bAgreement"
 
 export default function SignAgreementsPage() {
   const t = useTranslations("dashboard.business.signAgreements");
+  const tTypes = useTranslations("shared.agreementTypes");
   const router = useRouter();
   const locale = useLocale();
   const pathname = usePathname();
@@ -317,7 +318,7 @@ export default function SignAgreementsPage() {
                 className="flex items-center gap-2 text-sm text-purple-700 hover:underline"
               >
                 <FileText className="w-4 h-4" />
-                {t("done.downloadLink", { type: doc.agreement_type_display, id: doc.contract_id })}
+                {t("done.downloadLink", { type: tTypes.has(doc.agreement_type) ? tTypes(doc.agreement_type) : doc.agreement_type_display, id: doc.contract_id })}
               </a>
             ))}
           </div>

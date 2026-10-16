@@ -120,7 +120,9 @@
       }
     },
     "tablePagination": {
-      "showing": "Showing {start}-{end} of {total} {label}"
+      "showing": "Showing {start}-{end} of {total} {label}",
+      "previousPage": "Previous page",
+      "nextPage": "Next page"
     },
     "evaluatorRatingCard": {
       "title": "Evaluator Rating",
@@ -457,6 +459,108 @@
       "selectNationality": "Select a nationality",
       "searchNationalities": "Search nationalities",
       "allRoles": "All roles"
+    },
+    "photoGuidelines": {
+      "faceVisible": "Face clearly visible, looking straight at the camera",
+      "wellLit": "Well-lit, no strong shadows or glare",
+      "nothingCovering": "No sunglasses, hats, or anything covering your face",
+      "onlyYou": "Only your face in the photo — no one else",
+      "sharp": "Sharp and in focus, not blurry",
+      "recent": "A recent photo that looks like you now"
+    },
+    "agreementTypes": {
+      "PRIVACY_TERMS": "Privacy Policy and Terms",
+      "AI_DISCLOSURE": "AI Assessment Disclosure",
+      "B2B_AGREEMENT": "B2B Agreement",
+      "DPA": "Data Processing Agreement (DPA)",
+      "B2C_AGREEMENT": "B2C Agreement",
+      "CANDIDATE_CONSENT": "Candidate Consent"
+    },
+    "ui": {
+      "errors": {
+        "registrationFailedRetry": "Registration failed. Please try again.",
+        "registrationFailed": "Registration failed",
+        "verificationFailed": "Verification failed. Please check your code and try again.",
+        "resendFailed": "Failed to resend verification code",
+        "resetEmailFailed": "Failed to send reset email. Please try again.",
+        "resetFailed": "Failed to reset password. Please try again.",
+        "loginFailed": "Login failed. Please check your credentials.",
+        "googleFailed": "Google sign-in failed. Please try again.",
+        "profileLoadFailed": "Failed to fetch profile",
+        "profileUpdateFailed": "Failed to update profile",
+        "passwordChangeFailed": "Failed to change password",
+        "documentUploadFailed": "Failed to upload document",
+        "pictureUploadFailed": "Failed to upload profile picture",
+        "pictureRemoveFailed": "Failed to remove profile picture",
+        "accountDeleteFailed": "Failed to delete account"
+      },
+      "loading": "Loading...",
+      "close": "Close",
+      "callConnectionLost": "Connection to the call server was interrupted.",
+      "contentProtection": {
+        "screenshotTitle": "Screenshots of this page may contain confidential information.",
+        "screenshotBody": "Please don't redistribute captured content without authorization."
+      }
+    },
+    "verifyPages": {
+      "certificate": {
+        "notFound": "No certificate could be verified for this ID.",
+        "noId": "No certificate ID provided.",
+        "failedHint": "This certificate could not be verified. If you believe this is an error, contact the issuing organization.",
+        "valid": "Valid Certificate",
+        "expired": "Expired Certificate",
+        "superseded": "Superseded Certificate",
+        "revoked": "Revoked Certificate",
+        "id": "Certificate ID",
+        "candidateName": "Candidate Name",
+        "issuedAt": "Issued At",
+        "expiresAt": "Expires At",
+        "footer": "This public page confirms authenticity and certificate status only. It does not display assessment details, scoring, or personal evaluation results.",
+        "title": "Certificate Verification",
+        "statusValues": {
+          "VALID": "Valid",
+          "EXPIRED": "Expired",
+          "SUPERSEDED": "Superseded",
+          "REVOKED": "Revoked"
+        }
+      },
+      "status": "Status",
+      "hash": "SHA-256 Hash",
+      "report": {
+        "noId": "No report ID provided.",
+        "notFound": "No report could be verified for this ID.",
+        "failedHint": "This report could not be verified. If you believe this is an error, contact the issuing organization.",
+        "authentic": "Authentic Report",
+        "superseded": "Superseded Report",
+        "revoked": "Revoked Report",
+        "id": "Report ID",
+        "targetRole": "Target Role",
+        "assessmentDate": "Assessment Date",
+        "authenticity": "Authenticity Status",
+        "publicStatus": "Public Report Status",
+        "verifiedAt": "Verified At",
+        "footer": "This public page confirms authenticity only. It does not display candidate score details, readiness reasoning, employer data, or personal evaluation results.",
+        "title": "Report Verification",
+        "statusValues": {
+          "Authentic": "Authentic",
+          "Superseded": "Superseded",
+          "Revoked": "Revoked"
+        }
+      },
+      "agreement": {
+        "noId": "No agreement ID provided.",
+        "notFound": "No signed agreement found for this ID.",
+        "failedHint": "This document could not be verified. If you believe this is an error, contact the issuing organization.",
+        "valid": "Valid Document",
+        "superseded": "Superseded — a newer version was signed",
+        "id": "Agreement ID",
+        "type": "Type",
+        "version": "Version",
+        "signatory": "Signatory",
+        "signedAt": "Signed at",
+        "footer": "To verify integrity, compare the hash above against the SHA-256 checksum of your downloaded PDF copy. No evaluation data or personal contact information is shown on this page.",
+        "title": "Document Verification"
+      }
     }
   },
   "landing-page": {
@@ -739,7 +843,27 @@
       "acceptInvitation": "Accept Invitation & Create Account",
       "accepting": "Creating Account...",
       "success": "Welcome Aboard!",
-      "successMessage": "Your account has been successfully created. You will be redirected to the login page in 3 seconds."
+      "successMessage": "Your account has been successfully created. You will be redirected to the login page in 3 seconds.",
+      "errors": {
+        "noToken": "No invitation token provided",
+        "passwordTooShort": "Password must be at least 8 characters long",
+        "passwordMismatch": "Passwords do not match",
+        "acceptFailed": "Failed to accept invitation"
+      },
+      "validating": "Validating invitation...",
+      "validatingHint": "Please wait while we verify your invitation.",
+      "invalidTitle": "Invalid Invitation",
+      "invalidBody": "The invitation link you provided is invalid or missing.",
+      "goHome": "Go to Home",
+      "welcomeTitle": "Welcome Aboard!",
+      "welcomeBody": "Your account has been successfully created. You will be redirected to the login page in 3 seconds.",
+      "goToLogin": "Go to Login Now",
+      "minChars": "Minimum 8 characters",
+      "requirements": "Password requirements:",
+      "reqLength": "At least 8 characters long",
+      "reqMatch": "Passwords match",
+      "termsLink": "Terms of Service",
+      "privacyLink": "Privacy Policy"
     },
     "forgot_password": {
       "header": {
@@ -762,7 +886,10 @@
       "validation": {
         "email_or_phone_required": "Email or phone is required",
         "email_or_phone_invalid": "Please enter a valid email or phone number"
-      }
+      },
+      "tryAgain": "Try Again",
+      "tryAgainLink": "Try again",
+      "didNotReceive": "Didn't receive the email?"
     },
     "login": {
       "header": {
@@ -787,7 +914,8 @@
         "terms_link": "Terms",
         "and_connector": "and",
         "privacy_link": "Privacy Policy"
-      }
+      },
+      "passwordPlaceholder": "Enter your password"
     },
     "register_selection": {
       "header": {
@@ -949,7 +1077,15 @@
       "link_login": {
         "prefix": "Remember your password?",
         "link_text": "Back to Login"
-      }
+      },
+      "validating": "Validating your reset link...",
+      "invalidTitle": "Invalid Reset Link",
+      "invalidBody": "This password reset link is invalid or has expired.",
+      "requestNew": "Request New Reset Link",
+      "backToLogin": "Back to Login",
+      "redirecting": "Redirecting to login...",
+      "failedTitle": "Reset Failed",
+      "tryAgain": "Try Again"
     },
     "register_candidate": {
       "pageTitle": "Individual Employer Registration",
@@ -2977,7 +3113,8 @@
         "averageScore": "Average Score",
         "loading": "Loading comparison data...",
         "noData": "No candidate comparison data available",
-        "showingTop": "Showing top {count, plural, one {# candidate} other {# candidates}} by average score"
+        "showingTop": "Showing top {count, plural, one {# candidate} other {# candidates}} by average score",
+        "loadFailed": "Failed to load comparison data"
       },
       "jobRoleDistributionChart": {
         "title": "Candidates by Job Role",
@@ -3299,7 +3436,19 @@
             "sendInvite": "Send Invitation",
             "sending": "Sending...",
             "role": "Role",
-            "roleHint": "The role sets the starting permissions. You can adjust them below."
+            "roleHint": "The role sets the starting permissions. You can adjust them below.",
+            "errors": {
+              "emailRequired": "Email is required",
+              "emailInvalid": "Invalid email format",
+              "firstNameRequired": "First name is required",
+              "lastNameRequired": "Last name is required",
+              "roleRequired": "Job title is required",
+              "phoneRequired": "Phone Number is required",
+              "permissionRequired": "At least one permission is required",
+              "sendFailed": "Failed to send invitation. Please try again."
+            },
+            "firstNamePlaceholder": "John",
+            "lastNamePlaceholder": "Doe"
           }
         },
         "subtitle": "Manage your company information, team and settings.",
@@ -3411,6 +3560,13 @@
             "standard": "Add candidates and manage assessments for their own candidates.",
             "review": "View all company results. No changes.",
             "custom": "A custom set of permissions. Use Edit to see or change it."
+          },
+          "permissionNames": {
+            "add_candidates": "Add candidates",
+            "set_evaluation": "Create and manage assessments",
+            "set_scores": "Set scores",
+            "set_payment": "Billing and payments",
+            "view_results": "View all company results"
           }
         },
         "licenseCard": {
@@ -3834,7 +3990,10 @@
         "createdBy": "Created by: {name}",
         "createdAt": "Created at: {date}",
         "updatedAt": "Last updated: {date}",
-        "company": "Company: {name}"
+        "company": "Company: {name}",
+        "photoAlt": "Candidate photo",
+        "photoPreviewAlt": "Photo preview",
+        "documentPreviewAlt": "Document preview"
       },
       "shareModal": {
         "noPermission": "You don't have permission to share candidates.",
@@ -4109,7 +4268,8 @@
           "noAssessmentsRemaining": "No assessment slots remaining - upgrade your plan to continue",
           "noActivePlan": "No active plan",
           "notAvailableShort": "N/A"
-        }
+        },
+        "tabsLabel": "Tabs"
       },
       "evaluations": {
         "title": "Evaluation Management",
@@ -4471,7 +4631,9 @@
         }
       },
       "dashboardHeader": {
-        "premiumBadge": "Premium"
+        "premiumBadge": "Premium",
+        "notifications": "Notifications",
+        "companyProfile": "Company profile"
       },
       "settings-tabs": {
         "editProfile": "Edit Profile",
@@ -4650,7 +4812,10 @@
             "confirmButton": "Confirm Cancellation",
             "cancellingButton": "Cancelling...",
             "failedAlert": "Failed to cancel subscription. Please try again."
-          }
+          },
+          "debugTitle": "Payment check details",
+          "syncing": "Syncing...",
+          "syncButton": "Sync this subscription"
         },
         "agreements-tab": {
           "title": "Legal Agreements",
@@ -4698,7 +4863,14 @@
             "deleting": "Deleting...",
             "incorrectPassword": "Incorrect password. Please try again."
           },
-          "saveButton": "Save Changes"
+          "saveButton": "Save Changes",
+          "errors": {
+            "currentRequired": "Current password is required",
+            "newRequired": "New password is required",
+            "weak": "New password does not meet security requirements",
+            "mismatch": "New passwords do not match",
+            "sameAsCurrent": "New password must be different from current password"
+          }
         }
       },
       "paymentMethodsList": {
@@ -4724,7 +4896,7 @@
       },
       "usageMeter": {
         "remaining": "{count} remaining",
-        "usedOf": "({used} / {limit} {unit} used)",
+        "usedOf": "({used} of {limit} used)",
         "approachingLimit": "Approaching limit ({percent}% used)",
         "limitReached": "Limit reached. Upgrade your plan to add more."
       },
@@ -4809,7 +4981,8 @@
           "maintenance": "Maintenance",
           "cleaner": "Cleaner",
           "sales": "Sales"
-        }
+        },
+        "loadFailed": "Failed to load comparison data"
       },
       "dashboard": {
         "packageExpires": "Package expires in {days} days!",
@@ -4998,30 +5171,9 @@
       },
       "notifications": {
         "title": "Notifications",
-        "items": {
-          "comment": {
-            "title": "{name} sent you a comment",
-            "message": "in evaluation task"
-          },
-          "status": {
-            "title": "Candidate status updated",
-            "message": "Set to In Progress"
-          },
-          "lowPoints": {
-            "title": "Low points review item",
-            "message": "Added to to-do list"
-          },
-          "report": {
-            "title": "{name}'s report is ready",
-            "message": "Download and review"
-          }
-        },
-        "time": {
-          "daysAgo": "{value} days ago",
-          "hoursAgo": "{value}h ago",
-          "hoursMinutesAgo": "{hours}h {minutes}m ago",
-          "yesterday": "Yesterday {time}"
-        }
+        "close": "Close",
+        "emptyTitle": "No notifications yet",
+        "emptyBody": "Important updates about your candidates and assessments will appear here. We also email them to you."
       },
       "signAgreements": {
         "loadFailedError": "Failed to load your agreement. Please refresh the page.",

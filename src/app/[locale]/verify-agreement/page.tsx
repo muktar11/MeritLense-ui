@@ -2,6 +2,8 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
+import { formatUtc } from "@/lib/format-utc";
 import { CheckCircle2, AlertTriangle, XCircle, Loader2, ShieldCheck } from "lucide-react";
 import agreementService from "@/app/api/agreements/endpoints";
 import type { AgreementVerification } from "@/app/api/agreements/types";
@@ -22,6 +24,9 @@ export default function VerifyAgreementPage() {
 
 function VerifyAgreementContent() {
   const searchParams = useSearchParams();
+  const t = useTranslations("shared.verifyPages");
+  const locale = useLocale();
+  const tTypes = useTranslations("shared.agreementTypes");
   const contractId = searchParams.get("id") ?? "";
 
   const [loading, setLoading] = useState(true);
@@ -30,7 +35,7 @@ function VerifyAgreementContent() {
 
   useEffect(() => {
     if (!contractId) {
-      setError("No agreement ID provided.");
+      setError(t("agreement.noId"));
       setLoading(false);
       return;
     }
@@ -42,7 +47,7 @@ function VerifyAgreementContent() {
       })
       .catch((err) => {
         if (active) {
-          setError(err?.response?.data?.error || "No signed agreement found for this ID.");
+          setError(t("agreement.notFound"));
         }
       })
       .finally(() => {
@@ -54,12 +59,12 @@ function VerifyAgreementContent() {
   }, [contractId]);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4" dir={locale === "ar" ? "rtl" : "ltr"}>
       <div className="bg-white rounded-2xl shadow-lg p-8 max-w-lg w-full">
         <div className="flex items-center gap-2 mb-6">
           <ShieldCheck className="w-6 h-6 text-purple-600" />
           <span className="text-lg font-bold text-gray-900">
-            Merit<span className="text-purple-600">Lense</span> Document Verification
+            Merit<span className="text-purple-600">Lense</span> {t("agreement.title")}
           </span>
         </div>
 
@@ -74,8 +79,7 @@ function VerifyAgreementContent() {
             <XCircle className="w-12 h-12 text-red-500 mx-auto mb-3" />
             <p className="text-gray-700 font-medium">{error}</p>
             <p className="text-sm text-gray-500 mt-2">
-              This document could not be verified. If you believe this is an error, contact the
-              issuing organization.
+              {t("agreement.failedHint")}
             </p>
           </div>
         )}
@@ -86,32 +90,30 @@ function VerifyAgreementContent() {
               {result.status === "VALID" ? (
                 <>
                   <CheckCircle2 className="w-6 h-6 text-green-600" />
-                  <span className="text-green-700 font-semibold">Valid Document</span>
+                  <span className="text-green-700 font-semibold">{t("agreement.valid")}</span>
                 </>
               ) : (
                 <>
                   <AlertTriangle className="w-6 h-6 text-amber-500" />
-                  <span className="text-amber-700 font-semibold">Superseded — a newer version was signed</span>
+                  <span className="text-amber-700 font-semibold">{t("agreement.superseded")}</span>
                 </>
               )}
             </div>
 
             <dl className="space-y-3 text-sm">
-              <Row label="Agreement ID" value={result.contract_id} mono />
-              <Row label="Type" value={result.agreement_type_display} />
-              <Row label="Version" value={result.version} />
-              <Row label="Signatory" value={result.signatory_name} />
+              <Row label={t("agreement.id")} value={result.contract_id} mono />
+              <Row label={t("agreement.type")} value={tTypes.has(result.agreement_type) ? tTypes(result.agreement_type) : result.agreement_type_display} />
+              <Row label={t("agreement.version")} value={result.version} />
+              <Row label={t("agreement.signatory")} value={result.signatory_name} />
               <Row
-                label="Signed at"
-                value={result.signed_at ? new Date(result.signed_at).toUTCString() : "—"}
+                label={t("agreement.signedAt")}
+                value={formatUtc(result.signed_at, locale)}
               />
-              <Row label="SHA-256 Hash" value={result.pdf_hash || "—"} mono wrap />
+              <Row label={t("hash")} value={result.pdf_hash || "—"} mono wrap />
             </dl>
 
             <p className="text-xs text-gray-400 mt-6">
-              To verify integrity, compare the hash above against the SHA-256 checksum of your
-              downloaded PDF copy. No evaluation data or personal contact information is shown on
-              this page.
+              {t("agreement.footer")}
             </p>
           </div>
         )}

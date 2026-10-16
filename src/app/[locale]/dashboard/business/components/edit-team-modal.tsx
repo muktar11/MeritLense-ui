@@ -213,7 +213,7 @@ export function EditTeamModal({ member, isOpen, onClose, onSuccess }: EditTeamMo
                       onChange={() => handlePermissionChange(permission.key)}
                       className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                     />
-                    <span className="text-sm text-gray-700">{permission.label}</span>
+                    <span className="text-sm text-gray-700">{tPage.has(`staff.permissionNames.${permission.key}`) ? tPage(`staff.permissionNames.${permission.key}`) : permission.label}</span>
                   </label>
                 ))}
               </div>
