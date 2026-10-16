@@ -295,6 +295,20 @@ async getInvoices(): Promise<Invoice[]> {
     }
   }
 
+// Payment status of the account's subscriptions as Stripe sees it (the
+// billing tab's "Check payment"). No trailing slash: the backend route has none.
+async checkPayment(): Promise<PaymentCheckResult[]> {
+  this.ensureAuthToken();
+  const response = await apiClient.get(`${this.baseURL}debug-payment`);
+  return response.data;
+}
+
+async retryPayment(subscriptionId: string | number): Promise<{ requires_action: boolean; hosted_invoice_url?: string; message?: string }> {
+  this.ensureAuthToken();
+  const response = await apiClient.post(`${this.baseURL}retry-payment`, { subscription_id: subscriptionId });
+  return response.data;
+}
+
 async checkSubscriptions(): Promise<any> {
   this.ensureAuthToken();
   const response = await apiClient.get(`${this.baseURL}check-subscriptions`);
@@ -315,6 +329,15 @@ async syncAllSubscriptions(): Promise<any> {
   return response.data;
 }
 
+}
+
+export interface PaymentCheckResult {
+  subscription_id: string;
+  stripe_status: string | null;
+  invoice_status: string | null;
+  payment_intent_status: string | null;
+  payment_intent_last_error: { code?: string; decline_code?: string; message?: string } | null;
+  hosted_invoice_url: string | null;
 }
 
 export default new PaymentService();

@@ -4664,7 +4664,8 @@
       "dashboardHeader": {
         "premiumBadge": "مميز",
         "notifications": "الإشعارات",
-        "companyProfile": "ملف الشركة"
+        "companyProfile": "ملف الشركة",
+        "planBadgeTitle": "باقتك الحالية"
       },
       "settings-tabs": {
         "editProfile": "تعديل الملف الشخصي",
@@ -4846,7 +4847,61 @@
           },
           "debugTitle": "تفاصيل فحص الدفع",
           "syncing": "جارٍ المزامنة...",
-          "syncButton": "مزامنة هذا الاشتراك"
+          "syncButton": "مزامنة هذا الاشتراك",
+          "paymentCheck": {
+            "button": "التحقق من الدفع",
+            "notAvailable": "غير متاح",
+            "subscription": "الاشتراك",
+            "latestInvoice": "آخر فاتورة",
+            "payment": "الدفع",
+            "payInvoice": "سداد الفاتورة المستحقة",
+            "sync": "تحديث الاشتراك",
+            "syncing": "جارٍ التحديث...",
+            "outcome": {
+              "ok": "مدفوعاتك محدّثة ولا يوجد مبلغ مستحق.",
+              "attention": "هناك دفعة تحتاج إلى إجراء منك. أكملها للحفاظ على اشتراكك نشطًا.",
+              "failed": "فشلت آخر محاولة دفع.",
+              "none": "لم يتم العثور على مدفوعات اشتراك لهذا الحساب.",
+              "error": "تعذّر التحقق من حالة الدفع الآن. يرجى المحاولة مرة أخرى بعد قليل."
+            },
+            "statuses": {
+              "active": "نشط",
+              "trialing": "تجريبي",
+              "past_due": "متأخر السداد",
+              "incomplete": "غير مكتمل",
+              "incomplete_expired": "انتهت صلاحيته قبل الدفع",
+              "canceled": "ملغى",
+              "unpaid": "غير مدفوع",
+              "paused": "متوقف مؤقتًا",
+              "draft": "مسودة",
+              "open": "بانتظار الدفع",
+              "paid": "مدفوعة",
+              "uncollectible": "غير قابلة للتحصيل",
+              "void": "ملغاة",
+              "succeeded": "تم بنجاح",
+              "processing": "قيد المعالجة",
+              "requires_payment_method": "يتطلب طريقة دفع",
+              "requires_action": "يتطلب تأكيدك",
+              "requires_confirmation": "بانتظار التأكيد",
+              "requires_capture": "بانتظار الاستلام"
+            },
+            "errors": {
+              "card_declined": "تم رفض بطاقتك. جرّب بطاقة أخرى أو تواصل مع البنك.",
+              "insufficient_funds": "الرصيد في البطاقة غير كافٍ.",
+              "expired_card": "انتهت صلاحية البطاقة.",
+              "incorrect_cvc": "رمز الأمان (CVC) للبطاقة غير صحيح.",
+              "incorrect_number": "رقم البطاقة غير صحيح.",
+              "processing_error": "تعذّرت معالجة الدفع. يرجى المحاولة مرة أخرى.",
+              "authentication_required": "يطلب البنك تأكيد هذه الدفعة.",
+              "lost_card": "رفض البنك البطاقة.",
+              "stolen_card": "رفض البنك البطاقة.",
+              "do_not_honor": "رفض البنك الدفعة. يرجى التواصل مع البنك.",
+              "generic_decline": "رفض البنك الدفعة. يرجى التواصل مع البنك.",
+              "generic": "لم تتم عملية الدفع. جرّب بطاقة أخرى أو تواصل مع البنك."
+            }
+          },
+          "noActionNeeded": "لا يوجد مبلغ مستحق حاليًا.",
+          "retryFailed": "تعذّر فتح صفحة الدفع. يرجى المحاولة مرة أخرى."
         },
         "agreements-tab": {
           "title": "الاتفاقيات القانونية",

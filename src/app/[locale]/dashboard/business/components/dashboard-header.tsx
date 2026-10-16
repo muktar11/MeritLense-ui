@@ -6,11 +6,13 @@ import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import NotificationsPanel from "./notifications";
 import { useAuth } from "@/app/hooks/useAuth";
+import { useCurrentPlanName } from "@/app/hooks/useCurrentPlanName";
 
 export default function DashboardHeader() {
   const [showNotifications, setShowNotifications] = useState(false);
   const locale = useLocale();
   const t = useTranslations("dashboard.indivisual.dashboardHeader");
+  const planName = useCurrentPlanName();
   const { userRole } = useAuth();
 
   return (
@@ -21,9 +23,11 @@ export default function DashboardHeader() {
         </div>
         
         <div className="flex items-center gap-4 relative">
-          <span className="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-medium">
-            {t("premiumBadge")}
-          </span>
+          {planName && (
+            <span className="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-medium" title={t("planBadgeTitle")}>
+              {planName}
+            </span>
+          )}
 
           {/* Notifications */}
           <button

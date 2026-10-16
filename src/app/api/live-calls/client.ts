@@ -1,4 +1,5 @@
 import axios from "axios";
+import { withPageLanguage } from '@/lib/api-language'
 import { API_BASE_URL } from "@/lib/config/env";
 
 // Deliberately separate from auth/client.ts's apiClient, mirroring
@@ -20,3 +21,6 @@ export const liveCallClient = axios.create({
     "Content-Type": "application/json",
   },
 });
+
+// Send the page language (Arabic or English) with every request.
+withPageLanguage(liveCallClient)

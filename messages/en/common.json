@@ -4633,7 +4633,8 @@
       "dashboardHeader": {
         "premiumBadge": "Premium",
         "notifications": "Notifications",
-        "companyProfile": "Company profile"
+        "companyProfile": "Company profile",
+        "planBadgeTitle": "Your current plan"
       },
       "settings-tabs": {
         "editProfile": "Edit Profile",
@@ -4815,7 +4816,61 @@
           },
           "debugTitle": "Payment check details",
           "syncing": "Syncing...",
-          "syncButton": "Sync this subscription"
+          "syncButton": "Sync this subscription",
+          "paymentCheck": {
+            "button": "Check payment",
+            "notAvailable": "Not available",
+            "subscription": "Subscription",
+            "latestInvoice": "Latest invoice",
+            "payment": "Payment",
+            "payInvoice": "Pay outstanding invoice",
+            "sync": "Refresh subscription",
+            "syncing": "Refreshing...",
+            "outcome": {
+              "ok": "Your payments are up to date.",
+              "attention": "A payment needs your attention. Complete it to keep your subscription active.",
+              "failed": "The last payment attempt failed.",
+              "none": "No subscription payments were found for this account.",
+              "error": "We couldn't check your payment status right now. Please try again shortly."
+            },
+            "statuses": {
+              "active": "Active",
+              "trialing": "Trial",
+              "past_due": "Past due",
+              "incomplete": "Incomplete",
+              "incomplete_expired": "Expired before payment",
+              "canceled": "Cancelled",
+              "unpaid": "Unpaid",
+              "paused": "Paused",
+              "draft": "Draft",
+              "open": "Awaiting payment",
+              "paid": "Paid",
+              "uncollectible": "Uncollectible",
+              "void": "Void",
+              "succeeded": "Succeeded",
+              "processing": "Processing",
+              "requires_payment_method": "Needs a payment method",
+              "requires_action": "Needs your confirmation",
+              "requires_confirmation": "Awaiting confirmation",
+              "requires_capture": "Awaiting capture"
+            },
+            "errors": {
+              "card_declined": "Your card was declined. Try another card or contact your bank.",
+              "insufficient_funds": "The card has insufficient funds.",
+              "expired_card": "The card has expired.",
+              "incorrect_cvc": "The card's security code (CVC) is incorrect.",
+              "incorrect_number": "The card number is incorrect.",
+              "processing_error": "The payment could not be processed. Please try again.",
+              "authentication_required": "Your bank needs you to confirm this payment.",
+              "lost_card": "The card was declined by your bank.",
+              "stolen_card": "The card was declined by your bank.",
+              "do_not_honor": "Your bank declined the payment. Please contact your bank.",
+              "generic_decline": "Your bank declined the payment. Please contact your bank.",
+              "generic": "The payment did not go through. Try another card or contact your bank."
+            }
+          },
+          "noActionNeeded": "No payment is due right now.",
+          "retryFailed": "We couldn't open the payment page. Please try again."
         },
         "agreements-tab": {
           "title": "Legal Agreements",
