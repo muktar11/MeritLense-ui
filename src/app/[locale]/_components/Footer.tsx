@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Instagram, Twitter, Linkedin, Mail } from "lucide-react";
+import { Facebook, Instagram, Twitter, Linkedin, Mail } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { OPEN_COOKIE_SETTINGS_EVENT } from "@/lib/cookie-consent";
 
@@ -49,6 +49,14 @@ export function Footer() {
                 className="text-foreground-muted hover:text-primary transition-colors"
               >
                 <Instagram className="h-5 w-5" />
+              </Link>
+              <Link
+                href="https://web.facebook.com/profile.php?id=61595223629694"
+                target="_blank"
+                aria-label="Facebook"
+                className="text-foreground-muted hover:text-primary transition-colors"
+              >
+                <Facebook className="h-5 w-5" />
               </Link>
               <Link
                 href="mailto:info@meritlense.com"
