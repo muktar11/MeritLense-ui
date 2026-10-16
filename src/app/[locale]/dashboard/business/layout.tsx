@@ -5,6 +5,7 @@ import { Breadcrumb } from "@/components/app/Breadcrumb";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { Watermark } from "@/components/app/Watermark";
 import { AgreementGuard, useB2BAgreementStatus } from "./components/agreement-guard";
+import { UpdatedAgreementsNotice } from "@/components/agreements/UpdatedAgreementsNotice";
 import {
   LayoutDashboard,
   BarChart3,
@@ -232,7 +233,12 @@ export default function AdminLayout({
                 ) : permissionsLoadError ? (
                   <p className="py-8 text-center text-red-600">{t("permissionsLoadError")}</p>
                 ) : canAccessCurrentPath ? (
-                  children
+                  <>
+                    {userRole === "B2B" && (
+                      <UpdatedAgreementsNotice types={["B2B_AGREEMENT", "DPA"]} signPath="/dashboard/business/sign-agreements" />
+                    )}
+                    {children}
+                  </>
                 ) : (
                   <p className="py-8 text-center text-muted-foreground">{t("accessDenied")}</p>
                 )}

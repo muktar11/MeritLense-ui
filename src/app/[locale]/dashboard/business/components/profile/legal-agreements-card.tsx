@@ -65,9 +65,10 @@ export function LegalAgreementsCard({ id }: { id: string }) {
       .filter((a) => !REQUIRED_AGREEMENT_TYPES.includes(a.agreement_type) && a.status !== "SUPERSEDED")
       .map((a) => ({ type: a.agreement_type, label: tTypes.has(a.agreement_type) ? tTypes(a.agreement_type) : a.agreement_type_display, agreement: a })),
   ]
-  const allSigned = REQUIRED_AGREEMENT_TYPES.every(
-    (type) => agreements.find((a) => a.agreement_type === type)?.status === "SIGNED",
-  )
+  const allSigned = REQUIRED_AGREEMENT_TYPES.every((type) => {
+    const a = agreements.find((x) => x.agreement_type === type)
+    return a?.status === "SIGNED" && a.is_current !== false
+  })
 
   const signedOn = (agreement: Agreement | undefined) =>
     agreement?.status === "SIGNED" && agreement.accepted_at
@@ -119,7 +120,14 @@ export function LegalAgreementsCard({ id }: { id: string }) {
                         {signed ? t("agreements.signed") : t("agreements.pending")}
                       </span>
                     </td>
-                    <td className="px-2 py-2.5 text-gray-600">{signedOn(agreement)}</td>
+                    <td className="px-2 py-2.5 text-gray-600">
+                      {signedOn(agreement)}
+                      {signed && agreement?.is_current === false && (
+                        <span className="mt-1 block w-fit whitespace-nowrap rounded-md bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
+                          {t("agreementsTable.newVersion")}
+                        </span>
+                      )}
+                    </td>
                     <td className="px-2 py-2.5">
                       <div className="flex items-center justify-end gap-1">
                         {signed && agreement && (REQUIRED_AGREEMENT_TYPES.includes(type) || agreement.signed_pdf_url) ? (

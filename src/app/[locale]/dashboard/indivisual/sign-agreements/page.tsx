@@ -46,7 +46,7 @@ export default function SignAgreementPage() {
     (async () => {
       try {
         const status = await agreementService.getStatus();
-        const signed = status.some((a) => a.agreement_type === "B2C_AGREEMENT" && a.status === "SIGNED");
+        const signed = status.some((a) => a.agreement_type === "B2C_AGREEMENT" && a.status === "SIGNED" && a.is_current !== false);
         if (!active) return;
 
         if (signed) {
