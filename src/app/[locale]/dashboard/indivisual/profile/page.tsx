@@ -48,7 +48,7 @@ import { localizedPlanName, type PaymentMethod } from "@/app/api/payments/types"
 import { AuditTrailModal } from "@/components/agreements/AuditTrailModal";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { COUNTRIES } from "@/lib/countries";
+import { COUNTRIES, countryName } from "@/lib/countries";
 import { CountrySelect, SearchSelect } from "@/components/app/searchable-fields";
 import { getTimezoneOptions } from "@/lib/location-detection";
 import { SectionCard, inputClass, outlineButtonClass, primaryButtonClass } from "../../business/components/profile/section-card";
@@ -98,6 +98,7 @@ function ProfilePageContent() {
   const t = useTranslations("dashboard.indivisual.profile");
   const tForm = useTranslations("dashboard.indivisual.settings.edit-profile-tab");
   const tBillingTab = useTranslations("dashboard.indivisual.settings.billing-tab");
+  const tTypes = useTranslations("shared.agreementTypes");
   const locale = useLocale();
   const dateLocale = locale === "ar" ? { locale: ar } : undefined;
   const router = useRouter();
@@ -179,8 +180,10 @@ function ProfilePageContent() {
   const fullName = `${p.first_name || ""} ${p.last_name || ""}`.trim();
   const jobRole = JOB_ROLES.find((r) => r.key === p.job_role);
   const nationality = NATIONALITIES.find((n) => n.key === p.nationality);
-  const residence = COUNTRIES.find((c) => c.key === p.country_of_residence);
-  const targetMarket = COUNTRIES.find((c) => c.key === p.target_market);
+  const residence = COUNTRIES.find((c) => c.key === p.country_of_residence)
+    ? { key: p.country_of_residence as string, label: countryName(p.country_of_residence, locale) }
+    : undefined;
+  const targetMarket = p.target_market ? { label: countryName(p.target_market, locale) } : undefined;
   const language = LANGUAGES.find((l) => l.key === p.preferred_language);
   const close = () => setDialog(null);
   const jumpTo = (id: string) => {
@@ -491,7 +494,7 @@ function ProfilePageContent() {
                     return (
                       <li key={a.id} className="flex items-center gap-3 py-2 text-sm">
                         <FileSignature className="h-4 w-4 shrink-0 text-gray-500" />
-                        <span className="min-w-0 flex-1 text-gray-900 dark:text-gray-100">{a.agreement_type_display}</span>
+                        <span className="min-w-0 flex-1 text-gray-900 dark:text-gray-100">{tTypes.has(a.agreement_type) ? tTypes(a.agreement_type) : a.agreement_type_display}</span>
                         <span className="hidden text-xs text-gray-500 sm:inline">
                           {signed && a.accepted_at ? t("agreementsCard.signedOn", { date: format(new Date(a.accepted_at), "d MMM yyyy", dateLocale) }) : ""}
                         </span>
@@ -514,7 +517,7 @@ function ProfilePageContent() {
                               <DropdownMenuItem onClick={() => downloadAgreement(a.id)}>
                                 <Download className="mr-2 h-4 w-4" /> {t("agreementsCard.download")}
                               </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => setAuditTarget({ id: a.id, label: a.agreement_type_display })}>
+                              <DropdownMenuItem onClick={() => setAuditTarget({ id: a.id, label: tTypes.has(a.agreement_type) ? tTypes(a.agreement_type) : a.agreement_type_display })}>
                                 <History className="mr-2 h-4 w-4" /> {t("agreementsCard.auditTrail")}
                               </DropdownMenuItem>
                             </DropdownMenuContent>

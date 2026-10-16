@@ -164,7 +164,7 @@ export default function SignInPage() {
                       setPassword(e.target.value)
                       setLocalError("")
                     }}
-                    placeholder="Enter your password"
+                    placeholder={t("passwordPlaceholder")}
                     className="pl-10 pr-10 h-11"
                     disabled={loading}
                   />

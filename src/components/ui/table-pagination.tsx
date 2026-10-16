@@ -39,7 +39,7 @@ export default function TablePagination({
             onClick={() => onPageChange(currentPage - 1)}
             disabled={currentPage === 1}
             className="p-1.5 rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            aria-label="Previous page"
+            aria-label={t("previousPage")}
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
@@ -68,7 +68,7 @@ export default function TablePagination({
             onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
             className="p-1.5 rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            aria-label="Next page"
+            aria-label={t("nextPage")}
           >
             <ChevronRight className="w-4 h-4" />
           </button>

@@ -2,6 +2,8 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
+import { formatUtc } from "@/lib/format-utc";
 import { AlertTriangle, CheckCircle2, Loader2, ShieldCheck, XCircle } from "lucide-react";
 
 import reportService from "@/app/api/reports/endpoints";
@@ -23,6 +25,8 @@ export default function VerifyReportPage() {
 
 function VerifyReportContent() {
   const searchParams = useSearchParams();
+  const t = useTranslations("shared.verifyPages");
+  const locale = useLocale();
   const reportId = searchParams.get("id") ?? "";
 
   const [loading, setLoading] = useState(true);
@@ -31,7 +35,7 @@ function VerifyReportContent() {
 
   useEffect(() => {
     if (!reportId) {
-      setError("No report ID provided.");
+      setError(t("report.noId"));
       setLoading(false);
       return;
     }
@@ -44,7 +48,7 @@ function VerifyReportContent() {
       })
       .catch((err) => {
         if (active) {
-          setError(err?.response?.data?.detail || err?.detail || "No report could be verified for this ID.");
+          setError(t("report.notFound"));
         }
       })
       .finally(() => {
@@ -57,12 +61,12 @@ function VerifyReportContent() {
   }, [reportId]);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4" dir={locale === "ar" ? "rtl" : "ltr"}>
       <div className="bg-white rounded-2xl shadow-lg p-8 max-w-xl w-full border border-slate-200">
         <div className="flex items-center gap-2 mb-6">
           <ShieldCheck className="w-6 h-6 text-blue-600" />
           <span className="text-lg font-bold text-slate-900">
-            Merit<span className="text-pink-500">Lense</span> Report Verification
+            Merit<span className="text-pink-500">Lense</span> {t("report.title")}
           </span>
         </div>
 
@@ -77,7 +81,7 @@ function VerifyReportContent() {
             <XCircle className="w-12 h-12 text-red-500 mx-auto mb-3" />
             <p className="text-slate-700 font-medium">{error}</p>
             <p className="text-sm text-slate-500 mt-2">
-              This report could not be verified. If you believe this is an error, contact the issuing organization.
+              {t("report.failedHint")}
             </p>
           </div>
         )}
@@ -88,36 +92,36 @@ function VerifyReportContent() {
               {result.verification_status === "Authentic" ? (
                 <>
                   <CheckCircle2 className="w-6 h-6 text-green-600" />
-                  <span className="text-green-700 font-semibold">Authentic Report</span>
+                  <span className="text-green-700 font-semibold">{t("report.authentic")}</span>
                 </>
               ) : result.verification_status === "Superseded" ? (
                 <>
                   <AlertTriangle className="w-6 h-6 text-amber-500" />
-                  <span className="text-amber-700 font-semibold">Superseded Report</span>
+                  <span className="text-amber-700 font-semibold">{t("report.superseded")}</span>
                 </>
               ) : (
                 <>
                   <XCircle className="w-6 h-6 text-red-500" />
-                  <span className="text-red-700 font-semibold">Revoked Report</span>
+                  <span className="text-red-700 font-semibold">{t("report.revoked")}</span>
                 </>
               )}
             </div>
 
             <dl className="space-y-3 text-sm">
-              <Row label="Report ID" value={result.report_id} mono />
-              <Row label="Target Role" value={result.target_role || "—"} />
-              <Row label="Assessment Date" value={result.assessment_date || "—"} />
-              <Row label="Authenticity Status" value={result.verification_status} />
-              <Row label="Public Report Status" value={result.public_report_status || "—"} />
+              <Row label={t("report.id")} value={result.report_id} mono />
+              <Row label={t("report.targetRole")} value={result.target_role || "—"} />
+              <Row label={t("report.assessmentDate")} value={result.assessment_date || "—"} />
+              <Row label={t("report.authenticity")} value={t.has(`report.statusValues.${result.verification_status}`) ? t(`report.statusValues.${result.verification_status}`) : result.verification_status} />
+              <Row label={t("report.publicStatus")} value={result.public_report_status || "—"} />
               <Row
-                label="Verified At"
-                value={result.verification_timestamp ? new Date(result.verification_timestamp).toUTCString() : "—"}
+                label={t("report.verifiedAt")}
+                value={formatUtc(result.verification_timestamp, locale)}
               />
-              <Row label="SHA-256 Hash" value={result.sha256_hash || "—"} mono wrap />
+              <Row label={t("hash")} value={result.sha256_hash || "—"} mono wrap />
             </dl>
 
             <p className="text-xs text-slate-400 mt-6">
-              This public page confirms authenticity only. It does not display candidate score details, readiness reasoning, employer data, or personal evaluation results.
+              {t("report.footer")}
             </p>
           </div>
         )}

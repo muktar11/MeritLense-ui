@@ -101,29 +101,29 @@ export function InviteTeamModal({ isOpen, onClose, onSuccess }: InviteTeamModalP
     const newErrors: Record<string, string> = {};
 
     if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
+      newErrors.email = t("inviteModal.errors.emailRequired");
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Invalid email format";
+      newErrors.email = t("inviteModal.errors.emailInvalid");
     }
 
     if (!formData.first_name.trim()) {
-      newErrors.first_name = "First name is required";
+      newErrors.first_name = t("inviteModal.errors.firstNameRequired");
     }
 
     if (!formData.last_name.trim()) {
-      newErrors.last_name = "Last name is required";
+      newErrors.last_name = t("inviteModal.errors.lastNameRequired");
     }
 
     if (!formData.job_title.trim()) {
-      newErrors.job_title = "Job title is required";
+      newErrors.job_title = t("inviteModal.errors.roleRequired");
     }
 
     if (!formData.phone_number.trim()) {
-      newErrors.job_title = "Phone Number is required";
+      newErrors.job_title = t("inviteModal.errors.phoneRequired");
     }
 
     if (formData.permissions.length === 0) {
-      newErrors.permissions = "At least one permission is required";
+      newErrors.permissions = t("inviteModal.errors.permissionRequired");
     }
 
     setErrors(newErrors);
@@ -147,7 +147,7 @@ export function InviteTeamModal({ isOpen, onClose, onSuccess }: InviteTeamModalP
       if (error.response?.data) {
         setErrors(error.response.data);
       } else {
-        setErrors({ form: 'Failed to send invitation. Please try again.' });
+        setErrors({ form: t("inviteModal.errors.sendFailed") });
       }
     } finally {
       setLoading(false);
@@ -210,7 +210,7 @@ export function InviteTeamModal({ isOpen, onClose, onSuccess }: InviteTeamModalP
                   className={`w-full pl-10 pr-3 py-2 border rounded-lg text-sm ${
                     errors.first_name ? 'border-red-500' : 'border-gray-300'
                   }`}
-                  placeholder="John"
+                  placeholder={t("inviteModal.firstNamePlaceholder")}
                 />
               </div>
               {errors.first_name && <p className="mt-1 text-xs text-red-600">{errors.first_name}</p>}
@@ -230,7 +230,7 @@ export function InviteTeamModal({ isOpen, onClose, onSuccess }: InviteTeamModalP
                   className={`w-full pl-10 pr-3 py-2 border rounded-lg text-sm ${
                     errors.last_name ? 'border-red-500' : 'border-gray-300'
                   }`}
-                  placeholder="Doe"
+                  placeholder={t("inviteModal.lastNamePlaceholder")}
                 />
               </div>
               {errors.last_name && <p className="mt-1 text-xs text-red-600">{errors.last_name}</p>}
@@ -305,7 +305,7 @@ export function InviteTeamModal({ isOpen, onClose, onSuccess }: InviteTeamModalP
                       onChange={() => handlePermissionChange(permission.key)}
                       className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                     />
-                    <span className="text-sm text-gray-700">{permission.label}</span>
+                    <span className="text-sm text-gray-700">{tPage.has(`staff.permissionNames.${permission.key}`) ? tPage(`staff.permissionNames.${permission.key}`) : permission.label}</span>
                   </label>
                 ))}
               </div>

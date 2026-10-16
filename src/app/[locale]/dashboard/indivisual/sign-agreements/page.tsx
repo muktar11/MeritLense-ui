@@ -11,6 +11,7 @@ type Step = "loading" | "review" | "otp" | "already-signed" | "done";
 
 export default function SignAgreementPage() {
   const t = useTranslations("dashboard.indivisual.signAgreements");
+  const tTypes = useTranslations("shared.agreementTypes");
   const router = useRouter();
   const locale = useLocale();
   const pathname = usePathname();
@@ -235,7 +236,7 @@ export default function SignAgreementPage() {
                 className="flex items-center gap-2 text-sm text-purple-700 hover:underline"
               >
                 <FileText className="w-4 h-4" />
-                {t("done.downloadLink", { type: signedDoc.agreement_type_display, id: signedDoc.contract_id })}
+                {t("done.downloadLink", { type: tTypes.has(signedDoc.agreement_type) ? tTypes(signedDoc.agreement_type) : signedDoc.agreement_type_display, id: signedDoc.contract_id })}
               </a>
             </div>
           )}

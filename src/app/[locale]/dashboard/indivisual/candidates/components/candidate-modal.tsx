@@ -25,9 +25,9 @@ import {
   LANGUAGES
 } from "../../../../../api/candidates/types"
 import { checkPassportPhotoQuality, matchFaces, passportQualityMessage, isBlockingQualityStatus, ensureModelsLoaded, FaceMatchResult, PassportPhotoQualityResult, PASSPORT_PHOTO_MATCH_THRESHOLD } from "@/lib/face-detection"
-import { PASSPORT_PHOTO_GUIDELINES } from "@/lib/photo-guidelines"
+import { PASSPORT_PHOTO_GUIDELINE_KEYS } from "@/lib/photo-guidelines"
 import { CANDIDATE_SKILLS_BY_ROLE, translateSkill } from "@/lib/candidate-skills"
-import { COUNTRIES } from "@/lib/countries"
+import { COUNTRIES, countryName } from "@/lib/countries"
 import { CountrySelect, SearchSelect } from "@/components/app/searchable-fields"
 import { detectCountry, detectTimezone, getTimezoneOptions, suggestLanguageFromCountry } from "@/lib/location-detection"
 import { CoreSkillsDropdown } from "@/components/candidates/core-skills-dropdown"
@@ -54,6 +54,7 @@ export function CandidateModal({
   currentUserId}: CandidateModalProps) {
   const t = useTranslations("dashboard.candidates.modal")
   const tSearch = useTranslations("shared.searchableSelect")
+  const tPhoto = useTranslations("shared.photoGuidelines")
   const tRoles = useTranslations("dashboard.candidates.table.candidateRoles")
   const tLanguages = useTranslations("dashboard.indivisual.settings.edit-profile-tab.languages")
   const tSkills = useTranslations("shared.candidateSkills")
@@ -647,7 +648,7 @@ export function CandidateModal({
                       candidate?.profile_photo && (
                         <Image
                           src={candidate.profile_photo}
-                          alt="Candidate photo"
+                          alt={t("photoAlt")}
                           width={96}
                           height={96}
                           className="rounded-lg object-cover w-24 h-24 border border-gray-200"
@@ -662,7 +663,7 @@ export function CandidateModal({
                             {previewPhoto ? (
                               <Image
                                 src={previewPhoto}
-                                alt="Photo preview"
+                                alt={t("photoPreviewAlt")}
                                 width={64}
                                 height={64}
                                 className="w-full h-full object-cover"
@@ -769,8 +770,8 @@ export function CandidateModal({
                           <div className="mt-2 rounded-lg bg-blue-50 border border-blue-100 p-2">
                             <p className="text-xs font-medium text-blue-800 mb-1">{t("photo.guidelinesTitle")}</p>
                             <ul className="text-xs text-blue-700 list-disc list-inside space-y-0.5">
-                              {PASSPORT_PHOTO_GUIDELINES.map((tip) => (
-                                <li key={tip}>{tip}</li>
+                              {PASSPORT_PHOTO_GUIDELINE_KEYS.map((tip) => (
+                                <li key={tip}>{tPhoto(tip)}</li>
                               ))}
                             </ul>
                             <p className="text-xs text-blue-700 mt-1">
@@ -816,12 +817,12 @@ export function CandidateModal({
                         <iframe
                           src={previewDocument}
                           className="w-full h-40 border rounded-lg"
-                          title="Document preview"
+                          title={t("documentPreviewAlt")}
                         />
                       ) : (
                         <Image
                           src={previewDocument}
-                          alt="Document preview"
+                          alt={t("documentPreviewAlt")}
                           width={200}
                           height={200}
                           className="max-w-full h-auto border rounded-lg"
@@ -995,7 +996,7 @@ export function CandidateModal({
                       {isViewMode ? (
                         <p className="text-gray-900 p-2 border rounded-lg bg-gray-50">
                           {formData.country_of_residence
-                            ? COUNTRIES.find((c) => c.key === formData.country_of_residence)?.label || formData.country_of_residence
+                            ? countryName(formData.country_of_residence, locale)
                             : "-"}
                         </p>
                       ) : (
@@ -1018,7 +1019,7 @@ export function CandidateModal({
                       {isViewMode ? (
                         <p className="text-gray-900 p-2 border rounded-lg bg-gray-50">
                           {formData.target_market
-                            ? COUNTRIES.find((c) => c.key === formData.target_market)?.label || formData.target_market
+                            ? countryName(formData.target_market, locale)
                             : "-"}
                         </p>
                       ) : (

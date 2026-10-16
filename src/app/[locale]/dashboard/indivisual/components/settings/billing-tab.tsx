@@ -211,7 +211,7 @@ export function BillingTab() {
     <div className="space-y-8">
       {debugInfo && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
-          <h4 className="font-medium text-yellow-800 mb-2">Debug Info</h4>
+          <h4 className="font-medium text-yellow-800 mb-2">{t('debugTitle')}</h4>
           <pre className="text-xs overflow-auto max-h-40">
             {JSON.stringify(debugInfo, null, 2)}
           </pre>
@@ -220,7 +220,7 @@ export function BillingTab() {
             disabled={syncing}
             className="mt-2 px-3 py-1 bg-yellow-600 text-white rounded-lg text-sm hover:bg-yellow-700"
           >
-            {syncing ? 'Syncing...' : 'Sync This Subscription'}
+            {syncing ? t('syncing') : t('syncButton')}
           </button>
         </div>
       )}
@@ -273,8 +273,8 @@ export function BillingTab() {
                       subscription.stripe_price.currency
                     )
                   : t('notAvailable')}
-                {subscription.price_details?.interval && `/${subscription.price_details.interval.toLowerCase()}`}
-                {!subscription.price_details && subscription.stripe_price?.interval && `/${subscription.stripe_price.interval.toLowerCase()}`}
+                {subscription.price_details?.interval && `/${t(`intervalWords.${subscription.price_details.interval.toLowerCase()}`)}`}
+                {!subscription.price_details && subscription.stripe_price?.interval && `/${t(`intervalWords.${subscription.stripe_price.interval.toLowerCase()}`)}`}
               </p>
             </div>
             <div>
@@ -371,7 +371,6 @@ export function BillingTab() {
                 used={usage.usage_percentages.candidate_limit.used}
                 limit={usage.usage_percentages.candidate_limit.limit}
                 label={t('candidates')}
-                unit="candidates"
               />
             )}
             {usage.usage_percentages.evaluation_limit && (
@@ -379,7 +378,6 @@ export function BillingTab() {
                 used={usage.usage_percentages.evaluation_limit.used}
                 limit={usage.usage_percentages.evaluation_limit.limit}
                 label={t('evaluations')}
-                unit="evaluations"
               />
             )}
             {usage.usage_percentages.team_member_limit && (
@@ -387,7 +385,6 @@ export function BillingTab() {
                 used={usage.usage_percentages.team_member_limit.used}
                 limit={usage.usage_percentages.team_member_limit.limit}
                 label={t('teamMembers')}
-                unit="team members"
               />
             )}
           </div>

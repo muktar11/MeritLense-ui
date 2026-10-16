@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import liveCallService from "@/app/api/live-calls/endpoints";
 import type {
   LiveCallRole,
@@ -55,6 +56,7 @@ function wsUrlFor(path: string, ticket: string): string {
 }
 
 export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
+  const tUi = useTranslations("shared.ui");
   const [status, setStatus] = useState<LiveCallStatus>("idle");
   const [role, setRole] = useState<LiveCallRole | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -394,7 +396,7 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
         }, 2000);
       };
       ws.onerror = () => {
-        setError("Connection to the call server was interrupted.");
+        setError(tUi("callConnectionLost"));
       };
     } catch (err) {
       if (!mountedRef.current) return;

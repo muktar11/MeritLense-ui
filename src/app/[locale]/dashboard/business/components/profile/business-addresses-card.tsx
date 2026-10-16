@@ -1,14 +1,14 @@
 "use client"
 
 import { useState } from "react"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { Loader2, MoreVertical, Pencil, Plus, Trash2 } from "lucide-react"
 import { CountrySelect } from "@/components/app/searchable-fields"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import companyService from "@/app/api/company/endpoints"
 import { ADDRESS_TYPES, type AddressType, type BusinessAddress, type BusinessAddressInput } from "@/app/api/company/types"
-import { COUNTRIES } from "@/lib/countries"
+import { COUNTRIES, countryName } from "@/lib/countries"
 import { inputClass, outlineButtonClass, primaryButtonClass } from "./section-card"
 
 const TYPE_BADGE: Record<AddressType, string> = {
@@ -58,6 +58,7 @@ export function BusinessAddressesCard({
   onChanged: () => Promise<void>
 }) {
   const t = useTranslations("dashboard.business.company-profile")
+  const locale = useLocale()
   const [dialog, setDialog] = useState<{ id: string | null; form: BusinessAddressInput } | null>(null)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -149,7 +150,7 @@ export function BusinessAddressesCard({
                   {address.label || t(`addresses.types.${address.address_type}`)}
                 </p>
                 {address.street && <p className="text-gray-600 dark:text-gray-400">{address.street}</p>}
-                <p className="text-gray-600 dark:text-gray-400">{[address.city, address.country].filter(Boolean).join(", ")}</p>
+                <p className="text-gray-600 dark:text-gray-400">{[address.city, countryName(address.country, locale)].filter(Boolean).join(locale === "ar" ? "، " : ", ")}</p>
               </div>
               <span className={`shrink-0 rounded-lg px-3 py-1 text-xs font-medium ${TYPE_BADGE[address.address_type]}`}>
                 {t(`addresses.types.${address.address_type}`)}

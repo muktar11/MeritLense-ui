@@ -42,7 +42,7 @@ function AcceptInvitationContent() {
 
   const validateToken = async () => {
     if (!token) {
-      setError("No invitation token provided");
+      setError(t("errors.noToken"));
       setValidating(false);
       return;
     }
@@ -57,17 +57,17 @@ function AcceptInvitationContent() {
     e.preventDefault();
     
     if (!token) {
-      setError("No invitation token provided");
+      setError(t("errors.noToken"));
       return;
     }
 
     if (password.length < 8) {
-      setError("Password must be at least 8 characters long");
+      setError(t("errors.passwordTooShort"));
       return;
     }
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setError(t("errors.passwordMismatch"));
       return;
     }
 
@@ -93,12 +93,12 @@ function AcceptInvitationContent() {
         const errorData = err.response.data;
         if (typeof errorData === 'object') {
           const errorMessages = Object.values(errorData).flat().join(', ');
-          setError(errorMessages || "Failed to accept invitation");
+          setError(errorMessages || t("errors.acceptFailed"));
         } else {
-          setError(errorData || "Failed to accept invitation");
+          setError(errorData || t("errors.acceptFailed"));
         }
       } else {
-        setError(err.message || "Failed to accept invitation");
+        setError(err.message || t("errors.acceptFailed"));
       }
     } finally {
       setLoading(false);
@@ -110,8 +110,8 @@ function AcceptInvitationContent() {
       <div className="min-h-screen bg-linear-to-br from-purple-50 to-pink-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
           <Loader2 className="w-12 h-12 animate-spin text-purple-600 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Validating invitation...</h2>
-          <p className="text-gray-600">Please wait while we verify your invitation.</p>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">{t("validating")}</h2>
+          <p className="text-gray-600">{t("validatingHint")}</p>
         </div>
       </div>
     );
@@ -122,15 +122,15 @@ function AcceptInvitationContent() {
       <div className="min-h-screen bg-linear-to-br from-purple-50 to-pink-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
           <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Invalid Invitation</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">{t("invalidTitle")}</h2>
           <p className="text-gray-600 mb-6">
-            The invitation link you provided is invalid or missing.
+            {t("invalidBody")}
           </p>
           <Link
             href="/"
             className="inline-block px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
           >
-            Go to Home
+            {t("goHome")}
           </Link>
         </div>
       </div>
@@ -142,15 +142,15 @@ function AcceptInvitationContent() {
       <div className="min-h-screen bg-linear-to-br from-purple-50 to-pink-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome Aboard!</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">{t("welcomeTitle")}</h2>
           <p className="text-gray-600 mb-6">
-            Your account has been successfully created. You will be redirected to the login page in 3 seconds.
+            {t("welcomeBody")}
           </p>
           <Link
-            href={`${locale}/auth/login`}
+            href={`/${locale}/auth/login`}
             className="inline-block px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
           >
-            Go to Login Now
+            {t("goToLogin")}
           </Link>
         </div>
       </div>
@@ -196,7 +196,7 @@ function AcceptInvitationContent() {
                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
             </div>
-            <p className="mt-1 text-xs text-gray-500">Minimum 8 characters</p>
+            <p className="mt-1 text-xs text-gray-500">{t("minChars")}</p>
           </div>
 
           <div>
@@ -224,15 +224,15 @@ function AcceptInvitationContent() {
           </div>
 
           <div className="bg-gray-50 p-4 rounded-lg">
-            <p className="text-sm font-medium text-gray-700 mb-2">Password requirements:</p>
+            <p className="text-sm font-medium text-gray-700 mb-2">{t("requirements")}</p>
             <ul className="space-y-1 text-xs text-gray-600">
               <li className="flex items-center gap-2">
                 <span className={`w-1.5 h-1.5 rounded-full ${password.length >= 8 ? 'bg-green-500' : 'bg-gray-300'}`} />
-                At least 8 characters long
+                {t("reqLength")}
               </li>
               <li className="flex items-center gap-2">
                 <span className={`w-1.5 h-1.5 rounded-full ${password === confirmPassword && password.length > 0 ? 'bg-green-500' : 'bg-gray-300'}`} />
-                Passwords match
+                {t("reqMatch")}
               </li>
             </ul>
           </div>
@@ -255,11 +255,11 @@ function AcceptInvitationContent() {
           <p className="text-xs text-gray-500 text-center mt-4">
             By accepting this invitation, you agree to our{" "}
             <Link href="/terms" className="text-purple-600 hover:underline">
-              Terms of Service
+              {t("termsLink")}
             </Link>{" "}
             and{" "}
             <Link href="/privacy" className="text-purple-600 hover:underline">
-              Privacy Policy
+              {t("privacyLink")}
             </Link>
           </p>
         </form>

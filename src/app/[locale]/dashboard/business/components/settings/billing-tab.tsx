@@ -99,7 +99,7 @@ export function BillingTab() {
     
   } catch (error) {
     console.error('Error cancelling subscription:', error);
-    alert('Failed to cancel subscription. Please try again.');
+    alert(t('cancelModal.failedAlert'));
   } finally {
     setCancelling(false);
   }
@@ -211,7 +211,7 @@ export function BillingTab() {
     <div className="space-y-8">
       {debugInfo && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
-          <h4 className="font-medium text-yellow-800 mb-2">Debug Info</h4>
+          <h4 className="font-medium text-yellow-800 mb-2">{t('debugTitle')}</h4>
           <pre className="text-xs overflow-auto max-h-40">
             {JSON.stringify(debugInfo, null, 2)}
           </pre>
@@ -220,7 +220,7 @@ export function BillingTab() {
             disabled={syncing}
             className="mt-2 px-3 py-1 bg-yellow-600 text-white rounded-lg text-sm hover:bg-yellow-700"
           >
-            {syncing ? 'Syncing...' : 'Sync This Subscription'}
+            {syncing ? t('syncing') : t('syncButton')}
           </button>
         </div>
       )}
@@ -241,7 +241,7 @@ export function BillingTab() {
           className="px-3 py-1 bg-purple-500 text-white rounded-lg text-sm hover:bg-purple-600"
           disabled={!subscription}
         >
-          Check Payment
+          {t('checkPaymentButton')}
         </button>
       </div>
 
@@ -342,15 +342,15 @@ export function BillingTab() {
 
       {subscription?.status?.toLowerCase() === 'incomplete' && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <h4 className="font-medium text-yellow-800 mb-2">Action Required</h4>
+          <h4 className="font-medium text-yellow-800 mb-2">{t('actionRequiredTitle')}</h4>
           <p className="text-sm text-yellow-700 mb-3">
-            Your subscription is incomplete. Please complete the payment to activate your subscription.
+            {t('incompleteSubscriptionMessage')}
           </p>
           <button
             onClick={checkAndHandlePayment}
             className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700"
           >
-            Complete Payment
+            {t('completePaymentButton')}
           </button>
           
           {paymentAction?.url && (
@@ -361,7 +361,7 @@ export function BillingTab() {
                 rel="noopener noreferrer"
                 className="inline-block px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
               >
-                Go to Payment Page
+                {t('goToPaymentPageButton')}
               </a>
             </div>
           )}
@@ -403,13 +403,11 @@ export function BillingTab() {
     
     <div className="bg-white rounded-lg shadow-lg w-full max-w-md pointer-events-auto relative">
       <div className="p-6">
-        <h3 className="text-lg font-bold text-gray-900 mb-4">Cancel Subscription</h3>
+        <h3 className="text-lg font-bold text-gray-900 mb-4">{t('cancelModal.title')}</h3>
         
         <p className="text-sm text-gray-600 mb-4">
-          Are you sure you want to cancel your subscription? 
-          {cancelAtPeriodEnd 
-            ? ' You will continue to have access until the end of your billing period.'
-            : ' Your subscription will be cancelled immediately.'}
+          {t('cancelModal.confirmText')}{' '}
+          {cancelAtPeriodEnd ? t('cancelModal.periodEndNote') : t('cancelModal.immediateNote')}
         </p>
         
         <div className="mb-4">
@@ -421,21 +419,21 @@ export function BillingTab() {
               className="text-purple-600"
             />
             <span className="text-sm text-gray-700">
-              Cancel at end of billing period (recommended)
+              {t('cancelModal.periodEndOption')}
             </span>
           </label>
         </div>
         
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Reason for cancelling (optional)
+            {t('cancelModal.reasonLabel')}
           </label>
           <textarea
             value={cancelReason}
             onChange={(e) => setCancelReason(e.target.value)}
             rows={3}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-            placeholder="Tell us why you're cancelling..."
+            placeholder={t('cancelModal.reasonPlaceholder')}
           />
         </div>
         
@@ -444,7 +442,7 @@ export function BillingTab() {
             onClick={() => setShowCancelModal(false)}
             className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg text-sm hover:bg-gray-50"
           >
-            Keep Subscription
+            {t('cancelModal.keepButton')}
           </button>
           <button
             onClick={handleCancelSubscription}
@@ -454,10 +452,10 @@ export function BillingTab() {
             {cancelling ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Cancelling...
+                {t('cancelModal.cancellingButton')}
               </>
             ) : (
-              'Confirm Cancellation'
+              t('cancelModal.confirmButton')
             )}
           </button>
         </div>

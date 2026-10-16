@@ -6,7 +6,7 @@
 // (candidates, countries, languages, roles, time zones, …) uses these so
 // search, keyboard and mobile behaviour are the same everywhere.
 import { useMemo } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import {
   OptionAvatar,
   SearchableSelect,
@@ -15,7 +15,7 @@ import {
   type SearchableSelectProps,
 } from "@/components/ui/searchable-select";
 import { API_BASE_URL } from "@/lib/config/env";
-import { COUNTRIES } from "@/lib/countries";
+import { COUNTRIES, countryName } from "@/lib/countries";
 
 export type { SearchableOption };
 
@@ -120,16 +120,18 @@ export function CountrySelect({
   emptyOptionLabel?: string;
 }) {
   const t = useTranslations("shared.searchableSelect");
+  const locale = useLocale();
   const options = useMemo(() => {
     const list: SearchableOption[] = COUNTRIES.map((c) => ({
       value: valueKind === "code" ? c.key : c.label,
-      label: c.label,
-      keywords: c.key,
+      label: countryName(c.key, locale),
+      keywords: `${c.key} ${c.label}`,
     }));
+    if (locale !== "en") list.sort((a, b) => a.label.localeCompare(b.label, locale));
     if (value && !list.some((o) => o.value === value)) list.unshift({ value, label: value });
     if (emptyOptionLabel !== undefined) list.unshift({ value: "", label: emptyOptionLabel });
     return list;
-  }, [value, valueKind, emptyOptionLabel]);
+  }, [value, valueKind, emptyOptionLabel, locale]);
   return (
     <SearchSelect
       {...rest}

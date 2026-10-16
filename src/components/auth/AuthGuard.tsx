@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import { Loader2 } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { setAuthToken } from "@/app/api/auth/client"
 
 const DASHBOARD_ROUTES = {
@@ -21,6 +22,7 @@ interface AuthGuardProps {
 }
 
 export default function AuthGuard({ children, allowedRoles }: AuthGuardProps) {
+  const tUi = useTranslations("shared.ui")
   const router = useRouter()
   const pathname = usePathname()
   const locale = pathname.split("/")[1]
@@ -57,7 +59,7 @@ export default function AuthGuard({ children, allowedRoles }: AuthGuardProps) {
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-3">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
-          <p className="text-sm text-muted-foreground">Loading...</p>
+          <p className="text-sm text-muted-foreground">{tUi("loading")}</p>
         </div>
       </div>
     )

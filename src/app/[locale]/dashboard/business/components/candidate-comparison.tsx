@@ -35,7 +35,7 @@ export function CandidateComparison() {
       setData(validData.slice(0, 10))
     } catch (error) {
       console.error('Failed to fetch candidate comparison:', error)
-      setError('Failed to load comparison data')
+      setError(t("loadFailed"))
     } finally {
       setLoading(false)
     }

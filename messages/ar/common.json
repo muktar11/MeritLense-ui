@@ -92,7 +92,7 @@
       },
       "siteDefault": {
         "title": "MeritLense - منصة تقييم جاهزية القوى العاملة",
-        "description": "قيّم جاهزية القوى العاملة بموضوعية عبر 21 حزمة تقييم وظيفية في 11 قطاعًا. تقييم صوتي متعدد اللغات بمساعدة الذكاء الاصطناعي ينشئ تقارير جاهزية منظمة تدعم قرارات التوظيف لأصحاب العمل في دول الخليج."
+        "description": "قيّم جاهزية القوى العاملة بموضوعية عبر 21 باقة تقييم وظيفية في 11 قطاعًا. تقييم صوتي متعدد اللغات بمساعدة الذكاء الاصطناعي ينشئ تقارير جاهزية منظمة تدعم قرارات التوظيف لأصحاب العمل في دول الخليج."
       },
       "privacyPolicy": {
         "title": "سياسة الخصوصية",
@@ -120,7 +120,9 @@
       }
     },
     "tablePagination": {
-      "showing": "عرض {start}-{end} من {total} {label}"
+      "showing": "عرض {start}-{end} من {total} {label}",
+      "previousPage": "الصفحة السابقة",
+      "nextPage": "الصفحة التالية"
     },
     "evaluatorRatingCard": {
       "title": "تقييم المُقيِّم",
@@ -206,7 +208,7 @@
       "coverageUnknown": "غير معروف",
       "screeningOnlyTitle": "تغطية فحص أولي فقط",
       "partialCoverageTitle": "تغطية جزئية",
-      "screeningOnlyBody": "توفر هذه الباقة تغطية تقييم بمستوى الفحص الأولي للدور المحدد — التحقق من الهوية والفحص الأساسي فقط. قم بالترقية إلى Advanced/Growth للحصول على تقييم MeritLense الكامل مع مؤشر الجاهزية وتفصيل المهارات.",
+      "screeningOnlyBody": "توفر هذه الباقة تغطية تقييم بمستوى الفحص الأولي للدور المحدد — التحقق من الهوية والفحص الأساسي فقط. قم بالترقية إلى الباقة المتقدمة أو باقة النمو للحصول على تقييم MeritLense الكامل مع مؤشر الجاهزية وتفصيل المهارات.",
       "partialCoverageBody": "خطتك الحالية تمنحك وصولاً كاملاً للتقييم لهذا الدور، لكن الإضافات الخاصة بالدور (تسجيل الفيديو التعريفي، تقرير المؤشرات السلوكية) غير متاحة في هذه الفئة من الباقات.",
       "upgradeToPrefix": "قم بالترقية إلى",
       "upgradeToSuffix": "للحصول على تغطية كاملة لهذا الدور.",
@@ -457,6 +459,108 @@
       "selectNationality": "اختر الجنسية",
       "searchNationalities": "ابحث عن جنسية",
       "allRoles": "جميع الأدوار"
+    },
+    "photoGuidelines": {
+      "faceVisible": "الوجه ظاهر بوضوح وموجّه مباشرة إلى الكاميرا",
+      "wellLit": "إضاءة جيدة دون ظلال قوية أو انعكاسات",
+      "nothingCovering": "بدون نظارات شمسية أو قبعات أو أي شيء يغطي الوجه",
+      "onlyYou": "وجهك فقط في الصورة، دون أي شخص آخر",
+      "sharp": "صورة واضحة وغير مشوشة",
+      "recent": "صورة حديثة تشبه مظهرك الحالي"
+    },
+    "agreementTypes": {
+      "PRIVACY_TERMS": "سياسة الخصوصية والشروط",
+      "AI_DISCLOSURE": "الإفصاح عن التقييم بالذكاء الاصطناعي",
+      "B2B_AGREEMENT": "اتفاقية الشركات",
+      "DPA": "اتفاقية معالجة البيانات (DPA)",
+      "B2C_AGREEMENT": "اتفاقية الأفراد",
+      "CANDIDATE_CONSENT": "موافقة المرشح"
+    },
+    "ui": {
+      "errors": {
+        "registrationFailedRetry": "تعذّر التسجيل. حاول مرة أخرى.",
+        "registrationFailed": "تعذّر التسجيل",
+        "verificationFailed": "تعذّر التحقق. تأكد من الرمز وحاول مرة أخرى.",
+        "resendFailed": "تعذّر إعادة إرسال رمز التحقق",
+        "resetEmailFailed": "تعذّر إرسال رسالة إعادة التعيين. حاول مرة أخرى.",
+        "resetFailed": "تعذّر إعادة تعيين كلمة المرور. حاول مرة أخرى.",
+        "loginFailed": "تعذّر تسجيل الدخول. تحقق من بياناتك.",
+        "googleFailed": "تعذّر تسجيل الدخول عبر Google. حاول مرة أخرى.",
+        "profileLoadFailed": "تعذّر تحميل الملف الشخصي",
+        "profileUpdateFailed": "تعذّر تحديث الملف الشخصي",
+        "passwordChangeFailed": "تعذّر تغيير كلمة المرور",
+        "documentUploadFailed": "تعذّر رفع المستند",
+        "pictureUploadFailed": "تعذّر رفع الصورة الشخصية",
+        "pictureRemoveFailed": "تعذّر إزالة الصورة الشخصية",
+        "accountDeleteFailed": "تعذّر حذف الحساب"
+      },
+      "loading": "جارٍ التحميل...",
+      "close": "إغلاق",
+      "callConnectionLost": "انقطع الاتصال بخادم المكالمة.",
+      "contentProtection": {
+        "screenshotTitle": "قد تحتوي لقطات الشاشة لهذه الصفحة على معلومات سرية.",
+        "screenshotBody": "يرجى عدم إعادة نشر المحتوى الملتقط دون إذن."
+      }
+    },
+    "verifyPages": {
+      "certificate": {
+        "notFound": "تعذّر التحقق من أي شهادة بهذا المعرّف.",
+        "noId": "لم يتم تقديم معرّف الشهادة.",
+        "failedHint": "تعذّر التحقق من هذه الشهادة. إذا كنت تعتقد أن هذا خطأ، فتواصل مع الجهة المُصدرة.",
+        "valid": "شهادة صالحة",
+        "expired": "شهادة منتهية الصلاحية",
+        "superseded": "شهادة مستبدلة بإصدار أحدث",
+        "revoked": "شهادة ملغاة",
+        "id": "معرّف الشهادة",
+        "candidateName": "اسم المرشح",
+        "issuedAt": "تاريخ الإصدار",
+        "expiresAt": "تاريخ الانتهاء",
+        "footer": "تؤكد هذه الصفحة العامة صحة الشهادة وحالتها فقط، ولا تعرض تفاصيل التقييم أو الدرجات أو النتائج الشخصية.",
+        "title": "التحقق من الشهادة",
+        "statusValues": {
+          "VALID": "صالحة",
+          "EXPIRED": "منتهية الصلاحية",
+          "SUPERSEDED": "مستبدلة",
+          "REVOKED": "ملغاة"
+        }
+      },
+      "status": "الحالة",
+      "hash": "بصمة SHA-256",
+      "report": {
+        "noId": "لم يتم تقديم معرّف التقرير.",
+        "notFound": "تعذّر التحقق من أي تقرير بهذا المعرّف.",
+        "failedHint": "تعذّر التحقق من هذا التقرير. إذا كنت تعتقد أن هذا خطأ، فتواصل مع الجهة المُصدرة.",
+        "authentic": "تقرير موثّق",
+        "superseded": "تقرير مستبدل بإصدار أحدث",
+        "revoked": "تقرير ملغى",
+        "id": "معرّف التقرير",
+        "targetRole": "الدور المستهدف",
+        "assessmentDate": "تاريخ التقييم",
+        "authenticity": "حالة الموثوقية",
+        "publicStatus": "حالة التقرير العامة",
+        "verifiedAt": "وقت التحقق",
+        "footer": "تؤكد هذه الصفحة العامة صحة التقرير فقط، ولا تعرض درجات المرشح أو أسباب الجاهزية أو بيانات صاحب العمل أو النتائج الشخصية.",
+        "title": "التحقق من التقرير",
+        "statusValues": {
+          "Authentic": "موثّق",
+          "Superseded": "مستبدل",
+          "Revoked": "ملغى"
+        }
+      },
+      "agreement": {
+        "noId": "لم يتم تقديم معرّف الاتفاقية.",
+        "notFound": "لا توجد اتفاقية موقّعة بهذا المعرّف.",
+        "failedHint": "تعذّر التحقق من هذا المستند. إذا كنت تعتقد أن هذا خطأ، فتواصل مع الجهة المُصدرة.",
+        "valid": "مستند صالح",
+        "superseded": "مستبدل، فقد وُقّع إصدار أحدث",
+        "id": "معرّف الاتفاقية",
+        "type": "النوع",
+        "version": "الإصدار",
+        "signatory": "الموقّع",
+        "signedAt": "تاريخ التوقيع",
+        "footer": "للتحقق من سلامة المستند، قارن البصمة أعلاه ببصمة SHA-256 لنسخة PDF التي نزّلتها. لا تُعرض في هذه الصفحة أي بيانات تقييم أو معلومات اتصال شخصية.",
+        "title": "التحقق من المستند"
+      }
     }
   },
   "landing-page": {
@@ -484,7 +588,7 @@
       "image_alt": "معاينة لوحة تحكم MeritLense"
     },
     "stats": {
-      "role_packages": "حزمة تقييم وظيفية",
+      "role_packages": "باقة تقييم وظيفية",
       "workforce_sectors": "قطاع عمالي",
       "voice_evaluation": "تقييم صوتي بمساعدة الذكاء الاصطناعي",
       "multilingual_gcc": "متعدد اللغات وجاهز لسوق الخليج"
@@ -519,7 +623,7 @@
       "additional_features": [
         {
           "title": "إطار التقييم الوظيفي المتخصص",
-          "description": "21 حزمة وظيفية عبر 11 قطاعًا للقوى العاملة — تقييم كفاءات منظم وفق متطلبات الدور المحددة، مع دعم للتقييم الصوتي متعدد اللغات."
+          "description": "21 باقة وظيفية عبر 11 قطاعًا للقوى العاملة — تقييم كفاءات منظم وفق متطلبات الدور المحددة، مع دعم للتقييم الصوتي متعدد اللغات."
         },
         {
           "title": "حيادية قانونية",
@@ -739,7 +843,27 @@
       "acceptInvitation": "قبول الدعوة وإنشاء حساب",
       "accepting": "جاري إنشاء الحساب...",
       "success": "مرحباً بك!",
-      "successMessage": "تم إنشاء حسابك بنجاح. سيتم إعادة توجيهك إلى صفحة تسجيل الدخول خلال 3 ثوانٍ."
+      "successMessage": "تم إنشاء حسابك بنجاح. سيتم إعادة توجيهك إلى صفحة تسجيل الدخول خلال 3 ثوانٍ.",
+      "errors": {
+        "noToken": "لم يتم تقديم رمز الدعوة",
+        "passwordTooShort": "يجب ألا تقل كلمة المرور عن 8 أحرف",
+        "passwordMismatch": "كلمتا المرور غير متطابقتين",
+        "acceptFailed": "تعذّر قبول الدعوة"
+      },
+      "validating": "جارٍ التحقق من الدعوة...",
+      "validatingHint": "يرجى الانتظار بينما نتحقق من دعوتك.",
+      "invalidTitle": "دعوة غير صالحة",
+      "invalidBody": "رابط الدعوة الذي استخدمته غير صالح أو مفقود.",
+      "goHome": "الذهاب إلى الصفحة الرئيسية",
+      "welcomeTitle": "مرحبًا بك في الفريق!",
+      "welcomeBody": "تم إنشاء حسابك بنجاح. سيتم تحويلك إلى صفحة تسجيل الدخول خلال 3 ثوانٍ.",
+      "goToLogin": "الانتقال إلى تسجيل الدخول الآن",
+      "minChars": "8 أحرف على الأقل",
+      "requirements": "متطلبات كلمة المرور:",
+      "reqLength": "8 أحرف على الأقل",
+      "reqMatch": "كلمتا المرور متطابقتان",
+      "termsLink": "شروط الخدمة",
+      "privacyLink": "سياسة الخصوصية"
     },
     "forgot_password": {
       "header": {
@@ -763,7 +887,10 @@
       "validation": {
         "email_or_phone_required": "البريد الإلكتروني أو الهاتف مطلوب",
         "email_or_phone_invalid": "الرجاء إدخال بريد إلكتروني أو رقم هاتف صحيح"
-      }
+      },
+      "tryAgain": "حاول مرة أخرى",
+      "tryAgainLink": "أعد المحاولة",
+      "didNotReceive": "لم يصلك البريد الإلكتروني؟"
     },
     "login": {
       "header": {
@@ -788,7 +915,8 @@
         "terms_link": "الشروط",
         "and_connector": "و",
         "privacy_link": "سياسة الخصوصية"
-      }
+      },
+      "passwordPlaceholder": "أدخل كلمة المرور"
     },
     "register_selection": {
       "header": {
@@ -818,7 +946,7 @@
       "card_header": {
         "title": "التسجيل الفردي",
         "subtitle": "أنشئ حسابك الشخصي",
-        "switch_to_b2b": "التسجيل كمؤسسة"
+        "switch_to_b2b": "التسجيل كشركة"
       },
       "form_fields": {
         "full_name": {
@@ -847,7 +975,7 @@
         "countries": {
           "usa": "الولايات المتحدة",
           "uk": "المملكة المتحدة",
-          "sa": "Saudi Arabia"
+          "sa": "السعودية"
         },
         "languages": {
           "en": "الإنجليزية",
@@ -950,7 +1078,15 @@
       "link_login": {
         "prefix": "هل تذكر كلمة المرور الخاصة بك؟",
         "link_text": "العودة إلى تسجيل الدخول"
-      }
+      },
+      "validating": "جارٍ التحقق من رابط إعادة التعيين...",
+      "invalidTitle": "رابط إعادة التعيين غير صالح",
+      "invalidBody": "رابط إعادة تعيين كلمة المرور غير صالح أو منتهي الصلاحية.",
+      "requestNew": "طلب رابط جديد",
+      "backToLogin": "العودة إلى تسجيل الدخول",
+      "redirecting": "جارٍ التحويل إلى تسجيل الدخول...",
+      "failedTitle": "تعذّرت إعادة التعيين",
+      "tryAgain": "حاول مرة أخرى"
     },
     "register_candidate": {
       "pageTitle": "تسجيل صاحب عمل فردي",
@@ -1129,7 +1265,7 @@
       "user_type": "مدير",
       "page_type": "مدير",
       "pages_list": {
-        "overview": "لوحة القيادة",
+        "overview": "لوحة التحكم",
         "user_management": "فريق الإدارة",
         "business_candidate_management": "إدارة المرشحين",
         "candidate_management": "إدارة المرشحين",
@@ -1157,7 +1293,7 @@
         "individualAccounts": "الحسابات الفردية"
       },
       "overview_page": {
-        "title": "نظرة عامة على لوحة القيادة",
+        "title": "نظرة عامة على لوحة التحكم",
         "subtitle": "مراقبة أداء المنصة والمقاييس الرئيسية",
         "B2B": "من شركة إلى شركة",
         "B2C": "من شركة إلى مستهلك",
@@ -2020,7 +2156,7 @@
         }
       },
       "packageRequests": {
-        "title": "طلبات باقات Starter وEnterprise",
+        "title": "طلبات الباقة الابتدائية وباقة المؤسسات",
         "subtitle": "مراجعة طلبات الباقات المقدَّمة من شركات B2B.",
         "empty": "لا توجد طلبات باقات حتى الآن.",
         "filters": {
@@ -2047,8 +2183,8 @@
           "DENIED": "مرفوض"
         },
         "dealType": {
-          "STARTER": "Starter",
-          "ENTERPRISE": "Enterprise"
+          "STARTER": "الباقة الابتدائية",
+          "ENTERPRISE": "باقة المؤسسات"
         },
         "slotsShort": "{count} تقييم",
         "pointsShort": "{count} نقطة",
@@ -2674,7 +2810,7 @@
       "user_type": "شركة",
       "page_type": "شركة",
       "pages_list": {
-        "overview": "لوحة القيادة",
+        "overview": "لوحة التحكم",
         "profile_management": "الملف الشخصي للمستخدم",
         "candidate_management": "المرشحون",
         "multi_agency_panel": "التقييمات",
@@ -2890,6 +3026,10 @@
             "title": "مقارنة المرشحين",
             "description": "مقارنة المرشحين المتقدمين للوظيفة نفسها"
           }
+        },
+        "score-distribution-chart": {
+          "title": "متوسط الدرجات حسب الدور",
+          "score": "الدرجة"
         }
       },
       "candidateEvaluation": {
@@ -2985,7 +3125,8 @@
         "averageScore": "متوسط النتيجة",
         "loading": "جارٍ تحميل بيانات المقارنة...",
         "noData": "لا تتوفر بيانات لمقارنة المرشحين",
-        "showingTop": "عرض أفضل {count, plural, one {مرشح واحد} two {مرشحان} few {# مرشحين} many {# مرشحًا} other {# مرشح}} حسب متوسط النتيجة"
+        "showingTop": "عرض أفضل {count, plural, one {مرشح واحد} two {مرشحان} few {# مرشحين} many {# مرشحًا} other {# مرشح}} حسب متوسط النتيجة",
+        "loadFailed": "تعذّر تحميل بيانات المقارنة"
       },
       "jobRoleDistributionChart": {
         "title": "المرشحون حسب المسمى الوظيفي",
@@ -3307,7 +3448,19 @@
             "sendInvite": "إرسال الدعوة",
             "sending": "جارٍ الإرسال...",
             "role": "الدور",
-            "roleHint": "يحدد الدور الصلاحيات المبدئية، ويمكنك تعديلها أدناه."
+            "roleHint": "يحدد الدور الصلاحيات المبدئية، ويمكنك تعديلها أدناه.",
+            "errors": {
+              "emailRequired": "البريد الإلكتروني مطلوب",
+              "emailInvalid": "صيغة البريد الإلكتروني غير صحيحة",
+              "firstNameRequired": "الاسم الأول مطلوب",
+              "lastNameRequired": "اسم العائلة مطلوب",
+              "roleRequired": "الدور مطلوب",
+              "phoneRequired": "رقم الهاتف مطلوب",
+              "permissionRequired": "يجب اختيار صلاحية واحدة على الأقل",
+              "sendFailed": "تعذّر إرسال الدعوة. حاول مرة أخرى."
+            },
+            "firstNamePlaceholder": "محمد",
+            "lastNamePlaceholder": "أحمد"
           }
         },
         "subtitle": "أدر معلومات شركتك وفريقك وإعداداتك.",
@@ -3419,6 +3572,13 @@
             "standard": "إضافة المرشحين وإدارة التقييمات لمرشحيه فقط.",
             "review": "الاطلاع على جميع نتائج الشركة دون أي تعديل.",
             "custom": "مجموعة صلاحيات مخصصة. استخدم «تعديل» لعرضها أو تغييرها."
+          },
+          "permissionNames": {
+            "add_candidates": "إضافة المرشحين",
+            "set_evaluation": "إنشاء التقييمات وإدارتها",
+            "set_scores": "تحديد الدرجات",
+            "set_payment": "الفواتير والمدفوعات",
+            "view_results": "الاطلاع على جميع نتائج الشركة"
           }
         },
         "licenseCard": {
@@ -3479,7 +3639,9 @@
             "timezone": "المنطقة الزمنية",
             "selectTimezone": "اختر المنطقة الزمنية",
             "address": "العنوان",
-            "addressPlaceholder": "عنوان الشركة"
+            "addressPlaceholder": "عنوان الشركة",
+            "billingTaxId": "رقم التسجيل الضريبي (إن وجد)",
+            "billingEmail": "البريد الإلكتروني للفواتير"
           },
           "companySizes": {
             "1-10": "1-10 موظفين",
@@ -3677,6 +3839,25 @@
       "analytics": {
         "title": "التحليلات والرؤى",
         "subtitle": "تحليلات تفصيلية للتقييمات والجاهزية والمرشحين في شركتك."
+      },
+      "bills": {
+        "companySubscription": "اشتراك الشركة",
+        "noActiveSubscription": "لا يوجد اشتراك نشط",
+        "viewPlans": "عرض الباقات",
+        "paymentMethods": "طرق الدفع",
+        "addPaymentMethod": "إضافة طريقة دفع",
+        "invoices": "الفواتير",
+        "date": "التاريخ",
+        "invoiceNumber": "رقم الفاتورة",
+        "amount": "المبلغ",
+        "status": "الحالة",
+        "action": "الإجراء"
+      },
+      "company": {
+        "tabs": {
+          "profile": "ملف الشركة",
+          "billing": "الفواتير والاشتراك"
+        }
       }
     },
     "candidates": {
@@ -3840,7 +4021,10 @@
         "createdBy": "أنشئ بواسطة: {name}",
         "createdAt": "تاريخ الإنشاء: {date}",
         "updatedAt": "آخر تحديث: {date}",
-        "company": "الشركة: {name}"
+        "company": "الشركة: {name}",
+        "photoAlt": "صورة المرشح",
+        "photoPreviewAlt": "معاينة الصورة",
+        "documentPreviewAlt": "معاينة المستند"
       },
       "shareModal": {
         "noPermission": "ليس لديك صلاحية لمشاركة المرشحين.",
@@ -3901,7 +4085,7 @@
         "finish": "إنهاء",
         "priceCustom": "مخصص",
         "requestPackage": {
-          "cardTitle": "تحتاج إلى باقة Starter أو Enterprise؟",
+          "cardTitle": "تحتاج إلى الباقة الابتدائية أو باقة المؤسسات؟",
           "cardDescription": "هذه الباقات مصممة خصيصًا لمؤسستك. أرسل لنا طلبًا وسنعاود التواصل معك.",
           "cardButton": "طلب باقة مخصصة",
           "myRequestsTitle": "طلبات الباقات الخاصة بك",
@@ -3916,8 +4100,8 @@
           "description": "أخبرنا تقريبًا بما تحتاجه - سيتواصل معك فريقنا بالشروط النهائية.",
           "dealTypeLabel": "الباقة",
           "dealType": {
-            "STARTER": "Starter (حسب الاتفاقية)",
-            "ENTERPRISE": "Enterprise"
+            "STARTER": "الباقة الابتدائية (حسب الاتفاقية)",
+            "ENTERPRISE": "باقة المؤسسات"
           },
           "slotsLabel": "عدد تقييمات المرشحين (تقريبًا)",
           "slotsPlaceholder": "مثال: 100",
@@ -4023,7 +4207,10 @@
           "processingButton": "جارٍ معالجة الدفع...",
           "payNowButton": "ادفع الآن",
           "chargeNote": "سيتم خصم {price} مرة واحدة. لا تتجدد هذه الباقة تلقائيًا.",
-          "paymentFailedError": "فشل إتمام الدفع"
+          "paymentFailedError": "فشل إتمام الدفع",
+          "taxLabel": "الضريبة: {tax} {treatment}",
+          "taxIncluded": "(مشمولة في السعر)",
+          "totalLabel": "الإجمالي المستحق: {total}"
         },
         "success": {
           "processingTitle": "جارٍ المعالجة...",
@@ -4039,7 +4226,7 @@
         },
         "plans": {
           "basic": {
-            "name": "أساسي",
+            "name": "الأساسية",
             "description": "/شهر",
             "features": {
               "identityVerification": "التحقق من الهوية",
@@ -4051,7 +4238,7 @@
             }
           },
           "essential": {
-            "name": "أساسي متقدم",
+            "name": "الضرورية",
             "description": "/شهر",
             "features": {
               "practicalSimulation": "محاكاة عملية",
@@ -4059,7 +4246,7 @@
             }
           },
           "advanced": {
-            "name": "متقدم",
+            "name": "المتقدمة",
             "description": "/شهر",
             "badge": "وفر €10",
             "features": {
@@ -4067,11 +4254,11 @@
               "comprehensiveBehavioralTest": "اختبار شامل وسلوكي",
               "jobRoleMatching": "توصية بمطابقة الدور الوظيفي",
               "personalitySnapshot": "تقرير لمحة شخصية",
-              "dashboardAnalytics": "تحليلات لوحة القيادة"
+              "dashboardAnalytics": "تحليلات لوحة التحكم"
             }
           },
           "premium": {
-            "name": "ممتاز",
+            "name": "المميزة",
             "description": "/شهر",
             "features": {
               "culturalAdaptability": "التكيف الثقافي",
@@ -4098,7 +4285,22 @@
           "noAssessmentsRemaining": "لا توجد مقاعد تقييم متبقية - قم بترقية باقتك للمتابعة",
           "noActivePlan": "لا توجد باقة نشطة",
           "notAvailableShort": "غير متاح"
-        }
+        },
+        "billingAddress": {
+          "title": "عنوان الفوترة",
+          "description": "أدخل عنوان الفوترة حتى يتمكن Stripe من احتساب أي ضريبة مستحقة قبل الدفع.",
+          "packagePrice": "{name} — {price}",
+          "addressLine1": "العنوان",
+          "city": "المدينة",
+          "state": "الولاية / المنطقة (إن وجدت)",
+          "postalCode": "الرمز البريدي",
+          "country": "الدولة",
+          "selectCountry": "اختر دولة",
+          "calculating": "جارٍ احتساب الضريبة...",
+          "continue": "المتابعة إلى الدفع",
+          "back": "العودة إلى الباقات"
+        },
+        "tabsLabel": "علامات التبويب"
       },
       "evaluations": {
         "title": "إدارة التقييمات",
@@ -4460,7 +4662,9 @@
         }
       },
       "dashboardHeader": {
-        "premiumBadge": "بريميوم"
+        "premiumBadge": "مميز",
+        "notifications": "الإشعارات",
+        "companyProfile": "ملف الشركة"
       },
       "settings-tabs": {
         "editProfile": "تعديل الملف الشخصي",
@@ -4639,7 +4843,10 @@
             "confirmButton": "تأكيد الإلغاء",
             "cancellingButton": "جارٍ الإلغاء...",
             "failedAlert": "فشل إلغاء الاشتراك. يرجى المحاولة مرة أخرى."
-          }
+          },
+          "debugTitle": "تفاصيل فحص الدفع",
+          "syncing": "جارٍ المزامنة...",
+          "syncButton": "مزامنة هذا الاشتراك"
         },
         "agreements-tab": {
           "title": "الاتفاقيات القانونية",
@@ -4687,7 +4894,14 @@
             "deleting": "جارٍ الحذف...",
             "incorrectPassword": "كلمة مرور غير صحيحة. يرجى المحاولة مرة أخرى."
           },
-          "saveButton": "حفظ التغييرات"
+          "saveButton": "حفظ التغييرات",
+          "errors": {
+            "currentRequired": "كلمة المرور الحالية مطلوبة",
+            "newRequired": "كلمة المرور الجديدة مطلوبة",
+            "weak": "كلمة المرور الجديدة لا تستوفي متطلبات الأمان",
+            "mismatch": "كلمتا المرور الجديدتان غير متطابقتين",
+            "sameAsCurrent": "يجب أن تختلف كلمة المرور الجديدة عن الحالية"
+          }
         }
       },
       "paymentMethodsList": {
@@ -4713,7 +4927,7 @@
       },
       "usageMeter": {
         "remaining": "{count} متبقٍ",
-        "usedOf": "({used} / {limit} {unit} مستخدَم)",
+        "usedOf": "(تم استخدام {used} من {limit})",
         "approachingLimit": "الاقتراب من الحد ({percent}% مستخدَم)",
         "limitReached": "تم بلوغ الحد. قم بترقية خطتك لإضافة المزيد."
       },
@@ -4798,10 +5012,11 @@
           "maintenance": "صيانة",
           "cleaner": "منظف",
           "sales": "مبيعات"
-        }
+        },
+        "loadFailed": "تعذّر تحميل بيانات المقارنة"
       },
       "dashboard": {
-        "packageExpires": "تنتهي صلاحية الحزمة خلال {days} أيام!",
+        "packageExpires": "تنتهي صلاحية الباقة خلال {days} أيام!",
         "search": "بحث...",
         "notification": "الإشعارات",
         "metrics": {
@@ -4987,30 +5202,9 @@
       },
       "notifications": {
         "title": "الإشعارات",
-        "items": {
-          "comment": {
-            "title": "أرسل {name} تعليقًا",
-            "message": "في مهمة التقييم"
-          },
-          "status": {
-            "title": "تم تحديث حالة المرشح",
-            "message": "تم التعيين إلى قيد التنفيذ"
-          },
-          "lowPoints": {
-            "title": "عنصر مراجعة نقاط منخفضة",
-            "message": "تمت الإضافة إلى قائمة المهام"
-          },
-          "report": {
-            "title": "تقرير {name} جاهز",
-            "message": "تنزيل ومراجعة"
-          }
-        },
-        "time": {
-          "daysAgo": "منذ {value} يوم",
-          "hoursAgo": "منذ {value} ساعة",
-          "hoursMinutesAgo": "منذ {hours} ساعة و {minutes} دقيقة",
-          "yesterday": "أمس {time}"
-        }
+        "close": "إغلاق",
+        "emptyTitle": "لا توجد إشعارات بعد",
+        "emptyBody": "ستظهر هنا التحديثات المهمة عن مرشحيك وتقييماتهم، كما نرسلها إليك بالبريد الإلكتروني."
       },
       "signAgreements": {
         "loadFailedError": "فشل تحميل اتفاقيتك. يرجى تحديث الصفحة.",

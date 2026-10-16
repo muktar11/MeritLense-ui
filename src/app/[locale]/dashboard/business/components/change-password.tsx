@@ -48,27 +48,27 @@ export function ChangePassword({ id }: { id?: string }) {
 
   const validateForm = (): boolean => {
     if (!formData.current_password) {
-      setError("Current password is required")
+      setError(t("errors.currentRequired"))
       return false
     }
     
     if (!formData.new_password) {
-      setError("New password is required")
+      setError(t("errors.newRequired"))
       return false
     }
 
     if (!passwordValidation.minLength || !passwordValidation.hasNumber || !passwordValidation.hasSymbol) {
-      setError("New password does not meet security requirements")
+      setError(t("errors.weak"))
       return false
     }
 
     if (formData.new_password !== formData.confirm_new_password) {
-      setError("New passwords do not match")
+      setError(t("errors.mismatch"))
       return false
     }
 
     if (formData.current_password === formData.new_password) {
-      setError("New password must be different from current password")
+      setError(t("errors.sameAsCurrent"))
       return false
     }
 

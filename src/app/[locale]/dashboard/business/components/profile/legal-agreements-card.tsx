@@ -23,6 +23,7 @@ interface Row {
 export function LegalAgreementsCard({ id }: { id: string }) {
   const t = useTranslations("dashboard.business.company-profile")
   const tDocs = useTranslations("dashboard.business.signAgreements.docLabels")
+  const tTypes = useTranslations("shared.agreementTypes")
   const locale = useLocale()
   const router = useRouter()
   const [agreements, setAgreements] = useState<Agreement[]>([])
@@ -62,7 +63,7 @@ export function LegalAgreementsCard({ id }: { id: string }) {
     })),
     ...agreements
       .filter((a) => !REQUIRED_AGREEMENT_TYPES.includes(a.agreement_type) && a.status !== "SUPERSEDED")
-      .map((a) => ({ type: a.agreement_type, label: a.agreement_type_display, agreement: a })),
+      .map((a) => ({ type: a.agreement_type, label: tTypes.has(a.agreement_type) ? tTypes(a.agreement_type) : a.agreement_type_display, agreement: a })),
   ]
   const allSigned = REQUIRED_AGREEMENT_TYPES.every(
     (type) => agreements.find((a) => a.agreement_type === type)?.status === "SIGNED",
