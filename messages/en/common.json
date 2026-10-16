@@ -4831,7 +4831,8 @@
               "attention": "A payment needs your attention. Complete it to keep your subscription active.",
               "failed": "The last payment attempt failed.",
               "none": "No subscription payments were found for this account.",
-              "error": "We couldn't check your payment status right now. Please try again shortly."
+              "error": "We couldn't check your payment status right now. Please try again shortly.",
+              "records": "Your plan is active according to your account. The payment provider had no further detail to show."
             },
             "statuses": {
               "active": "Active",

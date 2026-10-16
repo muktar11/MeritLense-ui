@@ -18,11 +18,15 @@ const KNOWN_ERRORS = new Set([
   "processing_error", "authentication_required", "lost_card", "stolen_card", "do_not_honor", "generic_decline",
 ]);
 
-type Outcome = "ok" | "attention" | "failed" | "none" | "error";
+type Outcome = "ok" | "attention" | "failed" | "none" | "error" | "records";
 
 function outcomeOf(result: PaymentCheckResult | undefined): Outcome {
   if (!result) return "none";
   if ((result as { check_failed?: boolean }).check_failed) return "error";
+  // The payment provider had nothing to add; our own record is the status.
+  if ((result as { from_records?: boolean }).from_records) {
+    return result.stripe_status === "active" || result.stripe_status === "trialing" ? "records" : "attention";
+  }
   if (result.payment_intent_last_error) return "failed";
   if (result.invoice_status === "open" || result.stripe_status === "incomplete" || result.stripe_status === "past_due" || result.stripe_status === "unpaid") {
     return "attention";
@@ -70,8 +74,9 @@ export function PaymentCheckPanel({
     failed: "border-red-200 bg-red-50 text-red-800",
     none: "border-gray-200 bg-gray-50 text-gray-700",
     error: "border-red-200 bg-red-50 text-red-800",
+    records: "border-green-200 bg-green-50 text-green-800",
   } as const;
-  const Icon = outcome === "ok" ? CheckCircle2 : outcome === "attention" ? AlertTriangle : outcome === "none" ? AlertTriangle : XCircle;
+  const Icon = outcome === "ok" || outcome === "records" ? CheckCircle2 : outcome === "attention" ? AlertTriangle : outcome === "none" ? AlertTriangle : XCircle;
 
   return (
     <div className="space-y-3">
@@ -98,14 +103,18 @@ export function PaymentCheckPanel({
                 <dt className="opacity-75">{t("subscription")}</dt>
                 <dd className="font-medium">{statusLabel(result.stripe_status)}</dd>
               </div>
-              <div>
-                <dt className="opacity-75">{t("latestInvoice")}</dt>
-                <dd className="font-medium">{statusLabel(result.invoice_status)}</dd>
-              </div>
-              <div>
-                <dt className="opacity-75">{t("payment")}</dt>
-                <dd className="font-medium">{statusLabel(result.payment_intent_status)}</dd>
-              </div>
+              {outcome !== "records" && (
+                <>
+                  <div>
+                    <dt className="opacity-75">{t("latestInvoice")}</dt>
+                    <dd className="font-medium">{statusLabel(result.invoice_status)}</dd>
+                  </div>
+                  <div>
+                    <dt className="opacity-75">{t("payment")}</dt>
+                    <dd className="font-medium">{statusLabel(result.payment_intent_status)}</dd>
+                  </div>
+                </>
+              )}
             </dl>
           )}
           <div className="mt-3 flex flex-wrap gap-2">
