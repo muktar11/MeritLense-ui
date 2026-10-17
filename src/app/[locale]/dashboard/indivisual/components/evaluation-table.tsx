@@ -80,8 +80,8 @@ function getInitials(name: string): string {
 // submitted before those dimensions were collected; skipped rather than
 // producing NaN.
 function averageEvaluatorRating(rating: EvaluatorRating): number {
-  const { safety_awareness, hygiene, communication, task_execution, behavior_integrity } = rating
-  const scores = [safety_awareness, hygiene, communication, task_execution, behavior_integrity].filter(
+  const { safety_awareness, hygiene, communication, task_execution } = rating
+  const scores = [safety_awareness, hygiene, communication, task_execution].filter(
     (value): value is number => value !== null && value !== undefined
   )
   return Math.round(scores.reduce((sum, value) => sum + value, 0) / scores.length)

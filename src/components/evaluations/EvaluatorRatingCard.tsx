@@ -25,6 +25,7 @@ const EMPTY_RATING_FORM: Record<keyof EvaluatorRatingPayload, string> = {
   communication: "",
   behavior_integrity: "",
   task_execution: "",
+  comments: "",
 };
 
 interface EvaluatorRatingCardProps {
@@ -58,6 +59,7 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
               communication: ratingData.communication !== null ? String(ratingData.communication) : "",
               behavior_integrity: String(ratingData.behavior_integrity),
               task_execution: String(ratingData.task_execution),
+              comments: ratingData.comments ?? "",
             }
           : EMPTY_RATING_FORM
       );
@@ -82,6 +84,7 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
       }
       parsed[key] = numeric;
     }
+    parsed.comments = ratingForm.comments;
 
     setSubmittingRating(true);
     setRatingError(null);
@@ -122,6 +125,7 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
 
       {!evaluatorRating ? (
         <div className="space-y-5">
+          <p className="rounded-lg bg-blue-50 p-3 text-sm text-blue-900">{t("scoringGuidance")}</p>
           <div className="grid gap-x-6 gap-y-4 sm:grid-cols-2">
             {RATING_POOLS.map(({ key }) => (
               <label key={key} className="block">
@@ -138,6 +142,10 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
               </label>
             ))}
           </div>
+          <label className="block"><span className="text-sm font-medium text-gray-700">{t("comments")}</span>
+            <textarea value={ratingForm.comments} onChange={(e) => handleRatingFieldChange("comments", e.target.value)} maxLength={10000}
+              className="mt-1.5 w-full rounded-xl border border-gray-200 px-3.5 py-2.5 text-sm" rows={3} /></label>
+          <p className="text-xs text-gray-500">{t("finalSubmissionLock")}</p>
           <button
             type="button"
             onClick={handleSubmitRating}
@@ -150,6 +158,9 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
         </div>
       ) : (
         <div className="grid gap-3 sm:grid-cols-5">
+          <div className="sm:col-span-5 rounded-xl bg-teal-50 p-4"><p className="text-sm">{t("overallOutcome")}</p>
+            <p className="text-xl font-bold">{evaluatorRating.overall_score}% · {t(`readiness.${evaluatorRating.readiness_status}` as "readiness.READY")}</p>
+          </div>
           {RATING_POOLS.map(({ key }) => (
             <div key={key} className="rounded-xl bg-purple-50/60 border border-purple-100 px-3 py-2.5 text-center">
               <p className="text-xs text-gray-500">{t(`pools.${key}`)}</p>
@@ -172,6 +183,7 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
               {t("ratedByOn", { name: evaluatorRating.rated_by_name, date: new Date(evaluatorRating.rated_at).toLocaleString() })}
             </p>
           )}
+          {evaluatorRating.comments && <p className="sm:col-span-5 whitespace-pre-wrap text-sm text-gray-700">{t("comments")}: {evaluatorRating.comments}</p>}
         </div>
       )}
     </div>
