@@ -1290,7 +1290,7 @@
         "interview_setup": "Interview Setup",
         "candidate_comparison": "Candidate Comparison",
         "analytics_insights": "Analytics & Insights",
-        "review_queue": "Exceptions & Quality"
+        "review_queue": "Review Queue"
       },
       "candidateComparison": {
         "title": "Candidate Comparison",
@@ -2743,21 +2743,12 @@
         "subtitle": "Platform-wide evaluation, readiness, user and revenue analytics."
       },
       "reviewQueue": {
-        "title": "Exceptions & Quality",
-        "subtitle": "Review unresolved exceptions across AI and scheduled assessments. Valid results are processed automatically.",
-        "automaticProcessing": "Valid assessment results are processed automatically. Admin review is limited to unresolved exceptions.",
-        "filterLabel": "Assessment type",
-        "filters": {
-          "ALL": "All assessment types",
-          "AI_INTERVIEW": "AI assessment",
-          "SCHEDULED_INTERVIEW": "Scheduled assessment"
-        },
-        "empty": "No unresolved exceptions are waiting for review.",
-        "emptyFiltered": "No unresolved exceptions match this assessment type.",
+        "title": "Review Queue",
+        "subtitle": "Results held from employers until a reviewer records a decision. The automatic outcome is kept; your decision is stored as an audited correction.",
+        "empty": "No results are waiting for review.",
         "loadFailed": "Could not load the review queue.",
         "table": {
           "candidate": "Candidate",
-          "assessmentType": "Assessment type",
           "role": "Role",
           "language": "Language",
           "tier": "Assessment",

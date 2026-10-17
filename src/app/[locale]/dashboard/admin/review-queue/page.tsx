@@ -29,7 +29,6 @@ export default function ReviewQueuePage() {
   const [notice, setNotice] = useState("");
   const [viewing, setViewing] = useState<PendingReviewItem | null>(null);
   const [reviewing, setReviewing] = useState<PendingReviewItem | null>(null);
-  const [assessmentType, setAssessmentType] = useState<"ALL" | "AI_INTERVIEW" | "SCHEDULED_INTERVIEW">("ALL");
 
   const fetchQueue = useCallback(async () => {
     setLoading(true);
@@ -53,9 +52,6 @@ export default function ReviewQueuePage() {
   const tierLabel = (value: string) => (value === "FULL" || value === "SCREENING" ? t(`tiers.${value}`) : value);
   const completedLabel = (value: string | null) =>
     value ? format(new Date(value), "d MMM yyyy, HH:mm", locale === "ar" ? { locale: ar } : undefined) : "—";
-  const filteredItems = assessmentType === "ALL"
-    ? items
-    : items.filter((item) => item.assessment_type === assessmentType);
 
   const reasonsList = (reasons: string[]) => (
     <ul className="space-y-1">
@@ -93,22 +89,6 @@ export default function ReviewQueuePage() {
           <p className="text-sm text-gray-600 max-w-3xl">{t("subtitle")}</p>
         </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-lg border border-blue-100 bg-blue-50 px-4 py-3">
-          <p className="text-sm text-blue-900">{t("automaticProcessing")}</p>
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-            <span>{t("filterLabel")}</span>
-            <select
-              value={assessmentType}
-              onChange={(event) => setAssessmentType(event.target.value as typeof assessmentType)}
-              className="rounded-md border border-gray-300 bg-white px-3 py-2"
-            >
-              <option value="ALL">{t("filters.ALL")}</option>
-              <option value="AI_INTERVIEW">{t("filters.AI_INTERVIEW")}</option>
-              <option value="SCHEDULED_INTERVIEW">{t("filters.SCHEDULED_INTERVIEW")}</option>
-            </select>
-          </label>
-        </div>
-
         {notice && (
           <div className="flex items-center justify-between gap-3 rounded-lg border border-green-200 bg-green-50 px-4 py-2 text-sm text-green-800">
             <span>{notice}</span>
@@ -125,10 +105,10 @@ export default function ReviewQueuePage() {
             </div>
           ) : loadError ? (
             <div className="text-center py-12 text-red-600 text-sm">{loadError}</div>
-          ) : filteredItems.length === 0 ? (
+          ) : items.length === 0 ? (
             <div className="text-center py-12">
               <ShieldCheck className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-              <p className="text-gray-600">{items.length === 0 ? t("empty") : t("emptyFiltered")}</p>
+              <p className="text-gray-600">{t("empty")}</p>
             </div>
           ) : (
             <>
@@ -137,7 +117,6 @@ export default function ReviewQueuePage() {
                   <TableHeader>
                     <TableRow className="bg-gray-50">
                       <TableHead>{t("table.candidate")}</TableHead>
-                      <TableHead>{t("table.assessmentType")}</TableHead>
                       <TableHead>{t("table.role")}</TableHead>
                       <TableHead>{t("table.automatic")}</TableHead>
                       <TableHead>{t("table.reasons")}</TableHead>
@@ -146,13 +125,12 @@ export default function ReviewQueuePage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredItems.map((item) => (
+                    {items.map((item) => (
                       <TableRow key={item.evaluation_id} className="align-top hover:bg-gray-50">
                         <TableCell>
                           <p className="font-medium text-gray-900">{item.candidate_name}</p>
                           <p className="text-xs text-gray-500">{item.company ?? t("noCompany")}</p>
                         </TableCell>
-                        <TableCell className="text-sm text-gray-700">{t(`filters.${item.assessment_type}`)}</TableCell>
                         <TableCell className="text-sm text-gray-700">
                           <p>{roleLabel(item.role_code)}</p>
                           <p className="text-xs text-gray-500">{tierLabel(item.evaluation_tier)} · {item.language}</p>
@@ -171,13 +149,13 @@ export default function ReviewQueuePage() {
               </div>
 
               <div className="lg:hidden divide-y divide-gray-100">
-                {filteredItems.map((item) => (
+                {items.map((item) => (
                   <div key={item.evaluation_id} className="p-4 space-y-3">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <p className="font-medium text-gray-900 truncate">{item.candidate_name}</p>
                         <p className="text-xs text-gray-500 truncate">
-                          {t(`filters.${item.assessment_type}`)} · {roleLabel(item.role_code)} · {tierLabel(item.evaluation_tier)} · {item.language}
+                          {roleLabel(item.role_code)} · {tierLabel(item.evaluation_tier)} · {item.language}
                         </p>
                         <p className="text-xs text-gray-500 truncate">{item.company ?? t("noCompany")}</p>
                       </div>
