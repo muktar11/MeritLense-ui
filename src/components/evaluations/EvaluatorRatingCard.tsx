@@ -11,7 +11,9 @@ import type { EvaluatorRating, EvaluatorRatingPayload } from "@/app/api/evaluati
 // shown as a Risk Level (High/Medium/Low) on the certificate/report, per
 // Report Specification Section 4. psych_professional is no longer
 // collected - it isn't an approved dimension and is pending legal review.
-const RATING_POOLS: { key: keyof EvaluatorRatingPayload }[] = [
+type EvaluatorRatingScoreKey = Exclude<keyof EvaluatorRatingPayload, "comments">;
+
+const RATING_POOLS: { key: EvaluatorRatingScoreKey }[] = [
   { key: "safety_awareness" },
   { key: "hygiene" },
   { key: "communication" },
