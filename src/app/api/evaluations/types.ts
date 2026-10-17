@@ -384,6 +384,7 @@ export type ReviewStatus = 'NOT_REQUIRED' | 'REQUIRED' | 'APPROVED';
 
 export interface PendingReviewItem {
   evaluation_id: string;
+  assessment_type: 'AI_INTERVIEW' | 'SCHEDULED_INTERVIEW';
   candidate_name: string;
   role_code: string;
   language: string;
