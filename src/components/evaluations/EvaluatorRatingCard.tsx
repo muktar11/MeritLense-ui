@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Loader2, Pencil, Star } from "lucide-react";
+import { Loader2, Star } from "lucide-react";
 import { useTranslations } from "next-intl";
 import evaluationService from "@/app/api/evaluations/endpoints";
 import type { EvaluatorRating, EvaluatorRatingPayload } from "@/app/api/evaluations/types";
@@ -41,7 +41,6 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
   const [loading, setLoading] = useState(true);
   const [evaluatorRating, setEvaluatorRating] = useState<EvaluatorRating | null>(null);
   const [ratingForm, setRatingForm] = useState(EMPTY_RATING_FORM);
-  const [isEditingRating, setIsEditingRating] = useState(false);
   const [submittingRating, setSubmittingRating] = useState(false);
   const [ratingError, setRatingError] = useState<string | null>(null);
 
@@ -51,7 +50,6 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
     evaluationService.getEvaluatorRating(evaluationId).then((ratingData) => {
       if (cancelled) return;
       setEvaluatorRating(ratingData);
-      setIsEditingRating(!ratingData);
       setRatingForm(
         ratingData
           ? {
@@ -90,7 +88,6 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
     try {
       const saved = await evaluationService.submitEvaluatorRating(evaluationId, parsed as EvaluatorRatingPayload);
       setEvaluatorRating(saved);
-      setIsEditingRating(false);
     } catch (err) {
       const detail = (err as { detail?: string; response?: { data?: { detail?: string } } })?.detail
         ?? (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
@@ -115,16 +112,6 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
           <Star className="w-5 h-5 text-purple-600" />
           <h4 className="text-base font-bold text-gray-900">{t("title")}</h4>
         </div>
-        {evaluatorRating && !isEditingRating && (
-          <button
-            type="button"
-            onClick={() => setIsEditingRating(true)}
-            className="inline-flex items-center gap-1 px-2.5 py-1.5 border border-purple-200 bg-white hover:bg-purple-50 text-purple-700 rounded-lg text-xs font-medium"
-          >
-            <Pencil className="w-3.5 h-3.5" />
-            {t("edit")}
-          </button>
-        )}
       </div>
 
       {ratingError && (
@@ -133,7 +120,7 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
         </div>
       )}
 
-      {!evaluatorRating || isEditingRating ? (
+      {!evaluatorRating ? (
         <div className="space-y-5">
           <div className="grid gap-x-6 gap-y-4 sm:grid-cols-2">
             {RATING_POOLS.map(({ key }) => (
@@ -150,17 +137,6 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
                 />
               </label>
             ))}
-          </div>
-          <div className="rounded-xl bg-purple-50/60 border border-purple-100 px-4 py-3.5">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-sm font-bold text-purple-700">{t("consistency")}</p>
-                <p className="mt-0.5 text-xs text-gray-500">{t("consistencyHint")}</p>
-              </div>
-              {evaluatorRating && (
-                <p className="text-lg font-bold text-gray-900">{evaluatorRating.consistency}</p>
-              )}
-            </div>
           </div>
           <button
             type="button"
