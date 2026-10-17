@@ -2823,12 +2823,39 @@
         "performance_scorecard": "Performance Scorecard",
         "user_management": "User Management",
         "business_management": "Assessment Results",
+        "exceptions_quality": "Exceptions & Quality",
         "audit_logs": "Billing & Payments",
         "notifications": "Notifications & Alerts",
         "system_configuration": "Company Profile",
         "compare_candidates": "Compare Candidates"
       },
       "sidebarLocked": "Sign the B2B Services Agreement and DPA to unlock this page",
+      "exceptionsQuality": {
+        "title": "Exceptions & Quality",
+        "subtitle": "Track processing status for your company’s AI and scheduled assessments.",
+        "automaticProcessing": "Valid results are processed automatically. Any unresolved exception is being reviewed by the MeritLense team.",
+        "filterLabel": "Assessment type",
+        "filters": {
+          "ALL": "All assessment types",
+          "AI_INTERVIEW": "AI assessment",
+          "SCHEDULED_INTERVIEW": "Scheduled assessment"
+        },
+        "states": {
+          "UNDER_REVIEW": "Under review",
+          "PROCESSED": "Processed",
+          "CANCELLED": "Cancelled",
+          "IN_PROGRESS": "In progress"
+        },
+        "table": {
+          "candidate": "Candidate",
+          "type": "Assessment type",
+          "date": "Date",
+          "status": "Processing status"
+        },
+        "empty": "No assessments found.",
+        "emptyDescription": "Completed valid assessments are processed automatically. There are no unresolved exceptions to display.",
+        "loadFailed": "Could not load assessment status. Please try again."
+      },
       "accessDenied": "Your staff permissions do not grant access to this section.",
       "permissionsLoadError": "Unable to load your staff permissions. Please refresh and try again.",
       "licenseStatusLoadError": "Unable to check your company license status. Retry to continue.",
@@ -4045,6 +4072,7 @@
         "candidate_management": "Candidates",
         "evaluation_setup": "Evaluations",
         "assessments_monitor": "Assessment Results",
+        "exceptions_quality": "Exceptions & Quality",
         "reports_certificates": "Reports & Certificates",
         "profile_management": "Profile",
         "packages_subscription": "Billing & Payments",
@@ -4053,6 +4081,32 @@
         "compare_candidates": "Compare Candidates"
       },
       "sidebarLocked": "Sign the B2C Individual Services Agreement to unlock this page",
+      "exceptionsQuality": {
+        "title": "Exceptions & Quality",
+        "subtitle": "Track processing status for your AI and scheduled assessments.",
+        "automaticProcessing": "Valid results are processed automatically. Any unresolved exception is being reviewed by the MeritLense team.",
+        "filterLabel": "Assessment type",
+        "filters": {
+          "ALL": "All assessment types",
+          "AI_INTERVIEW": "AI assessment",
+          "SCHEDULED_INTERVIEW": "Scheduled assessment"
+        },
+        "states": {
+          "UNDER_REVIEW": "Under review",
+          "PROCESSED": "Processed",
+          "CANCELLED": "Cancelled",
+          "IN_PROGRESS": "In progress"
+        },
+        "table": {
+          "candidate": "Candidate",
+          "type": "Assessment type",
+          "date": "Date",
+          "status": "Processing status"
+        },
+        "empty": "No assessments found.",
+        "emptyDescription": "Completed valid assessments are processed automatically. There are no unresolved exceptions to display.",
+        "loadFailed": "Could not load assessment status. Please try again."
+      },
       "payment": {
         "title": "The Right Plan for Your Business",
         "subtitle": "Based on your selected job roles, key job focus areas, and evaluation metrics, choose the right subscription plan.",

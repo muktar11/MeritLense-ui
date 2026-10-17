@@ -21,6 +21,7 @@ import {
   Bell,
   Activity,
   GitCompare,
+  ShieldCheck,
 } from "lucide-react";
 
 import { LanguageSelector } from "@/components/app/LanguageSelector";
@@ -81,6 +82,13 @@ export default function AdminLayout({
         label: t("pages_list.assessments_monitor"),
         icon: Building2,
         href: `/${locale}/dashboard/indivisual/score-management`,
+        disabled: lockedUntilSigned,
+        disabledTooltip,
+      },
+      {
+        label: t("pages_list.exceptions_quality"),
+        icon: ShieldCheck,
+        href: `/${locale}/dashboard/indivisual/exceptions-quality`,
         disabled: lockedUntilSigned,
         disabledTooltip,
       },

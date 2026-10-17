@@ -16,6 +16,7 @@ import {
   ClipboardList,
   GitCompare,
   Loader2,
+  ShieldCheck,
 } from "lucide-react";
 import { LanguageSelector } from "@/components/app/LanguageSelector";
 import { useTranslations, useLocale } from "next-intl";
@@ -43,6 +44,7 @@ function requiredPermissionsForPath(path: string): string[] | null {
   if (path.includes("/dashboard/business/candidates")) return [TEAM_PERMISSIONS.candidates];
   if (path.includes("/dashboard/business/candidate-evaluation")) return [TEAM_PERMISSIONS.evaluation];
   if (path.includes("/dashboard/business/score-management")) return [TEAM_PERMISSIONS.scores];
+  if (path.includes("/dashboard/business/exceptions-quality")) return [VIEW_RESULTS];
   if (path.includes("/dashboard/business/payment")) return [TEAM_PERMISSIONS.payment];
   return ALL_TEAM_PERMISSIONS;
 }
@@ -51,7 +53,9 @@ function canAccessPath(path: string, permissions: string[], allowProfile = false
   if (path.includes("/dashboard/business/company-profile")) return allowProfile;
   if (
     permissions.includes(VIEW_RESULTS)
-    && (path.includes("/dashboard/business/candidate-evaluation") || path.includes("/dashboard/business/score-management"))
+    && (path.includes("/dashboard/business/candidate-evaluation")
+      || path.includes("/dashboard/business/score-management")
+      || path.includes("/dashboard/business/exceptions-quality"))
   ) {
     return true;
   }
@@ -150,6 +154,13 @@ export default function AdminLayout({
         label: t("pages_list.business_management"),
         icon: Building2,
         href: `/${locale}/dashboard/business/score-management`,
+        disabled: lockedUntilSigned,
+        disabledTooltip,
+      },
+      {
+        label: t("pages_list.exceptions_quality"),
+        icon: ShieldCheck,
+        href: `/${locale}/dashboard/business/exceptions-quality`,
         disabled: lockedUntilSigned,
         disabledTooltip,
       },
