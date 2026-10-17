@@ -1,12 +1,11 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Link from "next/link"
 import { useLocale, useTranslations } from "next-intl"
 import { LANGUAGES } from "@/lib/languages"
 import Image from "next/image"
 import {
-  X, Loader2, AlertCircle, Search, ChevronDown, LayoutGrid, Users,
+  X, Loader2, Search, ChevronDown, LayoutGrid, Users,
   User, FileText, Link2, Stethoscope, House, ConciergeBell, Shield, Settings, Truck,
   Wrench, Leaf, Briefcase, Brush, Baby, UserRound, Accessibility, HeartHandshake, Pill,
   HeartPulse, BedDouble, UtensilsCrossed, Ticket, SprayCan, Factory, Package, Car, HardHat,
@@ -22,8 +21,6 @@ import type { CoverageLevel, EvaluationTier, InterviewConfig, InterviewSession, 
 import {
   getCoverageColor,
   buildRolePackages,
-  recommendPackageForFullCoverage,
-  PACKAGE_ORDER_B2B,
 } from "@/app/api/interviews/types"
 
 // Display-only grouping of the 21 role_codes into sidebar categories. Any
@@ -185,10 +182,6 @@ export default function StartSessionModal({
   const roleLabel = (role: RolePackage) => t.has(`roles.${role.role_code}`) ? t(`roles.${role.role_code}`) : role.role_name
 
   const selectedRole = rolePackages.find(r => r.role_code === selectedRoleCode)
-  const showUpgradePrompt = selectedRole && selectedRole.coverage !== null && selectedRole.coverage !== 'FULL'
-  const recommendedPackage = selectedRole
-    ? recommendPackageForFullCoverage(selectedRole.role_code, coverageRows, PACKAGE_ORDER_B2B)
-    : null
 
   const tierLabel = (tier: EvaluationTier) =>
     tier === 'FULL' ? t("assessmentTypeFull")
@@ -645,40 +638,11 @@ export default function StartSessionModal({
               </div>
             </div>
 
-            {/* Depth chooser, upgrade prompt and errors sit pinned above the
-                footer, so they're visible as soon as a role is picked rather
-                than somewhere below the fold of the role grid. */}
-            {(showUpgradePrompt || error) && (
+            {/* Errors sit pinned above the footer, so they're visible as
+                soon as a role is picked. Any package with slots may run a
+                Full Assessment, so there is no upgrade prompt here. */}
+            {error && (
               <div className="shrink-0 border-t border-gray-100 px-4 sm:px-6 py-3 space-y-3 max-h-[30vh] overflow-y-auto">
-                {showUpgradePrompt && (
-                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
-                    <div className="flex gap-3">
-                      <AlertCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
-                      <div>
-                        <p className="text-sm font-semibold text-amber-800">
-                          {selectedRole.coverage === 'SCREENING'
-                            ? t("screeningOnlyTitle")
-                            : t("partialCoverageTitle")}
-                        </p>
-                        <p className="text-xs text-amber-700 mt-1">
-                          {selectedRole.coverage === 'SCREENING'
-                            ? t("screeningOnlyBody")
-                            : t("partialCoverageBody")}
-                          {recommendedPackage && (
-                            <> {t("upgradeToPrefix")} <span className="font-semibold">{recommendedPackage.package_name}</span> {t("upgradeToSuffix")}</>
-                          )}
-                        </p>
-                        <Link
-                          href={`/${locale}/dashboard/business/payment`}
-                          className="mt-2 inline-block text-xs font-semibold text-amber-700 underline underline-offset-2 hover:text-amber-900"
-                        >
-                          {t("upgradePlanLink")}
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
                 {error && (
                   <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
                     {error}
