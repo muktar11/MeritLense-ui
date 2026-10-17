@@ -10,6 +10,7 @@ import type {
   IdentityVerificationResult,
   IntegrityEventResult,
   VerbalConfirmationResult,
+  LocalizedText,
 } from './types';
 
 class InterviewSessionClientService {
@@ -38,6 +39,30 @@ class InterviewSessionClientService {
     const response = await interviewSessionClient.post(`/${sessionId}/question-audio/`, {
       token,
       ...(languageCode ? { language_code: languageCode } : {}),
+    });
+    return response.data;
+  }
+
+  // One of the session's questions in another language - its approved
+  // EN/AR version, or a translation shown beside the original. Rejects
+  // (503) when no translation is available.
+  async getQuestionText(
+    sessionId: string,
+    token: string,
+    questionId: string,
+    language: string
+  ): Promise<LocalizedText> {
+    const response = await interviewSessionClient.get(`/${sessionId}/question-text/`, {
+      params: { token, question_id: questionId, language },
+    });
+    return response.data;
+  }
+
+  // The verbal-confirmation statement in a language (approved EN/AR, or a
+  // translation of the English).
+  async getVerbalStatement(sessionId: string, token: string, language: string): Promise<LocalizedText> {
+    const response = await interviewSessionClient.get(`/${sessionId}/prechecks/statement/`, {
+      params: { token, language },
     });
     return response.data;
   }
@@ -98,18 +123,21 @@ class InterviewSessionClientService {
     return response.data;
   }
 
-  async captureConsent(sessionId: string, token: string, signatoryName: string): Promise<PrecheckStatus> {
+  // displayLanguage: the language the consent text was shown in (e.g. "AM"),
+  // recorded with the consent.
+  async captureConsent(sessionId: string, token: string, signatoryName: string, displayLanguage?: string): Promise<PrecheckStatus> {
     const response = await interviewSessionClient.post(`/${sessionId}/prechecks/consent/`, {
       token,
       signatory_name: signatoryName,
+      ...(displayLanguage ? { display_language: displayLanguage.toUpperCase() } : {}),
     });
     return response.data;
   }
 
-  async acknowledgePrivacy(sessionId: string, token: string): Promise<PrecheckStatus> {
+  async acknowledgePrivacy(sessionId: string, token: string, displayLanguage?: string): Promise<PrecheckStatus> {
     const response = await interviewSessionClient.post(`/${sessionId}/prechecks/privacy-acknowledgement/`, {
       token,
-      metadata: { source: 'candidate-precheck' },
+      metadata: { source: 'candidate-precheck', ...(displayLanguage ? { display_language: displayLanguage.toUpperCase() } : {}) },
     });
     return response.data;
   }
@@ -133,11 +161,17 @@ class InterviewSessionClientService {
   async submitVerbalConfirmation(
     sessionId: string,
     token: string,
-    recordingBlob: Blob
+    recordingBlob: Blob,
+    statement?: { text: string; language: string }
   ): Promise<VerbalConfirmationResult> {
     const formData = new FormData();
     formData.append('token', token);
     formData.append('recording_file', recordingBlob, 'verbal-confirmation.webm');
+    // Keep, with the recording, exactly which statement the candidate read.
+    if (statement) {
+      formData.append('statement', statement.text);
+      formData.append('statement_language', statement.language);
+    }
     const response = await interviewSessionClient.post(
       `/${sessionId}/prechecks/verbal-confirmation/`,
       formData,

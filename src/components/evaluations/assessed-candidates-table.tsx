@@ -7,6 +7,7 @@ import type { Candidate } from "@/app/api/candidates/types";
 import type { CandidateScoreSummary } from "@/app/api/evaluations/types";
 import { Input } from "@/components/ui/input";
 import TablePagination from "@/components/ui/table-pagination";
+import { ScoreSourceBadge } from "@/components/evaluations/ScoreSourceBadge";
 
 const PAGE_SIZE = 10;
 
@@ -174,9 +175,12 @@ export function AssessedCandidatesTable({
                     <td className="px-6 py-4 text-gray-700">{roleName(evaluation.role_code)}</td>
                     <td className="px-6 py-4 text-gray-700">{formatDate(evaluation.generated_at)}</td>
                     <td className="px-6 py-4">
-                      <span className="inline-flex rounded-full bg-purple-50 px-2.5 py-1 font-semibold text-purple-700">
-                        {evaluation.overall_percentage}%
-                      </span>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="inline-flex rounded-full bg-purple-50 px-2.5 py-1 font-semibold text-purple-700">
+                          {evaluation.overall_percentage}%
+                        </span>
+                        <ScoreSourceBadge evaluation={evaluation} />
+                      </div>
                     </td>
                     <td className="px-6 py-4 text-right">
                       <button
@@ -209,6 +213,7 @@ export function AssessedCandidatesTable({
                 <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-600">
                   <span>{roleName(evaluation.role_code)}</span>
                   <span>{formatDate(evaluation.generated_at)}</span>
+                  <ScoreSourceBadge evaluation={evaluation} />
                 </div>
                 <button
                   type="button"

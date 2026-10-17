@@ -7,10 +7,11 @@ interface UsageMeterProps {
   used: number;
   limit: number;
   label: string;
+  /** No longer shown: the label names what is counted. */
   unit?: string;
 }
 
-export function UsageMeter({ used, limit, label, unit = 'items' }: UsageMeterProps) {
+export function UsageMeter({ used, limit, label }: UsageMeterProps) {
   const t = useTranslations('dashboard.indivisual.usageMeter');
   const percentage = (used / limit) * 100;
   const remaining = Math.max(0, limit - used);
@@ -29,7 +30,7 @@ export function UsageMeter({ used, limit, label, unit = 'items' }: UsageMeterPro
         <span className="text-gray-600">{label}</span>
         <span className="text-right">
           <span className="font-semibold text-gray-900">{t('remaining', { count: remaining })}</span>
-          <span className="text-gray-400"> {t('usedOf', { used, limit, unit })}</span>
+          <span className="text-gray-400"> {t('usedOf', { used, limit })}</span>
         </span>
       </div>
 

@@ -17,6 +17,7 @@ import type { EvaluationListItem, Evaluation, CreateEvaluationData } from "@/app
 import type { Candidate } from "@/app/api/candidates/types";
 import type { InterviewSession } from "@/app/api/interviews/types";
 import { EVALUATION_TYPES, EVALUATION_STATUS } from "@/app/api/evaluations/types";
+import { apiErrorMessage } from "@/lib/api-error-message";
 
 type ModalMode = 'view' | 'create' | 'edit' | 'reschedule';
 
@@ -185,11 +186,9 @@ function EvaluationManagement() {
       await evaluationService.createEvaluation(data);
       await fetchData();
       return true;
-    } catch (error: any) {
+    } catch (error) {
       console.error('Failed to create evaluation:', error);
-      setSubmitError(
-        error?.detail || error?.error || error?.response?.data?.detail || t('scheduleFailed')
-      );
+      setSubmitError(apiErrorMessage(error) || t('scheduleFailed'));
       return false;
     }
   };
@@ -201,11 +200,9 @@ function EvaluationManagement() {
       await evaluationService.updateEvaluation(selectedEvaluation.id, data);
       await fetchData();
       return true;
-    } catch (error: any) {
+    } catch (error) {
       console.error('Failed to update evaluation:', error);
-      setSubmitError(
-        error?.detail || error?.error || error?.response?.data?.detail || t('updateFailed')
-      );
+      setSubmitError(apiErrorMessage(error) || t('updateFailed'));
       return false;
     }
   };

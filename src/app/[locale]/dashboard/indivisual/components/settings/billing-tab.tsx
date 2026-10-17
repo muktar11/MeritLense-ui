@@ -9,6 +9,7 @@ import { localizedPlanName, type PaymentMethod, type Invoice } from "@/app/api/p
 import { PaymentMethodsList } from "../payment-methods-list";
 import { AddPaymentMethodModal } from "../add-payment-method-modal";
 import { UsageMeter } from "../usage-meter";
+import { PaymentCheckPanel } from "./payment-check-panel";
 import TablePagination from "@/components/ui/table-pagination";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
@@ -34,7 +35,7 @@ export function BillingTab() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAddMethodModalOpen, setIsAddMethodModalOpen] = useState(false);
-  const [debugInfo, setDebugInfo] = useState<any>(null);
+  const [paymentNotice, setPaymentNotice] = useState<string | null>(null);
   const [syncing, setSyncing] = useState(false);
   const [paymentAction, setPaymentAction] = useState<{requiresAction: boolean; url?: string} | null>(null);
   const [showCancelModal, setShowCancelModal] = useState(false);
@@ -120,62 +121,23 @@ export function BillingTab() {
   return Math.max(0, diffDays);
 };
 
-  const checkStatus = async () => {
-    try {
-      const data = await paymentService.checkSubscriptions();
-      setDebugInfo(data);
-    } catch (error) {
-      console.error('Error checking status:', error);
-    }
-  };
 
   const checkAndHandlePayment = async () => {
     if (!subscription) return;
-    
+    setPaymentNotice(null);
     try {
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
-      const token = localStorage.getItem('accessToken');
-      
-      const response = await fetch(`${API_BASE_URL}/payments/retry-payment/`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ subscription_id: subscription.id })
-      });
-      
-      const data = await response.json();
-      
+      const data = await paymentService.retryPayment(subscription.id);
       if (data.requires_action && data.hosted_invoice_url) {
         setPaymentAction({ requiresAction: true, url: data.hosted_invoice_url });
+      } else {
+        setPaymentNotice(t('noActionNeeded'));
       }
     } catch (error) {
       console.error('Error checking payment:', error);
+      setPaymentNotice(t('retryFailed'));
     }
   };
 
-  const checkPaymentStatus = async () => {
-    if (!subscription) return;
-    
-    try {
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
-      const token = localStorage.getItem('accessToken');
-      
-      const response = await fetch(`${API_BASE_URL}/payments/debug-payment/`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      const data = await response.json();
-      
-      if (data[0]?.hosted_invoice_url) {
-        window.open(data[0].hosted_invoice_url, '_blank');
-      }
-    } catch (error) {
-      console.error('Error checking payment:', error);
-    }
-  };
 
   const syncSubscription = async () => {
     if (!subscription) return;
@@ -209,32 +171,7 @@ export function BillingTab() {
 
   return (
     <div className="space-y-8">
-      {debugInfo && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
-          <h4 className="font-medium text-yellow-800 mb-2">Debug Info</h4>
-          <pre className="text-xs overflow-auto max-h-40">
-            {JSON.stringify(debugInfo, null, 2)}
-          </pre>
-          <button
-            onClick={syncSubscription}
-            disabled={syncing}
-            className="mt-2 px-3 py-1 bg-yellow-600 text-white rounded-lg text-sm hover:bg-yellow-700"
-          >
-            {syncing ? 'Syncing...' : 'Sync This Subscription'}
-          </button>
-        </div>
-      )}
-
-      <div className="flex gap-2 mb-4 flex-wrap">
-
-        <button
-          onClick={checkPaymentStatus}
-          className="px-3 py-1 bg-purple-500 text-white rounded-lg text-sm hover:bg-purple-600"
-          disabled={!subscription}
-        >
-          {t('checkPaymentButton')}
-        </button>
-      </div>
+      <PaymentCheckPanel subscriptionId={subscription?.id} onSync={syncSubscription} syncing={syncing} />
 
       {subscription ? (
         <div className="bg-linear-to-r from-purple-50 to-pink-50 rounded-lg p-6 border border-purple-200">
@@ -273,8 +210,8 @@ export function BillingTab() {
                       subscription.stripe_price.currency
                     )
                   : t('notAvailable')}
-                {subscription.price_details?.interval && `/${subscription.price_details.interval.toLowerCase()}`}
-                {!subscription.price_details && subscription.stripe_price?.interval && `/${subscription.stripe_price.interval.toLowerCase()}`}
+                {subscription.price_details?.interval && `/${t(`intervalWords.${subscription.price_details.interval.toLowerCase()}`)}`}
+                {!subscription.price_details && subscription.stripe_price?.interval && `/${t(`intervalWords.${subscription.stripe_price.interval.toLowerCase()}`)}`}
               </p>
             </div>
             <div>
@@ -346,6 +283,7 @@ export function BillingTab() {
           >
             {t('completePaymentButton')}
           </button>
+          {paymentNotice && <p className="mt-2 text-sm text-yellow-800" role="status">{paymentNotice}</p>}
 
           {paymentAction?.url && (
             <div className="mt-3">
@@ -371,7 +309,6 @@ export function BillingTab() {
                 used={usage.usage_percentages.candidate_limit.used}
                 limit={usage.usage_percentages.candidate_limit.limit}
                 label={t('candidates')}
-                unit="candidates"
               />
             )}
             {usage.usage_percentages.evaluation_limit && (
@@ -379,7 +316,6 @@ export function BillingTab() {
                 used={usage.usage_percentages.evaluation_limit.used}
                 limit={usage.usage_percentages.evaluation_limit.limit}
                 label={t('evaluations')}
-                unit="evaluations"
               />
             )}
             {usage.usage_percentages.team_member_limit && (
@@ -387,7 +323,6 @@ export function BillingTab() {
                 used={usage.usage_percentages.team_member_limit.used}
                 limit={usage.usage_percentages.team_member_limit.limit}
                 label={t('teamMembers')}
-                unit="team members"
               />
             )}
           </div>

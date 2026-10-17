@@ -4,8 +4,12 @@ export interface B2CRegistrationData {
   last_name: string
   password: string
   confirm_password: string
+  // Required registration checkbox (Terms & Privacy); recorded server-side.
+  terms_accepted: boolean
+  terms_language?: "en" | "ar"
   passport_id: string
-  job_role: string
+  // No longer asked at registration (Job Title removed).
+  job_role?: string
   nationality: string
   preferred_language: string
   phone_number: string
@@ -16,6 +20,10 @@ export interface B2CRegistrationData {
   country_of_residence?: string
   target_market?: string
   timezone?: string
+  // Typed values when "Other" is chosen; optional city in the target market.
+  nationality_other?: string
+  country_of_residence_other?: string
+  target_city?: string
   // Optional - the upload UI is currently hidden on the registration form
   // (see auth/register/candidate/page.tsx); B2C accounts can still upload
   // these later from their profile/settings.
@@ -97,6 +105,9 @@ export interface B2BRegistrationData {
   last_name: string
   password: string
   confirm_password: string
+  // Required registration checkbox (Terms & Privacy); recorded server-side.
+  terms_accepted: boolean
+  terms_language?: "en" | "ar"
   company_name: string
   company_registration_number: string
   company_size: string

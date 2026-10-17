@@ -129,7 +129,7 @@ function ResetPasswordForm() {
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
           <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8 text-center">
             <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
-            <p className="text-gray-600">Validating your reset link...</p>
+            <p className="text-gray-600">{t("validating")}</p>
           </div>
         </div>
       </div>
@@ -146,23 +146,23 @@ function ResetPasswordForm() {
               <AlertCircle className="w-8 h-8 text-red-600" />
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Invalid Reset Link
+              {t("invalidTitle")}
             </h2>
             <p className="text-gray-600 mb-6">
-              {tokenError || "This password reset link is invalid or has expired."}
+              {tokenError || t("invalidBody")}
             </p>
             <div className="space-y-3">
               <Button
                 onClick={() => router.push(`/${locale}/auth/forgot-password`)}
                 className="w-full"
               >
-                Request New Reset Link
+                {t("requestNew")}
               </Button>
               <Link
                 href={`/${locale}/auth/login`}
                 className="block text-sm text-blue-600 hover:text-blue-700"
               >
-                Back to Login
+                {t("backToLogin")}
               </Link>
             </div>
           </div>
@@ -188,7 +188,7 @@ function ResetPasswordForm() {
             </p>
             <div className="flex items-center justify-center gap-2 text-gray-500">
               <Loader2 className="w-5 h-5 animate-spin" />
-              <span className="text-sm">Redirecting to login...</span>
+              <span className="text-sm">{t("redirecting")}</span>
             </div>
           </div>
         </div>
@@ -206,14 +206,14 @@ function ResetPasswordForm() {
               <AlertCircle className="w-8 h-8 text-red-600" />
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Reset Failed
+              {t("failedTitle")}
             </h2>
             <p className="text-gray-600 mb-6">{error}</p>
             <Button
               onClick={() => form.reset()}
               className="w-full"
             >
-              Try Again
+              {t("tryAgain")}
             </Button>
           </div>
         </div>

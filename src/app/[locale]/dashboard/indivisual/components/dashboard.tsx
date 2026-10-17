@@ -1,159 +1,94 @@
 // app/dashboard/indivisual/overview/components/dashboard.tsx
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { useLocale } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
-import { Search, Bell, Loader2, BarChart3 } from "lucide-react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { toast } from "sonner"
+import { Search, Bell, Loader2, BarChart3, LayoutGrid, SlidersHorizontal } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { MetricCard } from "./metric-card"
-import { CandidateList } from "./candidate-list"
-import { PointConsumptionChart } from "./point-consumption-chart"
-import { TimeRangeChart } from "./time-range-chart"
-import { EvaluationManagement } from "./evaluation-management"
-import { CandidateComparison } from "./candidate-comparison"
-import { StatusDistributionChart } from "./status-distribution-chart"
-import { ReadinessIndexChart } from "../../business/components/readiness-index-chart"
-import { LanguageDistributionChart } from "./language-distribution-chart"
-import { EvaluationTrendChart } from "./evaluation-trend-chart"
-import { RecentActivityTable } from "./recent-activity-table"
-import { useTranslations } from "next-intl"
+import { CustomizeDashboardDialog } from "../../business/components/widgets/customize-dashboard-dialog"
+import {
+  B2C_DEFAULT_WIDGETS,
+  B2C_WIDGET_CATALOG,
+  B2CWidgetGrid,
+  CandidateSearchContext,
+  isB2CWidgetId,
+  type B2CWidgetId,
+} from "./widgets/widget-registry"
 import b2cDashboardService from "@/app/api/dashboard/b2c/endpoints"
 import paymentService from "@/app/api/payments/endpoints"
-import type {
-  DashboardStats,
-  RecentCandidate,
-  RecentEvaluation,
-  EvaluationTimeRange,
-  EvaluationStatusDistribution,
-  JobRoleDistribution,
-  ScoreTrend,
-  LanguageDistribution,
-  EvaluationTrend,
-  MonthlyActivity,
-  ReadinessDistribution
-} from "@/app/api/dashboard/b2c/types"
+import type { DashboardLayout, DashboardStats } from "@/app/api/dashboard/b2c/types"
 import type { Subscription } from "@/app/api/payments/types"
-import { ScoreTrendChart } from "./score-trend-chart"
+
+function visibleWidgets(layout: DashboardLayout | null): B2CWidgetId[] {
+  return layout ? layout.widgets.filter(isB2CWidgetId) : [...B2C_DEFAULT_WIDGETS]
+}
 
 export function Dashboard() {
   const t = useTranslations("dashboard.indivisual.dashboard")
-  const tStatus = useTranslations("dashboard.indivisual.statusDistribution")
+  const tOverview = useTranslations("dashboard.business.overview")
   const router = useRouter()
   const locale = useLocale()
 
-  const [loading, setLoading] = useState(true)
+  const [statsLoading, setStatsLoading] = useState(true)
   const [stats, setStats] = useState<DashboardStats | null>(null)
-  const [recentCandidates, setRecentCandidates] = useState<RecentCandidate[]>([])
-  const [recentEvaluations, setRecentEvaluations] = useState<RecentEvaluation[]>([])
-  const [timeRange, setTimeRange] = useState<EvaluationTimeRange[]>([])
-  const [statusDistribution, setStatusDistribution] = useState<EvaluationStatusDistribution[]>([])
-  const [readiness, setReadiness] = useState<ReadinessDistribution | null>(null)
-  const [jobRoleDistribution, setJobRoleDistribution] = useState<JobRoleDistribution[]>([])
-  const [scoreTrend, setScoreTrend] = useState<ScoreTrend[]>([])
-  const [languageDistribution, setLanguageDistribution] = useState<LanguageDistribution[]>([])
-  const [evaluationTrend, setEvaluationTrend] = useState<EvaluationTrend[]>([])
-  const [monthlyActivity, setMonthlyActivity] = useState<MonthlyActivity[]>([])
   const [subscription, setSubscription] = useState<Subscription | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
-  const [activeTab, setActiveTab] = useState<"scheduled" | "inProgress" | "completed">("inProgress")
+  // null = not loaded (or failed to load): render the default layout, so
+  // the dashboard is fully usable without any customization. Each widget
+  // loads its own data, so hidden widgets cost no requests.
+  const [layout, setLayout] = useState<DashboardLayout | null>(null)
+  const [layoutReady, setLayoutReady] = useState(false)
+  const [customizeOpen, setCustomizeOpen] = useState(false)
 
   useEffect(() => {
-    fetchDashboardData()
+    b2cDashboardService.getStats()
+      .then(setStats)
+      .catch((error) => console.error("Failed to fetch dashboard stats:", error))
+      .finally(() => setStatsLoading(false))
+
+    b2cDashboardService.getDashboardLayout()
+      .then(setLayout)
+      .catch((error) => console.error("Failed to fetch dashboard layout:", error))
+      .finally(() => setLayoutReady(true))
+
+    paymentService.getActiveSubscriptions()
+      .then(async (active) => {
+        setSubscription(active.length > 0 ? await paymentService.getSubscription(active[0].id) : null)
+      })
+      .catch((error) => {
+        console.error("Failed to fetch subscription:", error)
+        setSubscription(null)
+      })
   }, [])
 
-  useEffect(() => {
-    if (activeTab) {
-      fetchEvaluationsByStatus()
-    }
-  }, [activeTab])
-
-  const fetchDashboardData = async () => {
-    setLoading(true)
+  const saveLayout = async (widgets: B2CWidgetId[]) => {
     try {
-      const [
-        statsData,
-        candidatesData,
-        timeRangeData,
-        statusData,
-        jobRoleData,
-        scoreTrendData,
-        langDistData,
-        trendData,
-        monthlyData,
-        readinessData
-      ] = await Promise.all([
-        b2cDashboardService.getStats(),
-        b2cDashboardService.getRecentCandidates(10),
-        b2cDashboardService.getEvaluationTimeRange(),
-        b2cDashboardService.getStatusDistribution(),
-        b2cDashboardService.getJobRoleDistribution(),
-        b2cDashboardService.getScoreTrend(30),
-        b2cDashboardService.getLanguageDistribution(),
-        b2cDashboardService.getEvaluationTrend(30),
-        b2cDashboardService.getMonthlyActivity(6),
-        b2cDashboardService.getReadinessDistribution()
-      ])
-
-      setStats(statsData)
-      setRecentCandidates(candidatesData)
-      setTimeRange(timeRangeData)
-      setStatusDistribution(statusData)
-      setJobRoleDistribution(jobRoleData)
-      setScoreTrend(scoreTrendData)
-      setLanguageDistribution(langDistData)
-      setEvaluationTrend(trendData)
-      setMonthlyActivity(monthlyData)
-      setReadiness(readinessData)
-
-      // Fetch initial evaluations
-      await fetchEvaluationsByStatus()
+      setLayout(await b2cDashboardService.saveDashboardLayout(widgets))
+      toast.success(tOverview("customize.saved"))
     } catch (error) {
-      console.error('Failed to fetch dashboard data:', error)
-    } finally {
-      setLoading(false)
+      console.error("Failed to save dashboard layout:", error)
+      toast.error(tOverview("customize.saveError"))
+      throw error
     }
-
-    fetchSubscription()
   }
 
-  const fetchSubscription = async () => {
+  const resetLayout = async () => {
     try {
-      const activeSubscriptions = await paymentService.getActiveSubscriptions()
-      if (activeSubscriptions.length > 0) {
-        const fullSubscription = await paymentService.getSubscription(activeSubscriptions[0].id)
-        setSubscription(fullSubscription)
-      } else {
-        setSubscription(null)
-      }
+      setLayout(await b2cDashboardService.resetDashboardLayout())
+      toast.success(tOverview("customize.resetDone"))
     } catch (error) {
-      console.error('Failed to fetch subscription:', error)
-      setSubscription(null)
+      console.error("Failed to reset dashboard layout:", error)
+      toast.error(tOverview("customize.saveError"))
+      throw error
     }
   }
 
-  const fetchEvaluationsByStatus = async () => {
-    try {
-      let statusParam: string | undefined
-      if (activeTab === 'scheduled') statusParam = 'scheduled'
-      else if (activeTab === 'completed') statusParam = 'completed'
-      
-      const evaluations = await b2cDashboardService.getRecentEvaluations(10, statusParam)
-      setRecentEvaluations(evaluations)
-    } catch (error) {
-      console.error('Failed to fetch evaluations:', error)
-    }
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-purple-500" />
-      </div>
-    )
-  }
+  // Memoized: the customize dialog re-seeds its draft when this changes.
+  const widgets = useMemo(() => visibleWidgets(layout), [layout])
 
   // Available Slots (the headline figure) plus how many are Reserved for
   // an upcoming interview that hasn't started yet - Available alone can't
@@ -163,13 +98,12 @@ export function Dashboard() {
   const remainingSlots = stats?.remaining_slots ?? null
   const reservedSlots = stats?.reserved_slots ?? null
 
-  // Format language distribution for the chart - same shape the business
-  // dashboard's identical chart component expects.
-  const languageChartData = languageDistribution.map(item => ({
-    key: item.language.toLowerCase(),
-    language: item.language_display,
-    value: item.percentage
-  }))
+  const customizeButton = (
+    <Button size="sm" className="gap-1.5" onClick={() => setCustomizeOpen(true)}>
+      <SlidersHorizontal className="h-4 w-4" />
+      {tOverview("customize.button")}
+    </Button>
+  )
 
   return (
     <div className="min-h-screen bg-background">
@@ -187,24 +121,25 @@ export function Dashboard() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="w-full sm:max-w-md">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Search className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <input
                 type="text"
                 placeholder={t("search")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 text-sm bg-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full ps-10 pe-4 py-2 text-sm bg-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
           </div>
 
-          <div className="flex items-center justify-end gap-4">
+          <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-4">
             <Button asChild variant="outline" size="sm" className="gap-1.5 bg-white">
               <Link href={`/${locale}/dashboard/indivisual/analytics`}>
                 <BarChart3 className="h-4 w-4" />
                 {t("viewAnalytics")}
               </Link>
             </Button>
+            {customizeButton}
             <button className="relative">
               <Bell className="w-5 h-5 text-muted-foreground hover:text-foreground" />
               <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full" />
@@ -219,7 +154,11 @@ export function Dashboard() {
       {/* Main Content */}
       <main className="p-4 sm:p-6 space-y-6">
         {/* Metrics */}
-        {stats && (
+        {statsLoading ? (
+          <div className="flex h-24 items-center justify-center" role="status">
+            <Loader2 className="w-6 h-6 animate-spin text-purple-500" />
+          </div>
+        ) : stats && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
             <MetricCard
               title={t("metrics.evaluationsCompleted")}
@@ -273,67 +212,34 @@ export function Dashboard() {
           </div>
         )}
 
-        {/* Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left */}
-          <div className="lg:col-span-2 space-y-6">
-            <CandidateList 
-              candidates={recentCandidates}
-              searchTerm={searchTerm}
-            />
-            <EvaluationManagement
-              evaluations={recentEvaluations}
-              activeTab={activeTab}
-              onTabChange={setActiveTab}
-            />
-            <StatusDistributionChart data={statusDistribution} />
+        {/* Widgets */}
+        {!layoutReady ? (
+          <div className="flex h-48 items-center justify-center" role="status">
+            <Loader2 className="w-6 h-6 animate-spin text-purple-500" />
           </div>
-
-          {/* Right */}
-          <div className="space-y-6">
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base">
-                  {t("notification")}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="text-sm">
-                  <p className="font-medium">
-                    • {t("notifications.pendingEvaluation")}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {t("notifications.newReport")}
-                  </p>
-                </div>
-                {statusDistribution.slice(0, 2).map((item) => (
-                  <div key={item.status} className="text-sm">
-                    <p className="font-medium">
-                      • {item.count} {tStatus.has(`status.${item.status}`) ? tStatus(`status.${item.status}`) : item.status_display}
-                    </p>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-
-            {readiness && <ReadinessIndexChart data={readiness} />}
-            <PointConsumptionChart data={jobRoleDistribution} />
-            <TimeRangeChart data={timeRange} />
-            <LanguageDistributionChart data={languageChartData} />
+        ) : widgets.length > 0 ? (
+          <CandidateSearchContext.Provider value={searchTerm}>
+            <B2CWidgetGrid widgets={widgets} />
+          </CandidateSearchContext.Provider>
+        ) : (
+          <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-gray-200 bg-white px-6 py-12 text-center">
+            <LayoutGrid className="h-8 w-8 text-gray-300" />
+            <p className="text-sm font-medium text-gray-700">{tOverview("emptyLayout.title")}</p>
+            <p className="max-w-md text-sm text-gray-500">{tOverview("emptyLayout.description")}</p>
+            {customizeButton}
           </div>
-        </div>
-
-        <EvaluationTrendChart data={evaluationTrend} />
-
-        {/* Monthly Activity */}
-        {monthlyActivity.length > 0 && (
-          <RecentActivityTable activities={monthlyActivity} />
         )}
-
-        {/* Comparison */}
-        <CandidateComparison />
-        <ScoreTrendChart data={scoreTrend} />
       </main>
+
+      <CustomizeDashboardDialog
+        open={customizeOpen}
+        onOpenChange={setCustomizeOpen}
+        catalog={B2C_WIDGET_CATALOG}
+        widgets={widgets}
+        onSave={saveLayout}
+        onReset={resetLayout}
+        description={t("customizeDescription")}
+      />
     </div>
   )
 }

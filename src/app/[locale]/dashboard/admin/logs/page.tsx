@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { SearchSelect } from "@/components/app/searchable-fields"
 import { Badge } from "@/components/ui/badge"
 import { 
   Sparkles, 
@@ -21,9 +22,12 @@ import {
   CheckCircle,
   AlertCircle,
   Info,
-  AlertTriangle
+  AlertTriangle,
+  Globe
 } from "lucide-react"
 import { VerifyDocumentsModal } from "./components/verify-documents-modal"
+import { IpTracer } from "./components/ip-tracer"
+import { CandidateTrailModal } from "./components/candidate-trail-modal"
 import auditService from "@/app/api/admin/audit/endpoints"
 import type { 
   AuditLogEntry, 
@@ -33,7 +37,7 @@ import type {
 
 export default function AuditLog() {
   const t = useTranslations("dashboard.admin.auditLog")
-  const [activeTab, setActiveTab] = useState<"evaluation" | "audit">("evaluation")
+  const [activeTab, setActiveTab] = useState<"evaluation" | "audit" | "ip">("evaluation")
   
   // Audit logs state
   const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>([])
@@ -46,7 +50,8 @@ export default function AuditLog() {
     category: "",
     severity: "",
     date_from: "",
-    date_to: ""
+    date_to: "",
+    ip_address: ""
   })
   const [categories, setCategories] = useState<Array<{ key: string; label: string }>>([])
   const [actions, setActions] = useState<Array<{ key: string; label: string }>>([])
@@ -57,6 +62,8 @@ export default function AuditLog() {
   const [pendingLoading, setPendingLoading] = useState(true)
   const [selectedUser, setSelectedUser] = useState<PendingVerificationUser | null>(null)
   const [isVerifyModalOpen, setIsVerifyModalOpen] = useState(false)
+  // Candidate activity trail: opened from an audit row or a passport-ID search.
+  const [trail, setTrail] = useState<{ candidateId?: string | null; passportId?: string } | null>(null)
 
   const pageSize = 20
 
@@ -106,7 +113,11 @@ export default function AuditLog() {
         category: auditFilters.category || undefined,
         severity: auditFilters.severity || undefined,
         date_from: auditFilters.date_from || undefined,
-        date_to: auditFilters.date_to || undefined
+        date_to: auditFilters.date_to || undefined,
+        // Only a complete address: the API rejects a partial one.
+        ip_address: /^(\d{1,3}\.){3}\d{1,3}$|:/.test(auditFilters.ip_address.trim())
+          ? auditFilters.ip_address.trim()
+          : undefined
       })
       setAuditLogs(response.results || [])
       setAuditTotal(response.count || 0)
@@ -214,7 +225,7 @@ export default function AuditLog() {
 
         {/* Tabs */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
-          <div className="inline-flex bg-white rounded-full p-1 shadow-sm border border-gray-200">
+          <div className="inline-flex max-w-full overflow-x-auto whitespace-nowrap bg-white rounded-full p-1 shadow-sm border border-gray-200">
             <button
               onClick={() => setActiveTab("evaluation")}
               className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
@@ -232,6 +243,15 @@ export default function AuditLog() {
             >
               <ClipboardList className={`w-4 h-4 ${activeTab === "audit" ? "text-purple-600" : "text-gray-400"}`} />
               {t("tabs.auditLogs")}
+            </button>
+            <button
+              onClick={() => setActiveTab("ip")}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                activeTab === "ip" ? "text-purple-600" : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              <Globe className={`w-4 h-4 ${activeTab === "ip" ? "text-purple-600" : "text-gray-400"}`} />
+              {t("tabs.ipTracer")}
             </button>
           </div>
           <span className="px-4 py-1.5 bg-blue-900 text-white text-xs font-semibold rounded-full whitespace-nowrap">
@@ -374,6 +394,17 @@ export default function AuditLog() {
           </div>
         )}
 
+        {activeTab === "ip" && (
+          <IpTracer
+            onViewLogs={(ip) => {
+              setAuditPage(1)
+              setAuditFilters(prev => ({ ...prev, search: "", ip_address: ip }))
+              setActiveTab("audit")
+            }}
+            onOpenTrail={(passportId) => setTrail({ passportId })}
+          />
+        )}
+
         {/* Audit Logs Tab */}
         {activeTab === "audit" && (
           <>
@@ -407,20 +438,25 @@ export default function AuditLog() {
                     />
                   </div>
                 </div>
-                <Select 
-                  value={auditFilters.category} 
-                  onValueChange={(v) => setAuditFilters(prev => ({ ...prev, category: v === 'all' ? '' : v }))}
-                >
-                  <SelectTrigger className="w-40">
-                    <SelectValue placeholder={t("audit.allCategories")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">{t("audit.allCategories")}</SelectItem>
-                    {categories.map(cat => (
-                      <SelectItem key={cat.key} value={cat.key}>{cat.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Input
+                  dir="ltr"
+                  placeholder={t("audit.ipFilter")}
+                  value={auditFilters.ip_address}
+                  onChange={(e) => {
+                    setAuditPage(1)
+                    setAuditFilters(prev => ({ ...prev, ip_address: e.target.value }))
+                  }}
+                  className="w-full sm:w-48 font-mono"
+                />
+                <SearchSelect
+                  id="audit-category-filter"
+                  aria-label={t("audit.allCategories")}
+                  className="w-full sm:w-48"
+                  buttonClassName="min-h-9 rounded-md px-3 py-1.5"
+                  value={auditFilters.category}
+                  onChange={(v) => setAuditFilters(prev => ({ ...prev, category: v }))}
+                  options={[{ value: "", label: t("audit.allCategories") }, ...categories.map(cat => ({ value: cat.key, label: cat.label, keywords: cat.key }))]}
+                />
                 <Select 
                   value={auditFilters.severity} 
                   onValueChange={(v) => setAuditFilters(prev => ({ ...prev, severity: v === 'all' ? '' : v }))}
@@ -457,13 +493,14 @@ export default function AuditLog() {
                         <TableHead>{t("audit.table.severity")}</TableHead>
                         <TableHead>{t("audit.table.resource")}</TableHead>
                         <TableHead>{t("audit.table.timestamp")}</TableHead>
+                        <TableHead>{t("audit.table.ip")}</TableHead>
                         <TableHead>{t("audit.table.description")}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {!auditLogs || auditLogs.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={7} className="text-center py-8 text-gray-500">
+                          <TableCell colSpan={8} className="text-center py-8 text-gray-500">
                             {t("audit.noLogs")}
                           </TableCell>
                         </TableRow>
@@ -493,6 +530,15 @@ export default function AuditLog() {
                                 <div>
                                   <p className="text-sm font-medium">{log.resource_name}</p>
                                   <p className="text-xs text-gray-500">{log.resource_type_name || '-'}</p>
+                                  {log.trail_candidate_id && (
+                                    <button
+                                      type="button"
+                                      onClick={() => setTrail({ candidateId: log.trail_candidate_id })}
+                                      className="text-xs text-purple-700 hover:underline"
+                                    >
+                                      {t("trail.open")}
+                                    </button>
+                                  )}
                                 </div>
                               ) : (
                                 <span className="text-gray-400">-</span>
@@ -500,6 +546,15 @@ export default function AuditLog() {
                             </TableCell>
                             <TableCell className="text-sm text-gray-600">
                               {auditService.formatTimestamp(log.created_at)}
+                            </TableCell>
+                            <TableCell>
+                              {log.ip_address ? (
+                                <span className="font-mono text-xs text-gray-700" title={log.user_agent || undefined}>
+                                  {log.ip_address}
+                                </span>
+                              ) : (
+                                <span className="text-gray-400">-</span>
+                              )}
                             </TableCell>
                             <TableCell className="max-w-xs">
                               <p className="text-sm text-gray-600 truncate" title={log.description}>
@@ -538,10 +593,22 @@ export default function AuditLog() {
                             <p className="mt-1 text-sm">
                               <span className="font-medium">{log.resource_name}</span>
                               {log.resource_type_name && <span className="text-gray-500"> · {log.resource_type_name}</span>}
+                              {log.trail_candidate_id && (
+                                <button
+                                  type="button"
+                                  onClick={() => setTrail({ candidateId: log.trail_candidate_id })}
+                                  className="ms-2 text-xs text-purple-700 hover:underline"
+                                >
+                                  {t("trail.open")}
+                                </button>
+                              )}
                             </p>
                           )}
                           <p className="mt-1 text-sm text-gray-600">{log.description}</p>
-                          <p className="mt-1 text-xs text-gray-400">{auditService.formatTimestamp(log.created_at)}</p>
+                          <p className="mt-1 text-xs text-gray-400">
+                            {auditService.formatTimestamp(log.created_at)}
+                            {log.ip_address && <span className="font-mono"> · {log.ip_address}</span>}
+                          </p>
                         </div>
                       ))
                     )}
@@ -588,6 +655,12 @@ export default function AuditLog() {
       </div>
 
       {/* Verify Documents Modal */}
+      <CandidateTrailModal
+        candidateId={trail?.candidateId}
+        passportId={trail?.passportId}
+        onClose={() => setTrail(null)}
+      />
+
       <VerifyDocumentsModal
         isOpen={isVerifyModalOpen}
         onClose={() => {

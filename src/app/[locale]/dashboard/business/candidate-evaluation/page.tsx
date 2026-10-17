@@ -16,6 +16,7 @@ import type { EvaluationListItem, Evaluation, CreateEvaluationData } from "@/app
 import type { Candidate } from "@/app/api/candidates/types";
 import type { InterviewSession } from "@/app/api/interviews/types";
 import { EVALUATION_TYPES, EVALUATION_STATUS } from "@/app/api/evaluations/types";
+import { apiErrorMessage } from "@/lib/api-error-message";
 
 type ModalMode = 'view' | 'create' | 'edit' | 'reschedule';
 
@@ -59,6 +60,7 @@ export default function EvaluationManagement() {
 
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [typeFilter, setTypeFilter] = useState<string>("");
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
@@ -108,6 +110,7 @@ export default function EvaluationManagement() {
   };
 
   const handleOpenCreateModal = () => {
+    setSubmitError(null);
     setModalMode('create');
     setSelectedEvaluation(null);
     setIsModalOpen(true);
@@ -125,6 +128,7 @@ export default function EvaluationManagement() {
   };
 
   const handleOpenEditModal = async (item: EvaluationListItem) => {
+    setSubmitError(null);
     try {
       const fullEvaluation = await evaluationService.getEvaluation(item.id);
       setSelectedEvaluation(fullEvaluation);
@@ -163,24 +167,28 @@ export default function EvaluationManagement() {
   };
 
   const handleCreateEvaluation = async (data: CreateEvaluationData): Promise<boolean> => {
+    setSubmitError(null);
     try {
       await evaluationService.createEvaluation(data);
       await fetchData();
       return true;
     } catch (error) {
       console.error('Failed to create evaluation:', error);
+      setSubmitError(apiErrorMessage(error) || t('scheduleFailed'));
       return false;
     }
   };
 
   const handleEditEvaluation = async (data: CreateEvaluationData): Promise<boolean> => {
     if (!selectedEvaluation) return false;
+    setSubmitError(null);
     try {
       await evaluationService.updateEvaluation(selectedEvaluation.id, data);
       await fetchData();
       return true;
     } catch (error) {
       console.error('Failed to update evaluation:', error);
+      setSubmitError(apiErrorMessage(error) || t('updateFailed'));
       return false;
     }
   };
@@ -309,6 +317,7 @@ export default function EvaluationManagement() {
         candidates={candidates}
         userRole={userRole || undefined}
         currentUserId={userId || undefined}
+        errorMessage={submitError}
       />
 
       {selectedEvaluation && (

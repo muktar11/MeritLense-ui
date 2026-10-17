@@ -152,6 +152,9 @@ export interface InterviewConfig {
 export interface CreateSessionData {
   candidate_id: string;
   config_id: string;
+  // The candidate's language (any LANGUAGES key); the config sets the
+  // question-set language (EN/AR).
+  answer_language?: string;
 }
 
 export interface InterviewSession {

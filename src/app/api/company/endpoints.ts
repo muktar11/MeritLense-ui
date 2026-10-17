@@ -1,5 +1,5 @@
 import { apiClient, apiFormDataClient } from '../auth/client';
-import { CompanyProfile } from './types';
+import { BusinessAddress, BusinessAddressInput, CompanyProfile, CompanyProfileUpdate } from './types';
 import { API_BASE_URL } from '@/lib/config/env';
 
 export interface RequestedCompanyDocument {
@@ -36,6 +36,25 @@ class CompanyService {
   async updateRoles(roles: string[]): Promise<CompanyProfile> {
     const response = await apiClient.patch(`${this.baseURL}profile`, { roles });
     return response.data;
+  }
+
+  async updateProfile(data: CompanyProfileUpdate): Promise<CompanyProfile> {
+    const response = await apiClient.patch(`${this.baseURL}profile`, data);
+    return response.data;
+  }
+
+  async addAddress(data: BusinessAddressInput): Promise<BusinessAddress> {
+    const response = await apiClient.post(`${this.baseURL}profile/addresses`, data);
+    return response.data;
+  }
+
+  async updateAddress(id: string, data: Partial<BusinessAddressInput>): Promise<BusinessAddress> {
+    const response = await apiClient.patch(`${this.baseURL}profile/addresses/${id}`, data);
+    return response.data;
+  }
+
+  async removeAddress(id: string): Promise<void> {
+    await apiClient.delete(`${this.baseURL}profile/addresses/${id}`);
   }
 
   async getDocumentRequests(): Promise<{ results: RequestedCompanyDocument[] }> {

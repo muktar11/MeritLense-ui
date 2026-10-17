@@ -4,11 +4,11 @@ import { useState } from "react";
 import { 
   Eye, 
   Edit, 
-  Share2, 
   Search,
   Plus
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { SearchSelect } from "@/components/app/searchable-fields";
 import { Candidate } from "../../../../../api/candidates/types";
 import TablePagination from "@/components/ui/table-pagination";
 import { translateSkill } from "@/lib/candidate-skills";
@@ -19,7 +19,6 @@ interface CandidatesTableProps {
   candidates: Candidate[];
   onView: (candidate: Candidate) => void;
   onEdit: (candidate: Candidate) => void;
-  onShare: (candidate: Candidate) => void;
   onAdd: () => void;
   loading?: boolean;
   userRole: string;
@@ -29,18 +28,17 @@ export default function CandidatesTable({
   candidates, 
   onView, 
   onEdit, 
-  onShare,
   onAdd,
   loading,
   userRole = 'B2C',
 }: CandidatesTableProps) {
   const t = useTranslations("dashboard.candidates.table");
+  const tSearch = useTranslations("shared.searchableSelect");
   const tSkills = useTranslations("shared.candidateSkills");
   const [searchTerm, setSearchTerm] = useState("");
   const [filterRole, setFilterRole] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const canShare = userRole === 'B2B';
   
   const canEdit = (_candidate: Candidate) => true;
 
@@ -110,16 +108,16 @@ export default function CandidatesTable({
                 className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               />
             </div>
-            <select
+            <SearchSelect
+              id="candidates-role-filter"
+              aria-label={t("filters.allRoles")}
+              className="w-full sm:w-56"
+              buttonClassName="min-h-10 rounded-lg border-gray-300 px-3 py-2"
               value={filterRole}
-              onChange={(e) => setFilterRole(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            >
-              <option value="">{t("filters.allRoles")}</option>
-              {uniqueRoles.map(role => (
-                <option key={role} value={role}>{getJobRoleLabel(role)}</option>
-              ))}
-            </select>
+              onChange={setFilterRole}
+              options={[{ value: "", label: t("filters.allRoles") }, ...uniqueRoles.map(role => ({ value: role, label: getJobRoleLabel(role) }))]}
+              searchPlaceholder={tSearch("searchRoles")}
+            />
           </div>
           <button
             onClick={onAdd}
@@ -246,15 +244,6 @@ export default function CandidatesTable({
                         </button>
                       )}
 
-                      {canShare && (
-                        <button
-                          onClick={() => onShare(candidate)}
-                          className="p-1 text-gray-400 hover:text-green-500 rounded-full hover:bg-green-50"
-                          title={t("actions.share")}
-                        >
-                          <Share2 size={16} />
-                        </button>
-                      )}
                     </div>
                   </td>
                 </tr>
@@ -264,7 +253,7 @@ export default function CandidatesTable({
         </table>
       </div>
 
-      {/* Mobile: card list. Same data and the same view/edit/share actions
+      {/* Mobile: card list. Same data and the same view/edit actions
           as the table above, just laid out so nothing requires a
           horizontal swipe to reach. */}
       <div className="md:hidden divide-y divide-gray-200">
@@ -316,15 +305,6 @@ export default function CandidatesTable({
                       title={t("actions.edit")}
                     >
                       <Edit size={18} />
-                    </button>
-                  )}
-                  {canShare && (
-                    <button
-                      onClick={() => onShare(candidate)}
-                      className="p-2 text-gray-400 hover:text-green-500 rounded-full hover:bg-green-50"
-                      title={t("actions.share")}
-                    >
-                      <Share2 size={18} />
                     </button>
                   )}
                 </div>

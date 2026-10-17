@@ -3,13 +3,16 @@
 import { Bell, User, Settings, BarChart3 } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import NotificationsPanel from "./notifications";
 import { useAuth } from "@/app/hooks/useAuth";
+import { useCurrentPlanName } from "@/app/hooks/useCurrentPlanName";
 
 export default function DashboardHeader() {
   const [showNotifications, setShowNotifications] = useState(false);
   const locale = useLocale();
+  const t = useTranslations("dashboard.indivisual.dashboardHeader");
+  const planName = useCurrentPlanName();
   const { userRole } = useAuth();
 
   return (
@@ -20,17 +23,19 @@ export default function DashboardHeader() {
         </div>
         
         <div className="flex items-center gap-4 relative">
-          <span className="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-medium">
-            Premium
-          </span>
+          {planName && (
+            <span className="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-medium" title={t("planBadgeTitle")}>
+              {planName}
+            </span>
+          )}
 
           {/* Notifications */}
           <button
             onClick={() => setShowNotifications(!showNotifications)}
+            aria-label={t("notifications")}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors relative"
           >
             <Bell className="w-5 h-5 text-gray-600" />
-            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
           </button>
 
           {showNotifications && (
@@ -50,7 +55,7 @@ export default function DashboardHeader() {
             <Link
               href={`/${locale}/dashboard/business/company-profile`}
               className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-              aria-label="Company profile"
+              aria-label={t("companyProfile")}
             >
               <Settings className="w-5 h-5 text-gray-600" />
             </Link>

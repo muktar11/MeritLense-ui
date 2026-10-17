@@ -9,6 +9,7 @@ import { localizedPlanName, type PaymentMethod, type Invoice } from "@/app/api/p
 import { PaymentMethodsList } from "../payment-methods-list";
 import { AddPaymentMethodModal } from "../add-payment-method-modal";
 import { UsageMeter } from "../usage-meter";
+import { PaymentCheckPanel } from "../../../indivisual/components/settings/payment-check-panel";
 import TablePagination from "@/components/ui/table-pagination";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
@@ -34,7 +35,7 @@ export function BillingTab() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAddMethodModalOpen, setIsAddMethodModalOpen] = useState(false);
-  const [debugInfo, setDebugInfo] = useState<any>(null);
+  const [paymentNotice, setPaymentNotice] = useState<string | null>(null);
   const [syncing, setSyncing] = useState(false);
   const [paymentAction, setPaymentAction] = useState<{requiresAction: boolean; url?: string} | null>(null);
   const [showCancelModal, setShowCancelModal] = useState(false);
@@ -99,7 +100,7 @@ export function BillingTab() {
     
   } catch (error) {
     console.error('Error cancelling subscription:', error);
-    alert('Failed to cancel subscription. Please try again.');
+    alert(t('cancelModal.failedAlert'));
   } finally {
     setCancelling(false);
   }
@@ -120,62 +121,23 @@ export function BillingTab() {
   return Math.max(0, diffDays);
 };
 
-  const checkStatus = async () => {
-    try {
-      const data = await paymentService.checkSubscriptions();
-      setDebugInfo(data);
-    } catch (error) {
-      console.error('Error checking status:', error);
-    }
-  };
 
   const checkAndHandlePayment = async () => {
     if (!subscription) return;
-    
+    setPaymentNotice(null);
     try {
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
-      const token = localStorage.getItem('accessToken');
-      
-      const response = await fetch(`${API_BASE_URL}/payments/retry-payment/`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ subscription_id: subscription.id })
-      });
-      
-      const data = await response.json();
-      
+      const data = await paymentService.retryPayment(subscription.id);
       if (data.requires_action && data.hosted_invoice_url) {
         setPaymentAction({ requiresAction: true, url: data.hosted_invoice_url });
+      } else {
+        setPaymentNotice(t('noActionNeeded'));
       }
     } catch (error) {
       console.error('Error checking payment:', error);
+      setPaymentNotice(t('retryFailed'));
     }
   };
 
-  const checkPaymentStatus = async () => {
-    if (!subscription) return;
-    
-    try {
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
-      const token = localStorage.getItem('accessToken');
-      
-      const response = await fetch(`${API_BASE_URL}/payments/debug-payment/`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      const data = await response.json();
-      
-      if (data[0]?.hosted_invoice_url) {
-        window.open(data[0].hosted_invoice_url, '_blank');
-      }
-    } catch (error) {
-      console.error('Error checking payment:', error);
-    }
-  };
 
   const syncSubscription = async () => {
     if (!subscription) return;
@@ -209,41 +171,7 @@ export function BillingTab() {
 
   return (
     <div className="space-y-8">
-      {debugInfo && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
-          <h4 className="font-medium text-yellow-800 mb-2">Debug Info</h4>
-          <pre className="text-xs overflow-auto max-h-40">
-            {JSON.stringify(debugInfo, null, 2)}
-          </pre>
-          <button
-            onClick={syncSubscription}
-            disabled={syncing}
-            className="mt-2 px-3 py-1 bg-yellow-600 text-white rounded-lg text-sm hover:bg-yellow-700"
-          >
-            {syncing ? 'Syncing...' : 'Sync This Subscription'}
-          </button>
-        </div>
-      )}
-
-      <div className="bg-linear-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
-        <div className="flex items-center gap-3">
-          <Building2 className="w-5 h-5 text-blue-600" />
-          <p className="text-sm text-blue-800">
-            {t('companySubscription')}
-          </p>
-        </div>
-      </div>
-
-      <div className="flex gap-2 mb-4 flex-wrap">
-
-        <button
-          onClick={checkPaymentStatus}
-          className="px-3 py-1 bg-purple-500 text-white rounded-lg text-sm hover:bg-purple-600"
-          disabled={!subscription}
-        >
-          Check Payment
-        </button>
-      </div>
+      <PaymentCheckPanel subscriptionId={subscription?.id} onSync={syncSubscription} syncing={syncing} />
 
       {subscription ? (
         <div className="bg-linear-to-r from-purple-50 to-pink-50 rounded-lg p-6 border border-purple-200">
@@ -342,16 +270,17 @@ export function BillingTab() {
 
       {subscription?.status?.toLowerCase() === 'incomplete' && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <h4 className="font-medium text-yellow-800 mb-2">Action Required</h4>
+          <h4 className="font-medium text-yellow-800 mb-2">{t('actionRequiredTitle')}</h4>
           <p className="text-sm text-yellow-700 mb-3">
-            Your subscription is incomplete. Please complete the payment to activate your subscription.
+            {t('incompleteSubscriptionMessage')}
           </p>
           <button
             onClick={checkAndHandlePayment}
             className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700"
           >
-            Complete Payment
+            {t('completePaymentButton')}
           </button>
+          {paymentNotice && <p className="mt-2 text-sm text-yellow-800" role="status">{paymentNotice}</p>}
           
           {paymentAction?.url && (
             <div className="mt-3">
@@ -361,7 +290,7 @@ export function BillingTab() {
                 rel="noopener noreferrer"
                 className="inline-block px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
               >
-                Go to Payment Page
+                {t('goToPaymentPageButton')}
               </a>
             </div>
           )}
@@ -403,13 +332,11 @@ export function BillingTab() {
     
     <div className="bg-white rounded-lg shadow-lg w-full max-w-md pointer-events-auto relative">
       <div className="p-6">
-        <h3 className="text-lg font-bold text-gray-900 mb-4">Cancel Subscription</h3>
+        <h3 className="text-lg font-bold text-gray-900 mb-4">{t('cancelModal.title')}</h3>
         
         <p className="text-sm text-gray-600 mb-4">
-          Are you sure you want to cancel your subscription? 
-          {cancelAtPeriodEnd 
-            ? ' You will continue to have access until the end of your billing period.'
-            : ' Your subscription will be cancelled immediately.'}
+          {t('cancelModal.confirmText')}{' '}
+          {cancelAtPeriodEnd ? t('cancelModal.periodEndNote') : t('cancelModal.immediateNote')}
         </p>
         
         <div className="mb-4">
@@ -421,21 +348,21 @@ export function BillingTab() {
               className="text-purple-600"
             />
             <span className="text-sm text-gray-700">
-              Cancel at end of billing period (recommended)
+              {t('cancelModal.periodEndOption')}
             </span>
           </label>
         </div>
         
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Reason for cancelling (optional)
+            {t('cancelModal.reasonLabel')}
           </label>
           <textarea
             value={cancelReason}
             onChange={(e) => setCancelReason(e.target.value)}
             rows={3}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-            placeholder="Tell us why you're cancelling..."
+            placeholder={t('cancelModal.reasonPlaceholder')}
           />
         </div>
         
@@ -444,7 +371,7 @@ export function BillingTab() {
             onClick={() => setShowCancelModal(false)}
             className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg text-sm hover:bg-gray-50"
           >
-            Keep Subscription
+            {t('cancelModal.keepButton')}
           </button>
           <button
             onClick={handleCancelSubscription}
@@ -454,10 +381,10 @@ export function BillingTab() {
             {cancelling ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Cancelling...
+                {t('cancelModal.cancellingButton')}
               </>
             ) : (
-              'Confirm Cancellation'
+              t('cancelModal.confirmButton')
             )}
           </button>
         </div>

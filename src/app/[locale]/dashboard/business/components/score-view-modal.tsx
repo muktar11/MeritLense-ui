@@ -7,6 +7,7 @@ import type { Candidate } from "@/app/api/candidates/types";
 import type { CandidateScoreSummary } from "@/app/api/evaluations/types";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { EvaluationDocumentsSection } from "@/components/evaluations/EvaluationDocumentLinks";
+import { ScoreSourceBadge } from "@/components/evaluations/ScoreSourceBadge";
 
 interface ScoreViewModalProps {
   isOpen: boolean;
@@ -27,6 +28,7 @@ export function ScoreViewModal({
 }: ScoreViewModalProps) {
   const t = useTranslations("dashboard.business.score-management.viewModal");
   const tRoles = useTranslations("shared.startSessionModal.roles");
+  const tSource = useTranslations("shared.scoreSource");
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   useEffect(() => {
@@ -52,7 +54,8 @@ export function ScoreViewModal({
   const evaluationOptionLabel = (evaluation: CandidateScoreSummary) => {
     const role = tRoles.has(evaluation.role_code) ? tRoles(evaluation.role_code) : evaluation.role_code;
     const date = new Date(evaluation.generated_at).toLocaleDateString();
-    return t("evaluationOption", { role, date, score: evaluation.overall_percentage });
+    const label = t("evaluationOption", { role, date, score: evaluation.overall_percentage });
+    return evaluation.source === "EVALUATOR_RATING" ? `${label} · ${tSource("evaluatorRating")}` : label;
   };
 
   return (
@@ -132,7 +135,10 @@ export function ScoreViewModal({
           {sortedScores.length > 0 && (
             <div className="mt-4 pt-4 border-t border-purple-200">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-700">{t("overallAverageScore")}</span>
+                <span className="flex flex-wrap items-center gap-2 text-sm font-medium text-gray-700">
+                  {t("overallAverageScore")}
+                  <ScoreSourceBadge evaluation={selected} />
+                </span>
                 <span className="text-2xl font-bold text-purple-600">{calculatedAverage}%</span>
               </div>
             </div>

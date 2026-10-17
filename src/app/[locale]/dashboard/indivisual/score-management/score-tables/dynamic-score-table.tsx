@@ -7,6 +7,7 @@ import type { Candidate } from "@/app/api/candidates/types";
 import type { CandidateScoreSummary } from "@/app/api/evaluations/types";
 import TablePagination from "@/components/ui/table-pagination";
 import { EvaluationDocumentsRow } from "@/components/evaluations/EvaluationDocumentLinks";
+import { ScoreSourceBadge } from "@/components/evaluations/ScoreSourceBadge";
 
 const PAGE_SIZE = 10;
 
@@ -74,6 +75,7 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
                   {summary?.evaluation_id ? (
                     <>
                       {summary.overall_percentage}%
+                      <span className="ml-2 rtl:ml-0 rtl:mr-2"><ScoreSourceBadge evaluation={summary} /></span>
                       {(evaluations?.length ?? 0) > 1 && (
                         <span className="ml-1 text-xs font-normal text-gray-400">
                           {t("moreEvaluations", { count: evaluations!.length - 1 })}
@@ -130,6 +132,7 @@ export function DynamicScoreTable({ candidates, scores, onViewScores }: DynamicS
                   </div>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
+                  <ScoreSourceBadge evaluation={summary} />
                   <span className="font-medium text-purple-600 text-sm">
                     {summary?.evaluation_id ? `${summary.overall_percentage}%` : "—"}
                   </span>

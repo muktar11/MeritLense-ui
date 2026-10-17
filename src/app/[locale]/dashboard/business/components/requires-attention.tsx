@@ -11,9 +11,12 @@ import type { AttentionReason, RequiresAttention } from "@/app/api/dashboard/b2b
 import evaluationService from "@/app/api/evaluations/endpoints";
 import type { Evaluation } from "@/app/api/evaluations/types";
 import EvaluationModal from "./schedule-evaluation-modal";
+import IndividualEvaluationModal from "../../indivisual/components/schedule-evaluation-modal";
 
 interface RequiresAttentionPanelProps {
   data: RequiresAttention;
+  /** Which dashboard it sits on - sets the "View all" and live-call links. */
+  dashboard?: "business" | "indivisual";
 }
 
 const REASON_STYLES: Record<AttentionReason, string> = {
@@ -34,7 +37,7 @@ function initials(name: string) {
 // Decision-oriented queue: completed evaluations flagged for human review,
 // or without enough evidence for a readiness decision - "who needs
 // attention / what should I review next".
-export function RequiresAttentionPanel({ data }: RequiresAttentionPanelProps) {
+export function RequiresAttentionPanel({ data, dashboard = "business" }: RequiresAttentionPanelProps) {
   const t = useTranslations("dashboard.business.overview.requiresAttention");
   const locale = useLocale();
   const [openingId, setOpeningId] = useState<string | null>(null);
@@ -52,6 +55,10 @@ export function RequiresAttentionPanel({ data }: RequiresAttentionPanelProps) {
   };
 
   const remaining = data.total - data.items.length;
+  const Modal = dashboard === "indivisual" ? IndividualEvaluationModal : EvaluationModal;
+  const viewAllHref = dashboard === "indivisual"
+    ? `/${locale}/dashboard/indivisual/evaluations`
+    : `/${locale}/dashboard/business/candidate-evaluation`;
 
   return (
     <Card className="bg-white border-gray-100 h-full" dir={locale === "ar" ? "rtl" : "ltr"}>
@@ -137,7 +144,7 @@ export function RequiresAttentionPanel({ data }: RequiresAttentionPanelProps) {
         <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-3 text-xs">
           <span className="text-gray-500">{remaining > 0 ? t("moreCount", { count: remaining }) : ""}</span>
           <Link
-            href={`/${locale}/dashboard/business/candidate-evaluation`}
+            href={viewAllHref}
             className="inline-flex items-center gap-1 font-medium text-blue-600 hover:text-blue-700"
           >
             {t("viewAll")}
@@ -146,7 +153,7 @@ export function RequiresAttentionPanel({ data }: RequiresAttentionPanelProps) {
         </div>
       </CardContent>
 
-      <EvaluationModal
+      <Modal
         isOpen={selectedEvaluation !== null}
         onClose={() => setSelectedEvaluation(null)}
         mode="view"

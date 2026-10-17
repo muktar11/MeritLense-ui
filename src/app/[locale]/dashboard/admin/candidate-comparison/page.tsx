@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import {
   RadarChart,
   PolarGrid,
@@ -10,7 +10,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { Download, FileText, Loader2, FileSearch, Search } from "lucide-react";
+import { Download, FileText, GitCompare, Loader2, FileSearch, Search } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import { ScoreViewModal } from "../../business/components/score-view-modal";
 import candidateService from "@/app/api/candidates/endpoints";
@@ -26,6 +26,7 @@ import type {
   FullComparisonResult,
 } from "@/app/api/dashboard/admin/types";
 import { exportChartAsPng } from "@/lib/chart-export";
+import { SearchSelect } from "@/components/app/searchable-fields";
 
 // Same order/values used for both the radar chart series and the selection
 // buttons, so a candidate's swatch color always matches its polygon color.
@@ -45,7 +46,6 @@ export default function AdminCandidateComparisonPage() {
   // Step 0: Select Account
   const [accounts, setAccounts] = useState<ComparisonAccount[]>([]);
   const [loadingAccounts, setLoadingAccounts] = useState(true);
-  const [accountSearch, setAccountSearch] = useState("");
   const [selectedAccount, setSelectedAccount] = useState<ComparisonAccount | null>(null);
 
   // Step 1: Select Job Role
@@ -120,51 +120,56 @@ export default function AdminCandidateComparisonPage() {
     return () => { active = false; };
   }, [selectedAccount, selectedRoleCode]);
 
-  // Step 2 -> Step 3: auto-compare once 2-4 candidates are selected.
-  useEffect(() => {
-    if (!selectedAccount || !selectedRoleCode || selectedCandidateIds.length < 2) {
-      setComparison(null);
-      return;
-    }
-    let active = true;
+  // Step 2 -> Step 3: runs only when the user presses Compare. Any change
+  // to the selection clears the previous result (and ignores a request still
+  // in flight), so the comparison shown always matches the current picks.
+  const [compareError, setCompareError] = useState(false);
+  const compareRequestRef = useRef(0);
+
+  const resetComparison = () => {
+    compareRequestRef.current++;
+    setComparison(null);
+    setCompareError(false);
+    setLoadingComparison(false);
+  };
+
+  const handleCompare = async () => {
+    if (!selectedAccount || !selectedRoleCode || selectedCandidateIds.length < 2) return;
+    const requestId = ++compareRequestRef.current;
+    setComparison(null);
+    setCompareError(false);
     setLoadingComparison(true);
-    adminDashboardService
-      .getFullComparison(selectedAccount, selectedRoleCode, selectedCandidateIds, locale)
-      .then((data) => { if (active) setComparison(data); })
-      .catch((error) => {
-        console.error('Failed to fetch full comparison:', error);
-        if (active) setComparison(null);
-      })
-      .finally(() => { if (active) setLoadingComparison(false); });
-    return () => { active = false; };
-  }, [selectedAccount, selectedRoleCode, selectedCandidateIds, locale]);
+    try {
+      const data = await adminDashboardService.getFullComparison(selectedAccount, selectedRoleCode, selectedCandidateIds, locale);
+      if (requestId === compareRequestRef.current) setComparison(data);
+    } catch (error) {
+      console.error('Failed to fetch full comparison:', error);
+      if (requestId === compareRequestRef.current) setCompareError(true);
+    } finally {
+      if (requestId === compareRequestRef.current) setLoadingComparison(false);
+    }
+  };
 
   const accountKey = (account: ComparisonAccount) => `${account.owner_type}:${account.owner_id}`;
 
-  const filteredAccounts = useMemo(() => {
-    const query = accountSearch.trim().toLowerCase();
-    if (!query) return accounts;
-    return accounts.filter((a) =>
-      a.name.toLowerCase().includes(query) || a.email.toLowerCase().includes(query)
-    );
-  }, [accounts, accountSearch]);
 
   const handleSelectAccount = (key: string) => {
     const account = accounts.find((a) => accountKey(a) === key) ?? null;
     setSelectedAccount(account);
     setSelectedRoleCode(null);
     setSelectedCandidateIds([]);
-    setComparison(null);
+    resetComparison();
   };
 
   const handleSelectRole = (roleCode: string) => {
     if (roleCode === selectedRoleCode) return;
     setSelectedRoleCode(roleCode);
     setSelectedCandidateIds([]);
-    setComparison(null);
+    resetComparison();
   };
 
   const toggleCandidate = (id: string) => {
+    resetComparison();
     if (selectedCandidateIds.includes(id)) {
       setSelectedCandidateIds(selectedCandidateIds.filter((c) => c !== id));
     } else if (selectedCandidateIds.length < 4) {
@@ -298,8 +303,8 @@ export default function AdminCandidateComparisonPage() {
     );
   }
 
-  const companyAccounts = filteredAccounts.filter((a) => a.owner_type === "COMPANY");
-  const userAccounts = filteredAccounts.filter((a) => a.owner_type === "USER");
+  const companyAccounts = accounts.filter((a) => a.owner_type === "COMPANY");
+  const userAccounts = accounts.filter((a) => a.owner_type === "USER");
 
   return (
     <div className="py-6 sm:py-8 max-w-7xl mx-auto">
@@ -317,41 +322,26 @@ export default function AdminCandidateComparisonPage() {
           ) : accounts.length === 0 ? (
             <p className="text-sm text-gray-400">{tAdmin("noAccounts")}</p>
           ) : (
-            <div className="flex flex-col sm:flex-row gap-2 max-w-3xl">
-              <div className="relative sm:w-64">
-                <Search className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  type="text"
-                  value={accountSearch}
-                  onChange={(e) => setAccountSearch(e.target.value)}
-                  placeholder={tAdmin("searchAccounts")}
-                  className="w-full ps-9 pe-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-purple-400"
-                />
-              </div>
-              <select
-                value={selectedAccount ? accountKey(selectedAccount) : ""}
-                onChange={(e) => handleSelectAccount(e.target.value)}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:border-purple-400"
-              >
-                <option value="">{tAdmin("chooseAccount")}</option>
-                {companyAccounts.length > 0 && (
-                  <optgroup label={tAdmin("businessAccounts")}>
-                    {companyAccounts.map((a) => (
-                      <option key={accountKey(a)} value={accountKey(a)}>{a.name} · {a.candidate_count}</option>
-                    ))}
-                  </optgroup>
-                )}
-                {userAccounts.length > 0 && (
-                  <optgroup label={tAdmin("individualAccounts")}>
-                    {userAccounts.map((a) => (
-                      <option key={accountKey(a)} value={accountKey(a)}>
-                        {a.email && a.email !== a.name ? `${a.name} (${a.email})` : a.name} · {a.candidate_count}
-                      </option>
-                    ))}
-                  </optgroup>
-                )}
-              </select>
-            </div>
+            <SearchSelect
+              id="admin-comparison-account"
+              aria-label={tAdmin("selectAccount")}
+              className="max-w-3xl"
+              buttonClassName="rounded-lg border-gray-300 bg-white"
+              value={selectedAccount ? accountKey(selectedAccount) : ""}
+              onChange={handleSelectAccount}
+              placeholder={tAdmin("chooseAccount")}
+              searchPlaceholder={tAdmin("searchAccounts")}
+              options={[...companyAccounts, ...userAccounts].map((a) => ({
+                value: accountKey(a),
+                label: a.name,
+                description: [
+                  a.owner_type === "COMPANY" ? tAdmin("businessAccounts") : tAdmin("individualAccounts"),
+                  a.email && a.email !== a.name ? a.email : "",
+                ].filter(Boolean).join(" · "),
+                keywords: a.email,
+                hint: String(a.candidate_count),
+              }))}
+            />
           )}
         </div>
 
@@ -419,11 +409,21 @@ export default function AdminCandidateComparisonPage() {
             {selectedCandidateIds.length > 0 && selectedCandidateIds.length < 2 && (
               <p className="text-xs text-amber-600 mt-2">{t("needMoreCandidates")}</p>
             )}
+            {eligibleCandidates.length > 0 && (
+              <button
+                onClick={handleCompare}
+                disabled={selectedCandidateIds.length < 2 || loadingComparison}
+                className="mt-4 flex items-center gap-2 px-5 py-2.5 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loadingComparison ? <Loader2 size={16} className="animate-spin" /> : <GitCompare size={16} />}
+                {loadingComparison ? t("comparing") : t("compareButton", { count: selectedCandidateIds.length })}
+              </button>
+            )}
           </div>
         )}
 
         {/* Step 3: Compare */}
-        {selectedAccount && selectedRoleCode && selectedCandidateIds.length >= 2 && (
+        {selectedAccount && selectedRoleCode && (loadingComparison || comparison || compareError) && (
           <div className="border-t border-gray-100 pt-6">
             {loadingComparison ? (
               <div className="flex items-center gap-2 text-gray-400 text-sm">
@@ -557,6 +557,8 @@ export default function AdminCandidateComparisonPage() {
                   </button>
                 </div>
               </>
+            ) : compareError ? (
+              <p className="text-sm text-red-600">{t("compareFailed")}</p>
             ) : null}
           </div>
         )}

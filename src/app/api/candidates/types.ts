@@ -23,7 +23,6 @@ export interface Candidate {
   created_by_name: string;
   company: string | null;
   company_name: string;
-  shared_with: string[];
   created_at: string;
   updated_at: string;
 }

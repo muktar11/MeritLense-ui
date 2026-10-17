@@ -5,13 +5,13 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   LucideIcon,
   ChevronLeft,
-  User,
+  ChevronsUpDown,
   LogOut,
   Menu,
   X,
   Lock,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +21,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuthStore } from "@/store/auth-store";
+import { useAuth } from "@/app/hooks/useAuth";
 import { useTranslations, useLocale } from "next-intl";
 
 interface SidebarItem {
@@ -40,6 +41,25 @@ interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
+// Who is signed in, as saved at login (useAuth keeps these in localStorage;
+// the zustand auth store was never populated, so the footer showed no name).
+function useSignedInUser() {
+  const [user, setUser] = useState<{ name: string; role: string | null }>({ name: "", role: null });
+  useEffect(() => {
+    try {
+      const data = JSON.parse(localStorage.getItem("userData") || "{}");
+      setUser({ name: String(data.full_name || "").trim(), role: localStorage.getItem("userRole") });
+    } catch {
+      setUser({ name: "", role: null });
+    }
+  }, []);
+  return user;
+}
+
+function initialsOf(name: string): string {
+  return name.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase() || "?";
+}
+
 function SidebarContent({
   sidebarItems,
   userType,
@@ -55,15 +75,19 @@ function SidebarContent({
   const router = useRouter();
   const locale = useLocale();
 
-  const logout = useAuthStore((state) => state.logout);
-  const user = useAuthStore((state) => state.user);
+  const clearAuthStore = useAuthStore((state) => state.logout);
+  const { logout } = useAuth();
+  const user = useSignedInUser();
 
   const t = useTranslations("dashboard");
+  const accountType = user.role ? t(`accountTypes.${user.role}`) : userType;
 
-  /** ✅ LOGOUT HANDLER */
+  // Clears the real session (tokens in localStorage) - the store alone
+  // held nothing, so logging out from here didn't sign the user out.
   const logOutHandler = () => {
-    logout(); // clear auth store
-    router.replace(`/${locale}/auth/login`); // locale-aware redirect
+    logout();
+    clearAuthStore();
+    router.replace(`/${locale}/auth/login`);
   };
 
   return (
@@ -163,22 +187,26 @@ function SidebarContent({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
+              type="button"
+              aria-label={t("accountMenu")}
+              title={collapsed ? `${user.name} - ${accountType}` : undefined}
               className={cn(
                 "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-secondary-200 transition-colors",
                 collapsed && "justify-center"
               )}
             >
-              <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center shrink-0">
-                <User className="h-4 w-4 text-gray-600" />
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 text-white text-sm font-semibold flex items-center justify-center shrink-0">
+                {initialsOf(user.name)}
               </div>
 
               {!collapsed && (
-                <div className="flex-1 text-left">
-                  <p className="text-sm font-medium text-gray-900">
-                    {user?.fullName}
-                  </p>
-                  <p className="text-xs text-gray-500">{user?.email}</p>
-                </div>
+                <>
+                  <div className="flex-1 min-w-0 text-start">
+                    <p className="text-sm font-semibold text-gray-900 truncate">{user.name || "—"}</p>
+                    <p className="text-xs text-gray-500 truncate">{accountType}</p>
+                  </div>
+                  <ChevronsUpDown className="h-4 w-4 text-gray-400 shrink-0" />
+                </>
               )}
             </button>
           </DropdownMenuTrigger>
@@ -188,8 +216,8 @@ function SidebarContent({
             align={collapsed ? "center" : "end"}
             className="w-56"
           >
-            <DropdownMenuItem onClick={logOutHandler}>
-              <LogOut className="mr-2 h-4 w-4" />
+            <DropdownMenuItem onClick={logOutHandler} className="text-red-600 focus:text-red-700">
+              <LogOut className="me-2 h-4 w-4" />
               <span>{t("logout")}</span>
             </DropdownMenuItem>
           </DropdownMenuContent>

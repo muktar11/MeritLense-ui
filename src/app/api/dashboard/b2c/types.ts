@@ -70,37 +70,16 @@ export interface ComparisonEligibleCandidate {
   job_role: string;
 }
 
-export interface ComparisonCompetencyRow {
-  dimension_key: string;
-  label: string;
-  classification: 'CRITICAL' | 'NON_CRITICAL' | 'REQUIRED';
-  percentage: number;
-  status_label: string;
-  tone: string;
-}
-
-export interface ComparisonCandidateEntry {
-  candidate_id: string;
-  candidate_name: string;
-  evaluation_id: string;
-  readiness_status: string;
-  readiness_display: string;
-  assessment_coverage: number;
-  requires_human_review: boolean;
-  competencies: ComparisonCompetencyRow[];
-}
-
-export interface ComparisonKeyDifference {
-  label: string;
-  text: string;
-}
-
-export interface FullComparisonResult {
-  role_code: string;
-  role_name: string;
-  candidates: ComparisonCandidateEntry[];
-  key_differences: ComparisonKeyDifference[];
-}
+// Same shapes as the B2B comparison - one backend implementation.
+export type {
+  ComparisonAssessment,
+  ComparisonCandidateEntry,
+  ComparisonCompetencyRow,
+  ComparisonCriticalIndicators,
+  ComparisonKeyDifference,
+  EvaluationTier,
+  FullComparisonResult,
+} from '@/app/api/dashboard/b2b/types';
 
 export interface EvaluationTimeRange {
   range: string;
@@ -148,4 +127,9 @@ export interface MonthlyActivity {
 }
 
 // Same shape as the B2B readiness-distribution response.
-export type { ReadinessDistribution, ReadinessStatus } from '@/app/api/dashboard/b2b/types';
+export type {
+  DashboardLayout,
+  ReadinessDistribution,
+  ReadinessStatus,
+  RequiresAttention,
+} from '@/app/api/dashboard/b2b/types';

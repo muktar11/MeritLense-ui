@@ -5,14 +5,23 @@
 // browser here belongs to the candidate taking a specific interview, and
 // that interview's language was chosen by the admin/config, not by the
 // candidate's own browser locale.
-export type CandidateLanguage = "en" | "ar";
+import { buildCandidateStrings } from "./candidate-builders";
+import arMessages from "./locales/ar.json";
+
+// A lowercase LANGUAGES key: "en" and "ar" are built in below; every other
+// language is registered once its bundle loads (see candidate-messages.ts).
+export type CandidateLanguage = string;
 
 export function resolveCandidateLanguage(uiLanguage?: string | null): CandidateLanguage {
-  return (uiLanguage ?? "").toUpperCase() === "AR" ? "ar" : "en";
+  const key = (uiLanguage ?? "").toLowerCase();
+  if (DICTIONARIES[key]) return key;
+  return key === "ar" ? "ar" : "en";
 }
 
+const RTL_LANGUAGES = ["ar", "ur"];
+
 export function candidateDir(language: CandidateLanguage): "rtl" | "ltr" {
-  return language === "ar" ? "rtl" : "ltr";
+  return RTL_LANGUAGES.includes(language) ? "rtl" : "ltr";
 }
 
 interface CandidateStrings {
@@ -58,7 +67,14 @@ interface CandidateStrings {
     verbalConfirmation: {
       title: string;
       subtitle: string;
+      subtitleNote: string;
+      statementLabel: string;
       phrase: string;
+      listenButton: string;
+      stopListening: string;
+      audioUnavailable: string;
+      info: string;
+      micDenied: string;
       startButton: string;
       recording: (seconds: number) => string;
       stopButton: string;
@@ -264,8 +280,15 @@ const en: CandidateStrings = {
     },
     verbalConfirmation: {
       title: "Verbal Confirmation",
-      subtitle: "Please read the following out loud and record yourself saying it:",
-      phrase: "I confirm that I am the person completing this interview and that my answers are my own.",
+      subtitle: "Please read the statement below and record your voice.",
+      subtitleNote: "This confirms that you are the person completing this assessment.",
+      statementLabel: "English (Original)",
+      phrase: "I confirm that I am completing this assessment myself and that these are my own answers.",
+      listenButton: "Listen in English",
+      stopListening: "Stop",
+      audioUnavailable: "Audio playback isn't available on this device. Please read the statement on screen.",
+      info: "You can listen to the statement, re-record if needed, and then submit to continue.",
+      micDenied: "We couldn't access your microphone. Please allow microphone access in your browser and try again.",
       startButton: "Start Recording",
       recording: (seconds) => `Recording… ${seconds}s`,
       stopButton: "Stop Recording",
@@ -459,246 +482,16 @@ const en: CandidateStrings = {
   },
 };
 
-const ar: CandidateStrings = {
-  common: {
-    retry: "إعادة المحاولة",
-    continueLabel: "متابعة",
-  },
-  precheck: {
-    preparing: "جارٍ تجهيز مقابلتك…",
-    liveCallBanner: "مقابلة مباشرة — ستنضم إلى مكالمة فيديو مع المقيّم بمجرد استعدادك",
-    consent: {
-      title: "موافقتك",
-      paragraph1:
-        "لقد تمت دعوتك لإكمال تقييم جاهزية القوى العاملة عبر منصة ميريت لينس. المشاركة اختيارية، وبمتابعتك فإنك تؤكد أنك تختار المشاركة بمحض إرادتك.",
-      paragraph2:
-        "سيتم معالجة إجاباتك، والتسجيلات الصوتية، وبيانات التحقق من الهوية لإجراء هذا التقييم، وسيتم مشاركة التقرير الناتج مع صاحب العمل أو الجهة التي طلبت هذا التقييم. لا تتخذ ميريت لينس قرار التوظيف — يبقى ذلك من مسؤولية صاحب العمل.",
-      signLabel: "التوقيع باسم",
-      namePlaceholder: "اسمك غير متوفر - يرجى التواصل مع الدعم",
-      agreeLabel: "أوافق على المشاركة في هذا التقييم وعلى معالجة بياناتي كما هو موضح أعلاه.",
-      submitLabel: "التوقيع والمتابعة",
-      errorGeneric: "حدث خطأ أثناء حفظ موافقتك. يُرجى المحاولة مرة أخرى.",
-    },
-    privacy: {
-      title: "إشعار الخصوصية",
-      paragraph1:
-        "تقوم ميريت لينس بجمع ومعالجة إجاباتك المنطوقة و/أو المكتوبة (بما في ذلك التسجيلات الصوتية والنصوص المفرغة عند الإجابة صوتيًا)، وصورة يتم التقاطها للتحقق من الهوية، والدرجات والمؤشرات وغيرها من المخرجات التي يولدها تحليلنا المعتمد على الذكاء الاصطناعي من إجاباتك. إذا تضمنت جلستك مقابلة فيديو مباشرة، فإن المكالمة نفسها لا تُسجَّل — تُفرَّغ إجاباتك المنطوقة فقط لأغراض التقييم.",
-      paragraph2:
-        "تُستخدم هذه البيانات للتحقق من هويتك، وإجراء تقييم جاهزيتك للقوى العاملة، وتحليل إجاباتك وأدائك في الكفاءات، وإصدار تقرير التقييم الخاص بك، وعند الاقتضاء، شهادة.",
-      paragraph3:
-        "تستخدم بعض أجزاء هذا التقييم الذكاء الاصطناعي والتحليل الآلي لتفريغ إجاباتك وترجمتها وتقييمها. النتائج هي معلومات داعمة لاتخاذ القرار، وليست قرارًا نهائيًا — يبقى صاحب العمل أو الجهة التي دعتك لهذا التقييم المسؤول الوحيد عن أي قرار توظيف.",
-      paragraph4:
-        "لا تبيع ميريت لينس بياناتك. يجوز لمزوّدي الخدمات المعتمدين (مثل مزوّدي خدمات تحويل الكلام إلى نص، والترجمة، والتحليل بالذكاء الاصطناعي) معالجة بياناتك فقط بالقدر اللازم لتقديم خدمة هذا التقييم، وفق ضمانات مناسبة لحماية البيانات. تُشارَك نتائجك أيضًا مع صاحب العمل أو الجهة التي طلبت هذا التقييم.",
-      paragraph5: "يتم الاحتفاظ ببياناتك وفقًا لسياسة الاحتفاظ بالبيانات الخاصة بميريت لينس.",
-      ackLabel:
-        "أؤكد أنني قرأت وفهمت إشعار الخصوصية هذا، وأقرّ بأن بياناتي الشخصية، بما في ذلك الفيديو والصوت والنصوص المفرغة ومعلومات التحقق من الهوية، ستتم معالجتها للأغراض الموضحة أعلاه.",
-      submitLabel: "إقرار ومتابعة",
-      errorGeneric: "حدث خطأ أثناء حفظ إقرارك. يُرجى المحاولة مرة أخرى.",
-    },
-    deviceCheck: {
-      title: "فحص الكاميرا والميكروفون",
-      subtitle: "نحتاج إلى التأكد من أن كاميرتك وميكروفونك يعملان قبل البدء.",
-      testButton: "اختبار الكاميرا والميكروفون",
-      checking: "جارٍ فحص الأجهزة…",
-      passedMessage: "الكاميرا والميكروفون يعملان بشكل جيد.",
-      continueButton: "متابعة",
-      failedMessage: "تعذّر الوصول إلى الكاميرا والميكروفون معًا. يُرجى السماح بالوصول إليهما والمحاولة مرة أخرى.",
-      retryButton: "إعادة المحاولة",
-      errorGeneric: "حدث خطأ أثناء حفظ نتيجة فحص الأجهزة. يُرجى المحاولة مرة أخرى.",
-    },
-    verbalConfirmation: {
-      title: "التأكيد الصوتي",
-      subtitle: "يُرجى قراءة النص التالي بصوت عالٍ وتسجيل نفسك وأنت تقوله:",
-      phrase: "أؤكد أنني الشخص الذي يُكمل هذه المقابلة وأن إجاباتي هي إجاباتي الخاصة.",
-      startButton: "بدء التسجيل",
-      recording: (seconds) => `جارٍ التسجيل… ${seconds} ث`,
-      stopButton: "إيقاف التسجيل",
-      retryButton: "إعادة التسجيل",
-      submitButton: "إرسال ومتابعة",
-      errorGeneric: "حدث خطأ أثناء إرسال تسجيلك. يُرجى المحاولة مرة أخرى.",
-    },
-  },
-  identity: {
-    loading: "جارٍ تجهيز التحقق من الهوية…",
-    unavailableTitle: "فشل التحقق من الهوية",
-    unavailableParagraph1: "لم نتمكن من العثور على صورة مرجعية واضحة مسجَّلة لهذه الجلسة.",
-    unavailableParagraph2:
-      "يُرجى التواصل مع الشخص الذي دعاك لهذه المقابلة — لا يمكن لجلستك المتابعة حتى يتم حل هذه المشكلة.",
-    setupFailedTitle: "تعذّر تحميل التحقق",
-    setupFailedBody: "هذه عادةً مشكلة اتصال مؤقتة. يُرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.",
-    retryButton: "إعادة المحاولة",
-    title: "تحقق من هويتك",
-    subtitle: "التقط صورة سريعة حتى نتمكن من تأكيد أنها أنت. لن تتمكن من بدء المقابلة حتى يتم اجتياز هذه الخطوة.",
-    cameraError: "تعذّر الوصول إلى الكاميرا. يُرجى السماح بالوصول إلى الكاميرا والمحاولة مرة أخرى.",
-    youLabel: "أنت",
-    idOnFileLabel: "الهوية المسجَّلة",
-    startCameraButton: "تشغيل الكاميرا",
-    capturePhotoButton: "التقاط الصورة",
-    verifyingLabel: (seconds) => `جارٍ التحقق من الهوية… ${seconds} ث`,
-    preparingLabel: "جارٍ التجهيز…",
-    noFaceTitle: "لم يتم اكتشاف وجه",
-    noFaceMessage: "لم نتمكن من العثور على وجه واضح في هذه الصورة — هذه ليست نتيجة مطابقة، بل تعذّر تحليل الصورة فقط.",
-    identificationFailedTitle: "فشل التحقق من الهوية",
-    multipleFacesMessage: "تم اكتشاف أكثر من شخص. يُرجى التأكد من ظهورك أنت فقط في الإطار، ثم المحاولة مرة أخرى.",
-    verifiedTitle: "تم التحقق من الهوية",
-    matchPassed: (score) => `نسبة التطابق ${score.toFixed(0)}%.`,
-    matchFailed: (score) => `نسبة التطابق ${score.toFixed(0)}% — وهذا لا يستوفي الحد الأدنى المطلوب.`,
-    continueButton: "المتابعة إلى المقابلة",
-    tipsTitle: "لتحقيق مطابقة ناجحة:",
-    tips: [
-      "واجه مصدر إضاءة — تجنّب الجلوس أمام نافذة أو مصدر ضوء خلفك",
-      "انظر مباشرة إلى الكاميرا بحيث يظهر وجهك بالكامل",
-      "أزل النظارات الشمسية أو أي شيء يغطي وجهك",
-      "تأكد من ظهورك أنت فقط في الإطار",
-    ],
-  },
-  orientation: {
-    steps: [
-      {
-        title: "قبل أن تبدأ",
-        description: "نظرة سريعة على طريقة عمل هذه المقابلة — تستغرق حوالي 20 ثانية.",
-      },
-      {
-        title: "اقرأ كل سؤال أو استمع إليه",
-        description: "يظهر كل سؤال على الشاشة — اضغط على أيقونة مكبر الصوت إذا كنت تفضّل الاستماع إليه.",
-      },
-      {
-        title: "أجب صوتيًا أو كتابيًا",
-        description: "اختر ما يناسبك — يمكنك التبديل بين التسجيل والكتابة في أي سؤال.",
-      },
-      {
-        title: "راقب المؤقت",
-        description: "يظهر الوقت المتبقي دائمًا أعلى الصفحة — يتم إرسال المقابلة تلقائيًا عند انتهاء الوقت.",
-      },
-      {
-        title: "أنت جاهز الآن",
-        description: "أجب بالوتيرة التي تناسبك ضمن الوقت المحدد. بالتوفيق!",
-      },
-    ],
-    skip: "تخطي",
-    next: "التالي",
-    start: "بدء الاختبار",
-  },
-  interviewPage: {
-    notReadyTitle: "مقابلتك ليست جاهزة بعد",
-    notReadyBody: "يُرجى التواصل مع الشخص الذي دعاك لهذه المقابلة — سيحتاج إلى بدء جلستك قبل أن تتمكن من البدء.",
-    scheduledTitle: "مقابلتك مجدولة",
-    scheduledBody: (formattedDateTime) =>
-      (formattedDateTime
-        ? `ستبدأ هذه المقابلة في ${formattedDateTime} (بتوقيت جهازك المحلي).`
-        : "لم تبدأ هذه المقابلة بعد.") +
-      " ستنتقل هذه الصفحة تلقائيًا عند حلول الموعد — يمكنك تركها مفتوحة أو العودة إليها لاحقًا.",
-    pausedTitle: "تم إيقاف المقابلة مؤقتًا",
-    pausedBody: "لاحظنا وجود أكثر من شخص أمام الكاميرا. يُرجى التأكد من أنك بمفردك أمام الكاميرا — ستُستأنف مقابلتك تلقائيًا.",
-    terminatedTitle: "انتهت المقابلة",
-    terminatedBody:
-      "تم إنهاء هذه المقابلة بسبب تكرار مخالفات النزاهة. يُرجى التواصل مع الشخص الذي دعاك إذا كنت تعتقد أن هذا خطأ.",
-    expiredTitle: "انتهت صلاحية رابط هذه المقابلة",
-    inactiveTitle: "رابط هذه المقابلة لم يعد نشطًا",
-    cancelledMessage: (reason) => `تم إلغاء هذه المقابلة: ${reason}`,
-    expiredMessage: "يُرجى التواصل مع الشخص الذي دعاك لطلب رابط جديد.",
-    genericUnavailableMessage: "انتهت صلاحية هذه الجلسة أو لم تعد متاحة.",
-    completedTitle: "اكتملت المقابلة",
-    completedMessage: (roleName) => `شكرًا لك${roleName ? ` على إكمال مقابلة ${roleName}` : ""}. تم إرسال إجاباتك.`,
-    errorTitle: "حدث خطأ ما",
-    interviewTitle: (roleName) => `مقابلة ${roleName}`,
-    answeringInLabel: "الإجابة باللغة:",
-    recordAnswerButton: "تسجيل الإجابة",
-    typeAnswerButton: "كتابة الإجابة",
-    audioUnavailableMessage: (languageLabel) => `الإجابات الصوتية غير متاحة حاليًا بلغة ${languageLabel} — يُرجى كتابة إجابتك.`,
-    thisLanguage: "هذه اللغة",
-    submitAnswerError: "تعذّر إرسال إجابتك. يُرجى المحاولة مرة أخرى.",
-    submitRecordingError: "تعذّر إرسال تسجيلك. يُرجى المحاولة مرة أخرى.",
-    loadQuestionError: "حدث خطأ أثناء تحميل السؤال التالي. يُرجى تحديث الصفحة.",
-    startError: "تعذّر بدء مقابلتك. يُرجى تحديث الصفحة أو التواصل مع الشخص الذي دعاك.",
-    uploadingLabel: "جارٍ الرفع والتفريغ الصوتي…",
-    missingLinkError: "رابط هذه المقابلة يفتقد معلومات مطلوبة.",
-    notFoundError: "لم نتمكن من العثور على جلسة المقابلة هذه. قد يكون الرابط غير صحيح.",
-  },
-  questionCard: {
-    questionOf: (n, total) => `السؤال ${n} من ${total}`,
-    domainLabel: (domain) => `المجال: ${domain}`,
-    skillTagLabel: (skill) => `المهارة: ${skill}`,
-    readAloudTitle: "لغة القراءة الصوتية",
-    listenTitle: "الاستماع إلى السؤال",
-    audioUnavailable: "الصوت غير متاح لهذا السؤال حاليًا. يُرجى قراءة السؤال على الشاشة.",
-  },
-  answerRecorder: {
-    micError: "تعذّر الوصول إلى الميكروفون. يُرجى السماح بالوصول إلى الميكروفون والمحاولة مرة أخرى.",
-    tapToRecord: "اضغط لتسجيل إجابتك",
-    recordingLabel: (time) => `جارٍ التسجيل… ${time}`,
-    stopButton: "إيقاف",
-    reRecordButton: "إعادة التسجيل",
-    submitButton: "إرسال الإجابة",
-  },
-  answerTextForm: {
-    placeholder: "اكتب إجابتك هنا...",
-    submitButton: "إرسال الإجابة",
-  },
-  integrityMonitor: {
-    problemLabels: {
-      NO_FACE_DETECTED: "لا يمكننا رؤيتك",
-      MULTIPLE_FACES_DETECTED: "تم اكتشاف أكثر من وجه",
-      CAMERA_UNAVAILABLE: "يبدو أن الكاميرا متوقفة أو غير متاحة",
-    },
-    willBeFlagged: (label, secondsLeft) => `${label} — سيتم تسجيل هذا كمخالفة نزاهة خلال ${secondsLeft} ث ما لم يتم حل المشكلة.`,
-  },
-  testTimer: {
-    remaining: (mm, ss) => `${mm}:${ss} متبقٍ`,
-    warning5Min: "تبقّت 5 دقائق",
-    warning1Min: "تبقّت دقيقة واحدة",
-    warning30Sec: "تبقّت 30 ثانية",
-  },
-  liveCallRoom: {
-    missingSessionId: "معرّف الجلسة مفقود.",
-    callEnded: "انتهت المكالمة",
-    callEndedMessage: "انتهت مكالمة المقابلة المباشرة هذه.",
-    returnToDashboard: "العودة إلى لوحة التحكم",
-    couldntJoin: "تعذر الانضمام إلى المكالمة",
-    refreshAndTryAgain: "يرجى تحديث الصفحة والمحاولة مرة أخرى.",
-    opensAt: "تُفتح هذه المكالمة قبل 15 دقيقة من موعدها المحدد:",
-    yourLocalTime: "(بتوقيتك المحلي).",
-    statusJoining: "جارٍ الانضمام إلى المكالمة…",
-    statusWaiting: "في انتظار انضمام المشارك الآخر…",
-    statusPendingAdmission: "في انتظار سماح المُقيِّم لك بالدخول…",
-    statusReconnecting: "جارٍ إعادة الاتصال…",
-    statusConnecting: "جارٍ الاتصال…",
-    candidateWantsToJoin: "يريد المرشح الانضمام",
-    letThemIn: "هل تسمح له بالدخول إلى المقابلة؟",
-    deny: "رفض",
-    admit: "قبول",
-    manualTranslationActive: "وضع الترجمة اليدوية مفعّل",
-    youreEvaluator: "أنت المُقيِّم",
-    youreCandidate: "أنت المرشح",
-    manualTranslationLabel: "الترجمة اليدوية",
-    messageFeed: "سجل الرسائل",
-    isSpeaking: (role) => `${role} يتحدث الآن…`,
-    waitingToFinish: (role) => `في انتظار انتهاء ${role}…`,
-    tapToRecord: "اضغط لتسجيل دورك",
-    recording: (time) => `جارٍ التسجيل… ${time}`,
-    stop: "إيقاف",
-    reRecord: "إعادة التسجيل",
-    sending: "جارٍ الإرسال…",
-    send: "إرسال",
-    noSegmentsYet: "سجّل دورك في الحديث لإرساله إلى المشارك الآخر بلغته.",
-    you: "أنت",
-    otherParticipant: "المشارك الآخر",
-    original: "النص الأصلي",
-    translated: "الترجمة",
-    iSpeak: "أتحدث",
-    iWantToHear: "أريد أن أسمع",
-    endCall: "إنهاء المكالمة",
-    candidateLabel: "المرشح",
-    evaluatorLabel: "المُقيِّم",
-  },
-  callControlsIntro: {
-    recordBeat: "اضغط هنا لتسجيل دورك عندما يحين وقت حديثك.",
-    languageBeat: "حدد هنا اللغة التي تتحدثها واللغة التي تريد سماعها.",
-    gotIt: "فهمت",
-  },
-};
+// Arabic lives in locales/ar.json like every other language, so it can be
+// reviewed and corrected without touching code.
+const ar: CandidateStrings = buildCandidateStrings(arMessages);
 
 const DICTIONARIES: Record<CandidateLanguage, CandidateStrings> = { en, ar };
+
+/** Adds a bundled language once it has loaded (candidate-messages.ts). */
+export function registerCandidateStrings(language: CandidateLanguage, strings: CandidateStrings) {
+  DICTIONARIES[language] = strings;
+}
 
 export function getCandidateStrings(uiLanguage?: string | null): CandidateStrings {
   return DICTIONARIES[resolveCandidateLanguage(uiLanguage)];

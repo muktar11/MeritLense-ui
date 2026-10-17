@@ -388,7 +388,6 @@ export default function PaymentPage() {
                         used={currentUsage.usage_percentages.candidate_limit.used}
                         limit={currentUsage.usage_percentages.candidate_limit.limit}
                         label={tBilling('candidates')}
-                        unit="candidates"
                       />
                     )}
                     {currentUsage.usage_percentages.evaluation_limit && (
@@ -396,7 +395,6 @@ export default function PaymentPage() {
                         used={currentUsage.usage_percentages.evaluation_limit.used}
                         limit={currentUsage.usage_percentages.evaluation_limit.limit}
                         label={tBilling('evaluations')}
-                        unit="evaluations"
                       />
                     )}
                     {currentUsage.usage_percentages.team_member_limit && (
@@ -404,7 +402,6 @@ export default function PaymentPage() {
                         used={currentUsage.usage_percentages.team_member_limit.used}
                         limit={currentUsage.usage_percentages.team_member_limit.limit}
                         label={tBilling('teamMembers')}
-                        unit="team members"
                       />
                     )}
                   </div>

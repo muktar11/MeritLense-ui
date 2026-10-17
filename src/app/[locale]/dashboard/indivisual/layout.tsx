@@ -5,6 +5,7 @@ import { Breadcrumb } from "@/components/app/Breadcrumb";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { Watermark } from "@/components/app/Watermark";
 import { AgreementGuard, useB2CAgreementStatus } from "./components/agreement-guard";
+import { UpdatedAgreementsNotice } from "@/components/agreements/UpdatedAgreementsNotice";
 
 import {
   LayoutDashboard,
@@ -19,6 +20,7 @@ import {
   Package,
   Bell,
   Activity,
+  GitCompare,
 } from "lucide-react";
 
 import { LanguageSelector } from "@/components/app/LanguageSelector";
@@ -83,6 +85,13 @@ export default function AdminLayout({
         disabledTooltip,
       },
 
+      {
+        label: t("pages_list.compare_candidates"),
+        icon: GitCompare,
+        href: `/${locale}/dashboard/indivisual/compare-candidates`,
+        disabled: lockedUntilSigned,
+        disabledTooltip,
+      },
     {
         label: t("pages_list.packages_subscription"),
         icon: Package,
@@ -108,7 +117,10 @@ export default function AdminLayout({
               <Breadcrumb />
               <LanguageSelector />
             </div>
-            <div className="sm:px-8 px-4">{children}</div>
+            <div className="sm:px-8 px-4">
+              <UpdatedAgreementsNotice types={["B2C_AGREEMENT"]} signPath="/dashboard/indivisual/sign-agreements" />
+              {children}
+            </div>
           </div>
         </DashboardLayout>
       </AgreementGuard>

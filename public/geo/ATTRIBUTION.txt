@@ -1,0 +1,5 @@
+City names in /geo/cities/*.json are derived from GeoNames (https://www.geonames.org/),
+cities with more than 15,000 inhabitants, licensed under Creative Commons Attribution 4.0
+(https://creativecommons.org/licenses/by/4.0/). Changes: limited to the 300 largest cities
+per country, Arabic names selected from GeoNames alternate names with letter clean-up, and
+hand-checked Arabic names for the main GCC cities. Rebuild with scripts/geo/build_cities.py.

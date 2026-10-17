@@ -5,6 +5,7 @@ import { Breadcrumb } from "@/components/app/Breadcrumb";
 import AuthGuard from "@/components/auth/AuthGuard";
 import { Watermark } from "@/components/app/Watermark";
 import { AgreementGuard, useB2BAgreementStatus } from "./components/agreement-guard";
+import { UpdatedAgreementsNotice } from "@/components/agreements/UpdatedAgreementsNotice";
 import {
   LayoutDashboard,
   BarChart3,
@@ -13,6 +14,7 @@ import {
   Settings,
   FileText,
   ClipboardList,
+  GitCompare,
   Loader2,
 } from "lucide-react";
 import { LanguageSelector } from "@/components/app/LanguageSelector";
@@ -32,6 +34,9 @@ const TEAM_PERMISSIONS = {
 } as const;
 
 const ALL_TEAM_PERMISSIONS = Object.values(TEAM_PERMISSIONS);
+// Read-only access to every result in the company (Reviewer role). It opens
+// the results pages; the backend refuses any change made from them.
+const VIEW_RESULTS = "view_results";
 
 function requiredPermissionsForPath(path: string): string[] | null {
   if (path.includes("/dashboard/business/company-profile")) return null;
@@ -44,6 +49,12 @@ function requiredPermissionsForPath(path: string): string[] | null {
 
 function canAccessPath(path: string, permissions: string[], allowProfile = false): boolean {
   if (path.includes("/dashboard/business/company-profile")) return allowProfile;
+  if (
+    permissions.includes(VIEW_RESULTS)
+    && (path.includes("/dashboard/business/candidate-evaluation") || path.includes("/dashboard/business/score-management"))
+  ) {
+    return true;
+  }
   const required = requiredPermissionsForPath(path);
   return required === null || required.every(permission => permissions.includes(permission));
 }
@@ -143,6 +154,13 @@ export default function AdminLayout({
         disabledTooltip,
       },
       {
+        label: t("pages_list.compare_candidates"),
+        icon: GitCompare,
+        href: `/${locale}/dashboard/business/compare-candidates`,
+        disabled: lockedUntilSigned,
+        disabledTooltip,
+      },
+      {
         label: t("pages_list.audit_logs"),
         icon: FileText,
         href: `/${locale}/dashboard/business/payment`,
@@ -215,7 +233,12 @@ export default function AdminLayout({
                 ) : permissionsLoadError ? (
                   <p className="py-8 text-center text-red-600">{t("permissionsLoadError")}</p>
                 ) : canAccessCurrentPath ? (
-                  children
+                  <>
+                    {userRole === "B2B" && (
+                      <UpdatedAgreementsNotice types={["B2B_AGREEMENT", "DPA"]} signPath="/dashboard/business/sign-agreements" />
+                    )}
+                    {children}
+                  </>
                 ) : (
                   <p className="py-8 text-center text-muted-foreground">{t("accessDenied")}</p>
                 )}

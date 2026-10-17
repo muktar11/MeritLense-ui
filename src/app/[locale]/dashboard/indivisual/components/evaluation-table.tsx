@@ -119,8 +119,9 @@ export default function EvaluationTable({
   const paginatedData = data.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
 
   const handleCopyMeetingLink = async (evaluation: EvaluationListItem) => {
-    if (!evaluation.meeting_link) return
-    await navigator.clipboard.writeText(evaluation.meeting_link)
+    const link = evaluation.meeting_short_link || evaluation.meeting_link
+    if (!link) return
+    await navigator.clipboard.writeText(link)
     setCopiedId(evaluation.id)
     setTimeout(() => setCopiedId(null), 2000)
   }
@@ -173,9 +174,14 @@ export default function EvaluationTable({
                   {TYPE_KEYS[item.evaluation_type] ? tType(TYPE_KEYS[item.evaluation_type]) : item.evaluation_type_display}
                 </td>
                 <td className="py-4 px-4">
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(item.status)}`}>
-                    {STATUS_KEYS[item.status] ? tStatus(STATUS_KEYS[item.status]) : item.status_display}
-                  </span>
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(item.status)}`}>
+                      {STATUS_KEYS[item.status] ? tStatus(STATUS_KEYS[item.status]) : item.status_display}
+                    </span>
+                    {item.review_status === 'REQUIRED' && (
+                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">{t("underReview")}</span>
+                    )}
+                  </div>
                 </td>
                 <td className="py-4 px-4 text-gray-600">
                   {format(new Date(item.scheduled_date), 'MMM d, yyyy h:mm a', locale === 'ar' ? { locale: ar } : undefined)}
@@ -397,6 +403,9 @@ export default function EvaluationTable({
                   <span className={`px-3 py-1 rounded-full font-medium ${getStatusBadgeColor(item.status)}`}>
                     {STATUS_KEYS[item.status] ? tStatus(STATUS_KEYS[item.status]) : item.status_display}
                   </span>
+                  {item.review_status === 'REQUIRED' && (
+                    <span className="px-3 py-1 rounded-full font-medium bg-amber-100 text-amber-800">{t("underReview")}</span>
+                  )}
                   <span className="text-gray-600">
                     {format(new Date(item.scheduled_date), 'MMM d, yyyy h:mm a', locale === 'ar' ? { locale: ar } : undefined)}
                   </span>

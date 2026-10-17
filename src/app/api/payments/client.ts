@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { withPageLanguage } from '@/lib/api-language'
 import { API_BASE_URL } from '@/lib/config/env'
 
 export const authClient = axios.create({
@@ -148,3 +149,9 @@ authFormDataClient.interceptors.response.use(
     }
   }
 )
+
+// Send the page language (Arabic or English) with every request.
+withPageLanguage(authClient)
+withPageLanguage(authFormDataClient)
+withPageLanguage(apiClient)
+withPageLanguage(apiFormDataClient)

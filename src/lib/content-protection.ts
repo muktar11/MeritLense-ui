@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 /**
  * Casual copy-protection deterrents, applied platform-wide (public pages
@@ -63,6 +64,7 @@ function isDevToolsShortcut(event: KeyboardEvent): boolean {
 }
 
 export function useContentProtection() {
+  const t = useTranslations("shared.ui.contentProtection");
   useEffect(() => {
     const handleCopyShortcuts = (event: KeyboardEvent) => {
       if (isExemptTarget(event.target)) return;
@@ -94,8 +96,8 @@ export function useContentProtection() {
     // or intercept it. This is a visible reminder, not a block.
     const handleKeyUp = (event: KeyboardEvent) => {
       if (event.key === "PrintScreen") {
-        toast.warning("Screenshots of this page may contain confidential information.", {
-          description: "Please don't redistribute captured content without authorization.",
+        toast.warning(t("screenshotTitle"), {
+          description: t("screenshotBody"),
         });
       }
     };
@@ -111,5 +113,5 @@ export function useContentProtection() {
       document.removeEventListener("dragstart", handleDragStart);
       document.removeEventListener("keyup", handleKeyUp);
     };
-  }, []);
+  }, [t]);
 }

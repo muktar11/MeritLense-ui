@@ -1,379 +1,111 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
-import { useTranslations, useLocale } from "next-intl"
-import { useTheme } from "next-themes"
-import { usePathname, useRouter } from "@/i18n/navigation"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Upload, Download, LogOut, Loader2, Plus, MoreVertical, Mail, UserCheck, Clock, FileSignature, CheckCircle2, History, Pencil, Trash2 } from "lucide-react"
+import { useCallback, useEffect, useState } from "react"
+import { useLocale, useTranslations } from "next-intl"
+import { FileSignature, FileText, Loader2, Lock, Settings, Users, type LucideIcon } from "lucide-react"
 import { useProfile } from "../../../../hooks/useProfile"
 import { useAuth } from "../../../../hooks/useAuth"
-import { LANGUAGES } from "../../../../api/auth/endpoints"
-import { COUNTRIES } from "@/lib/countries"
-import { getTimezoneOptions } from "@/lib/location-detection"
-import { ChangePassword } from "./change-password"
-import { InviteTeamModal } from "./invite-team-modal"
-import { EditTeamModal } from "./edit-team-modal"
-import { PendingInvitations } from "./pending-invitations"
-import { CompanyLicenseDocuments } from "./company-license-documents"
-import { AuditTrailModal } from "@/components/agreements/AuditTrailModal"
-import teamService from "@/app/api/team/endpoints"
-import type { TeamMember, TeamInvitation } from "@/app/api/team/types"
-import agreementService from "@/app/api/agreements/endpoints"
-import type { Agreement } from "@/app/api/agreements/types"
+import type { B2BProfileData } from "@/app/api/profile/endpoints"
 import companyService from "@/app/api/company/endpoints"
-import TablePagination from "@/components/ui/table-pagination"
-import { format } from "date-fns"
-import { ar } from "date-fns/locale"
+import type { CompanyProfile as Company } from "@/app/api/company/types"
+import { ChangePassword } from "./change-password"
+import { CompanyLicenseDocuments } from "./company-license-documents"
+import { CompanyInfoCard } from "./profile/company-info-card"
+import { ContactCard } from "./profile/contact-card"
+import { BusinessAddressesCard } from "./profile/business-addresses-card"
+import { TeamAccessCard } from "./profile/team-access-card"
+import { LicenseCard } from "./profile/license-card"
+import { LegalAgreementsCard } from "./profile/legal-agreements-card"
+import { SettingsCard } from "./profile/settings-card"
 
-const REQUIRED_AGREEMENT_TYPES = ["B2B_AGREEMENT", "DPA"] as const
+// Company Profile (B2B, approved design 14 Oct 2026). The section bar
+// jumps to each card; every card stays on the page. Partnerships from the
+// design is left out until there is a real partner feature behind it.
+const SECTIONS: { id: string; key: string; icon: LucideIcon }[] = [
+  { id: "team-access", key: "team", icon: Users },
+  { id: "legal-agreements", key: "agreements", icon: FileSignature },
+  { id: "business-license", key: "license", icon: FileText },
+  { id: "account-security", key: "security", icon: Lock },
+  { id: "settings", key: "settings", icon: Settings },
+]
 
-// The real, backend-enforced permission codes (CompanyTeamPermissions,
-// validated by TeamMemberUpdateSerializer) - "Full Access"/"Standard"/
-// "Read-only" below are just convenience presets for this compact
-// dropdown, not stored values of their own. These used to be a
-// completely different, never-valid set of strings ('full_access',
-// 'manage_evaluations', 'manage_team'), so every permission update made
-// through this dropdown was silently rejected by the backend.
-const ALL_TEAM_PERMISSIONS = ["add_candidates", "set_evaluation", "set_scores", "set_payment"]
-const STANDARD_TEAM_PERMISSIONS = ["add_candidates", "set_evaluation"]
-
-function permissionPresetFor(permissions: string[]): "full-access" | "standard" | "read-only" {
-  if (ALL_TEAM_PERMISSIONS.every(p => permissions.includes(p))) return "full-access"
-  if (permissions.length > 0) return "standard"
-  return "read-only"
-}
-
-function permissionsForPreset(preset: string): string[] {
-  if (preset === "full-access") return ALL_TEAM_PERMISSIONS
-  if (preset === "standard") return STANDARD_TEAM_PERMISSIONS
-  return []
-}
-const TEAM_MEMBERS_PAGE_SIZE = 10
-const LOGO_ACCEPTED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"]
-const LOGO_MAX_BYTES = 5 * 1024 * 1024
-const ROLES_MAX_COUNT = 8
-const ROLE_MAX_LENGTH = 30
+const str = (value: unknown) => (typeof value === "string" ? value : "")
 
 export function CompanyProfile() {
   const t = useTranslations("dashboard.business.company-profile")
-  const tLanguages = useTranslations("dashboard.indivisual.settings.edit-profile-tab.languages")
-  const tAgreementDocs = useTranslations("dashboard.business.signAgreements.docLabels")
   const locale = useLocale()
-  const pathname = usePathname()
-  const router = useRouter()
-  const { theme, setTheme } = useTheme()
   const { profile, loading, error, fetchProfile, updateProfile } = useProfile()
-  const { logout, userRole } = useAuth()
-
-  const [companyLogo, setCompanyLogo] = useState<string | null>(null)
-  const [logoUploading, setLogoUploading] = useState(false)
-  const [logoError, setLogoError] = useState<string | null>(null)
+  const { userRole } = useAuth()
   const isCompanyOwner = userRole === "B2B"
 
-  const [companyRoles, setCompanyRoles] = useState<string[]>([])
-  const [rolesSaving, setRolesSaving] = useState(false)
-  const [rolesError, setRolesError] = useState<string | null>(null)
-  const [isAddingRole, setIsAddingRole] = useState(false)
-  const [newRoleValue, setNewRoleValue] = useState("")
+  const [company, setCompany] = useState<Company | null>(null)
+  const [settingsSaving, setSettingsSaving] = useState(false)
+  const [activeSection, setActiveSection] = useState(SECTIONS[0].id)
 
-  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([])
-  const [pendingInvitations, setPendingInvitations] = useState<TeamInvitation[]>([])
-  const [teamLoading, setTeamLoading] = useState(false)
-  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
-  const [teamMembersPage, setTeamMembersPage] = useState(1)
-
-  const [agreements, setAgreements] = useState<Agreement[]>([])
-  const [agreementsLoading, setAgreementsLoading] = useState(false)
-  const [auditTarget, setAuditTarget] = useState<{ id: string; label: string } | null>(null)
-  const [updatingMember, setUpdatingMember] = useState<number | null>(null)
-  const [editingMember, setEditingMember] = useState<TeamMember | null>(null)
-  
-  const [activeTab, setActiveTab] = useState("profile")
-  const [isEditing, setIsEditing] = useState(false)
-  const [saveSuccess, setSaveSuccess] = useState(false)
-  const [timezoneOptions] = useState<string[]>(getTimezoneOptions)
-
-  const [formData, setFormData] = useState({
-    first_name: "",
-    last_name: "",
-    company_name: "",
-    email: "",
-    phone_number: "",
-    country: "",
-    city: "",
-    address: "",
-    website: "",
-    industry: "",
-    preferred_language: "EN",
-    notification_preference: "email",
-    target_market: "",
-    timezone: "",
-  })
-
-  useEffect(() => {
-    if (profile) {
-      setFormData({
-        first_name: profile.first_name || "",
-        last_name: profile.last_name || "",
-        company_name: profile.company_name || "",
-        email: profile.email || "",
-        phone_number: profile.phone_number || "",
-        country: profile.country || "",
-        city: profile.city || "",
-        address: profile.address || "",
-        website: profile.website || "",
-        industry: profile.industry || "",
-        preferred_language: profile.preferred_language || "EN",
-        notification_preference: profile.notification_preference || "email",
-        target_market: profile.target_market || "",
-        timezone: profile.timezone || "",
-      })
-    }
-  }, [profile])
-
-  const fetchCompanyExtras = useCallback(async () => {
+  const loadCompany = useCallback(async () => {
     try {
-      const company = await companyService.getProfile()
-      setCompanyLogo(company.logo)
-      setCompanyRoles(company.roles || [])
+      setCompany(await companyService.getProfile())
     } catch (fetchError) {
-      // Team members can't load /companies/profile (owner-only endpoint) -
-      // not an error worth surfacing, the logo/roles UI just stays read-only.
-      console.error('Failed to fetch company profile extras:', fetchError)
+      // Team members can't read /companies/profile (owner-only); the cards
+      // then show the employer profile's copy, read-only.
+      console.error("Failed to fetch company profile:", fetchError)
     }
   }, [])
 
-  const handleLogoClick = () => {
-    if (!isCompanyOwner || logoUploading) return
-    document.getElementById('company-logo-input')?.click()
-  }
-
-  const handleLogoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    e.target.value = ""
-    if (!file) return
-
-    setLogoError(null)
-    if (!LOGO_ACCEPTED_TYPES.includes(file.type)) {
-      setLogoError(t("logoErrors.invalidType"))
-      return
-    }
-    if (file.size > LOGO_MAX_BYTES) {
-      setLogoError(t("logoErrors.tooLarge"))
-      return
-    }
-
-    setLogoUploading(true)
-    try {
-      const company = await companyService.uploadLogo(file)
-      setCompanyLogo(company.logo)
-    } catch (uploadError) {
-      console.error('Failed to upload company logo:', uploadError)
-      setLogoError(t("logoErrors.uploadFailed"))
-    } finally {
-      setLogoUploading(false)
-    }
-  }
-
-  const saveRoles = async (roles: string[]) => {
-    setRolesError(null)
-    setRolesSaving(true)
-    try {
-      const company = await companyService.updateRoles(roles)
-      setCompanyRoles(company.roles || [])
-      return true
-    } catch (saveError) {
-      console.error('Failed to update company roles:', saveError)
-      setRolesError(t("roleErrors.saveFailed"))
-      return false
-    } finally {
-      setRolesSaving(false)
-    }
-  }
-
-  const handleStartAddRole = () => {
-    if (!isCompanyOwner || rolesSaving) return
-    setRolesError(null)
-    setNewRoleValue("")
-    setIsAddingRole(true)
-  }
-
-  const handleConfirmAddRole = async () => {
-    const role = newRoleValue.trim()
-    if (!role) {
-      setIsAddingRole(false)
-      return
-    }
-    if (companyRoles.includes(role)) {
-      setRolesError(t("roleErrors.alreadyAdded"))
-      return
-    }
-    if (companyRoles.length >= ROLES_MAX_COUNT) {
-      setRolesError(t("roleErrors.maxCount", { count: ROLES_MAX_COUNT }))
-      return
-    }
-    if (role.length > ROLE_MAX_LENGTH) {
-      setRolesError(t("roleErrors.maxLength", { count: ROLE_MAX_LENGTH }))
-      return
-    }
-    const success = await saveRoles([...companyRoles, role])
-    if (success) {
-      setIsAddingRole(false)
-      setNewRoleValue("")
-    }
-  }
-
-  const handleRemoveRole = async (role: string) => {
-    if (!isCompanyOwner || rolesSaving) return
-    await saveRoles(companyRoles.filter((r) => r !== role))
-  }
-
-  const handleDownloadAgreement = async (agreementId: string) => {
-    try {
-      const { url } = await agreementService.getDownloadUrl(agreementId)
-      window.open(url, "_blank", "noopener,noreferrer")
-    } catch (error) {
-      console.error('Failed to get agreement download URL:', error)
-    }
-  }
-
-  const fetchAgreements = useCallback(async () => {
-    setAgreementsLoading(true)
-    try {
-      const data = await agreementService.getStatus()
-      setAgreements(data)
-    } catch (error) {
-      console.error('Failed to fetch agreement status:', error)
-    } finally {
-      setAgreementsLoading(false)
-    }
-  }, [t])
-
-  const fetchTeamData = useCallback(async () => {
-    setTeamLoading(true)
-    try {
-      const [members, invitations] = await Promise.all([
-        teamService.getTeamMembers(),
-        teamService.getPendingInvitations()
-      ])
-      setTeamMembers(members)
-      setPendingInvitations(invitations)
-    } catch (error) {
-      console.error('Failed to fetch team data:', error)
-    } finally {
-      setTeamLoading(false)
-    }
-  }, [])
+  const licenseVerified = profile?.business_license_verified === true
 
   useEffect(() => {
-    if (profile?.business_license_verified !== true) return
-    fetchTeamData()
-    fetchAgreements()
-    fetchCompanyExtras()
-  }, [profile?.business_license_verified, fetchTeamData, fetchAgreements, fetchCompanyExtras])
+    if (licenseVerified && isCompanyOwner) loadCompany()
+  }, [licenseVerified, isCompanyOwner, loadCompany])
 
-  const handleInviteSuccess = () => {
-    fetchTeamData()
+  // Highlight the section in view.
+  useEffect(() => {
+    if (!licenseVerified) return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)
+        if (visible[0]) setActiveSection(visible[0].target.id)
+      },
+      { rootMargin: "-20% 0px -60% 0px" },
+    )
+    SECTIONS.forEach(({ id }) => {
+      const el = document.getElementById(id)
+      if (el) observer.observe(el)
+    })
+    return () => observer.disconnect()
+  }, [licenseVerified])
+
+  const jumpTo = (id: string) => {
+    setActiveSection(id)
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" })
   }
 
-  const handleCancelInvitation = async (invitationId: number) => {
+  const saveSettings = async (prefs: Partial<B2BProfileData>) => {
+    setSettingsSaving(true)
     try {
-      await teamService.cancelInvitation(invitationId)
-      await fetchTeamData()
-    } catch (error) {
-      console.error('Failed to cancel invitation:', error)
-    }
-  }
-
-  const handleUpdateMemberPermission = async (memberId: number, permissions: string[]) => {
-    setUpdatingMember(memberId)
-    try {
-      await teamService.updateTeamMember(memberId, { permissions })
-      await fetchTeamData()
-    } catch (error) {
-      console.error('Failed to update member permissions:', error)
+      return await updateProfile(prefs as B2BProfileData)
     } finally {
-      setUpdatingMember(null)
+      setSettingsSaving(false)
     }
-  }
-
-  const handleUpdateMemberRole = async (memberId: number, jobTitle: string) => {
-    setUpdatingMember(memberId)
-    try {
-      await teamService.updateTeamMember(memberId, { job_title: jobTitle })
-      await fetchTeamData()
-    } catch (error) {
-      console.error('Failed to update member role:', error)
-    } finally {
-      setUpdatingMember(null)
-    }
-  }
-
-  const handleRemoveMember = async (memberId: number) => {
-    if (!confirm(t('removeMemberConfirm'))) return
-    
-    setUpdatingMember(memberId)
-    try {
-      await teamService.removeTeamMember(memberId)
-      await fetchTeamData()
-    } catch (error) {
-      console.error('Failed to remove team member:', error)
-    } finally {
-      setUpdatingMember(null)
-    }
-  }
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
-  }
-
-  const handleSave = async () => {
-    const success = await updateProfile(formData)
-    if (success) {
-      setSaveSuccess(true)
-      setIsEditing(false)
-      setTimeout(() => setSaveSuccess(false), 3000)
-      const preferredLocale = formData.preferred_language.toUpperCase() === "AR"
-        ? "ar"
-        : formData.preferred_language.toUpperCase() === "EN"
-          ? "en"
-          : locale
-      if (preferredLocale !== locale) {
-        router.replace(pathname, { locale: preferredLocale })
-      }
-    }
-  }
-
-  const handleLogout = () => {
-    logout()
   }
 
   if (loading && !profile) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
       </div>
     )
   }
 
-  if (profile?.business_license_verified !== true) {
+  if (!licenseVerified) {
     return (
       <div className="min-h-screen bg-background p-4 sm:p-6" dir={locale === "ar" ? "rtl" : "ltr"}>
         <div className="mx-auto max-w-3xl">
-          <h1 className="text-2xl sm:text-3xl font-bold">{t("title")}</h1>
+          <h1 className="text-2xl font-bold sm:text-3xl">{t("title")}</h1>
           <CompanyLicenseDocuments
             profile={profile || {}}
             isCompanyOwner={isCompanyOwner}
-            canUploadRequestedDocuments={
-              isCompanyOwner || profile?.role === "B2B_TEAM_MEMBER"
-            }
+            canUploadRequestedDocuments={isCompanyOwner || profile?.role === "B2B_TEAM_MEMBER"}
             onLicenseUploaded={fetchProfile}
           />
         </div>
@@ -381,813 +113,105 @@ export function CompanyProfile() {
     )
   }
 
-  const teamMembersTotalPages = Math.max(1, Math.ceil(teamMembers.length / TEAM_MEMBERS_PAGE_SIZE))
-  const teamMembersSafePage = Math.min(teamMembersPage, teamMembersTotalPages)
-  const paginatedTeamMembers = teamMembers.slice(
-    (teamMembersSafePage - 1) * TEAM_MEMBERS_PAGE_SIZE,
-    teamMembersSafePage * TEAM_MEMBERS_PAGE_SIZE
-  )
+  const p = (profile || {}) as Record<string, unknown>
 
   return (
-    <div className="min-h-screen bg-background p-4 sm:p-6" dir={locale === "ar" ? "rtl" : "ltr"}>
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-3 sm:gap-0">
-        <h1 className="text-2xl sm:text-3xl font-bold">{t("title")}</h1>
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-          <Button variant="outline" size="sm" className="text-sm bg-transparent whitespace-nowrap">
-            <span className="mr-2">👤</span> {t("myProfile")}
-          </Button>
-          <span className="text-sm font-medium">{t("more")}</span>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="text-sm bg-transparent whitespace-nowrap"
-            onClick={handleLogout}
-          >
-            <LogOut className="w-4 h-4 mr-2" /> {t("logout")}
-          </Button>
+    <div className="min-h-screen bg-gray-50/60 p-4 sm:p-6 dark:bg-background" dir={locale === "ar" ? "rtl" : "ltr"}>
+      <header className="mb-5">
+        <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl dark:text-gray-100">{t("title")}</h1>
+        <p className="mt-1 text-sm text-gray-500">{t("subtitle")}</p>
+      </header>
+
+      {error && (
+        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3">
+          <p className="text-sm text-red-600">{error}</p>
         </div>
-      </div>
-
-      <div className="space-y-6">
-        {saveSuccess && (
-          <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-            <p className="text-sm text-green-600">{t("updateSuccess")}</p>
-          </div>
-        )}
-
-        {error && (
-          <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-sm text-red-600">{error}</p>
-          </div>
-        )}
-
-        <Card>
-          <CardHeader className="pb-4 flex flex-row items-center justify-between">
-            <CardTitle className="text-lg">{t("companyDescription")}</CardTitle>
-            {!isEditing ? (
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => setIsEditing(true)}
-              >
-                {t("edit")}
-              </Button>
-            ) : (
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setIsEditing(false)}
-                >
-                  {t("cancel")}
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={handleSave}
-                  disabled={loading}
-                >
-                  {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                  {t("save")}
-                </Button>
-              </div>
-            )}
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
-              <div className="flex flex-col items-center gap-2 shrink-0">
-                <input
-                  id="company-logo-input"
-                  type="file"
-                  accept="image/jpeg,image/jpg,image/png,image/webp"
-                  className="hidden"
-                  disabled={!isCompanyOwner || logoUploading}
-                  onChange={handleLogoChange}
-                />
-                <div
-                  onClick={handleLogoClick}
-                  className={`w-28 h-28 sm:w-32 sm:h-32 bg-muted rounded-lg flex items-center justify-center border-2 border-dashed transition overflow-hidden ${
-                    isCompanyOwner ? "cursor-pointer hover:border-purple-500" : "cursor-default opacity-75"
-                  }`}
-                >
-                  {logoUploading ? (
-                    <Loader2 className="w-6 h-6 text-muted-foreground animate-spin" />
-                  ) : companyLogo ? (
-                    <img src={companyLogo} alt={t("logoAlt")} className="w-full h-full object-contain" />
-                  ) : (
-                    <Upload className="w-6 h-6 text-muted-foreground" />
-                  )}
-                </div>
-                <span className="text-xs text-muted-foreground text-center">{t("uploadLogo")}</span>
-                {logoError && (
-                  <span className="text-xs text-red-600 text-center max-w-28 sm:max-w-32">{logoError}</span>
-                )}
-              </div>
-
-              <div className="flex-1 space-y-4 min-w-0">
-                <div>
-                  <label className="text-sm font-medium">{t("companyName")}</label>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      name="company_name"
-                      value={formData.company_name}
-                      onChange={handleInputChange}
-                      className="w-full mt-1 px-3 py-2 border rounded-lg"
-                    />
-                  ) : (
-                    <p className="text-sm text-foreground break-words">{formData.company_name}</p>
-                  )}
-                </div>
-
-                <div className="text-sm text-muted-foreground space-y-2">
-                  <p>{t("companyDescriptionText")}</p>
-                </div>
-                
-                {companyRoles.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {companyRoles.map((role) => (
-                      <span
-                        key={role}
-                        className="inline-flex items-center gap-1 text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full"
-                      >
-                        {role}
-                        {isCompanyOwner && (
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveRole(role)}
-                            disabled={rolesSaving}
-                            className="hover:text-purple-900 disabled:opacity-50"
-                            aria-label={t("removeRoleAriaLabel", { role })}
-                          >
-                            ×
-                          </button>
-                        )}
-                      </span>
-                    ))}
-                  </div>
-                )}
-
-                {isCompanyOwner && (
-                  <div>
-                    {isAddingRole ? (
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="text"
-                          value={newRoleValue}
-                          onChange={(e) => setNewRoleValue(e.target.value)}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") { e.preventDefault(); handleConfirmAddRole() }
-                            if (e.key === "Escape") setIsAddingRole(false)
-                          }}
-                          placeholder={t("rolePlaceholder")}
-                          maxLength={ROLE_MAX_LENGTH}
-                          autoFocus
-                          disabled={rolesSaving}
-                          className="text-sm px-2 py-1 border rounded-lg w-40"
-                        />
-                        <button
-                          type="button"
-                          onClick={handleConfirmAddRole}
-                          disabled={rolesSaving}
-                          className="text-sm font-medium text-purple-600 hover:underline disabled:opacity-50"
-                        >
-                          {rolesSaving ? t("savingRole") : t("addButton")}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setIsAddingRole(false)}
-                          disabled={rolesSaving}
-                          className="text-sm text-muted-foreground hover:underline disabled:opacity-50"
-                        >
-                          {t("cancel")}
-                        </button>
-                      </div>
-                    ) : (
-                      companyRoles.length < ROLES_MAX_COUNT && (
-                        <span
-                          onClick={handleStartAddRole}
-                          className="text-sm font-medium cursor-pointer text-purple-600 hover:underline"
-                        >
-                          {t("addRole")}
-                        </span>
-                      )
-                    )}
-                    {rolesError && <p className="text-xs text-red-600 mt-1">{rolesError}</p>}
-                  </div>
-                )}
-              </div>
-
-              <div className="space-y-3 shrink-0 min-w-50">
-                <div>
-                  <label className="text-xs text-muted-foreground">{t("email")}</label>
-                  <p className="text-sm font-medium truncate">{formData.email}</p>
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground">{t("phone")}</label>
-                  {isEditing ? (
-                    <input
-                      type="tel"
-                      name="phone_number"
-                      value={formData.phone_number}
-                      onChange={handleInputChange}
-                      className="w-full mt-1 px-3 py-1 text-sm border rounded"
-                    />
-                  ) : (
-                    <p className="text-sm font-medium truncate">{formData.phone_number}</p>
-                  )}
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground">{t("country")}</label>
-                  {isEditing ? (
-                    <select
-                      name="country"
-                      value={formData.country}
-                      onChange={handleInputChange}
-                      className="w-full mt-1 px-3 py-1 text-sm border rounded"
-                    >
-                      <option value="">{t("selectCountry")}</option>
-                      {formData.country && !COUNTRIES.some((c) => c.label === formData.country) && (
-                        <option value={formData.country}>{formData.country}</option>
-                      )}
-                      {COUNTRIES.map((c) => (
-                        <option key={c.key} value={c.label}>{c.label}</option>
-                      ))}
-                    </select>
-                  ) : (
-                    <p className="text-sm font-medium truncate">{formData.country}</p>
-                  )}
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground">{t("city")}</label>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      name="city"
-                      value={formData.city}
-                      onChange={handleInputChange}
-                      className="w-full mt-1 px-3 py-1 text-sm border rounded"
-                    />
-                  ) : (
-                    <p className="text-sm font-medium truncate">{formData.city}</p>
-                  )}
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground">{t("website")}</label>
-                  {isEditing ? (
-                    <input
-                      type="url"
-                      name="website"
-                      value={formData.website}
-                      onChange={handleInputChange}
-                      className="w-full mt-1 px-3 py-1 text-sm border rounded"
-                    />
-                  ) : (
-                    <p className="text-sm font-medium flex items-center gap-1 truncate">
-                      {formData.website} 
-                      {formData.website && (
-                        <a 
-                          href={formData.website} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="cursor-pointer text-purple-600 hover:underline"
-                        >
-                          ↗
-                        </a>
-                      )}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground">{t("preferredLanguage")}</label>
-                  {isEditing ? (
-                    <select
-                      name="preferred_language"
-                      value={formData.preferred_language}
-                      onChange={handleInputChange}
-                      className="w-full mt-1 px-3 py-1 text-sm border rounded"
-                    >
-                      {LANGUAGES.map((lang) => (
-                        <option key={lang.key} value={lang.key}>
-                          {tLanguages(lang.key)}
-                        </option>
-                      ))}
-                    </select>
-                  ) : (
-                    <p className="text-sm font-medium truncate">
-                      {formData.preferred_language ? tLanguages(formData.preferred_language) : formData.preferred_language}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground">{t("targetHiringMarket")}</label>
-                  {isEditing ? (
-                    <select
-                      name="target_market"
-                      value={formData.target_market}
-                      onChange={handleInputChange}
-                      className="w-full mt-1 px-3 py-1 text-sm border rounded"
-                    >
-                      <option value="">{t("selectMarket")}</option>
-                      {COUNTRIES.map((c) => (
-                        <option key={c.key} value={c.key}>{c.label}</option>
-                      ))}
-                    </select>
-                  ) : (
-                    <p className="text-sm font-medium truncate">
-                      {COUNTRIES.find((c) => c.key === formData.target_market)?.label || formData.target_market}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground">{t("timeZone")}</label>
-                  {isEditing ? (
-                    <select
-                      name="timezone"
-                      value={formData.timezone}
-                      onChange={handleInputChange}
-                      className="w-full mt-1 px-3 py-1 text-sm border rounded"
-                    >
-                      <option value="">{t("selectTimezone")}</option>
-                      {formData.timezone && !timezoneOptions.includes(formData.timezone) && (
-                        <option value={formData.timezone}>{formData.timezone}</option>
-                      )}
-                      {timezoneOptions.map((tz) => (
-                        <option key={tz} value={tz}>{tz}</option>
-                      ))}
-                    </select>
-                  ) : (
-                    <p className="text-sm font-medium truncate">{formData.timezone}</p>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <label className="text-xs text-muted-foreground">{t("address")}</label>
-              {isEditing ? (
-                <input
-                  type="text"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleInputChange}
-                  className="w-full mt-1 px-3 py-2 border rounded-lg"
-                />
-              ) : (
-                <p className="text-sm">{formData.address || t("noAddressProvided")}</p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        <div className="flex flex-col lg:flex-row gap-6">
-          <div className="flex-1 space-y-6">
-            <Card>
-              <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-4 gap-2">
-                <CardTitle className="text-lg">{t("manageUsers")}</CardTitle>
-                <Button 
-                  onClick={() => setIsInviteModalOpen(true)}
-                  className="bg-purple-600 hover:bg-purple-700 text-white text-sm gap-2 whitespace-nowrap"
-                >
-                  <Plus className="w-4 h-4" /> {t("addUser")}
-                </Button>
-              </CardHeader>
-              <CardContent>
-                {teamLoading ? (
-                  <div className="flex justify-center py-8">
-                    <Loader2 className="w-6 h-6 animate-spin text-purple-600" />
-                  </div>
-                ) : (
-                  <>
-                    <PendingInvitations 
-                      invitations={pendingInvitations}
-                      onCancel={handleCancelInvitation}
-                    />
-
-                    <div className="hidden md:block overflow-x-auto">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>{t("columns.user")}</TableHead>
-                            <TableHead>{t("columns.userRole")}</TableHead>
-                            <TableHead>{t("columns.permission")}</TableHead>
-                            <TableHead>{t("columns.status")}</TableHead>
-                            <TableHead></TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-{teamMembers.length === 0 && pendingInvitations.length === 0 ? (
-  <TableRow>
-    <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-      {t("noTeamMembers")}
-    </TableCell>
-  </TableRow>
-) : (
-  paginatedTeamMembers.map((member) => (
-    <TableRow key={member.id}>
-      <TableCell>
-        <div>
-          <p className="text-sm font-medium">
-            {member.first_name} {member.last_name}
-          </p>
-          <p className="text-xs text-muted-foreground">{member.email}</p>
-          {member.invitation_accepted_at && (
-            <p className="text-xs text-gray-400 mt-1">
-              {t("joinedLabel", { date: format(new Date(member.invitation_accepted_at), 'MMM d, yyyy', locale === 'ar' ? { locale: ar } : undefined) })}
-            </p>
-          )}
-        </div>
-      </TableCell>
-      <TableCell>
-        <Select
-          defaultValue={member.job_title?.toLowerCase().replace(/\s+/g, '-') || 'member'}
-          onValueChange={(value) => {
-            const jobTitle = value.split('-').map(word => 
-              word.charAt(0).toUpperCase() + word.slice(1)
-            ).join(' ')
-            handleUpdateMemberRole(member.id, jobTitle)
-          }}
-          disabled={updatingMember === member.id}
-        >
-          <SelectTrigger className="w-32 h-8 text-xs">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="business-manager">{t("roles.businessManager")}</SelectItem>
-            <SelectItem value="agent">{t("roles.agent")}</SelectItem>
-            <SelectItem value="analyst">{t("roles.analyst")}</SelectItem>
-            <SelectItem value="hr-manager">{t("roles.hrManager")}</SelectItem>
-            <SelectItem value="recruiter">{t("roles.recruiter")}</SelectItem>
-            <SelectItem value="junior-recruiter">{t("roles.juniorRecruiter")}</SelectItem>
-          </SelectContent>
-        </Select>
-      </TableCell>
-      <TableCell>
-        <Select
-          defaultValue={permissionPresetFor(member.permissions)}
-          onValueChange={(value) => handleUpdateMemberPermission(member.id, permissionsForPreset(value))}
-          disabled={updatingMember === member.id}
-        >
-          <SelectTrigger className="w-32 h-8 text-xs border-purple-200">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="full-access">{t("permissions.fullAccess")}</SelectItem>
-            <SelectItem value="standard">{t("permissions.standard")}</SelectItem>
-            <SelectItem value="read-only">{t("permissions.readOnly")}</SelectItem>
-          </SelectContent>
-        </Select>
-      </TableCell>
-      <TableCell>
-        {member.is_active ? (
-          <span className="inline-flex items-center gap-1 text-xs text-green-600">
-            <UserCheck className="w-3 h-3" />
-            {t("memberActive")}
-          </span>
-        ) : (
-          <span className="inline-flex items-center gap-1 text-xs text-gray-400">
-            <Clock className="w-3 h-3" />
-            {t("memberInactive")}
-          </span>
-        )}
-      </TableCell>
-      <TableCell>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8"
-              disabled={updatingMember === member.id}
-              title={t("actions.moreActions")}
-            >
-              {updatingMember === member.id ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <MoreVertical className="w-4 h-4" />
-              )}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => setEditingMember(member)}>
-              <Pencil className="w-4 h-4 mr-2" />
-              {t("actions.edit")}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleRemoveMember(member.id)} variant="destructive">
-              <Trash2 className="w-4 h-4 mr-2" />
-              {t("actions.delete")}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </TableCell>
-    </TableRow>
-  ))
-)}
-                        </TableBody>
-                      </Table>
-                    </div>
-
-                    {/* Mobile: card list, same controls as the table above. */}
-                    <div className="md:hidden divide-y">
-                      {teamMembers.length === 0 && pendingInvitations.length === 0 ? (
-                        <p className="text-center py-8 text-muted-foreground text-sm">{t("noTeamMembers")}</p>
-                      ) : (
-                        paginatedTeamMembers.map((member) => (
-                          <div key={member.id} className="py-3">
-                            <div className="flex items-start justify-between gap-3">
-                              <div className="min-w-0">
-                                <p className="text-sm font-medium truncate">
-                                  {member.first_name} {member.last_name}
-                                </p>
-                                <p className="text-xs text-muted-foreground truncate">{member.email}</p>
-                                {member.invitation_accepted_at && (
-                                  <p className="text-xs text-gray-400 mt-1">
-                                    {t("joinedLabel", { date: format(new Date(member.invitation_accepted_at), 'MMM d, yyyy', locale === 'ar' ? { locale: ar } : undefined) })}
-                                  </p>
-                                )}
-                              </div>
-                              <div className="flex items-center gap-2 shrink-0">
-                                {member.is_active ? (
-                                  <span className="inline-flex items-center gap-1 text-xs text-green-600">
-                                    <UserCheck className="w-3 h-3" />
-                                    {t("memberActive")}
-                                  </span>
-                                ) : (
-                                  <span className="inline-flex items-center gap-1 text-xs text-gray-400">
-                                    <Clock className="w-3 h-3" />
-                                    {t("memberInactive")}
-                                  </span>
-                                )}
-                                <DropdownMenu>
-                                  <DropdownMenuTrigger asChild>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="h-8"
-                                      disabled={updatingMember === member.id}
-                                      title={t("actions.moreActions")}
-                                    >
-                                      {updatingMember === member.id ? (
-                                        <Loader2 className="w-4 h-4 animate-spin" />
-                                      ) : (
-                                        <MoreVertical className="w-4 h-4" />
-                                      )}
-                                    </Button>
-                                  </DropdownMenuTrigger>
-                                  <DropdownMenuContent align="end">
-                                    <DropdownMenuItem onClick={() => setEditingMember(member)}>
-                                      <Pencil className="w-4 h-4 mr-2" />
-                                      {t("actions.edit")}
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => handleRemoveMember(member.id)} variant="destructive">
-                                      <Trash2 className="w-4 h-4 mr-2" />
-                                      {t("actions.delete")}
-                                    </DropdownMenuItem>
-                                  </DropdownMenuContent>
-                                </DropdownMenu>
-                              </div>
-                            </div>
-                            <div className="mt-2 flex gap-2">
-                              <Select
-                                defaultValue={member.job_title?.toLowerCase().replace(/\s+/g, '-') || 'member'}
-                                onValueChange={(value) => {
-                                  const jobTitle = value.split('-').map(word =>
-                                    word.charAt(0).toUpperCase() + word.slice(1)
-                                  ).join(' ')
-                                  handleUpdateMemberRole(member.id, jobTitle)
-                                }}
-                                disabled={updatingMember === member.id}
-                              >
-                                <SelectTrigger className="flex-1 h-8 text-xs">
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="business-manager">{t("roles.businessManager")}</SelectItem>
-                                  <SelectItem value="agent">{t("roles.agent")}</SelectItem>
-                                  <SelectItem value="analyst">{t("roles.analyst")}</SelectItem>
-                                  <SelectItem value="hr-manager">{t("roles.hrManager")}</SelectItem>
-                                  <SelectItem value="recruiter">{t("roles.recruiter")}</SelectItem>
-                                  <SelectItem value="junior-recruiter">{t("roles.juniorRecruiter")}</SelectItem>
-                                </SelectContent>
-                              </Select>
-                              <Select
-                                defaultValue={permissionPresetFor(member.permissions)}
-                                onValueChange={(value) => handleUpdateMemberPermission(member.id, permissionsForPreset(value))}
-                                disabled={updatingMember === member.id}
-                              >
-                                <SelectTrigger className="flex-1 h-8 text-xs border-purple-200">
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="full-access">{t("permissions.fullAccess")}</SelectItem>
-                                  <SelectItem value="standard">{t("permissions.standard")}</SelectItem>
-                                  <SelectItem value="read-only">{t("permissions.readOnly")}</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                    {teamMembers.length > 0 && (
-                      <TablePagination
-                        currentPage={teamMembersSafePage}
-                        totalItems={teamMembers.length}
-                        pageSize={TEAM_MEMBERS_PAGE_SIZE}
-                        onPageChange={setTeamMembersPage}
-                        itemLabel={t("itemLabelPlural")}
-                      />
-                    )}
-                  </>
-                )}
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                <CardTitle className="text-lg">{t("partnerships")}</CardTitle>
-                <Tabs defaultValue="my-connections" className="mt-2 sm:mt-0">
-                  <TabsList className="grid w-full max-w-xs grid-cols-2">
-                    <TabsTrigger value="my-connections">{t("tabs.myConnections")}</TabsTrigger>
-                    <TabsTrigger value="discover">{t("tabs.discover")}</TabsTrigger>
-                  </TabsList>
-                </Tabs>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 border rounded-lg gap-2 sm:gap-0">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center text-white text-xs font-bold">
-                          {['B', 'R', 'N', 'R'][i-1]}
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium truncate">
-                            {['Bluesky', 'Bluerights', 'Nova Group', 'Resilient Agency'][i-1]}
-                          </p>
-                          <p className="text-xs text-muted-foreground truncate">email@company.net</p>
-                        </div>
-                      </div>
-                      <Button variant="outline" size="sm" className="text-xs bg-transparent mt-2 sm:mt-0">{t("connect")}</Button>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="flex-1 space-y-6">
-            <CompanyLicenseDocuments
-              profile={profile || {}}
-              isCompanyOwner={isCompanyOwner}
-              canUploadRequestedDocuments={isCompanyOwner}
-              onLicenseUploaded={fetchProfile}
-            />
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base flex items-center gap-2">
-                  <FileSignature className="w-4 h-4" />
-                  {t("agreements.title")}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <p className="text-xs text-muted-foreground">{t("agreements.description")}</p>
-                {agreementsLoading ? (
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    {t("agreements.loading")}
-                  </div>
-                ) : (
-                  <>
-                    <div className="space-y-2">
-                      {REQUIRED_AGREEMENT_TYPES.map((type) => {
-                        const agreement = agreements.find((a) => a.agreement_type === type)
-                        const isSigned = agreement?.status === "SIGNED"
-                        const label = type === "B2B_AGREEMENT" ? tAgreementDocs("b2bAgreement") : tAgreementDocs("dpa")
-                        return (
-                          <div key={type} className="flex items-center justify-between text-xs gap-2">
-                            <span className="truncate">{label}</span>
-                            <div className="flex items-center gap-2 shrink-0">
-                              {isSigned ? (
-                                <span className="inline-flex items-center gap-1 text-green-600">
-                                  <CheckCircle2 className="w-3 h-3" /> {t("agreements.signed")}
-                                </span>
-                              ) : (
-                                <span className="inline-flex items-center gap-1 text-amber-600">
-                                  <Clock className="w-3 h-3" /> {t("agreements.pending")}
-                                </span>
-                              )}
-                              {isSigned && agreement && (
-                                <>
-                                  <button
-                                    type="button"
-                                    onClick={() => handleDownloadAgreement(agreement.id)}
-                                    title={t("downloadPdfTooltip")}
-                                    className="text-gray-400 hover:text-purple-600"
-                                  >
-                                    <Download className="w-3.5 h-3.5" />
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={() => setAuditTarget({ id: agreement.id, label })}
-                                    title={t("viewAuditTrailTooltip")}
-                                    className="text-gray-400 hover:text-purple-600"
-                                  >
-                                    <History className="w-3.5 h-3.5" />
-                                  </button>
-                                </>
-                              )}
-                            </div>
-                          </div>
-                        )
-                      })}
-                    </div>
-                    <Button
-                      className="w-full bg-purple-600 hover:bg-purple-700 text-white text-xs"
-                      onClick={() => router.push(`/${locale}/dashboard/business/sign-agreements`)}
-                    >
-                      {REQUIRED_AGREEMENT_TYPES.every((type) =>
-                        agreements.find((a) => a.agreement_type === type)?.status === "SIGNED"
-                      )
-                        ? t("agreements.viewButton")
-                        : t("agreements.signButton")}
-                    </Button>
-                  </>
-                )}
-              </CardContent>
-            </Card>
-
-            <ChangePassword />
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">{t("settings")}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div>
-                  <label className="text-xs text-muted-foreground block mb-2">{t("theme")}</label>
-                  <Select
-                    value={theme === "dark" ? "dark" : "light"}
-                    onValueChange={(value) => setTheme(value)}
-                  >
-                    <SelectTrigger className="h-8 text-xs">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="light">{t("light")}</SelectItem>
-                      <SelectItem value="dark">{t("dark")}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground block mb-2">{t("notification")}</label>
-                  <Select
-                    value={formData.notification_preference}
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, notification_preference: value }))}
-                  >
-                    <SelectTrigger className="h-8 text-xs">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="email">{t("email")}</SelectItem>
-                      <SelectItem value="push">{t("push")}</SelectItem>
-                      <SelectItem value="both">{t("bothNotifications")}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <Button onClick={handleSave} className="w-full bg-purple-600 hover:bg-purple-700 text-white text-xs mt-2">{t("save")}</Button>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-
-        <div className="fixed bottom-6 right-6 lg:static lg:mt-4">
-          <Button onClick={handleSave} className="bg-purple-600 hover:bg-purple-700 text-white w-full lg:w-auto">
-            {t("saveChanges")}
-          </Button>
-        </div>
-      </div>
-
-      <InviteTeamModal
-        isOpen={isInviteModalOpen}
-        onClose={() => setIsInviteModalOpen(false)}
-        onSuccess={handleInviteSuccess}
-      />
-
-      {editingMember && (
-        <EditTeamModal
-          member={editingMember}
-          isOpen={!!editingMember}
-          onClose={() => setEditingMember(null)}
-          onSuccess={fetchTeamData}
-        />
       )}
 
-      <AuditTrailModal
-        agreementId={auditTarget?.id ?? null}
-        agreementLabel={auditTarget?.label ?? ""}
-        onClose={() => setAuditTarget(null)}
-      />
+      <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+        <CompanyInfoCard
+          company={company}
+          fallback={{
+            name: str(p.company_name),
+            industry: str(p.industry),
+            website: str(p.website),
+            registrationNumber: str(p.company_registration_number),
+          }}
+          isOwner={isCompanyOwner}
+          onCompanyChange={setCompany}
+        />
+        <div className="space-y-5 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5 dark:border-gray-800 dark:bg-gray-900">
+          <ContactCard
+            email={str(p.email)}
+            company={company}
+            fallbackPhone={str(p.phone_number)}
+            fallbackWebsite={str(p.website)}
+            isOwner={isCompanyOwner}
+            onCompanyChange={setCompany}
+          />
+          <div className="border-t border-gray-100 pt-4 dark:border-gray-800">
+            <BusinessAddressesCard
+              addresses={
+                company?.business_addresses ??
+                (str(p.country) || str(p.city) || str(p.address)
+                  ? [{
+                      id: "profile",
+                      label: "",
+                      address_type: "MAIN",
+                      country: str(p.country),
+                      city: str(p.city),
+                      street: str(p.address),
+                      created_at: "",
+                      updated_at: "",
+                    }]
+                  : [])
+              }
+              canEdit={isCompanyOwner && company !== null}
+              onChanged={loadCompany}
+            />
+          </div>
+        </div>
+      </div>
+
+      <nav
+        aria-label={t("sections.navLabel")}
+        className="sticky top-0 z-20 my-5 overflow-x-auto rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900"
+      >
+        <ul className="flex min-w-max">
+          {SECTIONS.map(({ id, key, icon: Icon }) => {
+            const active = activeSection === id
+            return (
+              <li key={id} className="flex-1">
+                <button
+                  type="button"
+                  onClick={() => jumpTo(id)}
+                  aria-current={active ? "true" : undefined}
+                  className={`flex w-full items-center justify-center gap-2 whitespace-nowrap border-b-2 px-5 py-3.5 text-sm font-medium transition ${
+                    active
+                      ? "border-purple-600 text-purple-700 dark:text-purple-300"
+                      : "border-transparent text-gray-700 hover:text-purple-700 dark:text-gray-300"
+                  }`}
+                >
+                  <Icon className="h-5 w-5" aria-hidden="true" />
+                  {t(`sections.${key}`)}
+                </button>
+              </li>
+            )
+          })}
+        </ul>
+      </nav>
+
+      {/* The staff table and the password row need the full width; the
+          license and agreements cards sit side by side. */}
+      <div className="space-y-5">
+        <TeamAccessCard id="team-access" isOwner={isCompanyOwner} />
+        <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
+          <LicenseCard id="business-license" profile={p} isOwner={isCompanyOwner} onLicenseUploaded={fetchProfile} />
+          <LegalAgreementsCard id="legal-agreements" />
+        </div>
+        <ChangePassword id="account-security" />
+        <SettingsCard id="settings" profile={p} saving={settingsSaving} onSave={saveSettings} />
+      </div>
     </div>
   )
 }

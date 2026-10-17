@@ -8,6 +8,7 @@ import { locales, rtlLocales, type Locale } from "@/config/locales";
 import { buildPageMetadata } from "@/lib/buildPageMetadata";
 import { ContentProtectionProvider } from "@/components/app/ContentProtectionProvider";
 import { ThemeProvider } from "@/components/app/theme-provider";
+import { CookieConsentBanner } from "@/components/app/CookieConsentBanner";
 
 
 export function generateStaticParams() {
@@ -74,7 +75,8 @@ export default async function LocaleLayout({
         <ThemeProvider>
           <ContentProtectionProvider />
           {children}
-          <Toaster richColors position={isRtl ? "top-left" : "top-right"} dir={isRtl ? "rtl" : "ltr"} />
+          <CookieConsentBanner />
+          <Toaster richColors position={isRtl ? "top-left" : "top-right"} dir={isRtl ? "rtl" : "ltr"} containerAriaLabel={isRtl ? "الإشعارات" : "Notifications"} />
         </ThemeProvider>
       </NextIntlClientProvider>
     </div>

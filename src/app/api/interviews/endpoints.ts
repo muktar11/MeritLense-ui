@@ -103,6 +103,14 @@ class InterviewService {
     return response.data;
   }
 
+  // MeritLense emails the candidate their interview link (server-side, so
+  // it works without a mail app on the employer's computer).
+  async sendSessionLink(id: string, locale?: string): Promise<{ sent_to: string }> {
+    setToken();
+    const response = await apiClient.post(`${this.sessionsURL}/${id}/send-link/`, { locale });
+    return response.data;
+  }
+
   async startSession(id: string): Promise<InterviewSession> {
     setToken();
     const response = await apiClient.post(`${this.sessionsURL}/${id}/start/`, {});

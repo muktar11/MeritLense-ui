@@ -10,6 +10,7 @@ import { AuditTrailModal } from "@/components/agreements/AuditTrailModal"
 
 export default function AgreementsTab() {
   const t = useTranslations("dashboard.indivisual.settings.agreements-tab")
+  const tTypes = useTranslations("shared.agreementTypes")
   const router = useRouter()
   const locale = useLocale()
 
@@ -63,7 +64,7 @@ export default function AgreementsTab() {
         <div className="border border-gray-200 rounded-lg p-4 space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-gray-900">
-              {agreement?.agreement_type_display || "B2C Agreement"}
+              {tTypes("B2C_AGREEMENT")}
             </span>
             {isSigned ? (
               <span className="inline-flex items-center gap-1 text-sm text-green-600">
@@ -87,7 +88,7 @@ export default function AgreementsTab() {
               </button>
               <button
                 type="button"
-                onClick={() => setAuditTarget({ id: agreement.id, label: agreement.agreement_type_display })}
+                onClick={() => setAuditTarget({ id: agreement.id, label: tTypes("B2C_AGREEMENT") })}
                 className="inline-flex items-center gap-1.5 text-purple-600 hover:underline"
               >
                 <History className="w-4 h-4" /> {t("viewAuditTrail")}

@@ -6,14 +6,25 @@ import { useTranslations } from "next-intl"
 import { useProfile } from "../../../../../hooks/useProfile"
 import { Loader2 } from "lucide-react"
 import { JOB_ROLES, NATIONALITIES, LANGUAGES } from "../../../../../api/auth/endpoints"
-import { COUNTRIES } from "@/lib/countries"
+import { CountrySelect, SearchSelect } from "@/components/app/searchable-fields"
 import { getTimezoneOptions } from "@/lib/location-detection"
 
 const PROFILE_PICTURE_MAX_BYTES = 5 * 1024 * 1024
 const PROFILE_PICTURE_ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"]
 
-export default function EditProfileTab() {
+// "personal" is the inline edit form of the Profile page's Personal
+// Information card: the photo has its own control there, and language,
+// target market and time zone live in the Settings section.
+export default function EditProfileTab({
+  mode = "full",
+  onDone,
+}: {
+  mode?: "full" | "personal"
+  onDone?: () => void
+} = {}) {
+  const personal = mode === "personal"
   const t = useTranslations("dashboard.indivisual.settings.edit-profile-tab")
+  const tSearch = useTranslations("shared.searchableSelect")
   const { profile, loading, error, updateProfile, fetchProfile, uploadProfilePicture, removeProfilePicture } = useProfile()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [pictureUploading, setPictureUploading] = useState(false)
@@ -64,6 +75,9 @@ export default function EditProfileTab() {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
+  const setField = (name: keyof typeof formData, value: string) =>
+    setFormData((prev) => ({ ...prev, [name]: value }))
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
@@ -85,6 +99,7 @@ export default function EditProfileTab() {
     if (success) {
       setSaveSuccess(true)
       setTimeout(() => setSaveSuccess(false), 3000)
+      onDone?.()
     }
   }
 
@@ -133,6 +148,7 @@ export default function EditProfileTab() {
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
       {/* Profile Avatar */}
+      {!personal && (
       <div className="flex flex-col sm:flex-row items-start gap-6 sm:gap-8">
         <div className="shrink-0">
           {profile?.profile_picture ? (
@@ -191,6 +207,7 @@ export default function EditProfileTab() {
           </div>
         </div>
       </div>
+      )}
 
       {/* Error Message */}
       {error && (
@@ -298,20 +315,16 @@ export default function EditProfileTab() {
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
             {t("jobRole")} *
           </label>
-          <select
-            name="job_role"
+          <SearchSelect
+            id="profile-job-role"
+            aria-label={t("jobRole")}
             value={formData.job_role}
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="">{t("selectJobRolePlaceholder")}</option>
-            {JOB_ROLES.map((role) => (
-              <option key={role.key} value={role.key}>
-                {t(`jobRoles.${role.key}`)}
-              </option>
-            ))}
-          </select>
+            onChange={(value) => setField("job_role", value)}
+            placeholder={t("selectJobRolePlaceholder")}
+            options={JOB_ROLES.map((role) => ({ value: role.key, label: t(`jobRoles.${role.key}`) }))}
+            searchPlaceholder={tSearch("searchRoles")}
+            buttonClassName="rounded-lg border-gray-300 px-4 py-2.5"
+          />
         </div>
 
         {/* Nationality */}
@@ -319,98 +332,89 @@ export default function EditProfileTab() {
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
             {t("nationality")} *
           </label>
-          <select
-            name="nationality"
+          <SearchSelect
+            id="profile-nationality"
+            aria-label={t("nationality")}
             value={formData.nationality}
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="">{t("selectNationalityPlaceholder")}</option>
-            {NATIONALITIES.map((nation) => (
-              <option key={nation.key} value={nation.key}>
-                {t(`nationalities.${nation.key}`)}
-              </option>
-            ))}
-          </select>
+            onChange={(value) => setField("nationality", value)}
+            placeholder={t("selectNationalityPlaceholder")}
+            options={NATIONALITIES.map((nation) => ({ value: nation.key, label: t(`nationalities.${nation.key}`), keywords: nation.key }))}
+            searchPlaceholder={tSearch("searchNationalities")}
+            buttonClassName="rounded-lg border-gray-300 px-4 py-2.5"
+          />
         </div>
 
         {/* Preferred Language */}
+        {!personal && (
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
             {t("preferredLanguage")} *
           </label>
-          <select
-            name="preferred_language"
+          <SearchSelect
+            id="profile-language"
+            aria-label={t("preferredLanguage")}
             value={formData.preferred_language}
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            {LANGUAGES.map((lang) => (
-              <option key={lang.key} value={lang.key}>
-                {t(`languages.${lang.key}`)}
-              </option>
-            ))}
-          </select>
+            onChange={(value) => setField("preferred_language", value)}
+            options={LANGUAGES.map((lang) => ({ value: lang.key, label: t(`languages.${lang.key}`), keywords: lang.key }))}
+            searchPlaceholder={tSearch("searchLanguages")}
+            buttonClassName="rounded-lg border-gray-300 px-4 py-2.5"
+          />
         </div>
+        )}
 
         {/* Country of Residence */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
             {t("countryOfResidence")}
           </label>
-          <select
-            name="country_of_residence"
+          <CountrySelect
+            id="profile-country"
+            aria-label={t("countryOfResidence")}
             value={formData.country_of_residence}
-            onChange={handleChange}
-            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="">{t("selectCountryPlaceholder")}</option>
-            {COUNTRIES.map((c) => (
-              <option key={c.key} value={c.key}>{c.label}</option>
-            ))}
-          </select>
+            onChange={(value) => setField("country_of_residence", value)}
+            emptyOptionLabel={t("selectCountryPlaceholder")}
+            buttonClassName="rounded-lg border-gray-300 px-4 py-2.5"
+          />
         </div>
 
         {/* Target Employment/Hiring Market */}
+        {!personal && (
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
             {t("targetMarket")}
           </label>
-          <select
-            name="target_market"
+          <CountrySelect
+            id="profile-target-market"
+            aria-label={t("targetMarket")}
             value={formData.target_market}
-            onChange={handleChange}
-            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="">{t("selectTargetMarketPlaceholder")}</option>
-            {COUNTRIES.map((c) => (
-              <option key={c.key} value={c.key}>{c.label}</option>
-            ))}
-          </select>
+            onChange={(value) => setField("target_market", value)}
+            emptyOptionLabel={t("selectTargetMarketPlaceholder")}
+            buttonClassName="rounded-lg border-gray-300 px-4 py-2.5"
+          />
         </div>
+        )}
 
         {/* Time Zone */}
+        {!personal && (
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
             {t("timezone")}
           </label>
-          <select
-            name="timezone"
+          <SearchSelect
+            id="profile-timezone"
+            aria-label={t("timezone")}
             value={formData.timezone}
-            onChange={handleChange}
-            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="">{t("selectTimezonePlaceholder")}</option>
-            {formData.timezone && !timezoneOptions.includes(formData.timezone) && (
-              <option value={formData.timezone}>{formData.timezone}</option>
-            )}
-            {timezoneOptions.map((tz) => (
-              <option key={tz} value={tz}>{tz}</option>
-            ))}
-          </select>
+            onChange={(value) => setField("timezone", value)}
+            options={[
+              { value: "", label: t("selectTimezonePlaceholder") },
+              ...(formData.timezone && !timezoneOptions.includes(formData.timezone) ? [{ value: formData.timezone, label: formData.timezone }] : []),
+              ...timezoneOptions.map((tz) => ({ value: tz, label: tz })),
+            ]}
+            searchPlaceholder={tSearch("searchTimezones")}
+            buttonClassName="rounded-lg border-gray-300 px-4 py-2.5"
+          />
         </div>
+        )}
 
         {/* Address */}
         <div className="sm:col-span-2">
@@ -429,7 +433,17 @@ export default function EditProfileTab() {
       </div>
 
       {/* Save Button */}
-      <div className="flex justify-center sm:justify-end">
+      <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+        {onDone && (
+          <button
+            type="button"
+            onClick={onDone}
+            disabled={loading}
+            className="w-full sm:w-auto px-6 py-2.5 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+          >
+            {t("cancelButton")}
+          </button>
+        )}
         <button
           type="submit"
           disabled={loading}

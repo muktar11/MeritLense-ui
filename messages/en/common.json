@@ -113,10 +113,16 @@
       "b2cAnalytics": {
         "title": "Analytics & Insights - MeritLense",
         "description": "Detailed evaluation, readiness and candidate analytics for your candidates"
+      },
+      "compareCandidates": {
+        "title": "Compare Candidates - MeritLense",
+        "description": "Compare candidates assessed for the same role, side by side."
       }
     },
     "tablePagination": {
-      "showing": "Showing {start}-{end} of {total} {label}"
+      "showing": "Showing {start}-{end} of {total} {label}",
+      "previousPage": "Previous page",
+      "nextPage": "Next page"
     },
     "evaluatorRatingCard": {
       "title": "Evaluator Rating",
@@ -171,7 +177,7 @@
       "emailSubject": "Your MeritLense assessment link",
       "shareMessage": "Hello {name}, here is your MeritLense workforce readiness assessment link: {link}",
       "headerTitle": "Create Workforce Readiness Assessment",
-      "headerSubtitle": "Select a role package and create the candidate link",
+      "headerSubtitle": "Select a candidate, assessment type, role, and language to create the assessment link.",
       "successTitle": "Session Created",
       "successMessagePrefix": "Workforce Readiness Assessment for",
       "successMessageSuffix": "is ready.",
@@ -212,6 +218,30 @@
       "createAssessmentLink": "Create Assessment Link",
       "selectCandidateAndPackageError": "Please select a candidate and a role package.",
       "createSessionFailedError": "Failed to create the assessment session. Please try again.",
+      "searchPlaceholder": "Search for a role (e.g. caregiver, driver, cleaner…)",
+      "assessmentTypeAll": "All Assessment Types",
+      "assessmentTypeFull": "Full Assessment",
+      "assessmentTypeScreening": "Screening Assessment",
+      "assessmentTypeBoth": "Full + Screening",
+      "allRoles": "All Roles",
+      "roleCount": "{count, plural, one {# role} other {# roles}}",
+      "noRolesMatch": "No roles match your search.",
+      "selectedRoleLabel": "Selected Role",
+      "assessmentTypeLabel": "Assessment Type",
+      "footerDurationLabel": "Duration:",
+      "durationMinutes": "{value} minutes",
+      "notSelected": "—",
+      "categories": {
+        "healthcare": "Healthcare",
+        "home_care": "Home Care & Domestic",
+        "hospitality": "Hospitality",
+        "security": "Security",
+        "facility": "Facility Management",
+        "logistics": "Logistics & Transport",
+        "trades": "Skilled Trades & Labor",
+        "agriculture": "Agriculture & Outdoor",
+        "other": "Other Roles"
+      },
       "roles": {
         "domestic_worker": "Domestic Worker (Housekeeper)",
         "child_caregiver": "Child Caregiver",
@@ -234,7 +264,34 @@
         "skilled_trades": "Skilled Trades & Maintenance",
         "farm_worker": "Farm Worker",
         "livestock_support": "Livestock Support"
-      }
+      },
+      "shareEmailSending": "Sending...",
+      "shareEmailSentShort": "Email sent",
+      "shareEmailSent": "Interview link sent to {email}.",
+      "shareEmailFailed": "The email could not be sent. Copy the link and send it another way.",
+      "shareEmailNoAddress": "This candidate has no email address. Copy the link or share it by WhatsApp.",
+      "candidateStepSubtitle": "Select the candidate who will take the assessment.",
+      "assessmentTypeSubtitle": "Choose the type of assessment to send.",
+      "screeningCardBody": "Shorter assessment of the key readiness indicators (7 questions).",
+      "fullCardBody": "Comprehensive assessment covering all competencies (21 questions).",
+      "roleStepTitle": "Role",
+      "roleStepSubtitle": "Select the role for this assessment.",
+      "languageStepTitle": "Candidate Language",
+      "languageStepSubtitle": "Select the language in which the candidate will take the assessment.",
+      "languageInfoLink": "The assessment link and interview will be in the selected language.",
+      "languageFromProfile": "Pre-selected from the candidate's preferred language.",
+      "footerCandidateLabel": "Selected Candidate",
+      "footerLanguageLabel": "Language",
+      "languages": {
+        "EN": "English",
+        "AR": "العربية (Arabic)"
+      },
+      "selectCandidateError": "Select the candidate first.",
+      "selectAssessmentTypeError": "Choose Screening or Full assessment.",
+      "selectRoleError": "Select the role for this assessment.",
+      "noSetupForLanguageError": "This role isn't set up in {language} for the chosen assessment type yet.",
+      "languageTranslatedFor": "The candidate's language is {language}: they will see each question in the approved {source} version with a {language} translation, and can answer in {language}.",
+      "languageTextAnswers": "{language} answers are typed: speech recognition isn't available for this language."
     },
     "evaluationResultsModal": {
       "title": "Workforce Readiness Assessment Results",
@@ -306,7 +363,11 @@
         "taskExecution": "Practical Task Execution",
         "knowledgeComprehension": "Knowledge & Comprehension"
       },
-      "notAssessed": "Not Assessed"
+      "notAssessed": "Not Assessed",
+      "awaitingReview": {
+        "title": "Result under review",
+        "body": "MeritLense is reviewing this result before release. The score, readiness decision, report and any certificate will appear here once the review is complete."
+      }
     },
     "liveCallRoom": {
       "missingSessionId": "Missing session ID.",
@@ -354,6 +415,158 @@
       "recordBeat": "Tap here to record your turn when it's your turn to speak.",
       "languageBeat": "Set the language you speak and the one you want to hear here.",
       "gotIt": "Got it"
+    },
+    "scoreSource": {
+      "evaluatorRating": "Evaluator rating",
+      "evaluatorRatingHint": "Scheduled interview rated by an evaluator. The score is the average of the rated competencies."
+    },
+    "cookieConsent": {
+      "title": "We value your privacy",
+      "body": "We use necessary cookies and similar storage to keep you signed in and the site working. With your permission we would also use optional analytics and marketing cookies; none are active today. You can change your choice at any time from Cookie settings at the bottom of the page.",
+      "policyLink": "Privacy Policy",
+      "acceptAll": "Accept All",
+      "rejectOptional": "Reject optional",
+      "preferences": "Preferences",
+      "preferencesTitle": "Cookie preferences",
+      "save": "Save choices",
+      "alwaysOn": "Always on",
+      "close": "Close",
+      "necessary": "Necessary",
+      "necessaryDescription": "Needed to sign in, keep you signed in, remember your language and keep the site secure.",
+      "analytics": "Analytics",
+      "analyticsDescription": "Would help us understand how the site is used so we can improve it.",
+      "marketing": "Marketing",
+      "marketingDescription": "Would let us measure our campaigns and show relevant content elsewhere.",
+      "settingsLink": "Cookie settings",
+      "saved": "Your cookie choice was saved.",
+      "justThisTime": "Just This Time",
+      "reject": "Reject",
+      "managePreferences": "Manage preferences"
+    },
+    "searchableSelect": {
+      "search": "Type to search…",
+      "noResults": "No results found",
+      "selectCandidate": "Select a candidate",
+      "searchCandidates": "Search by name or email",
+      "selectCountry": "Select a country",
+      "searchCountries": "Search countries",
+      "selectLanguage": "Select a language",
+      "searchLanguages": "Search languages",
+      "selectRole": "Select a role",
+      "searchRoles": "Search roles",
+      "selectTimezone": "Select a time zone",
+      "searchTimezones": "Search time zones",
+      "selectNationality": "Select a nationality",
+      "searchNationalities": "Search nationalities",
+      "allRoles": "All roles"
+    },
+    "photoGuidelines": {
+      "faceVisible": "Face clearly visible, looking straight at the camera",
+      "wellLit": "Well-lit, no strong shadows or glare",
+      "nothingCovering": "No sunglasses, hats, or anything covering your face",
+      "onlyYou": "Only your face in the photo — no one else",
+      "sharp": "Sharp and in focus, not blurry",
+      "recent": "A recent photo that looks like you now"
+    },
+    "agreementTypes": {
+      "PRIVACY_TERMS": "Privacy Policy and Terms",
+      "AI_DISCLOSURE": "AI Assessment Disclosure",
+      "B2B_AGREEMENT": "B2B Agreement",
+      "DPA": "Data Processing Agreement (DPA)",
+      "B2C_AGREEMENT": "B2C Agreement",
+      "CANDIDATE_CONSENT": "Candidate Consent"
+    },
+    "ui": {
+      "errors": {
+        "registrationFailedRetry": "Registration failed. Please try again.",
+        "registrationFailed": "Registration failed",
+        "verificationFailed": "Verification failed. Please check your code and try again.",
+        "resendFailed": "Failed to resend verification code",
+        "resetEmailFailed": "Failed to send reset email. Please try again.",
+        "resetFailed": "Failed to reset password. Please try again.",
+        "loginFailed": "Login failed. Please check your credentials.",
+        "googleFailed": "Google sign-in failed. Please try again.",
+        "profileLoadFailed": "Failed to fetch profile",
+        "profileUpdateFailed": "Failed to update profile",
+        "passwordChangeFailed": "Failed to change password",
+        "documentUploadFailed": "Failed to upload document",
+        "pictureUploadFailed": "Failed to upload profile picture",
+        "pictureRemoveFailed": "Failed to remove profile picture",
+        "accountDeleteFailed": "Failed to delete account"
+      },
+      "loading": "Loading...",
+      "close": "Close",
+      "callConnectionLost": "Connection to the call server was interrupted.",
+      "contentProtection": {
+        "screenshotTitle": "Screenshots of this page may contain confidential information.",
+        "screenshotBody": "Please don't redistribute captured content without authorization."
+      }
+    },
+    "verifyPages": {
+      "certificate": {
+        "notFound": "No certificate could be verified for this ID.",
+        "noId": "No certificate ID provided.",
+        "failedHint": "This certificate could not be verified. If you believe this is an error, contact the issuing organization.",
+        "valid": "Valid Certificate",
+        "expired": "Expired Certificate",
+        "superseded": "Superseded Certificate",
+        "revoked": "Revoked Certificate",
+        "id": "Certificate ID",
+        "candidateName": "Candidate Name",
+        "issuedAt": "Issued At",
+        "expiresAt": "Expires At",
+        "footer": "This public page confirms authenticity and certificate status only. It does not display assessment details, scoring, or personal evaluation results.",
+        "title": "Certificate Verification",
+        "statusValues": {
+          "VALID": "Valid",
+          "EXPIRED": "Expired",
+          "SUPERSEDED": "Superseded",
+          "REVOKED": "Revoked"
+        }
+      },
+      "status": "Status",
+      "hash": "SHA-256 Hash",
+      "report": {
+        "noId": "No report ID provided.",
+        "notFound": "No report could be verified for this ID.",
+        "failedHint": "This report could not be verified. If you believe this is an error, contact the issuing organization.",
+        "authentic": "Authentic Report",
+        "superseded": "Superseded Report",
+        "revoked": "Revoked Report",
+        "id": "Report ID",
+        "targetRole": "Target Role",
+        "assessmentDate": "Assessment Date",
+        "authenticity": "Authenticity Status",
+        "publicStatus": "Public Report Status",
+        "verifiedAt": "Verified At",
+        "footer": "This public page confirms authenticity only. It does not display candidate score details, readiness reasoning, employer data, or personal evaluation results.",
+        "title": "Report Verification",
+        "statusValues": {
+          "Authentic": "Authentic",
+          "Superseded": "Superseded",
+          "Revoked": "Revoked"
+        }
+      },
+      "agreement": {
+        "noId": "No agreement ID provided.",
+        "notFound": "No signed agreement found for this ID.",
+        "failedHint": "This document could not be verified. If you believe this is an error, contact the issuing organization.",
+        "valid": "Valid Document",
+        "superseded": "Superseded — a newer version was signed",
+        "id": "Agreement ID",
+        "type": "Type",
+        "version": "Version",
+        "signatory": "Signatory",
+        "signedAt": "Signed at",
+        "footer": "To verify integrity, compare the hash above against the SHA-256 checksum of your downloaded PDF copy. No evaluation data or personal contact information is shown on this page.",
+        "title": "Document Verification"
+      }
+    },
+    "updatedAgreements": {
+      "title": "Updated agreements are available",
+      "body": "A newer version of an agreement you signed is available. Please review and sign it. Your account keeps working in the meantime, and your earlier signed copy stays on record.",
+      "action": "Review and sign",
+      "dismiss": "Dismiss"
     }
   },
   "landing-page": {
@@ -584,7 +797,11 @@
         "eyebrow": "Want to Validate MeritLense First?",
         "heading": "Start with a Paid Pilot",
         "description": "Run MeritLense with a defined candidate group before moving to a larger workforce assessment program.",
-        "scope_items": ["Defined Scope", "Defined Candidate Volume", "Defined Pilot Period"],
+        "scope_items": [
+          "Defined Scope",
+          "Defined Candidate Volume",
+          "Defined Pilot Period"
+        ],
         "pricing_label": "Pricing: Based on Pilot Scope",
         "cta_label": "Request a Pilot"
       }
@@ -632,7 +849,27 @@
       "acceptInvitation": "Accept Invitation & Create Account",
       "accepting": "Creating Account...",
       "success": "Welcome Aboard!",
-      "successMessage": "Your account has been successfully created. You will be redirected to the login page in 3 seconds."
+      "successMessage": "Your account has been successfully created. You will be redirected to the login page in 3 seconds.",
+      "errors": {
+        "noToken": "No invitation token provided",
+        "passwordTooShort": "Password must be at least 8 characters long",
+        "passwordMismatch": "Passwords do not match",
+        "acceptFailed": "Failed to accept invitation"
+      },
+      "validating": "Validating invitation...",
+      "validatingHint": "Please wait while we verify your invitation.",
+      "invalidTitle": "Invalid Invitation",
+      "invalidBody": "The invitation link you provided is invalid or missing.",
+      "goHome": "Go to Home",
+      "welcomeTitle": "Welcome Aboard!",
+      "welcomeBody": "Your account has been successfully created. You will be redirected to the login page in 3 seconds.",
+      "goToLogin": "Go to Login Now",
+      "minChars": "Minimum 8 characters",
+      "requirements": "Password requirements:",
+      "reqLength": "At least 8 characters long",
+      "reqMatch": "Passwords match",
+      "termsLink": "Terms of Service",
+      "privacyLink": "Privacy Policy"
     },
     "forgot_password": {
       "header": {
@@ -655,7 +892,10 @@
       "validation": {
         "email_or_phone_required": "Email or phone is required",
         "email_or_phone_invalid": "Please enter a valid email or phone number"
-      }
+      },
+      "tryAgain": "Try Again",
+      "tryAgainLink": "Try again",
+      "didNotReceive": "Didn't receive the email?"
     },
     "login": {
       "header": {
@@ -680,7 +920,8 @@
         "terms_link": "Terms",
         "and_connector": "and",
         "privacy_link": "Privacy Policy"
-      }
+      },
+      "passwordPlaceholder": "Enter your password"
     },
     "register_selection": {
       "header": {
@@ -842,7 +1083,15 @@
       "link_login": {
         "prefix": "Remember your password?",
         "link_text": "Back to Login"
-      }
+      },
+      "validating": "Validating your reset link...",
+      "invalidTitle": "Invalid Reset Link",
+      "invalidBody": "This password reset link is invalid or has expired.",
+      "requestNew": "Request New Reset Link",
+      "backToLogin": "Back to Login",
+      "redirecting": "Redirecting to login...",
+      "failedTitle": "Reset Failed",
+      "tryAgain": "Try Again"
     },
     "register_candidate": {
       "pageTitle": "Individual Employer Registration",
@@ -928,6 +1177,89 @@
     },
     "common": {
       "back_to_home": "Back to Home"
+    },
+    "consent": {
+      "b2cStatement": "I confirm that I am 18 years or older and agree to the applicable <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>.",
+      "b2bStatement": "I have read and agree to the applicable <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>.",
+      "required": "Please tick the box to continue."
+    },
+    "lists": {
+      "search": "Search...",
+      "noMatches": "No matches",
+      "countryCode": "Code",
+      "searchCountryCode": "Search country or code",
+      "otherRequired": "Please type it in.",
+      "specifyNationality": "Type your nationality",
+      "specifyCountry": "Type your country",
+      "phoneInvalid": "Enter a valid phone number for the selected country code.",
+      "targetMarketHint": "Defaults to your country of residence; change it if you hire for another country.",
+      "targetCity": "Target hiring city (optional)",
+      "targetCityPlaceholder": "Any city",
+      "searchCity": "Search city",
+      "selectCity": "Select city",
+      "typeCity": "Type the city"
+    },
+    "register_company": {
+      "title": "Company Registration",
+      "subtitle": "Register your company for workforce readiness assessments",
+      "sections": {
+        "account": "Account Information",
+        "company": "Company Information"
+      },
+      "fields": {
+        "email": "Email Address",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "password": "Password",
+        "confirmPassword": "Confirm Password",
+        "companyName": "Company Name",
+        "registrationNumber": "Registration Number",
+        "companySize": "Company Size",
+        "industry": "Industry",
+        "country": "Country",
+        "city": "City",
+        "phone": "Phone Number",
+        "website": "Website",
+        "address": "Address",
+        "preferredLanguage": "Preferred Language",
+        "targetMarket": "Target Hiring Market"
+      },
+      "placeholders": {
+        "email": "company@example.com",
+        "firstName": "First name",
+        "lastName": "Last name",
+        "password": "Min. 8 characters",
+        "confirmPassword": "Confirm password",
+        "companyName": "Your company name",
+        "registrationNumber": "e.g. REG123456",
+        "companySize": "Select company size",
+        "industry": "e.g. Hospitality",
+        "country": "Select country",
+        "address": "Street, building, suite",
+        "targetMarket": "Select market"
+      },
+      "companySizes": "{range} employees",
+      "showPassword": "Show or hide password",
+      "documentsNote": "You can upload your registration certificate and other company documents from Company Profile after registration. Platform access is enabled after admin approval.",
+      "errors": {
+        "emailRequired": "Email is required",
+        "emailInvalid": "Enter a valid email address",
+        "firstNameRequired": "First name is required",
+        "lastNameRequired": "Last name is required",
+        "passwordRequired": "Password is required",
+        "passwordMin": "Password must be at least 8 characters",
+        "passwordsMismatch": "Passwords do not match",
+        "companyNameRequired": "Company name is required",
+        "registrationNumberRequired": "Registration number is required",
+        "companySizeRequired": "Company size is required",
+        "countryRequired": "Country is required",
+        "cityRequired": "City is required",
+        "phoneRequired": "Phone number is required"
+      },
+      "buttons": {
+        "submit": "Register Company",
+        "submitting": "Registering company..."
+      }
     }
   },
   "dashboard": {
@@ -952,7 +1284,8 @@
         "package_requests": "Package Requests",
         "interview_setup": "Interview Setup",
         "candidate_comparison": "Candidate Comparison",
-        "analytics_insights": "Analytics & Insights"
+        "analytics_insights": "Analytics & Insights",
+        "review_queue": "Review Queue"
       },
       "candidateComparison": {
         "title": "Candidate Comparison",
@@ -1588,7 +1921,8 @@
         "adminAccess": "Admin Access",
         "tabs": {
           "pendingVerifications": "Pending Verifications",
-          "auditLogs": "Audit Logs"
+          "auditLogs": "Audit Logs",
+          "ipTracer": "IP Tracer"
         },
         "pending": {
           "title": "Document Verification Queue",
@@ -1621,8 +1955,10 @@
             "severity": "Severity",
             "resource": "Resource",
             "timestamp": "Timestamp",
-            "description": "Description"
-          }
+            "description": "Description",
+            "ip": "IP address"
+          },
+          "ipFilter": "Filter by IP"
         },
         "severity": {
           "INFO": "Info",
@@ -1736,6 +2072,65 @@
             "of": "of",
             "prev": "Prev",
             "next": "Next"
+          }
+        },
+        "ipTracer": {
+          "title": "IP Tracer",
+          "subtitle": "Enter an account email to see every IP address it acted from, an IP address to see every account seen on it, or a candidate passport ID to see that candidate's full activity trail.",
+          "placeholder": "Email, IP address or passport ID",
+          "trace": "Trace",
+          "days": "Last {days} days",
+          "invalid": "Enter an email address or an IP address.",
+          "notFound": "No account found for this email.",
+          "failed": "Could not load the trace. Please try again.",
+          "accountHeading": "IP addresses used by {email}",
+          "candidateHeading": "IP addresses used by this account's candidates (interview links)",
+          "ipHeading": "Accounts seen on {ip}",
+          "unattributed": "{count} more events on this IP are not tied to an account (candidates on interview links, sign-in attempts for unknown emails).",
+          "empty": "No activity recorded in this period.",
+          "note": "IP addresses are recorded for every request from 14 Oct 2026. Older entries may have none.",
+          "viewLogs": "View logs",
+          "col": {
+            "ip": "IP address",
+            "account": "Account",
+            "firstSeen": "First seen",
+            "lastSeen": "Last seen",
+            "events": "Events",
+            "logins": "Sign-ins",
+            "failed": "Failed sign-ins",
+            "browsers": "Browser / device",
+            "shared": "Other accounts on this IP",
+            "sessions": "Interviews"
+          }
+        },
+        "trail": {
+          "open": "Activity trail",
+          "title": "Candidate activity trail",
+          "subtitle": "Who registered this candidate, who created each assessment, and every action tied to it, with the IP address it came from.",
+          "notFound": "No candidate found with this passport ID.",
+          "failed": "Could not load the trail. Please try again.",
+          "owner": "Account: {owner} · Company: {company}",
+          "registered": "Registered",
+          "byFrom": "by {name} ({email}) on {at} from",
+          "noRegistration": "No record of this candidate being added through the app (record created {at}). It was created outside the app, e.g. directly on the server.",
+          "noIp": "IP not recorded",
+          "assessments": "Assessments",
+          "noAssessments": "No assessments.",
+          "ran": "Started {start} · Ended {end}",
+          "createdBy": "Created",
+          "candidateIps": "Candidate's IP addresses on the interview link",
+          "events": "All activity ({count})",
+          "filterIp": "Filter by IP:",
+          "allIps": "All",
+          "noEvents": "No activity for this filter.",
+          "candidateOrSystem": "Candidate / system",
+          "page": "Page {current} of {total}",
+          "col": {
+            "when": "When",
+            "who": "Who",
+            "action": "Action",
+            "ip": "IP address",
+            "details": "Details"
           }
         }
       },
@@ -2341,6 +2736,53 @@
       "analytics": {
         "title": "Analytics & Insights",
         "subtitle": "Platform-wide evaluation, readiness, user and revenue analytics."
+      },
+      "reviewQueue": {
+        "title": "Review Queue",
+        "subtitle": "Results held from employers until a reviewer records a decision. The automatic outcome is kept; your decision is stored as an audited correction.",
+        "empty": "No results are waiting for review.",
+        "loadFailed": "Could not load the review queue.",
+        "table": {
+          "candidate": "Candidate",
+          "role": "Role",
+          "language": "Language",
+          "tier": "Assessment",
+          "company": "Company",
+          "automatic": "Automatic outcome",
+          "score": "Score",
+          "reasons": "Why it was held",
+          "completed": "Completed",
+          "actions": "Actions"
+        },
+        "tiers": {
+          "FULL": "Full",
+          "SCREENING": "Screening"
+        },
+        "noCompany": "Individual (B2C)",
+        "viewResults": "View results",
+        "review": "Record decision",
+        "modal": {
+          "title": "Record review decision",
+          "candidate": "Candidate",
+          "automatic": "Automatic outcome",
+          "reasons": "Why it was held",
+          "decision": "Your decision",
+          "notes": "Reviewer notes",
+          "notesPlaceholder": "What did you check, and why this decision?",
+          "notesRequired": "Please add notes explaining the decision.",
+          "submit": "Release result",
+          "submitting": "Releasing...",
+          "cancel": "Cancel",
+          "certificateNote": "A certificate is still only issued if the normal eligibility rules pass on the actual scores.",
+          "failed": "Could not record the decision."
+        },
+        "decisions": {
+          "READY": "Ready",
+          "PARTIALLY_READY": "Partially Ready",
+          "NOT_READY": "Not Ready",
+          "INCOMPLETE": "Incomplete"
+        },
+        "released": "Result released."
       }
     },
     "business": {
@@ -2375,10 +2817,11 @@
         "analytics_insights": "Analytics & Insights",
         "performance_scorecard": "Performance Scorecard",
         "user_management": "User Management",
-        "business_management": "Scores",
-        "audit_logs": "Payment",
+        "business_management": "Assessment Results",
+        "audit_logs": "Billing & Payments",
         "notifications": "Notifications & Alerts",
-        "system_configuration": "Company Profile"
+        "system_configuration": "Company Profile",
+        "compare_candidates": "Compare Candidates"
       },
       "sidebarLocked": "Sign the B2B Services Agreement and DPA to unlock this page",
       "accessDenied": "Your staff permissions do not grant access to this section.",
@@ -2676,7 +3119,8 @@
         "averageScore": "Average Score",
         "loading": "Loading comparison data...",
         "noData": "No candidate comparison data available",
-        "showingTop": "Showing top {count, plural, one {# candidate} other {# candidates}} by average score"
+        "showingTop": "Showing top {count, plural, one {# candidate} other {# candidates}} by average score",
+        "loadFailed": "Failed to load comparison data"
       },
       "jobRoleDistributionChart": {
         "title": "Candidates by Job Role",
@@ -2996,8 +3440,169 @@
             "inviteInfo": "The invited team member will receive an email with instructions to set up their account. The invitation will expire in 7 days.",
             "cancel": "Cancel",
             "sendInvite": "Send Invitation",
-            "sending": "Sending..."
+            "sending": "Sending...",
+            "role": "Role",
+            "roleHint": "The role sets the starting permissions. You can adjust them below.",
+            "errors": {
+              "emailRequired": "Email is required",
+              "emailInvalid": "Invalid email format",
+              "firstNameRequired": "First name is required",
+              "lastNameRequired": "Last name is required",
+              "roleRequired": "Job title is required",
+              "phoneRequired": "Phone Number is required",
+              "permissionRequired": "At least one permission is required",
+              "sendFailed": "Failed to send invitation. Please try again."
+            },
+            "firstNamePlaceholder": "John",
+            "lastNamePlaceholder": "Doe"
           }
+        },
+        "subtitle": "Manage your company information, team and settings.",
+        "info": {
+          "title": "Company Information",
+          "brandName": "Company (Brand) Name",
+          "legalName": "Legal Company Name",
+          "registrationNumber": "Registration Number",
+          "companyType": "Company Type",
+          "industry": "Industry",
+          "website": "Website",
+          "description": "Company Description",
+          "descriptionPlaceholder": "Describe what your company does and how you use MeritLense.",
+          "notSet": "Not set",
+          "selectType": "Select company type",
+          "changePhoto": "Change Photo",
+          "addPhoto": "Add Photo",
+          "businessRoles": "Business Roles",
+          "nameRequired": "Company name is required.",
+          "saveFailed": "Could not save the company information. Please try again.",
+          "saved": "Company information saved.",
+          "registrationLocked": "Contact MeritLense support to change the registration number.",
+          "companyTypes": {
+            "LLC": "Limited Liability Company (L.L.C.)",
+            "FREE_ZONE": "Free Zone Company",
+            "SOLE_ESTABLISHMENT": "Sole Establishment",
+            "CIVIL": "Civil Company",
+            "BRANCH": "Branch of a Foreign Company",
+            "PJSC": "Public Joint Stock Company (PJSC)",
+            "PRIVATE_JSC": "Private Joint Stock Company",
+            "OTHER": "Other"
+          }
+        },
+        "contact": {
+          "title": "Contact Information",
+          "email": "Email",
+          "phone": "Phone",
+          "website": "Website",
+          "emailLocked": "Your sign-in email. It cannot be changed here.",
+          "saveFailed": "Could not save the contact information. Please try again."
+        },
+        "addresses": {
+          "title": "Business Address(es)",
+          "add": "Add Address",
+          "empty": "No business address added yet.",
+          "addTitle": "Add Address",
+          "editTitle": "Edit Address",
+          "label": "Label",
+          "labelPlaceholder": "e.g. Main Office (UAE)",
+          "type": "Address Type",
+          "country": "Country",
+          "city": "City",
+          "street": "Street Address",
+          "streetPlaceholder": "Office, building, street, area",
+          "edit": "Edit",
+          "remove": "Remove",
+          "removeConfirm": "Remove this address?",
+          "mainLocked": "The Main Office cannot be removed. Edit it instead.",
+          "oneMain": "There is already a Main Office. Change it first.",
+          "countryRequired": "Country is required.",
+          "saveFailed": "Could not save the address. Please try again.",
+          "actions": "Address actions",
+          "types": {
+            "MAIN": "Main Office",
+            "TRADING": "Trading Address",
+            "BRANCH": "Branch Address"
+          }
+        },
+        "sections": {
+          "navLabel": "Company profile sections",
+          "team": "Team & Access",
+          "license": "Business License",
+          "agreements": "Legal Agreements",
+          "security": "Account Security",
+          "settings": "Settings"
+        },
+        "staff": {
+          "subtitle": "Add and manage team members and their access permissions.",
+          "name": "Name",
+          "email": "Email",
+          "role": "User Role",
+          "permissions": "Permissions",
+          "status": "Status",
+          "actions": "Actions",
+          "roleInfo": "What each role can do",
+          "permissionsInfo": "What each access level allows",
+          "ownerOnly": "Only the account owner can add or change staff.",
+          "legacyRole": "{title} (earlier job title)",
+          "updateFailed": "Could not update this staff member. Please try again.",
+          "roles": {
+            "admin": "Admin",
+            "evaluator": "Evaluator",
+            "reviewer": "Reviewer"
+          },
+          "roleHelp": {
+            "admin": "Adds candidates, runs assessments, sets scores and manages billing, and can view every result in the company. Changes apply to the candidates they added. The company profile and staff stay with the account owner.",
+            "evaluator": "Adds candidates and creates and manages assessments for the candidates they added.",
+            "reviewer": "Views every assessment, report and certificate in the company. Cannot change anything."
+          },
+          "access": {
+            "full": "Full Access",
+            "standard": "Standard Access",
+            "review": "Review Only",
+            "custom": "Custom",
+            "none": "No Access"
+          },
+          "accessHelp": {
+            "full": "Every permission, including billing and viewing all company results.",
+            "standard": "Add candidates and manage assessments for their own candidates.",
+            "review": "View all company results. No changes.",
+            "custom": "A custom set of permissions. Use Edit to see or change it."
+          },
+          "permissionNames": {
+            "add_candidates": "Add candidates",
+            "set_evaluation": "Create and manage assessments",
+            "set_scores": "Set scores",
+            "set_payment": "Billing and payments",
+            "view_results": "View all company results"
+          }
+        },
+        "licenseCard": {
+          "subtitle": "Upload and manage your business license and related documents.",
+          "fileLabel": "Business license",
+          "verified": "Document Verified",
+          "underReview": "Under Review",
+          "view": "View"
+        },
+        "agreementsTable": {
+          "subtitle": "Review and manage your legal agreements and documents.",
+          "document": "Document Name",
+          "type": "Type",
+          "legal": "Legal",
+          "status": "Status",
+          "signedOn": "Signed On",
+          "actions": "Actions",
+          "view": "View",
+          "review": "Review",
+          "download": "Download PDF",
+          "auditTrail": "View Audit Trail",
+          "newVersion": "New version available"
+        },
+        "security": {
+          "subtitle": "Manage your password and account security settings.",
+          "note": "Enter your current password to set a new one. Each team member changes their own password from their own account."
+        },
+        "settingsCard": {
+          "subtitle": "Configure your preferences.",
+          "saved": "Settings saved."
         }
       },
       "settings": {
@@ -3392,7 +3997,10 @@
         "createdBy": "Created by: {name}",
         "createdAt": "Created at: {date}",
         "updatedAt": "Last updated: {date}",
-        "company": "Company: {name}"
+        "company": "Company: {name}",
+        "photoAlt": "Candidate photo",
+        "photoPreviewAlt": "Photo preview",
+        "documentPreviewAlt": "Document preview"
       },
       "shareModal": {
         "noPermission": "You don't have permission to share candidates.",
@@ -3431,12 +4039,13 @@
         "overview": "Dashboard ",
         "candidate_management": "Candidates",
         "evaluation_setup": "Evaluations",
-        "assessments_monitor": "Scores",
+        "assessments_monitor": "Assessment Results",
         "reports_certificates": "Reports & Certificates",
         "profile_management": "Profile",
-        "packages_subscription": "Packages & Subscription",
+        "packages_subscription": "Billing & Payments",
         "notifications": "Notifications",
-        "analytics_insights": "Analytics & Insights"
+        "analytics_insights": "Analytics & Insights",
+        "compare_candidates": "Compare Candidates"
       },
       "sidebarLocked": "Sign the B2C Individual Services Agreement to unlock this page",
       "payment": {
@@ -3666,7 +4275,8 @@
           "noAssessmentsRemaining": "No assessment slots remaining - upgrade your plan to continue",
           "noActivePlan": "No active plan",
           "notAvailableShort": "N/A"
-        }
+        },
+        "tabsLabel": "Tabs"
       },
       "evaluations": {
         "title": "Evaluation Management",
@@ -3736,7 +4346,8 @@
             "markComplete": "Mark Complete",
             "startAiInterview": "Start AI Interview",
             "cancel": "Cancel"
-          }
+          },
+          "underReview": "Under review"
         },
         "scheduleModal": {
           "titles": {
@@ -3903,6 +4514,9 @@
         "selectEligibleCandidates": "Select Candidates to Compare (2-4)",
         "noEligibleCandidates": "No comparable candidates for this role yet.",
         "needMoreCandidates": "Select at least 2 candidates to compare.",
+        "compareButton": "{count, plural, =0 {Compare} =1 {Compare} other {Compare # Candidates}}",
+        "comparing": "Comparing…",
+        "compareFailed": "Couldn't load the comparison. Please try again.",
         "candidateSummary": "Candidate Summary",
         "readinessLevel": "Readiness Level",
         "assessmentCoverage": "Assessment Coverage",
@@ -3919,10 +4533,115 @@
         "exportingPdf": "Generating PDF..."
       },
       "profile": {
-        "pageTitle": "Profile Settings"
+        "pageTitle": "Profile Settings",
+        "subtitle": "Manage your personal information, security, billing and settings.",
+        "info": {
+          "title": "Personal Information",
+          "edit": "Edit",
+          "changePhoto": "Change Photo",
+          "addPhoto": "Add Photo",
+          "removePhoto": "Remove photo",
+          "notSet": "Not set"
+        },
+        "contact": {
+          "title": "Contact Information",
+          "email": "Email",
+          "phone": "Phone",
+          "subtitle": "Your contact details for account access and important updates.",
+          "verified": "Verified",
+          "address": "Address"
+        },
+        "address": {
+          "title": "Address",
+          "residence": "Country of residence",
+          "empty": "No address added yet."
+        },
+        "sections": {
+          "navLabel": "Profile sections",
+          "agreements": "Legal Agreements",
+          "security": "Account Security",
+          "billing": "Billing & Subscription",
+          "settings": "Settings",
+          "personal": "Personal Information",
+          "contact": "Contact Information"
+        },
+        "settings": {
+          "subtitle": "Configure your preferences.",
+          "theme": "Theme",
+          "light": "Light",
+          "dark": "Dark",
+          "save": "Save Changes",
+          "saved": "Settings saved."
+        },
+        "header": {
+          "accountType": "Individual Account",
+          "note": "Your profile helps us provide a secure and personalized experience on MeritLense.",
+          "changePhoto": "Change photo"
+        },
+        "personal": {
+          "subtitle": "Manage your basic information.",
+          "fullName": "Full Name",
+          "optional": "Not set (Optional)"
+        },
+        "security": {
+          "subtitle": "Manage your password and account security settings.",
+          "changePassword": "Change Password",
+          "password": "Password",
+          "change": "Change",
+          "deleteAccount": "Delete account",
+          "deleteHint": "Permanently remove your account and data.",
+          "manage": "Manage"
+        },
+        "billing": {
+          "subtitle": "View your plan details, payment methods and invoices.",
+          "managePlan": "Manage Plan",
+          "noPlan": "No active plan",
+          "noPlanHint": "Choose a plan to start assessing candidates.",
+          "renewsOn": "Renews on {date}",
+          "endsOn": "Ends on {date}",
+          "paymentMethod": "Payment Method",
+          "noMethod": "No payment method saved",
+          "update": "Update",
+          "add": "Add",
+          "history": "Billing History",
+          "historyHint": "View your past invoices.",
+          "view": "View"
+        },
+        "agreementsCard": {
+          "subtitle": "Review and manage your agreements and consents.",
+          "viewDocuments": "View Documents",
+          "signedOn": "Signed on {date}",
+          "signed": "Signed",
+          "pending": "Pending",
+          "sign": "Sign",
+          "download": "Download PDF",
+          "auditTrail": "View Audit Trail",
+          "actions": "Agreement actions",
+          "none": "No agreements on your account yet."
+        },
+        "settingsCard": {
+          "subtitle": "Personalize your experience.",
+          "edit": "Edit",
+          "language": "Language",
+          "targetMarket": "Target Market",
+          "timezone": "Time Zone",
+          "appearance": "Appearance",
+          "notSet": "Not set"
+        },
+        "dialogs": {
+          "editPersonal": "Edit Personal Information",
+          "editContact": "Edit Contact Information",
+          "editSettings": "Edit Settings",
+          "save": "Save",
+          "cancel": "Cancel",
+          "saveFailed": "Could not save. Please try again."
+        }
       },
       "dashboardHeader": {
-        "premiumBadge": "Premium"
+        "premiumBadge": "Premium",
+        "notifications": "Notifications",
+        "companyProfile": "Company profile",
+        "planBadgeTitle": "Your current plan"
       },
       "settings-tabs": {
         "editProfile": "Edit Profile",
@@ -4027,7 +4746,8 @@
             "LG": "Luganda",
             "MG": "Malagasy"
           },
-          "saveButton": "Save Changes"
+          "saveButton": "Save Changes",
+          "cancelButton": "Cancel"
         },
         "billing-tab": {
           "remainingPoints": "Remaining Points",
@@ -4100,7 +4820,65 @@
             "confirmButton": "Confirm Cancellation",
             "cancellingButton": "Cancelling...",
             "failedAlert": "Failed to cancel subscription. Please try again."
-          }
+          },
+          "debugTitle": "Payment check details",
+          "syncing": "Syncing...",
+          "syncButton": "Sync this subscription",
+          "paymentCheck": {
+            "button": "Check payment",
+            "notAvailable": "Not available",
+            "subscription": "Subscription",
+            "latestInvoice": "Latest invoice",
+            "payment": "Payment",
+            "payInvoice": "Pay outstanding invoice",
+            "sync": "Refresh subscription",
+            "syncing": "Refreshing...",
+            "outcome": {
+              "ok": "Your payments are up to date.",
+              "attention": "A payment needs your attention. Complete it to keep your subscription active.",
+              "failed": "The last payment attempt failed.",
+              "none": "No subscription payments were found for this account.",
+              "error": "We couldn't check your payment status right now. Please try again shortly.",
+              "records": "Your plan is active according to your account. The payment provider had no further detail to show."
+            },
+            "statuses": {
+              "active": "Active",
+              "trialing": "Trial",
+              "past_due": "Past due",
+              "incomplete": "Incomplete",
+              "incomplete_expired": "Expired before payment",
+              "canceled": "Cancelled",
+              "unpaid": "Unpaid",
+              "paused": "Paused",
+              "draft": "Draft",
+              "open": "Awaiting payment",
+              "paid": "Paid",
+              "uncollectible": "Uncollectible",
+              "void": "Void",
+              "succeeded": "Succeeded",
+              "processing": "Processing",
+              "requires_payment_method": "Needs a payment method",
+              "requires_action": "Needs your confirmation",
+              "requires_confirmation": "Awaiting confirmation",
+              "requires_capture": "Awaiting capture"
+            },
+            "errors": {
+              "card_declined": "Your card was declined. Try another card or contact your bank.",
+              "insufficient_funds": "The card has insufficient funds.",
+              "expired_card": "The card has expired.",
+              "incorrect_cvc": "The card's security code (CVC) is incorrect.",
+              "incorrect_number": "The card number is incorrect.",
+              "processing_error": "The payment could not be processed. Please try again.",
+              "authentication_required": "Your bank needs you to confirm this payment.",
+              "lost_card": "The card was declined by your bank.",
+              "stolen_card": "The card was declined by your bank.",
+              "do_not_honor": "Your bank declined the payment. Please contact your bank.",
+              "generic_decline": "Your bank declined the payment. Please contact your bank.",
+              "generic": "The payment did not go through. Try another card or contact your bank."
+            }
+          },
+          "noActionNeeded": "No payment is due right now.",
+          "retryFailed": "We couldn't open the payment page. Please try again."
         },
         "agreements-tab": {
           "title": "Legal Agreements",
@@ -4148,7 +4926,14 @@
             "deleting": "Deleting...",
             "incorrectPassword": "Incorrect password. Please try again."
           },
-          "saveButton": "Save Changes"
+          "saveButton": "Save Changes",
+          "errors": {
+            "currentRequired": "Current password is required",
+            "newRequired": "New password is required",
+            "weak": "New password does not meet security requirements",
+            "mismatch": "New passwords do not match",
+            "sameAsCurrent": "New password must be different from current password"
+          }
         }
       },
       "paymentMethodsList": {
@@ -4174,7 +4959,7 @@
       },
       "usageMeter": {
         "remaining": "{count} remaining",
-        "usedOf": "({used} / {limit} {unit} used)",
+        "usedOf": "({used} of {limit} used)",
         "approachingLimit": "Approaching limit ({percent}% used)",
         "limitReached": "Limit reached. Upgrade your plan to add more."
       },
@@ -4259,7 +5044,8 @@
           "maintenance": "Maintenance",
           "cleaner": "Cleaner",
           "sales": "Sales"
-        }
+        },
+        "loadFailed": "Failed to load comparison data"
       },
       "dashboard": {
         "packageExpires": "Package expires in {days} days!",
@@ -4288,7 +5074,58 @@
           "pendingEvaluation": "Pending Evaluation",
           "newReport": "New Report Ready"
         },
-        "viewAnalytics": "View Analytics"
+        "viewAnalytics": "View Analytics",
+        "widgets": {
+          "requires_attention": {
+            "title": "Requires Attention",
+            "description": "Evaluations flagged for human review or missing evidence"
+          },
+          "readiness_index": {
+            "title": "Overall Readiness Index",
+            "description": "Completed evaluations by readiness outcome"
+          },
+          "recent_candidates": {
+            "title": "Candidate List",
+            "description": "Your latest candidates and their results"
+          },
+          "recent_evaluations": {
+            "title": "Evaluation Management",
+            "description": "Scheduled, in-progress and completed evaluations"
+          },
+          "evaluation_status": {
+            "title": "Evaluation Status",
+            "description": "Scheduled, completed and cancelled evaluations"
+          },
+          "evaluation_trend": {
+            "title": "Evaluation Trends",
+            "description": "Daily evaluation activity over the last 30 days"
+          },
+          "performance_trend": {
+            "title": "Performance Trends",
+            "description": "Average score over the last 30 days"
+          },
+          "job_role_distribution": {
+            "title": "Assessments by Role",
+            "description": "How your assessments are spread across job roles"
+          },
+          "language_distribution": {
+            "title": "Language Distribution",
+            "description": "Evaluations by interview language"
+          },
+          "time_of_day": {
+            "title": "Evaluation Time of Day",
+            "description": "When evaluations take place"
+          },
+          "monthly_activity": {
+            "title": "Monthly Activity",
+            "description": "Candidates, evaluations and certificates per month"
+          },
+          "candidate_comparison": {
+            "title": "Candidate Comparison",
+            "description": "Average scores of your candidates side by side"
+          }
+        },
+        "customizeDescription": "Choose which widgets appear on your dashboard and set their order. Only you see this layout."
       },
       "pointConsumption": {
         "title": "Assessment Consumption by Service",
@@ -4397,30 +5234,9 @@
       },
       "notifications": {
         "title": "Notifications",
-        "items": {
-          "comment": {
-            "title": "{name} sent you a comment",
-            "message": "in evaluation task"
-          },
-          "status": {
-            "title": "Candidate status updated",
-            "message": "Set to In Progress"
-          },
-          "lowPoints": {
-            "title": "Low points review item",
-            "message": "Added to to-do list"
-          },
-          "report": {
-            "title": "{name}'s report is ready",
-            "message": "Download and review"
-          }
-        },
-        "time": {
-          "daysAgo": "{value} days ago",
-          "hoursAgo": "{value}h ago",
-          "hoursMinutesAgo": "{hours}h {minutes}m ago",
-          "yesterday": "Yesterday {time}"
-        }
+        "close": "Close",
+        "emptyTitle": "No notifications yet",
+        "emptyBody": "Important updates about your candidates and assessments will appear here. We also email them to you."
       },
       "signAgreements": {
         "loadFailedError": "Failed to load your agreement. Please refresh the page.",
@@ -4467,6 +5283,148 @@
       "analytics": {
         "title": "Analytics & Insights",
         "subtitle": "Detailed evaluation, readiness and candidate analytics for your candidates."
+      }
+    },
+    "accountTypes": {
+      "B2B": "Company Account",
+      "B2B_TEAM_MEMBER": "Team Member",
+      "B2C": "Individual Account",
+      "ADMIN": "Administrator",
+      "SUPERADMIN": "Super Administrator"
+    },
+    "accountMenu": "Account menu",
+    "compareCandidates": {
+      "title": "Compare Candidates",
+      "subtitle": "Compare 2–4 candidates assessed for the same role, side by side, using their recorded assessment results.",
+      "loadFailed": "Couldn't load this list. Please refresh the page.",
+      "step1": {
+        "title": "Choose the job role",
+        "hint": "Only candidates assessed for this exact role can be compared.",
+        "noRoles": "No candidates have comparable assessment results yet.",
+        "typeLabel": "Assessment type",
+        "typeHint": "Screening and Full Assessment results are never compared together."
+      },
+      "step2": {
+        "title": "Choose the assessments",
+        "hint": "{role} · {type}. Pick one assessment per candidate; 2–4 candidates.",
+        "search": "Search candidates",
+        "from": "From",
+        "to": "To",
+        "selected": "{count} of {max} selected",
+        "remove": "Remove {name}",
+        "empty": "No assessments match these filters.",
+        "attempts": "{count} assessments",
+        "needTwo": "Select at least 2 candidates."
+      },
+      "step3": {
+        "title": "Comparison results"
+      },
+      "tier": {
+        "FULL": "Full Assessment",
+        "SCREENING": "Screening"
+      },
+      "status": {
+        "COMPLETE": "Complete",
+        "HUMAN_REVIEW": "Human review"
+      },
+      "readiness": {
+        "READY": "Ready",
+        "PARTIALLY_READY": "Partially Ready",
+        "NOT_READY": "Readiness Gaps Identified",
+        "INCOMPLETE": "Insufficient Evidence",
+        "PENDING": "Pending"
+      },
+      "compare": "{count, plural, =0 {Compare} =1 {Compare} other {Compare # candidates}}",
+      "comparing": "Comparing…",
+      "compareFailed": "Couldn't load the comparison. Please try again.",
+      "incompatible": "These assessments can't be compared together. Choose assessments of the same type.",
+      "overallScore": "Overall score",
+      "scoreWithheld": "Withheld until human review is completed",
+      "readinessLevel": "Readiness level",
+      "criticalIndicators": "Critical indicators",
+      "criticalAllMet": "All met",
+      "criticalNotMet": "{count, plural, =1 {1 not met} other {# not met}}",
+      "assessmentCoverage": "Assessment coverage",
+      "humanReviewRequired": "Human review required",
+      "viewFullReport": "View full report",
+      "competencyComparison": "Competency comparison",
+      "competency": "Competency",
+      "classification": "Classification",
+      "classificationLabel": {
+        "CRITICAL": "Critical",
+        "NON_CRITICAL": "Non-Critical",
+        "REQUIRED": "Required"
+      },
+      "keyDifferences": "Key differences",
+      "radarChart": "Radar chart",
+      "barChart": "Bar chart",
+      "notEnoughForRadar": "A radar chart needs at least 3 comparable competencies.",
+      "exportPng": "PNG",
+      "exportPdf": "Export PDF report",
+      "exportingPdf": "Generating PDF…",
+      "limitations": "About this comparison",
+      "openPage": "Compare candidates",
+      "subtitleShort": "Select a job role and compare 2–4 candidates with their assessment results.",
+      "howItWorks": "How it works",
+      "close": "Close",
+      "loading": "Loading…",
+      "steps": {
+        "role": "Select Job Role",
+        "roleHint": "Choose the role to compare",
+        "candidates": "Select Candidates",
+        "candidatesHint": "Choose 2–4 candidates",
+        "view": "View Comparison",
+        "viewHint": "Analyse results and insights",
+        "export": "Export Report",
+        "exportHint": "Download or share"
+      },
+      "filters": {
+        "role": "Job Role",
+        "chooseRole": "Choose a job role",
+        "dateRange": "Date Range",
+        "optional": "Optional",
+        "type": "Assessment Type",
+        "allTypes": "All Types",
+        "roleNote": "Only candidates assessed for the selected role ({role}) will be shown.",
+        "ranges": {
+          "any": "Any time",
+          "30d": "Last 30 days",
+          "3m": "Last 3 months",
+          "6m": "Last 6 months",
+          "12m": "Last 12 months",
+          "custom": "Custom range"
+        }
+      },
+      "list": {
+        "title": "Select Candidates (2–4)",
+        "chooseRoleFirst": "Choose a job role to see the candidates assessed for it.",
+        "attempt": "Assessment for {name}"
+      },
+      "tabs": {
+        "overview": "Comparison Overview",
+        "detailed": "Detailed Scores",
+        "insights": "Key Insights",
+        "reports": "Reports"
+      },
+      "results": {
+        "empty": "Select 2–4 candidates and press Compare Candidates to see the results here.",
+        "overall": "Overall Comparison",
+        "overallHint": "Side-by-side comparison of the selected candidates for the {role} role",
+        "viewAs": "View as:",
+        "noDifferences": "No notable differences between the selected candidates."
+      },
+      "reports": {
+        "pdfHint": "Branded report with scores, charts, dates and limitations.",
+        "pngTitle": "Download chart (PNG)",
+        "pngHint": "The chart currently shown in the overview.",
+        "fullReports": "Full assessment reports"
+      },
+      "how": {
+        "0": "Choose the job role. Only candidates assessed for that exact role appear.",
+        "1": "Optionally narrow by date range or assessment type.",
+        "2": "Tick 2–4 candidates. If a candidate was assessed more than once, choose which assessment to use.",
+        "3": "Screening and Full Assessment results are never compared together - once you pick one type, the other is locked.",
+        "4": "Press Compare Candidates, review the tabs, and export the PDF report. The comparison shows recorded results only; it makes no new readiness decision."
       }
     }
   },

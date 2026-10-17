@@ -31,6 +31,7 @@ export type CertificateStatus = typeof CERTIFICATE_STATUS[number]['value'];
 export interface Evaluation {
   id: string;
   candidate: string;
+  review_status?: ReviewStatus;
   candidate_details?: Candidate;
   
   candidate_first_name: string;
@@ -59,6 +60,8 @@ export interface Evaluation {
   feedback?: string;
   
   meeting_link?: string;
+  // Short link to share instead of meeting_link; null when it can't be shortened.
+  meeting_short_link?: string | null;
   meeting_id?: string;
   meeting_password?: string;
   session_id?: string;
@@ -205,6 +208,10 @@ export interface CandidateScoreSummary {
   evaluation_tier: 'FULL' | 'SCREENING' | 'BOTH' | null;
   overall_percentage: number;
   status: SessionEvaluationStatus;
+  // AI_SCORING: AI interview scored by the rule engine. EVALUATOR_RATING:
+  // scheduled interview rated by a person (overall = average of the rated
+  // competencies). Optional so older API responses still type-check.
+  source?: 'AI_SCORING' | 'EVALUATOR_RATING';
   generated_at: string;
   competencies: CandidateScoreCompetency[];
   // Null when this evaluation's tier doesn't issue certificates, or
@@ -366,9 +373,45 @@ export interface ScoringRuleSetPayload {
   rules: ScoringRulePayload[];
 }
 
+// Release safeguard (backend HumanReviewService): while REQUIRED, the
+// score, readiness and report are withheld from the employer until an
+// admin reviewer records a decision.
+export type ReviewStatus = 'NOT_REQUIRED' | 'REQUIRED' | 'APPROVED';
+
+export interface PendingReviewItem {
+  evaluation_id: string;
+  candidate_name: string;
+  role_code: string;
+  language: string;
+  evaluation_tier: string;
+  company: string | null;
+  automatic_readiness: string;
+  score: number | null;
+  review_reasons: string[];
+  completed_at: string | null;
+}
+
+export type ReviewDecision = 'READY' | 'PARTIALLY_READY' | 'NOT_READY' | 'INCOMPLETE';
+
+export interface HumanReviewPayload {
+  decision: ReviewDecision;
+  notes: string;
+}
+
+export interface HumanReviewResult {
+  evaluation_id: string;
+  review_status: ReviewStatus;
+  decision: ReviewDecision;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  report_number: string | null;
+  certificate_status: string;
+}
+
 export interface EvaluationListItem {
   id: string;
   candidate_name: string;
+  review_status?: ReviewStatus;
   evaluation_type: EvaluationType;
   evaluation_type_display: string;
   status: EvaluationStatus;
@@ -386,5 +429,7 @@ export interface EvaluationListItem {
   // room (?sessionId=...) for INTERVIEW-type evaluations. Both null/absent
   // for other evaluation types or ones without a linked session.
   meeting_link?: string;
+  // Short link to share instead of meeting_link; null when it can't be shortened.
+  meeting_short_link?: string | null;
   session_id?: string;
 }

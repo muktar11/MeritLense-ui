@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { X, Loader2, Mail, User, Briefcase, Key } from "lucide-react";
 import { useTranslations } from "next-intl";
 import teamService from "@/app/api/team/endpoints";
+import { PRESET_PERMISSIONS, ROLE_JOB_TITLE, ROLE_PRESET, TEAM_ROLES, roleForJobTitle, type TeamRole } from "./team-roles";
 import type { Permission } from "@/app/api/team/types";
 
 interface InviteTeamModalProps {
@@ -14,6 +15,7 @@ interface InviteTeamModalProps {
 
 export function InviteTeamModal({ isOpen, onClose, onSuccess }: InviteTeamModalProps) {
   const t = useTranslations("dashboard.business.company-profile.team");
+  const tPage = useTranslations("dashboard.business.company-profile");
   const [loading, setLoading] = useState(false);
   const [permissions, setPermissions] = useState<Permission[]>([]);
   const [formData, setFormData] = useState({
@@ -63,6 +65,16 @@ export function InviteTeamModal({ isOpen, onClose, onSuccess }: InviteTeamModalP
     }
   };
 
+  // A role is a job title plus the permissions it starts with; they can
+  // still be adjusted with the checkboxes below.
+  const handleRoleChange = (role: TeamRole) => {
+    setFormData(prev => ({
+      ...prev,
+      job_title: ROLE_JOB_TITLE[role],
+      permissions: PRESET_PERMISSIONS[ROLE_PRESET[role]],
+    }));
+  };
+
   const handlePermissionChange = (permissionKey: string) => {
     setFormData(prev => {
       const newPermissions = prev.permissions.includes(permissionKey)
@@ -89,29 +101,29 @@ export function InviteTeamModal({ isOpen, onClose, onSuccess }: InviteTeamModalP
     const newErrors: Record<string, string> = {};
 
     if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
+      newErrors.email = t("inviteModal.errors.emailRequired");
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Invalid email format";
+      newErrors.email = t("inviteModal.errors.emailInvalid");
     }
 
     if (!formData.first_name.trim()) {
-      newErrors.first_name = "First name is required";
+      newErrors.first_name = t("inviteModal.errors.firstNameRequired");
     }
 
     if (!formData.last_name.trim()) {
-      newErrors.last_name = "Last name is required";
+      newErrors.last_name = t("inviteModal.errors.lastNameRequired");
     }
 
     if (!formData.job_title.trim()) {
-      newErrors.job_title = "Job title is required";
+      newErrors.job_title = t("inviteModal.errors.roleRequired");
     }
 
     if (!formData.phone_number.trim()) {
-      newErrors.job_title = "Phone Number is required";
+      newErrors.job_title = t("inviteModal.errors.phoneRequired");
     }
 
     if (formData.permissions.length === 0) {
-      newErrors.permissions = "At least one permission is required";
+      newErrors.permissions = t("inviteModal.errors.permissionRequired");
     }
 
     setErrors(newErrors);
@@ -135,7 +147,7 @@ export function InviteTeamModal({ isOpen, onClose, onSuccess }: InviteTeamModalP
       if (error.response?.data) {
         setErrors(error.response.data);
       } else {
-        setErrors({ form: 'Failed to send invitation. Please try again.' });
+        setErrors({ form: t("inviteModal.errors.sendFailed") });
       }
     } finally {
       setLoading(false);
@@ -198,7 +210,7 @@ export function InviteTeamModal({ isOpen, onClose, onSuccess }: InviteTeamModalP
                   className={`w-full pl-10 pr-3 py-2 border rounded-lg text-sm ${
                     errors.first_name ? 'border-red-500' : 'border-gray-300'
                   }`}
-                  placeholder="John"
+                  placeholder={t("inviteModal.firstNamePlaceholder")}
                 />
               </div>
               {errors.first_name && <p className="mt-1 text-xs text-red-600">{errors.first_name}</p>}
@@ -218,29 +230,36 @@ export function InviteTeamModal({ isOpen, onClose, onSuccess }: InviteTeamModalP
                   className={`w-full pl-10 pr-3 py-2 border rounded-lg text-sm ${
                     errors.last_name ? 'border-red-500' : 'border-gray-300'
                   }`}
-                  placeholder="Doe"
+                  placeholder={t("inviteModal.lastNamePlaceholder")}
                 />
               </div>
               {errors.last_name && <p className="mt-1 text-xs text-red-600">{errors.last_name}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                {t('inviteModal.jobTitle')} *
+              <label htmlFor="team-role" className="block text-sm font-medium text-gray-700 mb-1">
+                {t('inviteModal.role')} *
               </label>
               <div className="relative">
                 <Briefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <input
-                  type="text"
-                  name="job_title"
-                  value={formData.job_title}
-                  onChange={handleInputChange}
-                  className={`w-full pl-10 pr-3 py-2 border rounded-lg text-sm ${
+                <select
+                  id="team-role"
+                  value={roleForJobTitle(formData.job_title) ?? ''}
+                  onChange={(e) => handleRoleChange(e.target.value as TeamRole)}
+                  className={`w-full pl-10 pr-3 py-2 border rounded-lg text-sm bg-white ${
                     errors.job_title ? 'border-red-500' : 'border-gray-300'
                   }`}
-                  placeholder="HR Manager"
-                />
+                >
+                  <option value="" disabled>—</option>
+                  {TEAM_ROLES.map((role) => (
+                    <option key={role} value={role}>{tPage(`staff.roles.${role}`)}</option>
+                  ))}
+                </select>
               </div>
+              {roleForJobTitle(formData.job_title) && (
+                <p className="mt-1 text-xs text-gray-500">{tPage(`staff.roleHelp.${roleForJobTitle(formData.job_title)}`)}</p>
+              )}
+              <p className="mt-1 text-xs text-gray-400">{t('inviteModal.roleHint')}</p>
               {errors.job_title && <p className="mt-1 text-xs text-red-600">{errors.job_title}</p>}
             </div>
 
@@ -286,7 +305,7 @@ export function InviteTeamModal({ isOpen, onClose, onSuccess }: InviteTeamModalP
                       onChange={() => handlePermissionChange(permission.key)}
                       className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                     />
-                    <span className="text-sm text-gray-700">{permission.label}</span>
+                    <span className="text-sm text-gray-700">{tPage.has(`staff.permissionNames.${permission.key}`) ? tPage(`staff.permissionNames.${permission.key}`) : permission.label}</span>
                   </label>
                 ))}
               </div>

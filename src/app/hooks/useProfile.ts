@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { profileAPI, B2CProfileData, B2BProfileData, AdminProfileData, ChangePasswordData } from './../api/profile/endpoints'
 
 // profileClient's interceptor (lib/auth-session.ts) rejects with the raw
@@ -23,6 +24,7 @@ interface UseProfileReturn {
 }
 
 export const useProfile = (): UseProfileReturn => {
+  const tErr = useTranslations('shared.ui.errors')
   const [profile, setProfile] = useState<any>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -34,7 +36,7 @@ export const useProfile = (): UseProfileReturn => {
       const data = await profileAPI.getProfile()
       setProfile(data)
     } catch (err: any) {
-      setError(errorData(err).error || 'Failed to fetch profile')
+      setError(errorData(err).error || tErr("profileLoadFailed"))
     } finally {
       setLoading(false)
     }
@@ -57,9 +59,9 @@ export const useProfile = (): UseProfileReturn => {
         const errorMessages = Object.entries(data)
           .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`)
           .join(', ')
-        setError(errorMessages || 'Failed to update profile')
+        setError(errorMessages || tErr("profileUpdateFailed"))
       } else {
-        setError('Failed to update profile')
+        setError(tErr("profileUpdateFailed"))
       }
       return false
     } finally {
@@ -86,7 +88,7 @@ export const useProfile = (): UseProfileReturn => {
       } else if (data.detail) {
         setError(data.detail)
       } else {
-        setError('Failed to change password')
+        setError(tErr("passwordChangeFailed"))
       }
       return false
     } finally {
@@ -102,7 +104,7 @@ export const useProfile = (): UseProfileReturn => {
       setProfile(response.profile)
       return true
     } catch (err: any) {
-      setError(errorData(err).error || 'Failed to upload document')
+      setError(errorData(err).error || tErr("documentUploadFailed"))
       return false
     } finally {
       setLoading(false)
@@ -117,7 +119,7 @@ export const useProfile = (): UseProfileReturn => {
       setProfile((prev: any) => (prev ? { ...prev, profile_picture: response.profile_picture } : prev))
       return true
     } catch (err: any) {
-      setError(errorData(err).error || 'Failed to upload profile picture')
+      setError(errorData(err).error || tErr("pictureUploadFailed"))
       return false
     } finally {
       setLoading(false)
@@ -132,7 +134,7 @@ export const useProfile = (): UseProfileReturn => {
       setProfile((prev: any) => (prev ? { ...prev, profile_picture: null } : prev))
       return true
     } catch (err: any) {
-      setError(errorData(err).error || 'Failed to remove profile picture')
+      setError(errorData(err).error || tErr("pictureRemoveFailed"))
       return false
     } finally {
       setLoading(false)
@@ -146,7 +148,7 @@ export const useProfile = (): UseProfileReturn => {
       await profileAPI.deleteAccount(password)
       return true
     } catch (err: any) {
-      setError(errorData(err).error || 'Failed to delete account')
+      setError(errorData(err).error || tErr("accountDeleteFailed"))
       return false
     } finally {
       setLoading(false)
