@@ -270,6 +270,9 @@ export interface EvaluatorRating {
   behavioral_risk_level: 'Low' | 'Medium' | 'High' | 'Not Assessed';
   task_execution: number;
   consistency: number;
+    comments: string;
+    overall_score: number;
+    readiness_status: 'READY' | 'PARTIALLY_READY' | 'NOT_READY' | string;
   rated_by: string | null;
   rated_by_name: string | null;
   rated_at: string;
@@ -283,6 +286,7 @@ export interface EvaluatorRatingPayload {
   communication: number;
   behavior_integrity: number;
   task_execution: number;
+    comments?: string;
 }
 
 export type ScoringMethod =
