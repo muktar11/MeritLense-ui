@@ -10,8 +10,6 @@ import {
   Camera,
   CheckCircle2,
   Clock,
-  CreditCard,
-  Crown,
   Download,
   FileSignature,
   FileText,
@@ -35,16 +33,12 @@ import { useRouter } from "@/i18n/navigation";
 import DashboardHeader from "../components/dashboard-header";
 import EditProfileTab from "../components/settings/edit-profile-tab";
 import SecurityTab from "../components/settings/security-tab";
-import { BillingTab } from "../components/settings/billing-tab";
 import AgreementsTab from "../components/settings/agreements-tab";
-import { SubscriptionProvider, useSubscription } from "@/app/context/SubscriptionContext";
 import { useProfile } from "@/app/hooks/useProfile";
 import { JOB_ROLES, LANGUAGES, NATIONALITIES } from "@/app/api/auth/endpoints";
 import type { B2CProfileData } from "@/app/api/profile/endpoints";
 import agreementService from "@/app/api/agreements/endpoints";
 import type { Agreement } from "@/app/api/agreements/types";
-import paymentService from "@/app/api/payments/endpoints";
-import { localizedPlanName, type PaymentMethod } from "@/app/api/payments/types";
 import { AuditTrailModal } from "@/components/agreements/AuditTrailModal";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -53,16 +47,11 @@ import { CountrySelect, SearchSelect } from "@/components/app/searchable-fields"
 import { getTimezoneOptions } from "@/lib/location-detection";
 import { SectionCard, inputClass, outlineButtonClass, primaryButtonClass } from "../../business/components/profile/section-card";
 
-// Profile page for individual employers (approved design 15 Oct 2026): a
-// header with photo and name, a section bar, and summary cards. Editing
-// opens the existing forms in dialogs. ?tab=billing|security|agreements|
-// settings jumps to that card (payment pages link to ?tab=billing, which
-// also opens the full billing view).
+// Profile page for individual employers: personal and account settings.
 const SECTIONS: { id: string; key: string; icon: LucideIcon }[] = [
   { id: "personal", key: "sections.personal", icon: User },
   { id: "contact", key: "sections.contact", icon: Phone },
   { id: "security", key: "sections.security", icon: Lock },
-  { id: "billing", key: "sections.billing", icon: CreditCard },
   { id: "agreements", key: "sections.agreements", icon: FileText },
   { id: "settings", key: "sections.settings", icon: Settings },
 ];
@@ -70,14 +59,12 @@ const SECTIONS: { id: string; key: string; icon: LucideIcon }[] = [
 const PICTURE_MAX_BYTES = 5 * 1024 * 1024;
 const PICTURE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
-type DialogName = "personal" | "contact" | "security" | "billing" | "agreements" | "settings" | null;
+type DialogName = "personal" | "contact" | "security" | "agreements" | "settings" | null;
 
 export default function SettingsPage() {
   return (
     <Suspense fallback={<div className="min-h-screen bg-gray-50" />}>
-      <SubscriptionProvider>
-        <ProfilePageContent />
-      </SubscriptionProvider>
+      <ProfilePageContent />
     </Suspense>
   );
 }
@@ -97,7 +84,6 @@ const linkButton = "text-sm font-medium text-purple-700 hover:underline dark:tex
 function ProfilePageContent() {
   const t = useTranslations("dashboard.indivisual.profile");
   const tForm = useTranslations("dashboard.indivisual.settings.edit-profile-tab");
-  const tBillingTab = useTranslations("dashboard.indivisual.settings.billing-tab");
   const tTypes = useTranslations("shared.agreementTypes");
   const locale = useLocale();
   const dateLocale = locale === "ar" ? { locale: ar } : undefined;
@@ -105,16 +91,14 @@ function ProfilePageContent() {
   const searchParams = useSearchParams();
   const { theme } = useTheme();
   const { profile, loading, fetchProfile, updateProfile, uploadProfilePicture, removeProfilePicture } = useProfile();
-  const { subscription } = useSubscription();
 
-  const [dialog, setDialog] = useState<DialogName>(() => (searchParams.get("tab") === "billing" ? "billing" : null));
+  const [dialog, setDialog] = useState<DialogName>(null);
   const [activeSection, setActiveSection] = useState(SECTIONS[0].id);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [pictureBusy, setPictureBusy] = useState(false);
   const [pictureError, setPictureError] = useState<string | null>(null);
   const [agreements, setAgreements] = useState<Agreement[] | null>(null);
   const [auditTarget, setAuditTarget] = useState<{ id: string; label: string } | null>(null);
-  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[] | null>(null);
 
   const loadAgreements = () =>
     agreementService
@@ -124,28 +108,22 @@ function ProfilePageContent() {
         console.error("Failed to fetch agreements:", error);
         setAgreements([]);
       });
-  const loadPaymentMethods = () =>
-    paymentService
-      .getPaymentMethods()
-      .then(setPaymentMethods)
-      .catch((error) => {
-        console.error("Failed to fetch payment methods:", error);
-        setPaymentMethods([]);
-      });
-
   useEffect(() => {
     loadAgreements();
-    loadPaymentMethods();
   }, []);
 
   // ?tab= deep links scroll to that card once the page has rendered.
   const profileLoaded = Boolean(profile);
   useEffect(() => {
     const tab = searchParams.get("tab");
+    if (tab === "billing") {
+      router.replace("/dashboard/indivisual/payment?tab=billing");
+      return;
+    }
     if (!profileLoaded || !tab || !SECTIONS.some((s) => s.id === tab)) return;
     const timer = window.setTimeout(() => document.getElementById(tab)?.scrollIntoView({ block: "start" }), 50);
     return () => window.clearTimeout(timer);
-  }, [profileLoaded, searchParams]);
+  }, [profileLoaded, router, searchParams]);
 
   useEffect(() => {
     if (!profileLoaded) return;
@@ -211,18 +189,6 @@ function ProfilePageContent() {
     setPictureBusy(false);
     if (!ok) setPictureError(tForm("errors.removeFailed"));
   };
-
-  // Billing summary
-  const plan = subscription
-    ? localizedPlanName(subscription.price_details?.name || subscription.stripe_price?.name, locale)
-    : "";
-  const statusKey = subscription?.status
-    ? ({ ACTIVE: "active", PAST_DUE: "pastDue", CANCELED: "canceled", INCOMPLETE: "incomplete", INCOMPLETE_EXPIRED: "incompleteExpired", TRIALING: "trialing", UNPAID: "unpaid" } as Record<string, string>)[subscription.status]
-    : undefined;
-  const statusLabel = subscription ? (statusKey ? tBillingTab(`subscriptionStatus.${statusKey}`) : subscription.status_display) : "";
-  const periodEnd = subscription?.current_period_end ? format(new Date(subscription.current_period_end), "d MMM yyyy", dateLocale) : null;
-  const activeLike = subscription && (subscription.status === "ACTIVE" || subscription.status === "TRIALING");
-  const defaultMethod = paymentMethods?.find((m) => m.is_default) ?? paymentMethods?.[0];
 
   // Agreements summary: every current agreement on the account.
   const agreementRows = (agreements || []).filter((a) => a.status !== "SUPERSEDED");
@@ -407,67 +373,6 @@ function ProfilePageContent() {
             </SectionCard>
 
             <SectionCard
-              id="billing"
-              icon={CreditCard}
-              title={t("sections.billing")}
-              subtitle={t("billing.subtitle")}
-              action={
-                <button type="button" className={outlineButtonClass} onClick={() => router.push("/dashboard/indivisual/payment")}>
-                  {t("billing.managePlan")}
-                </button>
-              }
-            >
-              <div className="mb-2 flex items-center gap-3 rounded-xl bg-purple-50 p-3 dark:bg-purple-950/30">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white text-purple-600 dark:bg-gray-800">
-                  <Crown className="h-5 w-5" />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">{plan || t("billing.noPlan")}</p>
-                  {!subscription && <p className="text-xs text-gray-500">{t("billing.noPlanHint")}</p>}
-                </div>
-                {subscription && (
-                  <div className="shrink-0 text-end text-xs">
-                    <span className={`inline-flex items-center gap-1 font-medium ${activeLike ? "text-green-700" : "text-amber-700"}`}>
-                      {activeLike ? <CheckCircle2 className="h-3.5 w-3.5" /> : <Clock className="h-3.5 w-3.5" />} {statusLabel}
-                    </span>
-                    {periodEnd && (
-                      <p className="mt-0.5 text-gray-500">
-                        {subscription.cancel_at_period_end ? t("billing.endsOn", { date: periodEnd }) : t("billing.renewsOn", { date: periodEnd })}
-                      </p>
-                    )}
-                  </div>
-                )}
-              </div>
-              <div className="divide-y divide-gray-100 dark:divide-gray-800">
-                <Row
-                  label={t("billing.paymentMethod")}
-                  action={
-                    <button type="button" className={linkButton} onClick={() => setDialog("billing")}>
-                      {defaultMethod ? t("billing.update") : t("billing.add")}
-                    </button>
-                  }
-                >
-                  {paymentMethods === null ? (
-                    <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
-                  ) : defaultMethod ? (
-                    <span dir="ltr">
-                      {defaultMethod.card_brand ? `${defaultMethod.card_brand.charAt(0).toUpperCase()}${defaultMethod.card_brand.slice(1)}` : defaultMethod.display_name}
-                      {defaultMethod.card_last4 ? ` •••• ${defaultMethod.card_last4}` : ""}
-                    </span>
-                  ) : (
-                    <span className="text-gray-400">{t("billing.noMethod")}</span>
-                  )}
-                </Row>
-                <Row
-                  label={t("billing.history")}
-                  action={<button type="button" className={linkButton} onClick={() => setDialog("billing")}>{t("billing.view")}</button>}
-                >
-                  <span className="text-gray-500">{t("billing.historyHint")}</span>
-                </Row>
-              </div>
-            </SectionCard>
-
-            <SectionCard
               id="agreements"
               icon={FileText}
               title={t("sections.agreements")}
@@ -603,15 +508,6 @@ function ProfilePageContent() {
             <DialogTitle>{t("sections.security")}</DialogTitle>
           </DialogHeader>
           <SecurityTab />
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={dialog === "billing"} onOpenChange={(open) => { if (!open) { close(); loadPaymentMethods(); } }}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-4xl">
-          <DialogHeader>
-            <DialogTitle>{t("sections.billing")}</DialogTitle>
-          </DialogHeader>
-          <BillingTab />
         </DialogContent>
       </Dialog>
 

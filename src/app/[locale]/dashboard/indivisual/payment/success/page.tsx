@@ -30,7 +30,7 @@ function PaymentSuccessContent() {
   useEffect(() => {
     setLoading(false);
     const timer = setTimeout(() => {
-      router.push(`/${locale}/dashboard/indivisual/profile?tab=billing`);
+      router.push(`/${locale}/dashboard/indivisual/payment?tab=billing`);
     }, 3000);
 
     return () => clearTimeout(timer);
@@ -74,7 +74,7 @@ function PaymentSuccessContent() {
               </Link>
 
               <Link
-                href={`/${locale}/dashboard/indivisual/profile?tab=billing`}
+                href={`/${locale}/dashboard/indivisual/payment?tab=billing`}
                 className="block w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
               >
                 {t("viewBillingDetails")}

@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Check, Loader2, AlertCircle, CreditCard } from "lucide-react";
+import { Suspense, useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import { Check, Loader2, AlertCircle, CreditCard, History } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
@@ -15,6 +16,8 @@ import { OneTimePaymentForm } from "../components/one-time-payment-form";
 import { UsageMeter } from "../components/usage-meter";
 import { UsageSummary } from "../components/usage-summary";
 import { PlanCoverageChecklist } from "@/components/payments/PlanCoverageChecklist";
+import { BillingTab } from "../components/settings/billing-tab";
+import { SubscriptionProvider } from "@/app/context/SubscriptionContext";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -39,7 +42,72 @@ function getApiErrorMessage(error: unknown): string | undefined {
   return;
 }
 
+type PaymentTab = "plans" | "billing";
+
 export default function PaymentPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50" />}>
+      <PaymentPageTabs />
+    </Suspense>
+  );
+}
+
+function PaymentPageTabs() {
+  const t = useTranslations("dashboard.indivisual.payment");
+  const locale = useLocale();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState<PaymentTab>(() =>
+    searchParams.get("tab") === "billing" ? "billing" : "plans"
+  );
+
+  useEffect(() => {
+    setActiveTab(searchParams.get("tab") === "billing" ? "billing" : "plans");
+  }, [searchParams]);
+
+  const tabs = [
+    { id: "plans" as const, label: t("tabs.plans"), icon: CreditCard },
+    { id: "billing" as const, label: t("tabs.billing"), icon: History },
+  ];
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <nav className="mb-6 flex gap-3 border-b border-gray-200" aria-label={t("tabsLabel")}>
+          {tabs.map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              type="button"
+              role="tab"
+              aria-selected={activeTab === id}
+              onClick={() => {
+                setActiveTab(id);
+                router.replace(`/${locale}/dashboard/indivisual/payment?tab=${id}`, { scroll: false });
+              }}
+              className={`flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
+                activeTab === id
+                  ? "border-purple-600 text-purple-700"
+                  : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
+              }`}
+            >
+              <Icon className="h-4 w-4" />
+              {label}
+            </button>
+          ))}
+        </nav>
+        {activeTab === "plans" ? (
+          <PlansTabContent />
+        ) : (
+          <SubscriptionProvider>
+            <BillingTab />
+          </SubscriptionProvider>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function PlansTabContent() {
   const t = useTranslations("dashboard.indivisual.payment");
   const tBilling = useTranslations("dashboard.indivisual.settings.billing-tab");
   const locale = useLocale();
@@ -422,7 +490,7 @@ export default function PaymentPage() {
                   {t('currentPlanSection.upgradePlanButton')}
                 </button>
                 <Link
-                  href={`/${locale}/dashboard/indivisual/profile?tab=billing`}
+                  href={`/${locale}/dashboard/indivisual/payment?tab=billing`}
                   className="flex-1 text-center border border-gray-300 text-gray-700 font-semibold py-3 px-4 rounded-lg hover:bg-gray-50 transition"
                 >
                   {t('currentPlanSection.manageBillingButton')}
