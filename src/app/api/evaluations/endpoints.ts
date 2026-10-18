@@ -23,6 +23,8 @@ import {
 import { API_BASE_URL } from '@/lib/config/env';
 
 export interface AssessmentResultsData {
+  certificate_eligibility: { eligible: boolean; reason: string };
+  can_finalize: boolean;
   evaluation: Evaluation;
   transcript: { question: string; responses: { original: string; language: string; translation: string; translation_language: string }[] }[];
   reports: import('../reports/types').EvaluationReport[];
@@ -68,6 +70,12 @@ class EvaluationService {
   async getAssessmentResults(id: string): Promise<AssessmentResultsData> {
     this.ensureAuthToken();
     const response = await authClient.get(`${this.baseURL}/${id}/assessment-results`);
+    return response.data;
+  }
+
+  async finalizeScheduledAssessment(id: string): Promise<Evaluation> {
+    this.ensureAuthToken();
+    const response = await authClient.post(`${this.baseURL}/${id}/finalize-scheduled`, {});
     return response.data;
   }
 

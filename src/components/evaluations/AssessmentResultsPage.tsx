@@ -10,7 +10,7 @@ import reportService from "@/app/api/reports/endpoints";
 import type { Candidate } from "@/app/api/candidates/types";
 import type { EvaluationListItem } from "@/app/api/evaluations/types";
 import { apiErrorMessage } from "@/lib/api-error-message";
-import { AssessmentFilters, CandidateIdentity, assessmentDate, localDate, outlineButton, panel, primaryButton, useAssessmentText } from "./assessment-ui";
+import { AssessmentFilters, CandidateIdentity, hasAssessmentResult, assessmentDate, localDate, outlineButton, panel, primaryButton, useAssessmentText } from "./assessment-ui";
 
 type Tab = "overview" | "competencies" | "documents" | "history";
 export function AssessmentResultsPage({ scope }: { scope: "business" | "indivisual" }) {
@@ -36,7 +36,7 @@ export function AssessmentResultsPage({ scope }: { scope: "business" | "indivisu
     let active = true;
     setLoading(true); setError("");
     Promise.all([evaluationService.getEvaluations(), candidateService.getCandidates()]).then(([evaluations, people]) => {
-      if (active) { setItems(evaluations.filter(item => item.status === "COMPLETED")); setCandidates(people); }
+      if (active) { setItems(evaluations.filter(hasAssessmentResult)); setCandidates(people); }
     }).catch(error => { if (active) setError(apiErrorMessage(error) || text("Unable to load assessments.", "تعذر تحميل التقييمات.")); }).finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, [attempt]);
@@ -64,6 +64,24 @@ export function AssessmentResultsPage({ scope }: { scope: "business" | "indivisu
   const validCertificate = evaluation?.certificate_status === "ISSUED" && evaluation.certificate_enabled !== false && !screening && !!evaluation.certificate_url;
   const certificateLabel = validCertificate ? text("Available", "متاحة") : evaluation?.certificate_status === "PENDING" ? text("Pending", "قيد الانتظار") : evaluation?.certificate_status === "REVOKED" ? text("Revoked", "ملغاة") : evaluation?.certificate_status === "EXPIRED" ? text("Expired", "منتهية") : text("Not eligible / not issued", "غير مؤهل / لم تصدر");
   const transcriptAvailable = !!data?.transcript.length;
+  const eligibilityReason = ({
+    VERIFICATION_FAILED: text("Candidate identity verification is required.", "يجب التحقق من هوية المرشح."),
+    CONSENT_REQUIRED: text("Signed candidate consent is required.", "تلزم موافقة المرشح الموقعة."),
+    SCREENING_NO_CERTIFICATE: text("Screening assessments do not issue a readiness certificate.", "لا تصدر شهادة جاهزية للفحص الأولي."),
+    CERTIFICATE_DISABLED: text("Certificate issuance is disabled for this assessment.", "إصدار الشهادة معطل لهذا التقييم."),
+    COMPLETION_UNVERIFIED: text("Finalize the evaluator-rated assessment to check certificate eligibility.", "أكمل التقييم للتحقق من أهلية الشهادة."),
+    EVALUATOR_RATING_PENDING: text("Final evaluator ratings are required.", "تلزم تقييمات المقيّم النهائية."),
+    INCOMPLETE: text("Complete assessment evidence is required.", "تلزم أدلة تقييم مكتملة."),
+    HUMAN_REVIEW_PENDING: text("An authorized review must be completed first.", "يجب إكمال المراجعة المصرح بها أولاً."),
+  } as Record<string, string>)[data?.certificate_eligibility?.reason || ""];
+  async function finalizeScheduled() {
+    if (!selected) return;
+    await documentAction(async () => {
+      await evaluationService.finalizeScheduledAssessment(selected);
+      setData(await evaluationService.getAssessmentResults(selected));
+      setItems((await evaluationService.getEvaluations()).filter(hasAssessmentResult));
+    });
+  }
   async function documentAction(action: () => Promise<void>) { setDocumentBusy(true); setError(""); try { await action(); } catch (error) { setError(apiErrorMessage(error) || text("Unable to open document. Please retry.", "تعذر فتح المستند. يرجى إعادة المحاولة.")); } finally { setDocumentBusy(false); } }
   function transcriptDownload() {
     if (!data || !evaluation) return;
@@ -88,6 +106,10 @@ export function AssessmentResultsPage({ scope }: { scope: "business" | "indivisu
         { label: text("Certificate", "الشهادة"), value: certificateLabel, icon: Award, style: validCertificate ? "border-emerald-100 bg-emerald-50 text-emerald-800" : "border-amber-100 bg-amber-50 text-amber-800" },
       ].map(({ label, value, icon: Icon, style }) => <div key={label} className={`flex items-center gap-3 rounded-lg border p-4 ${style}`}><Icon className="h-8 w-8 shrink-0" /><div><p className="text-xs">{label}</p><p className="mt-1 text-sm font-semibold">{value}</p></div></div>)}</div>
       <nav aria-label={text("Assessment result tabs", "تبويبات نتيجة التقييم")} className="flex overflow-x-auto border-b border-sky-100" role="tablist">{([['overview', text("Overview", "نظرة عامة")], ['competencies', text("Competencies", "الكفاءات")], ['documents', text("Documents", "المستندات")], ['history', text("History", "السجل")]] as [Tab, string][]).map(([key, label]) => <button key={key} id={`tab-${key}`} aria-controls={`panel-${key}`} role="tab" aria-selected={tab === key} onClick={() => setTab(key)} className={`border-b-3 px-5 py-3 text-sm ${tab === key ? "border-blue-600 font-bold text-blue-700" : "border-transparent text-slate-500"}`}>{label}</button>)}</nav>
+      {employerLed && !validCertificate && <section className={`${panel} space-y-3 p-4`}>
+        <p className="text-sm text-slate-600">{eligibilityReason || (data.certificate_eligibility?.eligible ? text("This assessment is eligible. Generate its certificate below.", "هذا التقييم مؤهل. أنشئ شهادته أدناه.") : text("Certificate eligibility checks have not passed.", "لم تُستوفَ شروط أهلية الشهادة."))}</p>
+        {data.can_finalize && evaluation.certificate_enabled !== false && !screening && <button className={primaryButton} disabled={documentBusy} onClick={finalizeScheduled}>{documentBusy ? text("Checking eligibility…", "جار التحقق من الأهلية…") : text("Finalize & generate certificate", "إكمال التقييم وإنشاء الشهادة")}</button>}
+      </section>}
       <div role="tabpanel" id={`panel-${tab}`} aria-labelledby={`tab-${tab}`}>
       {tab === "documents" && <section className={panel}><h2 className="bg-sky-50/70 p-4 font-bold">{text("Documents — selected assessment only", "المستندات — للتقييم المحدد فقط")}</h2>
         <DocumentRow icon={FileText} title={text("Interview Transcript", "نص المقابلة")} available={transcriptAvailable} status={transcriptAvailable ? text("Available", "متاح") : text("No captured dialogue", "لا يوجد حوار مسجل")} description={text("Recorded questions, answers and unanswered items.", "الأسئلة والإجابات المسجلة والأسئلة التي لم تتم الإجابة عنها.")} onView={() => setShowTranscript(value => !value)} onDownload={transcriptDownload} note={text("Available regardless of pass / fail when recorded or captured text exists. Missing or unclear sections are marked; dialogue is never invented. Original-language text is retained and translations are clearly labelled.", "متاح بغض النظر عن النجاح أو الإخفاق عند وجود نص مسجل. تُحدد الأجزاء المفقودة أو غير الواضحة ولا يُختلق الحوار. يُحتفظ بالنص الأصلي وتُميز الترجمات بوضوح.")} />

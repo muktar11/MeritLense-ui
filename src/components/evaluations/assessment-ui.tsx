@@ -3,6 +3,11 @@
 import { useLocale } from "next-intl";
 import { Search } from "lucide-react";
 import type { Candidate } from "@/app/api/candidates/types";
+import type { EvaluationListItem } from "@/app/api/evaluations/types";
+
+export function hasAssessmentResult(item: EvaluationListItem) {
+  return item.status === 'COMPLETED' || (item.status !== 'CANCELLED' && item.assessment_mode === 'SCHEDULED_INTERVIEW' && !!item.evaluator_rating);
+}
 
 export const panel = "rounded-xl border border-sky-100 bg-white overflow-hidden";
 export const outlineButton = "rounded-md border border-blue-300 bg-white px-4 py-2 text-sm font-medium text-blue-700 hover:bg-blue-50 disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-100 disabled:text-gray-400";
