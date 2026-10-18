@@ -161,6 +161,17 @@ class EvaluationService {
     return response.data;
   }
 
+  async getScheduledOutputs(evaluationId: string): Promise<import("./types").ScheduledOutputs> {
+    this.ensureAuthToken();
+    const response = await authClient.get(`${this.baseURL}/${evaluationId}/scheduled-outputs`);
+    return response.data;
+  }
+
+  async recordScheduledException(evaluationId: string, operation: string, notes: string): Promise<void> {
+    this.ensureAuthToken();
+    await authClient.post(`${this.baseURL}/${evaluationId}/scheduled-outputs`, { operation, notes });
+  }
+
   async getEvaluatorRating(evaluationId: string): Promise<EvaluatorRating | null> {
     this.ensureAuthToken();
     try {

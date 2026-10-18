@@ -5,6 +5,7 @@ import { Loader2, Star } from "lucide-react";
 import { useTranslations } from "next-intl";
 import evaluationService from "@/app/api/evaluations/endpoints";
 import type { EvaluatorRating, EvaluatorRatingPayload } from "@/app/api/evaluations/types";
+import { ScheduledEvaluationOutputs } from "./ScheduledEvaluationOutputs";
 
 // The 5 approved report dimensions. behavior_integrity is still entered as
 // a raw 0-100 score here (that's the evaluator's actual input) - it's only
@@ -66,6 +67,8 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
           : EMPTY_RATING_FORM
       );
       setLoading(false);
+    }).catch(() => {
+      if (!cancelled) { setRatingError(t("submitFailedError")); setLoading(false); }
     });
     return () => {
       cancelled = true;
@@ -160,6 +163,7 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
         </div>
       ) : (
         <div className="grid gap-3 sm:grid-cols-5">
+          <p className="sm:col-span-5 rounded-lg bg-purple-50 p-3 text-xs text-purple-900">{t("finalSubmissionLock")}</p>
           <div className="sm:col-span-5 rounded-xl bg-teal-50 p-4"><p className="text-sm">{t("overallOutcome")}</p>
             <p className="text-xl font-bold">{evaluatorRating.overall_score}% · {t(`readiness.${evaluatorRating.readiness_status}` as "readiness.READY")}</p>
           </div>
@@ -186,6 +190,7 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
             </p>
           )}
           {evaluatorRating.comments && <p className="sm:col-span-5 whitespace-pre-wrap text-sm text-gray-700">{t("comments")}: {evaluatorRating.comments}</p>}
+          <div className="sm:col-span-5"><ScheduledEvaluationOutputs evaluationId={evaluationId} /></div>
         </div>
       )}
     </div>

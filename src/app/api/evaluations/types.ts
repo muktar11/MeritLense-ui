@@ -261,6 +261,14 @@ export interface CompetencyEvaluationResult {
 // psych_professional is intentionally not a field here - it's not an
 // approved dimension and is hidden from every API response pending a
 // legal/compliance review; do not add it back.
+export interface ScheduledOutputs {
+  can_manage_exceptions: boolean;
+  certificate_status: string;
+  certificate_url: string | null;
+  reports: { report_number: string; report_status: string; pdf_url: string | null; generated_at: string }[];
+  corrections: { created_at: string; reason: string; recorded_by: string | null; previous_values: Record<string, unknown>; corrected_values: Record<string, unknown> }[];
+}
+
 export interface EvaluatorRating {
   id: string;
   safety_awareness: number;
