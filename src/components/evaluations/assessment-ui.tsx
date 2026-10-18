@@ -16,6 +16,13 @@ export function useAssessmentText() {
   const locale = useLocale();
   return (en: string, ar: string) => locale === "ar" ? ar : en;
 }
+export function AssessmentType({ mode }: { mode: EvaluationListItem['assessment_mode'] }) {
+  const text = useAssessmentText();
+  const scheduled = mode === 'SCHEDULED_INTERVIEW';
+  return <span className={`inline-block whitespace-nowrap rounded-full px-3 py-1 text-xs font-medium ${scheduled ? 'bg-violet-100 text-violet-800' : 'bg-blue-100 text-blue-800'}`}>
+    {scheduled ? text('Scheduled assessment', 'تقييم مجدول') : text('AI assessment', 'تقييم بالذكاء الاصطناعي')}
+  </span>;
+}
 export function CandidateIdentity({ name, candidate, role }: { name: string; candidate?: Candidate; role?: string }) {
   return <div className="flex items-center gap-3"><div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-violet-100 font-bold text-violet-700">{candidate?.profile_photo ? <img src={candidate.profile_photo} alt="" className="h-full w-full object-cover" /> : name.split(" ").map(word => word[0]).slice(0, 2).join("")}</div><div><p className="font-semibold text-slate-950">{name}</p><p className="text-xs text-slate-500">{role || candidate?.job_role || "—"}</p></div></div>;
 }
