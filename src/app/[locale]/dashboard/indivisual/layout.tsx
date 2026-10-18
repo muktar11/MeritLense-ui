@@ -21,7 +21,6 @@ import {
   Bell,
   Activity,
   GitCompare,
-  ShieldCheck,
 } from "lucide-react";
 
 import { LanguageSelector } from "@/components/app/LanguageSelector";
@@ -85,13 +84,14 @@ export default function AdminLayout({
         disabled: lockedUntilSigned,
         disabledTooltip,
       },
-      {
-        label: t("pages_list.exceptions_quality"),
-        icon: ShieldCheck,
-        href: `/${locale}/dashboard/indivisual/exceptions-quality`,
-        disabled: lockedUntilSigned,
-        disabledTooltip,
-      },
+      // Exceptions and Quality is temporarily hidden from navigation.
+      // {
+      //   label: t("pages_list.exceptions_quality"),
+      //   icon: ShieldCheck,
+      //   href: `/${locale}/dashboard/indivisual/exceptions-quality`,
+      //   disabled: lockedUntilSigned,
+      //   disabledTooltip,
+      // },
 
       {
         label: t("pages_list.compare_candidates"),

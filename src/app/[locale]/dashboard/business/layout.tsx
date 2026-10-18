@@ -16,7 +16,6 @@ import {
   ClipboardList,
   GitCompare,
   Loader2,
-  ShieldCheck,
 } from "lucide-react";
 import { LanguageSelector } from "@/components/app/LanguageSelector";
 import { useTranslations, useLocale } from "next-intl";
@@ -157,13 +156,14 @@ export default function AdminLayout({
         disabled: lockedUntilSigned,
         disabledTooltip,
       },
-      {
-        label: t("pages_list.exceptions_quality"),
-        icon: ShieldCheck,
-        href: `/${locale}/dashboard/business/exceptions-quality`,
-        disabled: lockedUntilSigned,
-        disabledTooltip,
-      },
+      // Exceptions and Quality is temporarily hidden from navigation.
+      // {
+      //   label: t("pages_list.exceptions_quality"),
+      //   icon: ShieldCheck,
+      //   href: `/${locale}/dashboard/business/exceptions-quality`,
+      //   disabled: lockedUntilSigned,
+      //   disabledTooltip,
+      // },
       {
         label: t("pages_list.compare_candidates"),
         icon: GitCompare,
