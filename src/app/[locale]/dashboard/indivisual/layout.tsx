@@ -72,14 +72,14 @@ export default function AdminLayout({
         disabledTooltip,
       },
       {
-        label: t("pages_list.evaluation_setup"),
+        label: locale === "ar" ? "التقييمات" : "Evaluations",
         icon: ClipboardList,
         href: `/${locale}/dashboard/indivisual/evaluations`,
         disabled: lockedUntilSigned,
         disabledTooltip,
       },
       {
-        label: t("pages_list.assessments_monitor"),
+        label: locale === "ar" ? "نتائج التقييم" : "Assessment Results",
         icon: Building2,
         href: `/${locale}/dashboard/indivisual/score-management`,
         disabled: lockedUntilSigned,

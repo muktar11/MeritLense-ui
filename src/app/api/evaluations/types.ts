@@ -29,6 +29,10 @@ export type EvaluationStatus = typeof EVALUATION_STATUS[number]['value'];
 export type CertificateStatus = typeof CERTIFICATE_STATUS[number]['value'];
 
 export interface Evaluation {
+  evaluation_tier?: 'FULL' | 'SCREENING' | 'BOTH';
+  readiness_status?: string;
+  readiness_indicator_enabled?: boolean;
+  certificate_enabled?: boolean;
   id: string;
   candidate: string;
   review_status?: ReviewStatus;
@@ -421,6 +425,12 @@ export interface HumanReviewResult {
 }
 
 export interface EvaluationListItem {
+  completed_at?: string | null;
+  candidate: string;
+  candidate_job_role?: string;
+  candidate_email?: string;
+  candidate_preferred_language?: string;
+  evaluation_tier?: 'FULL' | 'SCREENING' | 'BOTH';
   id: string;
   candidate_name: string;
   review_status?: ReviewStatus;

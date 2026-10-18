@@ -1,12 +1,11 @@
-import { getTranslations } from "next-intl/server"
-import { ScoreManagement } from "../components/score-management"
+import { Suspense } from "react";
+import { AssessmentResultsPage } from "@/components/evaluations/AssessmentResultsPage";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params
-  const t = await getTranslations({ locale, namespace: "shared.pageMeta.b2bScoreManagement" })
-  return { title: t("title"), description: t("description") }
+  const { locale } = await params;
+  return { title: locale === "ar" ? "نتائج التقييم" : "Assessment Results" };
 }
 
 export default function Page() {
-  return <ScoreManagement />
+  return <Suspense><AssessmentResultsPage scope="business" /></Suspense>;
 }

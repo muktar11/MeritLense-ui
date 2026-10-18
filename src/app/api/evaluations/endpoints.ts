@@ -22,6 +22,13 @@ import {
 } from './types';
 import { API_BASE_URL } from '@/lib/config/env';
 
+export interface AssessmentResultsData {
+  evaluation: Evaluation;
+  transcript: { question: string; responses: { original: string; language: string; translation: string; translation_language: string }[] }[];
+  reports: import('../reports/types').EvaluationReport[];
+  corrections: { created_at: string; reason: string; recorded_by: string | null }[];
+}
+
 class EvaluationService {
   private baseURL = `${API_BASE_URL}/evaluations/evaluations`;
   private ruleSetsURL = `${API_BASE_URL}/evaluations/rule-sets`;
@@ -55,6 +62,12 @@ class EvaluationService {
   async getEvaluation(id: string): Promise<Evaluation> {
     this.ensureAuthToken();
     const response = await authClient.get(`${this.baseURL}/${id}`);
+    return response.data;
+  }
+
+  async getAssessmentResults(id: string): Promise<AssessmentResultsData> {
+    this.ensureAuthToken();
+    const response = await authClient.get(`${this.baseURL}/${id}/assessment-results`);
     return response.data;
   }
 

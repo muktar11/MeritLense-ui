@@ -144,14 +144,14 @@ export default function AdminLayout({
         disabledTooltip,
       },
       {
-        label: t("pages_list.multi_agency_panel"),
+        label: locale === "ar" ? "التقييمات" : "Evaluations",
         icon: ClipboardList,
         href: `/${locale}/dashboard/business/candidate-evaluation`,
         disabled: lockedUntilSigned,
         disabledTooltip,
       },
       {
-        label: t("pages_list.business_management"),
+        label: locale === "ar" ? "نتائج التقييم" : "Assessment Results",
         icon: Building2,
         href: `/${locale}/dashboard/business/score-management`,
         disabled: lockedUntilSigned,
