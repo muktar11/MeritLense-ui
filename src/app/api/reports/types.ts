@@ -3,13 +3,16 @@ export type ReportStatus = 'PENDING' | 'ACTIVE' | 'SUPERSEDED' | 'REVOKED' | 'FA
 // The backend rule engine emits readiness_indicator in Arabic regardless of
 // UI locale (it's the legal record's own fixed vocabulary) — map to an
 // English label for display without altering the underlying value.
+// Labels follow rulebook OUT-06; older stored wordings still map.
 const READINESS_INDICATOR_LABELS: Record<string, string> = {
   'جاهز': 'Ready',
+  'جاهز جزئيًا': 'Partially Ready',
   'جاهزية جزئية': 'Partially Ready',
   'متوسط': 'Partially Ready',
-  'غير جاهز': 'Readiness Gaps Identified',
-  'توجد فجوات جاهزية': 'Readiness Gaps Identified',
-  // Distinct from "Readiness Gaps Identified" - insufficient assessment
+  'غير جاهز': 'Not Ready',
+  'توجد فجوات جاهزية': 'Not Ready',
+  'تم تحديد فجوات في الجاهزية': 'Not Ready',
+  // Distinct from "Not Ready" - insufficient assessment
   // coverage means no readiness determination could be made at all, not
   // that gaps were found (see Week6ScoringService._apply_evaluation_rollups).
   'أدلة غير كافية': 'Insufficient Evidence',
