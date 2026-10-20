@@ -12,7 +12,8 @@ import { ScheduledEvaluationOutputs } from "./ScheduledEvaluationOutputs";
 // shown as a Risk Level (High/Medium/Low) on the certificate/report, per
 // Report Specification Section 4. psych_professional is no longer
 // collected - it isn't an approved dimension and is pending legal review.
-type EvaluatorRatingScoreKey = Exclude<keyof EvaluatorRatingPayload, "comments">;
+type RatingFormKey = Exclude<keyof EvaluatorRatingPayload, "critical_safety_failure" | "critical_safety_failure_note">;
+type EvaluatorRatingScoreKey = Exclude<RatingFormKey, "comments">;
 
 const RATING_POOLS: { key: EvaluatorRatingScoreKey }[] = [
   { key: "safety_awareness" },
@@ -22,7 +23,7 @@ const RATING_POOLS: { key: EvaluatorRatingScoreKey }[] = [
   { key: "behavior_integrity" },
 ];
 
-const EMPTY_RATING_FORM: Record<keyof EvaluatorRatingPayload, string> = {
+const EMPTY_RATING_FORM: Record<RatingFormKey, string> = {
   safety_awareness: "",
   hygiene: "",
   communication: "",
@@ -47,6 +48,8 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
   const [ratingForm, setRatingForm] = useState(EMPTY_RATING_FORM);
   const [submittingRating, setSubmittingRating] = useState(false);
   const [ratingError, setRatingError] = useState<string | null>(null);
+  const [criticalSafetyFailure, setCriticalSafetyFailure] = useState(false);
+  const [criticalSafetyFailureNote, setCriticalSafetyFailureNote] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -75,7 +78,7 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
     };
   }, [evaluationId]);
 
-  const handleRatingFieldChange = (key: keyof EvaluatorRatingPayload, value: string) => {
+  const handleRatingFieldChange = (key: RatingFormKey, value: string) => {
     setRatingForm((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -90,6 +93,12 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
       parsed[key] = numeric;
     }
     parsed.comments = ratingForm.comments;
+    if (criticalSafetyFailure && !criticalSafetyFailureNote.trim()) {
+      setRatingError(t("criticalSafetyFailureNoteRequired"));
+      return;
+    }
+    parsed.critical_safety_failure = criticalSafetyFailure;
+    parsed.critical_safety_failure_note = criticalSafetyFailure ? criticalSafetyFailureNote.trim() : "";
 
     setSubmittingRating(true);
     setRatingError(null);
@@ -150,6 +159,32 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
           <label className="block"><span className="text-sm font-medium text-gray-700">{t("comments")}</span>
             <textarea value={ratingForm.comments} onChange={(e) => handleRatingFieldChange("comments", e.target.value)} maxLength={10000}
               className="mt-1.5 w-full rounded-xl border border-gray-200 px-3.5 py-2.5 text-sm" rows={3} /></label>
+          <div className="rounded-xl border border-red-200 bg-red-50/60 p-4 space-y-3">
+            <label className="flex items-start gap-3">
+              <input
+                type="checkbox"
+                checked={criticalSafetyFailure}
+                onChange={(e) => setCriticalSafetyFailure(e.target.checked)}
+                className="mt-0.5 h-4 w-4 rounded border-red-300 text-red-600 focus:ring-red-500"
+              />
+              <span>
+                <span className="block text-sm font-semibold text-red-800">{t("criticalSafetyFailure")}</span>
+                <span className="block text-xs text-red-700">{t("criticalSafetyFailureHelp")}</span>
+              </span>
+            </label>
+            {criticalSafetyFailure && (
+              <label className="block">
+                <span className="text-sm font-medium text-gray-700">{t("criticalSafetyFailureNote")}</span>
+                <textarea
+                  value={criticalSafetyFailureNote}
+                  onChange={(e) => setCriticalSafetyFailureNote(e.target.value)}
+                  maxLength={5000}
+                  rows={3}
+                  className="mt-1.5 w-full rounded-xl border border-red-200 bg-white px-3.5 py-2.5 text-sm"
+                />
+              </label>
+            )}
+          </div>
           <p className="text-xs text-gray-500">{t("finalSubmissionLock")}</p>
           <button
             type="button"
@@ -184,6 +219,12 @@ export function EvaluatorRatingCard({ evaluationId, className }: EvaluatorRating
             <p className="text-xs text-gray-500">{t("consistency")}</p>
             <p className="text-lg font-bold text-gray-900">{evaluatorRating.consistency}</p>
           </div>
+          {evaluatorRating.critical_safety_failure && (
+            <div className="sm:col-span-5 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-800">
+              <p className="font-semibold">{t("criticalSafetyFailureRecorded")}</p>
+              <p className="whitespace-pre-wrap">{evaluatorRating.critical_safety_failure_note}</p>
+            </div>
+          )}
           {evaluatorRating.rated_by_name && (
             <p className="sm:col-span-5 text-[11px] text-gray-500">
               {t("ratedByOn", { name: evaluatorRating.rated_by_name, date: new Date(evaluatorRating.rated_at).toLocaleString() })}
