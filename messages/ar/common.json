@@ -5360,8 +5360,8 @@
       },
       "readiness": {
         "READY": "جاهز",
-        "PARTIALLY_READY": "جاهزية جزئية",
-        "NOT_READY": "توجد فجوات جاهزية",
+        "PARTIALLY_READY": "جاهز جزئيًا",
+        "NOT_READY": "غير جاهز",
         "INCOMPLETE": "أدلة غير كافية",
         "PENDING": "قيد المراجعة"
       },

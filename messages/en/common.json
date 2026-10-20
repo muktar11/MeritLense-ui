@@ -5330,7 +5330,7 @@
       "readiness": {
         "READY": "Ready",
         "PARTIALLY_READY": "Partially Ready",
-        "NOT_READY": "Readiness Gaps Identified",
+        "NOT_READY": "Not Ready",
         "INCOMPLETE": "Insufficient Evidence",
         "PENDING": "Pending"
       },
