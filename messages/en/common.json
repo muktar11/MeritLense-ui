@@ -520,6 +520,7 @@
         "valid": "Valid Certificate",
         "expired": "Expired Certificate",
         "superseded": "Superseded Certificate",
+        "testDocument": "Test document — not a valid certificate",
         "revoked": "Revoked Certificate",
         "id": "Certificate ID",
         "candidateName": "Candidate Name",
@@ -531,6 +532,7 @@
           "VALID": "Valid",
           "EXPIRED": "Expired",
           "SUPERSEDED": "Superseded",
+          "TEST_DOCUMENT": "Test document",
           "REVOKED": "Revoked"
         }
       },

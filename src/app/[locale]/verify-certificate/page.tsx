@@ -98,6 +98,11 @@ function VerifyCertificateContent() {
                   <AlertTriangle className="w-6 h-6 text-amber-500" />
                   <span className="text-amber-700 font-semibold">{t("certificate.expired")}</span>
                 </>
+              ) : result.status === "TEST_DOCUMENT" ? (
+                <>
+                  <AlertTriangle className="w-6 h-6 text-amber-500" />
+                  <span className="text-amber-700 font-semibold">{t("certificate.testDocument")}</span>
+                </>
               ) : result.status === "SUPERSEDED" ? (
                 <>
                   <AlertTriangle className="w-6 h-6 text-amber-500" />
