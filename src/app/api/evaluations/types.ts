@@ -189,7 +189,7 @@ export interface CertificateVerification {
   candidate_name: string;
   issued_at: string | null;
   expires_at: string | null;
-  status: 'VALID' | 'REVOKED' | 'EXPIRED' | 'SUPERSEDED';
+  status: 'VALID' | 'REVOKED' | 'EXPIRED' | 'SUPERSEDED' | 'TEST_DOCUMENT';
   pdf_hash: string;
 }
 
@@ -282,6 +282,8 @@ export interface EvaluatorRating {
   behavioral_risk_level: 'Low' | 'Medium' | 'High' | 'Not Assessed';
   task_execution: number;
   consistency: number;
+  critical_safety_failure: boolean;
+  critical_safety_failure_note: string;
     comments: string;
     overall_score: number;
     readiness_status: 'READY' | 'PARTIALLY_READY' | 'NOT_READY' | string;
@@ -299,6 +301,10 @@ export interface EvaluatorRatingPayload {
   behavior_integrity: number;
   task_execution: number;
     comments?: string;
+  // A confirmed critical safety failure: Not Ready and no readiness
+  // certificate, whatever the average. The note is required when set.
+  critical_safety_failure?: boolean;
+  critical_safety_failure_note?: string;
 }
 
 export type ScoringMethod =
