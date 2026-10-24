@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import liveCallService from "@/app/api/live-calls/endpoints";
 import type {
+  LiveCallParticipant,
   LiveCallRole,
   LiveCallServerEvent,
   LiveCallTranslationSegment,
@@ -44,6 +45,17 @@ interface UseLiveCallOptions {
   // omitted for the evaluator, who authenticates as a normal logged-in
   // staff user instead - see api/live-calls/endpoints.ts.
   candidateToken?: string;
+  // Evaluator only: the competency open in the interview guide, sent with
+  // each of their turns so the backend can file the conversation by
+  // competency (the candidate's reply inherits it server-side).
+  getCompetency?: () => string | undefined;
+}
+
+// Newest first, one entry per id: saved history and live events can overlap.
+function mergeSegments(current: LiveCallTranslationSegment[], incoming: LiveCallTranslationSegment[]) {
+  const byId = new Map(current.map((segment) => [segment.id, segment]));
+  for (const segment of incoming) byId.set(segment.id, { ...byId.get(segment.id), ...segment });
+  return [...byId.values()].sort((a, b) => b.sent_at.localeCompare(a.sent_at));
 }
 
 function wsUrlFor(path: string, ticket: string): string {
@@ -55,7 +67,7 @@ function wsUrlFor(path: string, ticket: string): string {
   return `${origin}${path}?ticket=${encodeURIComponent(ticket)}`;
 }
 
-export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
+export function useLiveCall({ sessionId, candidateToken, getCompetency }: UseLiveCallOptions) {
   const tUi = useTranslations("shared.ui");
   const [status, setStatus] = useState<LiveCallStatus>("idle");
   const [role, setRole] = useState<LiveCallRole | null>(null);
@@ -80,6 +92,10 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
   // Evaluator-only: a candidate is knocking and hasn't been admitted/denied yet.
   const [joinRequest, setJoinRequest] = useState(false);
   const [evaluationId, setEvaluationId] = useState<string | null>(null);
+  const [participants, setParticipants] = useState<LiveCallParticipant[]>([]);
+  const [sendingText, setSendingText] = useState(false);
+  const getCompetencyRef = useRef(getCompetency);
+  getCompetencyRef.current = getCompetency;
 
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
@@ -165,13 +181,15 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
     setTurnRecordingError(null);
     const formData = new FormData();
     formData.append("audio", turnBlobRef.current, "turn.webm");
+    const competency = getCompetencyRef.current?.();
+    if (competency) formData.append("competency", competency);
     try {
       const result = await liveCallService.sendSegment(sessionId, formData, candidateToken);
       // Log the turn on the sender's own feed too, but don't queue the
       // translated audio here - that's a translation of the sender's own
       // words, meant for the recipient to hear. The recipient gets their
       // copy (with audio) via the "translation_segment" WS broadcast below.
-      setTranslationSegments((current) => [result.segment, ...current]);
+      setTranslationSegments((current) => mergeSegments(current, [result.segment]));
       if (turnPreviewUrl) URL.revokeObjectURL(turnPreviewUrl);
       setTurnPreviewUrl(null);
       turnBlobRef.current = null;
@@ -184,6 +202,28 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
       setTurnRecordingState("recorded");
     }
   }, [candidateToken, sessionId, turnPreviewUrl]);
+
+  // Typed turn. Resolves false (with turnRecordingError set) on failure so
+  // the caller can keep the unsent text.
+  const sendTextTurn = useCallback(async (text: string) => {
+    const message = text.trim();
+    if (!message) return false;
+    setSendingText(true);
+    setTurnRecordingError(null);
+    try {
+      const result = await liveCallService.sendTextSegment(sessionId, message, getCompetencyRef.current?.(), candidateToken);
+      setTranslationSegments((current) => mergeSegments(current, [result.segment]));
+      return true;
+    } catch (err) {
+      setTurnRecordingError(
+        (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail ??
+          "The message could not be translated. You can try sending it again."
+      );
+      return false;
+    } finally {
+      setSendingText(false);
+    }
+  }, [candidateToken, sessionId]);
 
   const cleanupConnection = useCallback(() => {
     if (pcRef.current) {
@@ -275,6 +315,10 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
           break;
         case "peer_presence":
           setRemoteConnected(event.connected);
+          // The other side may have changed their languages before joining.
+          if (event.connected) {
+            liveCallService.getCall(sessionId, candidateToken).then((call) => setParticipants(call.participants)).catch(() => {});
+          }
           // Deterministic offer-initiator rule to avoid glare: the
           // evaluator always makes the offer, once they know the candidate
           // is on the call. The candidate only ever answers.
@@ -318,7 +362,7 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
           audioQueueRef.current.enqueue(event.audio);
           break;
         case "translation_segment":
-          setTranslationSegments((current) => [event.payload, ...current]);
+          setTranslationSegments((current) => mergeSegments(current, [event.payload]));
           if (event.payload.translated_audio) {
             audioQueueRef.current.enqueue(event.payload.translated_audio);
           }
@@ -341,7 +385,7 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
           break;
       }
     },
-    [createAndSendOffer, createPeerConnection, sendSignal, cleanupConnection, cleanupMedia]
+    [createAndSendOffer, createPeerConnection, sendSignal, cleanupConnection, cleanupMedia, sessionId, candidateToken]
   );
 
   const connect = useCallback(async () => {
@@ -354,6 +398,11 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
       setRole(joined.role);
       roleRef.current = joined.role;
       setEvaluationId(joined.call.evaluation_id);
+      setParticipants(joined.call.participants);
+      // A rejoin (refresh or reconnect) shows the conversation so far.
+      liveCallService.getConversation(sessionId, candidateToken)
+        .then((saved) => { if (mountedRef.current) setTranslationSegments((current) => mergeSegments(current, saved)); })
+        .catch(() => {});
       iceServersRef.current = joined.ice_servers as RTCIceServer[];
       setLanguagePrefsState(
         joined.call.participants.find((p) => p.role === joined.role) ?? {
@@ -498,5 +547,8 @@ export function useLiveCall({ sessionId, candidateToken }: UseLiveCallOptions) {
     localVideoRef,
     remoteVideoRef,
     evaluationId,
+    participants,
+    sendTextTurn,
+    sendingText,
   };
 }

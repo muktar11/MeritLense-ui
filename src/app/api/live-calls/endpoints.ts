@@ -1,6 +1,6 @@
 import { apiClient } from "@/app/api/auth/client";
 import { liveCallClient } from "./client";
-import type { LiveCall, LiveCallJoinResult, LiveCallTranslationSegment } from "./types";
+import type { LiveCall, LiveCallGuide, LiveCallJoinResult, LiveCallSavedSegment, LiveCallTranslationSegment } from "./types";
 
 // The evaluator joins as a normal authenticated staff user (apiClient,
 // carrying whatever staff Bearer token is in localStorage). The candidate
@@ -53,6 +53,36 @@ class LiveCallService {
     const response = await client.post(`${this.baseURL}/${sessionId}/segments`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
+    return response.data;
+  }
+
+  // A typed turn: translated and voiced for the other side like a spoken one.
+  async sendTextSegment(
+    sessionId: string,
+    text: string,
+    competency?: string,
+    candidateToken?: string
+  ): Promise<{ segment: LiveCallTranslationSegment }> {
+    const client = candidateToken ? liveCallClient : apiClient;
+    const response = await client.post(`${this.baseURL}/${sessionId}/segments`, {
+      text,
+      ...(competency ? { competency } : {}),
+      ...(candidateToken ? { token: candidateToken } : {}),
+    });
+    return response.data;
+  }
+
+  async getConversation(sessionId: string, candidateToken?: string): Promise<LiveCallSavedSegment[]> {
+    const client = candidateToken ? liveCallClient : apiClient;
+    const response = await client.get(`${this.baseURL}/${sessionId}/conversation`, {
+      params: candidateToken ? { token: candidateToken } : {},
+    });
+    return response.data;
+  }
+
+  // Evaluator only.
+  async getGuide(sessionId: string): Promise<LiveCallGuide> {
+    const response = await apiClient.get(`${this.baseURL}/${sessionId}/guide`);
     return response.data;
   }
 }

@@ -284,6 +284,8 @@ export interface EvaluatorRating {
   consistency: number;
   critical_safety_failure: boolean;
   critical_safety_failure_note: string;
+  competency_notes?: Partial<Record<ScorecardCompetency, string>>;
+  competency_evidence?: Partial<Record<ScorecardCompetency, string[]>>;
     comments: string;
     overall_score: number;
     readiness_status: 'READY' | 'PARTIALLY_READY' | 'NOT_READY' | string;
@@ -303,6 +305,22 @@ export interface EvaluatorRatingPayload {
     comments?: string;
   // A confirmed critical safety failure: Not Ready and no readiness
   // certificate, whatever the average. The note is required when set.
+  critical_safety_failure?: boolean;
+  critical_safety_failure_note?: string;
+  // Evidence note and linked live-call turns per competency (SCH-02/04).
+  competency_notes?: Partial<Record<ScorecardCompetency, string>>;
+  competency_evidence?: Partial<Record<ScorecardCompetency, string[]>>;
+}
+
+// The scheduled scorecard's competencies, keyed by rating field.
+export type ScorecardCompetency = 'safety_awareness' | 'hygiene' | 'communication' | 'task_execution' | 'behavior_integrity';
+
+// The evaluator's scorecard in progress (no scoring effect).
+export interface ScorecardDraftData {
+  ratings?: Partial<Record<ScorecardCompetency, string>>;
+  notes?: Partial<Record<ScorecardCompetency, string>>;
+  evidence?: Partial<Record<ScorecardCompetency, string[]>>;
+  comments?: string;
   critical_safety_failure?: boolean;
   critical_safety_failure_note?: string;
 }

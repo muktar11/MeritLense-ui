@@ -15,6 +15,7 @@ import {
   CandidateScoreSummary,
   EvaluatorRating,
   EvaluatorRatingPayload,
+  ScorecardDraftData,
   CertificateVerification,
   PendingReviewItem,
   HumanReviewPayload,
@@ -25,8 +26,11 @@ import { API_BASE_URL } from '@/lib/config/env';
 export interface AssessmentResultsData {
   certificate_eligibility: { eligible: boolean; reason: string };
   can_finalize: boolean;
+  can_manage_exceptions?: boolean;
   evaluation: Evaluation;
   transcript: { question: string; responses: { original: string; language: string; translation: string; translation_language: string }[] }[];
+  // Scheduled assessments: the live call's own turns, oldest first.
+  conversation?: import('../live-calls/types').LiveCallSavedSegment[];
   reports: import('../reports/types').EvaluationReport[];
   corrections: { created_at: string; reason: string; recorded_by: string | null }[];
 }
@@ -208,6 +212,18 @@ class EvaluationService {
   async submitEvaluatorRating(evaluationId: string, data: EvaluatorRatingPayload): Promise<EvaluatorRating> {
     this.ensureAuthToken();
     const response = await authClient.post(`${this.baseURL}/${evaluationId}/evaluator-rating`, data);
+    return response.data;
+  }
+
+  async getScorecardDraft(evaluationId: string): Promise<{ data: ScorecardDraftData; updated_at: string | null }> {
+    this.ensureAuthToken();
+    const response = await authClient.get(`${this.baseURL}/${evaluationId}/evaluator-rating/draft`);
+    return response.data;
+  }
+
+  async saveScorecardDraft(evaluationId: string, data: ScorecardDraftData): Promise<{ data: ScorecardDraftData; updated_at: string | null }> {
+    this.ensureAuthToken();
+    const response = await authClient.put(`${this.baseURL}/${evaluationId}/evaluator-rating/draft`, { data });
     return response.data;
   }
 
