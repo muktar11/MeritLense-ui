@@ -60,14 +60,42 @@ export type LiveCallClientAction =
 export interface LiveCallTranslationSegment {
   id: string;
   speaker_role: LiveCallRole;
-  recipient_role: LiveCallRole;
+  recipient_role?: LiveCallRole;
   source_language: string;
   target_language: string;
   original_text: string;
   translated_text: string;
-  translated_audio: string;
-  mime_type: string;
+  // Present only on turns received live; saved turns keep no audio.
+  translated_audio?: string;
+  mime_type?: string;
+  input_mode?: "AUDIO" | "TEXT";
+  competency?: string;
   sent_at: string;
+}
+
+// A conversation turn as saved by the backend (no audio).
+export type LiveCallSavedSegment = Omit<LiveCallTranslationSegment, "translated_audio" | "mime_type" | "recipient_role">;
+
+export interface LiveCallGuideQuestion {
+  id: string;
+  text: string;
+  order: number;
+  status: string;
+}
+
+// Evaluator-only context for the scheduled interview and scorecard.
+export interface LiveCallGuide {
+  session_id: string;
+  evaluation_id: string | null;
+  candidate: { name: string; photo_url: string | null };
+  role_name: string;
+  role_code: string;
+  scheduled_start_at: string | null;
+  evaluator_name: string;
+  candidate_language: string;
+  call: LiveCall | null;
+  competencies: { key: import("../evaluations/types").ScorecardCompetency; questions: LiveCallGuideQuestion[] }[];
+  conversation: LiveCallSavedSegment[];
 }
 
 export type LiveCallServerEvent =

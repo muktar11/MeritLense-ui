@@ -12,7 +12,7 @@ import { ScheduledEvaluationOutputs } from "./ScheduledEvaluationOutputs";
 // shown as a Risk Level (High/Medium/Low) on the certificate/report, per
 // Report Specification Section 4. psych_professional is no longer
 // collected - it isn't an approved dimension and is pending legal review.
-type RatingFormKey = Exclude<keyof EvaluatorRatingPayload, "critical_safety_failure" | "critical_safety_failure_note">;
+type RatingFormKey = Exclude<keyof EvaluatorRatingPayload, "critical_safety_failure" | "critical_safety_failure_note" | "competency_notes" | "competency_evidence">;
 type EvaluatorRatingScoreKey = Exclude<RatingFormKey, "comments">;
 
 const RATING_POOLS: { key: EvaluatorRatingScoreKey }[] = [
